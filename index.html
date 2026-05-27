@@ -107,8 +107,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 /* ── Site markers ──────────────────────────────────── */
 .leaflet-marker-icon.site-marker{background:transparent!important;border:none!important}
 .site-pin-wrap{width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.site-pin{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.55),0 0 0 4px rgba(0,0,0,.22);transition:transform .15s,box-shadow .15s}
-.site-pin-wrap:hover .site-pin,.site-pin-wrap:active .site-pin{transform:scale(1.18);box-shadow:0 4px 14px rgba(0,0,0,.7),0 0 0 5px rgba(0,0,0,.28)}
+.site-pin{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.55),0 0 0 4px rgba(0,0,0,.22);transition:transform .2s,box-shadow .15s;transform:scale(var(--site-scale,1))}
+.site-pin-wrap:hover .site-pin,.site-pin-wrap:active .site-pin{transform:scale(calc(var(--site-scale,1) * 1.18));box-shadow:0 4px 14px rgba(0,0,0,.7),0 0 0 5px rgba(0,0,0,.28)}
 .site-pin svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .site-pin.school{background:#1f8a5b}
 .site-pin.childcare{background:#7c5cd9}
@@ -335,6 +335,8 @@ var SITES_URL='https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/
 var FLIGHTS_URL='https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/refs/heads/main/dfr/flight_paths.geojson';
 var DEMO_URL='https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/nashville_council_district_demographics.json';
 var DIST_URL='https://maps.nashville.gov/arcgis/rest/services/Elections/Precincts/MapServer/1/query?where=1%3D1&outFields=DistrictName&f=geojson&outSR=4326&returnGeometry=true';
+var PROXY='https://n8n.intelechia.com/webhook/feed?url=';
+function pfetch(url){return fetch(PROXY+encodeURIComponent(url))}
 var SC={school:'#34d399',childcare:'#a78bfa',playground:'#06d6a0',worship:'#f59e0b'};
 var SWATH_M=82;
 var CM={1:{n:"Joy Kimbrough",p:"615-432-1301"},2:{n:"Kyonzté Toombs",p:"615-432-1302"},3:{n:"Jennifer Gamble",p:"615-432-1303"},4:{n:"Mike Cortese",p:"615-432-1304"},5:{n:"Sean Parker",p:"615-432-1305"},6:{n:"Clay Capp",p:"615-432-1306"},7:{n:"Emily Benedict",p:"615-432-1307"},8:{n:"Deonté Harrell",p:"615-432-1308"},9:{n:"Tonya Hancock",p:"615-432-1309"},10:{n:"Jennifer Frensley Webb",p:"615-432-1310"},11:{n:"Jeff Eslick",p:"615-432-1311"},12:{n:"Erin Evans",p:"615-432-1312"},13:{n:"Russ Bradford",p:"615-432-1313"},14:{n:"Jordan Huffman",p:"615-432-1314"},15:{n:"Jeff Gregg",p:"615-432-1315"},16:{n:"Ginny Welsch",p:"615-432-1316"},17:{n:"Terry Vo",p:"615-432-1317"},18:{n:"Tom Cash",p:"615-432-1318"},19:{n:"Jacob Kupin",p:"615-432-1319"},20:{n:"Rollin Horton",p:"615-432-1320"},21:{n:"Brandon Taylor",p:"615-432-1321"},22:{n:"Sheri Weiner",p:"615-432-1322"},23:{n:"Thom Druffel",p:"615-432-1323"},24:{n:"Brenda Gadd",p:"615-432-1324"},25:{n:"Jeff Preptit",p:"615-432-1325"},26:{n:"Courtney Johnston",p:"615-432-1326"},27:{n:"Robert Nash",p:"615-432-1327"},28:{n:"David Benton",p:"615-432-1328"},29:{n:"Tasha Ellis",p:"615-432-1329"},30:{n:"Sandra Sepulveda",p:"615-432-1330"},31:{n:"John Rutherford",p:"615-432-1331"},32:{n:"Joy Styles",p:"615-432-1332"},33:{n:"Antoinette Lee",p:"615-432-1333"},34:{n:"Sandy Ewing",p:"615-432-1334"},35:{n:"Jason Spain",p:"615-432-1335"}};
@@ -343,6 +345,15 @@ var isMobile=window.matchMedia('(max-width:768px)').matches;
 var map=L.map('map',{zoomControl:!isMobile,attributionControl:false}).setView([36.165,-86.78],12);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}).addTo(map);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
+
+// Scale site icons with zoom so the map stays legible when zoomed out
+function updateSiteIconScale(){
+  var z=map.getZoom();
+  var s=z>=16?1:z<=10?0.32:0.32+(z-10)/6*0.68;
+  document.documentElement.style.setProperty('--site-scale',s.toFixed(2));
+}
+map.on('zoomend',updateSiteIconScale);
+updateSiteIconScale();
 
 var allFlights=[],allSites=[],demographics={},baseline={},districtPolys={},clickMarker;
 
@@ -386,10 +397,7 @@ function showPanel(lat,lng){
   var dn=findDist(lat,lng);
   document.getElementById('hint').classList.add('hide');
   if(!dn||!CM[dn]){
-    var panelInner=document.getElementById('panelInner');
-    panelInner.innerHTML='<div class="p-head"><div class="p-name" style="font-size:17px">Outside Davidson County</div><div class="p-phone" style="margin-top:8px">This map covers Metro Nashville council districts only.</div></div>';
-    document.getElementById('panel').classList.add('show');
-    setPanelState('peek');
+    document.getElementById('panel').classList.remove('show');
     return;
   }
   var d=demographics[dn],cm=CM[dn],allNear=nearFlights(lat,lng),top=allNear[0],ft=top?Math.round(top.dist*3.281):Infinity,allOver=allNear.filter(function(r){return r.under}),h='';
@@ -537,7 +545,7 @@ document.getElementById('panelClose').addEventListener('click',function(){
 // ── Select a location (shared by map clicks + site icon clicks) ──
 function reverseGeocode(lat,lng){
   var pipAddr=document.getElementById('pipAddr');
-  fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&addressdetails=1&zoom=18',{headers:{'Accept':'application/json'}})
+  fetch(PROXY+encodeURIComponent('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&addressdetails=1&zoom=18'),{headers:{'Accept':'application/json'}})
     .then(function(r){return r.json()})
     .then(function(data){
       if(!data)throw new Error('no data');
@@ -582,6 +590,8 @@ function updatePipOverlay(lat,lng,inFrame){
   }
 }
 function selectLocation(lat,lng,siteLabel){
+  // Quietly ignore clicks outside Metro Nashville districts
+  if(!findDist(lat,lng))return;
   if(clickMarker)map.removeLayer(clickMarker);
   clickMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div style="width:16px;height:16px;background:#4d8df5;border:2px solid #fff;border-radius:50%;box-shadow:0 0 18px rgba(77,141,245,.9)"></div>',iconSize:[16,16],iconAnchor:[8,8]}),zIndexOffset:2000}).addTo(map);
   // Center map on the selection (offset upward so PiP doesn't cover it)
@@ -660,10 +670,10 @@ function bufLine(coords,rm){var left=[],right=[];for(var i=0;i<coords.length;i++
 
 // ── LOAD ──
 Promise.all([
-  fetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
-  fetch(FLIGHTS_URL+'?t='+Date.now()).then(function(r){return r.json()}),
-  fetch(DEMO_URL+'?t='+Date.now()).then(function(r){return r.json()}),
-  fetch(DIST_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}})
+  pfetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
+  pfetch(FLIGHTS_URL+'?t='+Date.now()).then(function(r){return r.json()}),
+  pfetch(DEMO_URL+'?t='+Date.now()).then(function(r){return r.json()}),
+  pfetch(DIST_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}})
 ]).then(function(res){
   demographics=(res[2].districts||{});compBaseline();
   if(res[3].features)res[3].features.forEach(function(f){var dn=(f.properties.DistrictName||'').replace(/\D/g,'');if(!dn)return;var geo=f.geometry;districtPolys[dn]=geo.type==='MultiPolygon'?geo.coordinates.flat():geo.coordinates});
