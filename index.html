@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#060a10">
+<title>Nashville DFR Surveillance Footprint</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link href="https://fonts.bunny.net/css?family=dm-sans:400,500,600,700|jetbrains-mono:400,600,700|source-serif-4:400,600,700&display=swap" rel="stylesheet" onerror="this.remove()">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#060a10;--surf:rgba(12,16,24,.95);--surf2:rgba(255,255,255,.04);
+  --txt:#dce4f0;--mut:#7e92b8;--mut2:rgba(126,146,184,.5);--line:rgba(255,255,255,.08);
+  --acc:#4d8df5;--hit:#ef4444;--ok:#34d399;--warn:#f59e0b;
+  --safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
+  --hdr:148px;
+}
+@media(max-width:768px){:root{--hdr:172px}}
+html,body{height:100%;height:100dvh;overscroll-behavior:none}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);overflow:hidden;-webkit-font-smoothing:antialiased;touch-action:manipulation}
+#map{position:absolute;top:calc(var(--hdr) + var(--safe-t));left:0;right:0;bottom:0;width:100%;height:auto}
+
+/* ── Headline banner ────────────────────────────────── */
+.headline{position:fixed;top:0;left:0;right:0;z-index:1010;background:linear-gradient(180deg,#0e1420 0%,#0a0f17 100%);border-bottom:1px solid rgba(239,68,68,.25);box-shadow:0 4px 24px rgba(0,0,0,.5);padding:14px 20px 14px 20px;padding-top:calc(14px + var(--safe-t));display:flex;gap:14px;align-items:flex-start}
+.headline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#ef4444 0%,#b91c1c 100%)}
+.headline-mark{flex-shrink:0;display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:.14em;margin-top:3px;line-height:1}
+.headline-mark::before{content:'';width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 10px #ef4444;animation:blink 1.6s ease-in-out infinite}
+.headline-body{flex:1;min-width:0;padding-right:54px}
+.headline h1{font-family:'Source Serif 4',serif;font-size:21px;font-weight:700;line-height:1.22;letter-spacing:-.005em;color:#fff;text-wrap:balance}
+.headline h1 em{color:#fca5a5;font-style:normal;font-weight:700}
+.headline-bullet{display:flex;gap:8px;margin-top:9px;font-size:12.5px;color:var(--mut);line-height:1.5;align-items:flex-start}
+.headline-bullet::before{content:'';flex-shrink:0;width:5px;height:5px;border-radius:50%;background:#ef4444;margin-top:7px;opacity:.85}
+.headline-bullet strong{color:#dce4f0;font-weight:600}
+.headline-toggle{position:absolute;top:calc(10px + var(--safe-t));right:12px;width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;z-index:2}
+.headline-toggle:hover{background:rgba(255,255,255,.1)}
+.headline-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
+.headline.collapsed .headline-toggle svg{transform:rotate(180deg)}
+.headline.collapsed .headline-body .headline-bullet,
+.headline.collapsed .headline-body h1{display:none}
+.headline.collapsed .headline-collapsed-text{display:block}
+.headline-collapsed-text{display:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#fff;line-height:1.3;padding-right:8px}
+.headline-collapsed-text em{color:#fca5a5;font-style:normal;font-weight:700}
+.headline.collapsed{padding-top:calc(10px + var(--safe-t));padding-bottom:10px}
+@media(max-width:768px){
+  .headline{padding:11px 14px 12px;padding-top:calc(11px + var(--safe-t));gap:10px}
+  .headline-body{padding-right:48px}
+  .headline h1{font-size:16.5px;line-height:1.25}
+  .headline-bullet{font-size:11.5px;margin-top:7px;line-height:1.45}
+  .headline-mark{font-size:9.5px;letter-spacing:.1em}
+  .headline-toggle{top:calc(8px + var(--safe-t));right:9px;width:32px;height:32px}
+}
+
+/* ── Top floating info button ────────────────────────── */
+.iconbtn{position:fixed;top:calc(var(--hdr) + 10px + var(--safe-t));right:10px;z-index:1003;width:44px;height:44px;background:var(--surf);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:12px;color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.iconbtn:hover{border-color:rgba(255,255,255,.2)}
+.iconbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── About modal ─────────────────────────────────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2000;display:none;align-items:center;justify-content:center;padding:16px;padding-bottom:calc(16px + var(--safe-b))}
+.modal-bg.show{display:flex}
+.modal{background:var(--surf);border:1px solid var(--line);border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:22px 22px 18px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+.modal h2{font-family:'Source Serif 4',serif;font-size:22px;margin-bottom:12px;padding-right:32px}
+.modal p{font-size:14px;color:var(--mut);line-height:1.6;margin-bottom:12px}
+.modal p strong{color:var(--txt)}
+.modal .close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.06);border:none;color:var(--txt);font-size:18px;cursor:pointer}
+.modal ul{padding-left:18px;font-size:13px;color:var(--mut);line-height:1.7}
+.modal ul li{margin-bottom:4px}
+.legend-block{background:var(--surf2);border-radius:10px;padding:12px 14px;margin-top:10px}
+.legend-block .legend-t{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-family:'JetBrains Mono',monospace}
+.li{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut);font-family:'JetBrains Mono',monospace;line-height:1.9}
+.lsw{width:16px;height:3px;border-radius:2px;flex-shrink:0}
+.lci{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-left:3px;margin-right:3px}
+
+/* ── Bottom sheet / Side panel ───────────────────────── */
+.leaflet-popup-content-wrapper{background:var(--surf)!important;color:var(--txt)!important;border:1px solid var(--line)!important;border-radius:10px!important;box-shadow:0 8px 32px rgba(0,0,0,.6)!important;backdrop-filter:blur(12px)}
+.leaflet-popup-tip{background:var(--surf)!important}
+.leaflet-popup-close-button{color:var(--mut)!important;font-size:18px!important;padding:6px 8px!important}
+
+.panel{position:fixed;z-index:1001;background:var(--surf);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);overflow:hidden;display:none;flex-direction:column}
+.panel.show{display:flex}
+
+/* Desktop: right rail */
+@media(min-width:769px){
+  .panel{top:calc(var(--hdr) + 14px + var(--safe-t));right:14px;width:380px;max-height:calc(100dvh - var(--hdr) - 28px - var(--safe-t) - var(--safe-b));border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.6)}
+  .sheet-grab{display:none}
+  .panel-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch}
+}
+/* Mobile: bottom sheet */
+@media(max-width:768px){
+  .panel{bottom:0;left:0;right:0;border-radius:18px 18px 0 0;border-bottom:none;box-shadow:0 -8px 32px rgba(0,0,0,.6);transition:transform .28s cubic-bezier(.32,.72,0,1);transform:translateY(0);will-change:transform;max-height:92dvh}
+  .panel[data-state="peek"]{transform:translateY(calc(100% - 168px))}
+  .panel[data-state="half"]{transform:translateY(0);max-height:62dvh}
+  .panel[data-state="full"]{transform:translateY(0);max-height:92dvh}
+  .panel.dragging{transition:none}
+  .sheet-grab{height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
+  .sheet-grab::before{content:'';width:38px;height:4px;background:rgba(255,255,255,.25);border-radius:2px}
+  .panel-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + var(--safe-b))}
+}
+.panel-scroll::-webkit-scrollbar{width:5px}
+.panel-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+
+.p-close{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:8px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:18px;cursor:pointer;z-index:3;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+@media(min-width:769px){.p-close{background:rgba(255,255,255,.06);border-color:transparent}}
+
+/* ── Site markers ──────────────────────────────────── */
+.leaflet-marker-icon.site-marker{background:transparent!important;border:none!important}
+.site-pin-wrap{width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.site-pin{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.55),0 0 0 4px rgba(0,0,0,.22);transition:transform .15s,box-shadow .15s}
+.site-pin-wrap:hover .site-pin,.site-pin-wrap:active .site-pin{transform:scale(1.18);box-shadow:0 4px 14px rgba(0,0,0,.7),0 0 0 5px rgba(0,0,0,.28)}
+.site-pin svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.site-pin.school{background:#1f8a5b}
+.site-pin.childcare{background:#7c5cd9}
+.site-pin.playground{background:#0c9c79}
+.site-pin.worship{background:#d4810b}
+
+/* ── Drone PiP ──────────────────────────────────────── */
+.pip{position:fixed;z-index:1002;background:#0a0f17;border:1px solid rgba(245,158,11,.4);border-radius:12px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.7),0 0 0 1px rgba(245,158,11,.12);display:none;transition:width .25s cubic-bezier(.32,.72,0,1),height .25s cubic-bezier(.32,.72,0,1),top .25s,left .25s,right .25s,bottom .25s,transform .25s}
+.pip.show{display:block}
+.pip-img{width:100%;height:100%;object-fit:cover;display:block;background:#0a0f17;filter:contrast(.95) saturate(.7) brightness(.85)}
+.pip::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 55%,rgba(6,10,16,.97) 100%);pointer-events:none;z-index:1}
+.pip-watermark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2;overflow:hidden}
+.pip-watermark span{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:rgba(255,255,255,.13);letter-spacing:.3em;text-transform:uppercase;transform:rotate(-22deg);white-space:nowrap}
+@media(max-width:768px){.pip:not(.expanded) .pip-watermark span{font-size:11px;letter-spacing:.18em}}
+/* Desktop default: top-left medium */
+@media(min-width:769px){
+  .pip{left:14px;top:calc(var(--hdr) + 14px + var(--safe-t));width:380px;height:260px}
+  .pip.expanded{width:min(680px,calc(100vw - 440px));height:min(480px,calc(100vh - var(--hdr) - 60px));left:14px;top:calc(var(--hdr) + 14px + var(--safe-t))}
+}
+/* Mobile default: top-left wider for legibility */
+@media(max-width:768px){
+  .pip{left:10px;top:calc(var(--hdr) + 10px + var(--safe-t));right:64px;width:auto;height:170px;border-radius:10px}
+  .pip.expanded{left:10px;right:10px;top:calc(var(--hdr) + 10px + var(--safe-t));width:auto;height:54vh;border-radius:14px}
+}
+.pip-btn{position:absolute;width:32px;height:32px;border-radius:8px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;backdrop-filter:blur(8px);padding:0;transition:background .15s,border-color .15s}
+.pip-btn:hover{background:rgba(0,0,0,.9);border-color:rgba(255,255,255,.35)}
+.pip-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pip-close{top:8px;right:8px}
+.pip-collapse{top:8px;right:48px}
+.pip-hud{position:absolute;inset:0;pointer-events:none;z-index:2}
+.pip-hud .corner{position:absolute;width:16px;height:16px;border:1.5px solid rgba(245,158,11,.7)}
+.pip-hud .tl{top:10px;left:10px;border-right:none;border-bottom:none}
+.pip-hud .tr{top:10px;right:10px;border-left:none;border-bottom:none}
+.pip-hud .bl{bottom:10px;left:10px;border-right:none;border-top:none}
+.pip-hud .br{bottom:10px;right:10px;border-left:none;border-top:none}
+.pip-hud .crosshair{position:absolute;left:50%;top:50%;width:34px;height:34px;transform:translate(-50%,-50%)}
+.pip-hud .crosshair::before,.pip-hud .crosshair::after{content:'';position:absolute;background:rgba(245,158,11,.55);box-shadow:0 0 6px rgba(245,158,11,.4)}
+.pip-hud .crosshair::before{left:50%;top:0;bottom:0;width:1px;transform:translateX(-.5px)}
+.pip-hud .crosshair::after{top:50%;left:0;right:0;height:1px;transform:translateY(-.5px)}
+.pip-hud .crosshair span{position:absolute;left:50%;top:50%;width:9px;height:9px;border:1.5px solid rgba(245,158,11,.7);border-radius:50%;transform:translate(-50%,-50%);background:rgba(245,158,11,.12)}
+.pip-tag{position:absolute;top:10px;left:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#fbbf24;letter-spacing:.06em;text-transform:uppercase;font-weight:700;z-index:3;padding:5px 9px;background:rgba(0,0,0,.78);border:1px solid rgba(251,191,36,.55);border-radius:6px;backdrop-filter:blur(6px);line-height:1.2;max-width:calc(100% - 100px)}
+.pip-tag::before{display:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.pip-tag-r{position:absolute;bottom:62px;right:10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#fff;letter-spacing:.04em;z-index:3;white-space:nowrap;padding:4px 8px;background:rgba(0,0,0,.7);border-radius:5px;backdrop-filter:blur(4px);font-weight:600}
+.pip-foot{position:absolute;left:0;right:0;bottom:0;padding:10px 14px 12px;z-index:3;font-family:'DM Sans',sans-serif;font-size:12px;color:#fff;line-height:1.35;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(6,10,16,.92) 22%,rgba(6,10,16,.98) 100%)}
+.pip-addr{font-family:'Source Serif 4',serif;font-size:15.5px;font-weight:700;color:#fff;line-height:1.25;text-shadow:0 1px 4px rgba(0,0,0,.7);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pip-sites{display:none;flex-direction:column;gap:5px;margin:6px 0 4px}
+.pip-sites.show{display:flex}
+.pip-site{display:flex;align-items:center;gap:8px;background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.55);border-radius:7px;padding:5px 8px}
+.pip-site-ic{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pip-site.school .pip-site-ic{background:#1f8a5b}
+.pip-site.childcare .pip-site-ic{background:#7c5cd9}
+.pip-site.playground .pip-site-ic{background:#0c9c79}
+.pip-site.worship .pip-site-ic{background:#d4810b}
+.pip-site-ic svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pip-site-tx{display:flex;flex-direction:column;min-width:0;flex:1}
+.pip-site-tx .t{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#fca5a5;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.pip-site-tx .n{font-family:'DM Sans',sans-serif;font-size:12.5px;color:#fff;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pip-cap{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.35}
+.pip-cap .l{color:rgba(220,228,240,.7)}
+.pip-cap .v{color:#fff;font-weight:700}
+.pip-foot .warn{display:block;font-size:11px;color:#fca5a5;margin-top:4px;line-height:1.35;font-weight:500;letter-spacing:.005em}
+@media(max-width:768px){
+  .pip:not(.expanded) .pip-watermark span{font-size:9px;letter-spacing:.15em}
+}
+/* Compact mobile layout — show only essentials */
+@media(max-width:768px){
+  .pip:not(.expanded) .pip-tag-r{display:none}
+  .pip:not(.expanded) .pip-foot .warn{display:none}
+  .pip:not(.expanded) .pip-cap{display:none}
+  .pip:not(.expanded) .pip-foot{padding:8px 11px 10px}
+  .pip:not(.expanded) .pip-addr{font-size:13px;-webkit-line-clamp:1;margin-bottom:3px}
+  .pip:not(.expanded) .pip-sites{margin:3px 0 0}
+  .pip:not(.expanded) .pip-site{padding:3px 6px;gap:6px}
+  .pip:not(.expanded) .pip-site-ic{width:18px;height:18px}
+  .pip:not(.expanded) .pip-site-ic svg{width:11px;height:11px}
+  .pip:not(.expanded) .pip-site-tx .t{font-size:8.5px}
+  .pip:not(.expanded) .pip-site-tx .n{font-size:11px}
+  .pip:not(.expanded) .pip-tag{font-size:10px;padding:3px 7px}
+  .pip:not(.expanded) .pip-hud .corner{width:11px;height:11px;top:7px;left:7px}
+  .pip:not(.expanded) .pip-hud .tr{left:auto;right:7px}
+  .pip:not(.expanded) .pip-hud .bl{top:auto;bottom:7px}
+  .pip:not(.expanded) .pip-hud .br{top:auto;left:auto;bottom:7px;right:7px}
+}
+
+.p-head{padding:14px 16px;border-bottom:1px solid var(--line);flex-shrink:0}
+.p-dist{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--acc);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.p-name{font-family:'Source Serif 4',serif;font-size:21px;font-weight:700;line-height:1.2}
+.p-phone{font-size:11px;color:var(--mut);font-family:'JetBrains Mono',monospace;margin-top:4px}
+.p-phone a{color:var(--mut);text-decoration:none;border-bottom:1px dotted rgba(126,146,184,.4)}
+.p-phone a:hover{color:var(--acc);border-bottom-color:var(--acc)}
+.p-addr{font-family:'DM Sans',sans-serif;font-size:13.5px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--txt);line-height:1.4}
+.p-addr .sub{color:var(--mut);font-size:11.5px;display:block;margin-top:2px}
+
+.p-verdict{padding:14px 16px;border-bottom:1px solid var(--line)}
+.p-verdict.hit{background:rgba(239,68,68,.08);border-left:3px solid var(--hit)}
+.p-verdict.miss{background:rgba(52,211,153,.05);border-left:3px solid var(--ok)}
+.p-verdict-t{font-size:14px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.p-verdict-b{font-size:12px;color:var(--mut);line-height:1.6;font-family:'JetBrains Mono',monospace}
+.p-verdict-b ol{padding-left:18px;margin-top:4px}
+.p-verdict-b li{margin-bottom:2px}
+
+.sect{padding:14px 16px;border-bottom:1px solid var(--line)}
+.sect:last-child{border-bottom:none}
+.sect-t{font-size:10px;font-weight:700;color:var(--mut2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;font-family:'JetBrains Mono',monospace}
+
+.dv-row{display:flex;align-items:center;margin-bottom:8px;gap:6px}
+.dv-label{font-size:11.5px;color:var(--mut);width:78px;flex-shrink:0;text-align:right}
+.dv-track{flex:1;height:14px;position:relative;background:rgba(255,255,255,.04);border-radius:3px;min-width:50px}
+.dv-center{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.18)}
+.dv-bar{position:absolute;height:10px;border-radius:2px;top:2px;min-width:2px}
+.dv-val{font-family:'JetBrains Mono',monospace;font-size:10px;width:76px;flex-shrink:0;text-align:right}
+.dv-val.pos{color:var(--warn)}.dv-val.neg{color:var(--acc)}
+.dv-val .raw{color:var(--mut2);font-size:9px}
+.dv-hdr{display:flex;margin-bottom:6px;font-size:9px;color:var(--mut2);font-family:'JetBrains Mono',monospace;gap:6px}
+.dv-hdr .dv-label{color:transparent;width:78px}
+.dv-hdr .dv-track{display:flex;justify-content:space-between;padding:0 4px;background:none;height:auto}
+.dv-hdr .dv-val{color:transparent;width:76px}
+.dv-sep{height:1px;background:rgba(255,255,255,.04);margin:10px 0}
+
+.km-row{display:flex;gap:8px;margin-bottom:8px}
+.km-row:last-child{margin-bottom:0}
+.km{flex:1;background:var(--surf2);border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:10px 12px;min-width:0}
+.km-v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;line-height:1.2}
+.km-l{font-size:10.5px;color:var(--mut2);margin-top:2px}
+.km-off{font-size:10px;font-family:'JetBrains Mono',monospace;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── Map controls ────────────────────────────────────── */
+.leaflet-control-attribution{display:none}
+.leaflet-control-zoom{border:none!important;margin:14px!important}
+@media(max-width:768px){.leaflet-control-zoom{display:none}}
+.leaflet-control-zoom a{background:var(--surf)!important;color:var(--txt)!important;border:1px solid var(--line)!important;backdrop-filter:blur(12px)}
+.leaflet-control-zoom a:first-child{border-radius:10px 10px 0 0!important}
+.leaflet-control-zoom a:last-child{border-radius:0 0 10px 10px!important;border-top:none!important}
+
+/* ── Splash ──────────────────────────────────────────── */
+.splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;transition:opacity .4s}
+.splash.hide{opacity:0;pointer-events:none}
+.splash .ring{width:36px;height:36px;border:3px solid rgba(255,255,255,.08);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite}
+.splash .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);letter-spacing:.1em;text-transform:uppercase}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Helper text (initial state) ─────────────────────── */
+.hint{position:fixed;bottom:calc(20px + var(--safe-b));left:50%;transform:translateX(-50%);z-index:998;background:var(--surf);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:24px;padding:10px 18px;font-size:13px;color:var(--mut);box-shadow:0 6px 24px rgba(0,0,0,.5);display:flex;align-items:center;gap:8px;transition:opacity .3s,transform .3s;max-width:calc(100vw - 24px);text-align:center}
+.hint.hide{opacity:0;transform:translateX(-50%) translateY(10px);pointer-events:none}
+.hint svg{width:14px;height:14px;stroke:var(--acc);fill:none;stroke-width:2;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="splash" id="splash"><div class="ring"></div><div class="lbl">Loading flight data…</div></div>
+
+<header class="headline" id="headline">
+  <div class="headline-mark">LIVE&nbsp;&middot;&nbsp;DFR</div>
+  <div class="headline-body">
+    <h1>MNPD Drone Trial: Is your child's <em>playground, school</em>, your <em>home</em>, or your <em>place of worship</em> being recorded?</h1>
+    <div class="headline-bullet"><div><strong>These are the actual flight paths</strong> from MNPD's Drone-as-First-Responder trial, which began <strong>May 26</strong>. MNPD says they're not sharing the footage &mdash; but they have no control over what their vendor does with it. Under <strong>TIPA</strong>, the footage can be shared with any law enforcement agency, and local government is restricted from limiting that.</div></div>
+    <div class="headline-collapsed-text">MNPD Drone Trial &middot; actual flight paths since <em>May 26</em>. <span style="color:var(--mut)">Tap to read more</span></div>
+  </div>
+  <button class="headline-toggle" id="headlineToggle" aria-label="Collapse banner" aria-expanded="true">
+    <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+</header>
+
+<div id="map"></div>
+
+<button class="iconbtn" id="aboutBtn" aria-label="About this map">
+  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+</button>
+
+<div class="hint" id="hint">
+  <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+  Tap anywhere to check that address
+</div>
+
+<div class="panel" id="panel">
+  <div class="sheet-grab" id="sheetGrab"></div>
+  <button class="p-close" id="panelClose" aria-label="Close">&times;</button>
+  <div class="panel-scroll" id="panelInner"></div>
+</div>
+
+<!-- Drone PiP -->
+<div class="pip" id="pip" role="region" aria-label="Approximate drone view">
+  <img class="pip-img" id="pipImg" alt="Approximate drone view at 150 ft">
+  <div class="pip-watermark"><span>Not actual footage</span></div>
+  <div class="pip-hud"><div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div><div class="crosshair"><span></span></div></div>
+  <div class="pip-tag">Approx. area &mdash; not real footage</div>
+  <button class="pip-btn pip-close" id="pipClose" aria-label="Close drone view">
+    <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+  </button>
+  <button class="pip-btn pip-collapse" id="pipToggle" aria-label="Expand drone view">
+    <svg viewBox="0 0 24 24" id="pipToggleIcon"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+  </button>
+  <div class="pip-foot">
+    <div class="pip-addr" id="pipAddr">Tap the map to begin</div>
+    <div class="pip-sites" id="pipSites"></div>
+    <div class="pip-cap"><span class="l">This preview · ~15 cm/px (2022 satellite)</span><span class="v">Real MPD drone · 1.2 cm/px</span></div>
+    <span class="warn">~12× sharper. Faces and license plates are identifiable.</span>
+  </div>
+</div>
+
+<!-- About modal -->
+<div class="modal-bg" id="aboutBg">
+  <div class="modal" role="dialog" aria-labelledby="aboutTitle">
+    <button class="close" id="aboutClose" aria-label="Close">&times;</button>
+    <h2 id="aboutTitle">Nashville's Drone Surveillance Footprint</h2>
+    <p>This map plots <strong>publicly disclosed Metro Nashville Police Drone-as-First-Responder flight paths</strong> against the city's most sensitive sites — schools, childcare, playgrounds, places of worship.</p>
+    <p>Tap any location to see whether drone cameras passed overhead and how your council district compares to the county on race, income, poverty, and housing burden.</p>
+    <p><strong>Camera reality:</strong> at ~150 ft altitude, MPD drones can identify faces and license plates at roughly 1.2 cm per pixel.</p>
+    <p style="font-size:12px;color:var(--mut2);margin-top:14px">Data: MPD flight logs · US Census ACS · Metro Nashville GIS · OpenStreetMap</p>
+    <div class="legend-block">
+      <div class="legend-t">Legend</div>
+      <div class="li"><div class="lsw" style="background:#ef4444"></div>Drone flight path</div>
+      <div class="li"><div class="lsw" style="background:rgba(239,68,68,.3);height:8px"></div>~270 ft camera swath</div>
+      <div class="li"><div class="lci" style="background:#34d399"></div>School</div>
+      <div class="li"><div class="lci" style="background:#a78bfa"></div>Childcare</div>
+      <div class="li"><div class="lci" style="background:#06d6a0"></div>Playground</div>
+      <div class="li"><div class="lci" style="background:#f59e0b"></div>Place of worship</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var SITES_URL='https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/dfr/sensitive_sites.json';
+var FLIGHTS_URL='https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/refs/heads/main/dfr/flight_paths.geojson';
+var DEMO_URL='https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/nashville_council_district_demographics.json';
+var DIST_URL='https://maps.nashville.gov/arcgis/rest/services/Elections/Precincts/MapServer/1/query?where=1%3D1&outFields=DistrictName&f=geojson&outSR=4326&returnGeometry=true';
+var SC={school:'#34d399',childcare:'#a78bfa',playground:'#06d6a0',worship:'#f59e0b'};
+var SWATH_M=82;
+var CM={1:{n:"Joy Kimbrough",p:"615-432-1301"},2:{n:"Kyonzté Toombs",p:"615-432-1302"},3:{n:"Jennifer Gamble",p:"615-432-1303"},4:{n:"Mike Cortese",p:"615-432-1304"},5:{n:"Sean Parker",p:"615-432-1305"},6:{n:"Clay Capp",p:"615-432-1306"},7:{n:"Emily Benedict",p:"615-432-1307"},8:{n:"Deonté Harrell",p:"615-432-1308"},9:{n:"Tonya Hancock",p:"615-432-1309"},10:{n:"Jennifer Frensley Webb",p:"615-432-1310"},11:{n:"Jeff Eslick",p:"615-432-1311"},12:{n:"Erin Evans",p:"615-432-1312"},13:{n:"Russ Bradford",p:"615-432-1313"},14:{n:"Jordan Huffman",p:"615-432-1314"},15:{n:"Jeff Gregg",p:"615-432-1315"},16:{n:"Ginny Welsch",p:"615-432-1316"},17:{n:"Terry Vo",p:"615-432-1317"},18:{n:"Tom Cash",p:"615-432-1318"},19:{n:"Jacob Kupin",p:"615-432-1319"},20:{n:"Rollin Horton",p:"615-432-1320"},21:{n:"Brandon Taylor",p:"615-432-1321"},22:{n:"Sheri Weiner",p:"615-432-1322"},23:{n:"Thom Druffel",p:"615-432-1323"},24:{n:"Brenda Gadd",p:"615-432-1324"},25:{n:"Jeff Preptit",p:"615-432-1325"},26:{n:"Courtney Johnston",p:"615-432-1326"},27:{n:"Robert Nash",p:"615-432-1327"},28:{n:"David Benton",p:"615-432-1328"},29:{n:"Tasha Ellis",p:"615-432-1329"},30:{n:"Sandra Sepulveda",p:"615-432-1330"},31:{n:"John Rutherford",p:"615-432-1331"},32:{n:"Joy Styles",p:"615-432-1332"},33:{n:"Antoinette Lee",p:"615-432-1333"},34:{n:"Sandy Ewing",p:"615-432-1334"},35:{n:"Jason Spain",p:"615-432-1335"}};
+
+var isMobile=window.matchMedia('(max-width:768px)').matches;
+var map=L.map('map',{zoomControl:!isMobile,attributionControl:false}).setView([36.165,-86.78],12);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
+
+var allFlights=[],allSites=[],demographics={},baseline={},districtPolys={},clickMarker;
+
+function fmtMoney(n){n=Math.round(n);var neg=n<0;n=Math.abs(n);var s=n>=1000?'$'+(n/1000).toFixed(n%1000===0?0:1)+'k':'$'+n;return neg?'-'+s:s}
+function fmtTime(d){return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})}
+function fmtDate(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function durStr(ms){var m=Math.round(ms/60000);return m<60?m+'m':Math.floor(m/60)+'h '+(m%60)+'m'}
+function gdist(a,b,c,d){var R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180;var x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
+function ptSeg(px,py,ax,ay,bx,by){var dx=bx-ax,dy=by-ay;if(!dx&&!dy)return gdist(px,py,ax,ay);var t=((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy);t=Math.max(0,Math.min(1,t));return gdist(px,py,ax+t*dx,ay+t*dy)}
+function exCoords(g){return g.type==='LineString'?g.coordinates:g.type==='MultiLineString'?g.coordinates.flat():[]}
+function nearFlights(lat,lng,n){
+  var r=[];
+  for(var i=0;i<allFlights.length;i++){var f=allFlights[i],c=exCoords(f.geometry),md=Infinity;
+    for(var j=0;j<c.length-1;j++){var d=ptSeg(lat,lng,c[j][1],c[j][0],c[j+1][1],c[j+1][0]);if(d<md)md=d}
+    r.push({dist:md,flight:f,under:md<=SWATH_M})}
+  r.sort(function(a,b){return a.dist-b.dist});return n?r.slice(0,n):r;
+}
+function sitesInFrame(lat,lng){
+  // PiP shows ~270x200 ft frame; ~30m radius from center
+  var r=[],RADIUS=30;
+  for(var i=0;i<allSites.length;i++){var s=allSites[i];if(!s.lat||!s.lng)continue;
+    var d=gdist(lat,lng,s.lat,s.lng);if(d<=RADIUS)r.push({site:s,dist:d})}
+  r.sort(function(a,b){return a.dist-b.dist});return r;
+}
+function pip(lat,lng,ring){var ins=false;for(var i=0,j=ring.length-1;i<ring.length;j=i++){var yi=ring[i][0],xi=ring[i][1],yj=ring[j][0],xj=ring[j][1];if(((yi>lng)!==(yj>lng))&&(lat<(xj-xi)*(lng-yi)/(yj-yi)+xi))ins=!ins}return ins}
+function findDist(lat,lng){for(var dn in districtPolys){for(var r=0;r<districtPolys[dn].length;r++){if(pip(lat,lng,districtPolys[dn][r]))return dn}}return null}
+function compBaseline(){
+  var ks=Object.keys(demographics),n=ks.length;if(!n)return;
+  var b={pct_white:0,pct_black:0,pct_hispanic:0,pct_asian:0,pct_two_or_more:0,pct_under_18:0,pct_65_and_over:0,median_household_income:0,per_capita_income:0,pct_total_poverty:0,pct_child_poverty:0,median_owner_value:0,median_monthly_rent:0,pct_renter_cost_burdened_35plus:0,unemployment_rate:0,median_age:0,population:0};
+  ks.forEach(function(k){var d=demographics[k];b.pct_white+=d.race_ethnicity.pct_white;b.pct_black+=d.race_ethnicity.pct_black;b.pct_hispanic+=d.race_ethnicity.pct_hispanic;b.pct_asian+=d.race_ethnicity.pct_asian;b.pct_two_or_more+=d.race_ethnicity.pct_two_or_more;b.pct_under_18+=d.age.pct_under_18;b.pct_65_and_over+=d.age.pct_65_and_over;b.median_household_income+=d.income.median_household_income;b.per_capita_income+=d.income.per_capita_income;b.pct_total_poverty+=d.poverty.pct_total_poverty;b.pct_child_poverty+=d.poverty.pct_child_poverty;b.median_owner_value+=d.housing.median_owner_value;b.median_monthly_rent+=d.housing.median_monthly_rent;b.pct_renter_cost_burdened_35plus+=d.housing.pct_renter_cost_burdened_35plus;b.unemployment_rate+=d.employment.unemployment_rate;b.median_age+=d.median_age;b.population+=d.population});
+  Object.keys(b).forEach(function(k){if(k!=='population')b[k]=+(b[k]/n).toFixed(1);else b[k]=Math.round(b[k]/n)});baseline=b;
+}
+function dvB(l,v,bs,u,c,inv){var delta=+(v-bs).toFixed(1),pct=Math.min(Math.abs(delta)/30*50,48),pos=delta>0,bc=c||(inv?(pos?'#ef4444':'#34d399'):(pos?'#34d399':'#ef4444')),st=pos?'left:50%;width:'+pct+'%':'right:50%;width:'+pct+'%',sg=delta>0?'+':'',cl=delta>0?'pos':'neg';return'<div class="dv-row"><div class="dv-label">'+l+'</div><div class="dv-track"><div class="dv-center"></div><div class="dv-bar" style="'+st+';background:'+bc+';opacity:.75"></div></div><div class="dv-val '+cl+'">'+sg+delta+u+' <span class="raw">('+v+(u==='pp'?'%':u)+')</span></div></div>'}
+
+function setPanelState(s){
+  if(!isMobile)return;
+  document.getElementById('panel').dataset.state=s;
+}
+
+function showPanel(lat,lng){
+  var dn=findDist(lat,lng);
+  document.getElementById('hint').classList.add('hide');
+  if(!dn||!CM[dn]){
+    var panelInner=document.getElementById('panelInner');
+    panelInner.innerHTML='<div class="p-head"><div class="p-name" style="font-size:17px">Outside Davidson County</div><div class="p-phone" style="margin-top:8px">This map covers Metro Nashville council districts only.</div></div>';
+    document.getElementById('panel').classList.add('show');
+    setPanelState('peek');
+    return;
+  }
+  var d=demographics[dn],cm=CM[dn],allNear=nearFlights(lat,lng),top=allNear[0],ft=top?Math.round(top.dist*3.281):Infinity,allOver=allNear.filter(function(r){return r.under}),h='';
+  var inFrame=sitesInFrame(lat,lng);
+
+  var halfW=20/(111000*Math.cos(lat*Math.PI/180));
+  var halfH=15/111000;
+  var satBbox=(lng-halfW)+','+(lat-halfH)+','+(lng+halfW)+','+(lat+halfH);
+  var satUrl='https://maps.nashville.gov/arcgis/rest/services/Imagery/2022Imagery_WGS84/MapServer/export?bbox='+satBbox+'&bboxSR=4326&size=720,520&format=jpg&f=image&dpi=180';
+  var pipImg=document.getElementById('pipImg');
+  pipImg.onerror=function(){this.onerror=null;this.src='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox='+satBbox+'&bboxSR=4326&size=600,420&format=jpg&f=image'};
+  pipImg.src=satUrl;
+  document.getElementById('pip').classList.add('show');
+
+  // PiP overlay: address + sensitive site detection
+  updatePipOverlay(lat,lng,inFrame);
+
+  h+='<div class="p-head"><div class="p-dist">Council District '+dn+'</div><div class="p-name">'+cm.n+'</div><div class="p-phone"><a href="tel:'+cm.p.replace(/-/g,'')+'">'+cm.p+'</a></div><div class="p-addr" id="clickAddr"><span style="color:var(--mut2)">Loading address…</span></div></div>';
+
+  if(top&&top.under){
+    var listed=allOver.slice().sort(function(a,b){return new Date(b.flight.properties.takeoff)-new Date(a.flight.properties.takeoff)});
+    h+='<div class="p-verdict hit"><div class="p-verdict-t" style="color:#ef4444">'+allOver.length+' drone flight'+(allOver.length>1?'s':'')+' recorded here</div><div class="p-verdict-b">Nearest path: '+ft+' ft<ol>';
+    listed.slice(0,3).forEach(function(r){var f=r.flight,t=new Date(f.properties.takeoff),l=new Date(f.properties.landing);h+='<li>'+fmtDate(t)+', '+fmtTime(t)+'–'+fmtTime(l)+' · '+durStr(l-t)+'</li>'});
+    if(allOver.length>3)h+='<li style="list-style:none;color:var(--mut2);margin-top:2px">+ '+(allOver.length-3)+' more</li>';
+    h+='</ol></div></div>';
+  }else if(top){
+    var ds=ft>=5280?((ft/5280).toFixed(1)+' mi'):(ft+' ft');
+    h+='<div class="p-verdict miss"><div class="p-verdict-t" style="color:#34d399">No recorded flights here</div><div class="p-verdict-b">Nearest path: '+ds+' away</div></div>';
+  }
+  if(d){var re=d.race_ethnicity;
+    h+='<div class="sect"><div class="sect-t">District vs. County Baseline</div><div class="dv-hdr"><div class="dv-label"></div><div class="dv-track"><span>← below</span><span>above →</span></div><div class="dv-val"></div></div>';
+    h+=dvB('White',re.pct_white,baseline.pct_white,'pp','#93a8d0');
+    h+=dvB('Black',re.pct_black,baseline.pct_black,'pp','#a78bfa');
+    h+=dvB('Hispanic',re.pct_hispanic,baseline.pct_hispanic,'pp','#f59e0b');
+    h+=dvB('Asian',re.pct_asian,baseline.pct_asian,'pp','#06d6a0');
+    h+='<div class="dv-sep"></div>';
+    h+=dvB('Poverty',d.poverty.pct_total_poverty,baseline.pct_total_poverty,'pp',null,true);
+    h+=dvB('Child pov.',d.poverty.pct_child_poverty,baseline.pct_child_poverty,'pp',null,true);
+    h+=dvB('Unemp.',d.employment.unemployment_rate,baseline.unemployment_rate,'pp',null,true);
+    h+=dvB('Rent burden',d.housing.pct_renter_cost_burdened_35plus,baseline.pct_renter_cost_burdened_35plus,'pp',null,true);
+    h+='<div class="dv-sep"></div>';
+    h+=dvB('Under 18',d.age.pct_under_18,baseline.pct_under_18,'pp','#06d6a0');
+    h+=dvB('Over 65',d.age.pct_65_and_over,baseline.pct_65_and_over,'pp','#7e92b8');
+    h+='</div>';
+    var io=Math.round(d.income.median_household_income-baseline.median_household_income),ho=Math.round(d.housing.median_owner_value-baseline.median_owner_value);
+    h+='<div class="sect"><div class="sect-t">Key metrics</div>';
+    h+='<div class="km-row"><div class="km"><div class="km-v">'+fmtMoney(d.income.median_household_income)+'</div><div class="km-l">Med. household</div><div class="km-off" style="color:'+(io<0?'#ef4444':'#34d399')+'">'+(io>=0?'+':'')+fmtMoney(io)+' vs county</div></div><div class="km"><div class="km-v">'+fmtMoney(d.housing.median_owner_value)+'</div><div class="km-l">Home value</div><div class="km-off" style="color:'+(ho<0?'#ef4444':'#34d399')+'">'+(ho>=0?'+':'')+fmtMoney(ho)+' vs county</div></div></div>';
+    h+='<div class="km-row"><div class="km"><div class="km-v">'+d.population.toLocaleString()+'</div><div class="km-l">Population</div><div class="km-off" style="color:var(--mut)">'+d.age.pct_under_18+'% under 18</div></div><div class="km"><div class="km-v">$'+d.housing.median_monthly_rent+'</div><div class="km-l">Med. rent</div><div class="km-off" style="color:var(--mut)">'+d.housing.pct_renter_cost_burdened_35plus+'% burdened</div></div></div></div>';
+  }
+  var panelInner=document.getElementById('panelInner');
+  panelInner.innerHTML=h;
+  panelInner.scrollTop=0;
+  document.getElementById('panel').classList.add('show');
+  setPanelState(top&&top.under?'half':'half');
+}
+
+// Panel close
+document.getElementById('panelClose').addEventListener('click',function(){
+  document.getElementById('panel').classList.remove('show');
+  if(clickMarker){map.removeLayer(clickMarker);clickMarker=null}
+});
+
+// PiP expand/collapse
+(function(){
+  var pip=document.getElementById('pip');
+  var toggle=document.getElementById('pipToggle');
+  var closeBtn=document.getElementById('pipClose');
+  var iconExpand='<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>';
+  var iconCollapse='<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>';
+  function setExpanded(ex){
+    pip.classList.toggle('expanded',ex);
+    document.getElementById('pipToggleIcon').innerHTML=ex?iconCollapse:iconExpand;
+    toggle.setAttribute('aria-label',ex?'Collapse drone view':'Expand drone view');
+  }
+  toggle.addEventListener('click',function(e){
+    e.stopPropagation();
+    setExpanded(!pip.classList.contains('expanded'));
+  });
+  closeBtn.addEventListener('click',function(e){
+    e.stopPropagation();
+    pip.classList.remove('show','expanded');
+  });
+  // Tap PiP body (not buttons) to expand
+  pip.addEventListener('click',function(e){
+    if(e.target.closest('.pip-btn'))return;
+    if(!pip.classList.contains('expanded'))setExpanded(true);
+  });
+})();
+
+// ── Mobile bottom-sheet drag ──
+(function(){
+  var sheet=document.getElementById('panel'),grab=document.getElementById('sheetGrab');
+  var sy=0,sx=0,startState='half',startTrans=0,dragging=false,h=0;
+  function onStart(e){
+    if(!isMobile)return;
+    var p=e.touches?e.touches[0]:e;
+    sy=p.clientY;sx=p.clientX;dragging=true;
+    h=window.innerHeight;
+    startState=sheet.dataset.state||'half';
+    sheet.classList.add('dragging');
+  }
+  function onMove(e){
+    if(!dragging)return;
+    var p=e.touches?e.touches[0]:e;
+    var dy=p.clientY-sy;
+    var baseY=startState==='peek'?(h-168):0;
+    var ty=Math.max(0,baseY+dy);
+    sheet.style.transform='translateY('+ty+'px)';
+    if(e.cancelable)e.preventDefault();
+  }
+  function onEnd(e){
+    if(!dragging)return;
+    dragging=false;sheet.classList.remove('dragging');sheet.style.transform='';
+    var p=e.changedTouches?e.changedTouches[0]:e;
+    var dy=p.clientY-sy;
+    var s=startState;
+    if(dy<-60){s=s==='peek'?'half':'full'}
+    else if(dy>60){s=s==='full'?'half':'peek'}
+    if(dy>180&&s==='peek'){
+      document.getElementById('panel').classList.remove('show');
+      if(clickMarker){map.removeLayer(clickMarker);clickMarker=null}
+      return;
+    }
+    setPanelState(s);
+  }
+  grab.addEventListener('touchstart',onStart,{passive:true});
+  grab.addEventListener('touchmove',onMove,{passive:false});
+  grab.addEventListener('touchend',onEnd);
+  grab.addEventListener('mousedown',function(e){onStart(e);
+    function mm(ev){onMove(ev)}function mu(ev){onEnd(ev);document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu)}
+    document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
+  });
+  // Tap on grab cycles peek <-> half
+  var lastTap=0;
+  grab.addEventListener('click',function(){
+    var now=Date.now();
+    if(now-lastTap>250){
+      var s=sheet.dataset.state||'half';
+      setPanelState(s==='peek'?'half':(s==='half'?'full':'peek'));
+    }
+    lastTap=now;
+  });
+})();
+
+// ── Select a location (shared by map clicks + site icon clicks) ──
+function reverseGeocode(lat,lng){
+  var pipAddr=document.getElementById('pipAddr');
+  fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json&addressdetails=1&zoom=18',{headers:{'Accept':'application/json'}})
+    .then(function(r){return r.json()})
+    .then(function(data){
+      if(!data)throw new Error('no data');
+      var html='',plain='';
+      if(data.address){
+        var a=data.address;
+        var line1=[a.house_number,a.road].filter(Boolean).join(' ');
+        var line2=[a.neighbourhood||a.suburb||a.hamlet||'',a.city||a.town||''].filter(Boolean).join(', ');
+        var head=line1||(data.display_name||'').split(',')[0]||'';
+        html=head+(line2?'<span class="sub">'+line2+'</span>':'');
+        plain=head+(line2?' · '+line2:'');
+      }else if(data.display_name){
+        plain=data.display_name.split(',').slice(0,2).join(', ');
+        html=plain;
+      }
+      var el=document.getElementById('clickAddr');
+      if(el&&html)el.innerHTML=html;
+      if(pipAddr&&!pipAddr.dataset.locked&&plain)pipAddr.textContent=plain;
+    }).catch(function(){
+      var coords=lat.toFixed(5)+', '+lng.toFixed(5);
+      var el=document.getElementById('clickAddr');
+      if(el)el.innerHTML=coords+'<span class="sub">Address lookup unavailable</span>';
+      if(pipAddr&&!pipAddr.dataset.locked)pipAddr.textContent=coords;
+    });
+}
+function updatePipOverlay(lat,lng,inFrame){
+  var addr=document.getElementById('pipAddr');
+  var siteRow=document.getElementById('pipSites');
+  if(addr){addr.textContent='Loading address…';delete addr.dataset.locked}
+  if(siteRow){
+    if(inFrame&&inFrame.length){
+      var TYPE_ICON=window.TYPE_ICON||{},typeLabel=window.typeLabel||{};
+      siteRow.innerHTML=inFrame.slice(0,3).map(function(x){
+        var s=x.site,t=s.type||'school';
+        return '<div class="pip-site '+t+'"><div class="pip-site-ic"><svg viewBox="0 0 24 24">'+(TYPE_ICON[t]||'')+'</svg></div><div class="pip-site-tx"><span class="t">'+(typeLabel[t]||t)+' in frame</span><span class="n">'+s.name+'</span></div></div>';
+      }).join('');
+      siteRow.classList.add('show');
+    }else{
+      siteRow.classList.remove('show');
+      siteRow.innerHTML='';
+    }
+  }
+}
+function selectLocation(lat,lng,siteLabel){
+  if(clickMarker)map.removeLayer(clickMarker);
+  clickMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div style="width:16px;height:16px;background:#4d8df5;border:2px solid #fff;border-radius:50%;box-shadow:0 0 18px rgba(77,141,245,.9)"></div>',iconSize:[16,16],iconAnchor:[8,8]}),zIndexOffset:2000}).addTo(map);
+  // Center map on the selection (offset upward so PiP doesn't cover it)
+  map.panTo([lat,lng],{animate:true,duration:0.4});
+  showPanel(lat,lng);
+  var pipAddr=document.getElementById('pipAddr');
+  if(siteLabel){
+    setTimeout(function(){
+      var el=document.getElementById('clickAddr');
+      if(el)el.innerHTML=siteLabel;
+      if(pipAddr){
+        pipAddr.innerHTML=siteLabel.replace(/<\/?(strong|span)[^>]*>/g,'').replace(/ · /g,' · ');
+        pipAddr.dataset.locked='1';
+      }
+    },10);
+  }else{
+    reverseGeocode(lat,lng);
+  }
+}
+
+// Map click
+map.on('click',function(e){
+  if(e.originalEvent.target.closest('.iconbtn,.panel,.modal-bg,.hint,.pip,.headline'))return;
+  selectLocation(e.latlng.lat,e.latlng.lng);
+});
+
+// ── About modal ──
+function openAbout(){document.getElementById('aboutBg').classList.add('show')}
+function closeAbout(){document.getElementById('aboutBg').classList.remove('show')}
+document.getElementById('aboutBtn').addEventListener('click',openAbout);
+document.getElementById('aboutClose').addEventListener('click',closeAbout);
+document.getElementById('aboutBg').addEventListener('click',function(e){if(e.target===this)closeAbout()});
+
+// ── Headline collapse + auto-size ──
+(function(){
+  var hdr=document.getElementById('headline');
+  var toggle=document.getElementById('headlineToggle');
+  function syncHeight(){
+    var h=hdr.offsetHeight;
+    document.documentElement.style.setProperty('--hdr',h+'px');
+    if(map&&map.invalidateSize)setTimeout(function(){map.invalidateSize()},260);
+  }
+  toggle.addEventListener('click',function(){
+    var coll=hdr.classList.toggle('collapsed');
+    toggle.setAttribute('aria-expanded',!coll);
+    toggle.setAttribute('aria-label',coll?'Expand banner':'Collapse banner');
+    setTimeout(syncHeight,30);
+  });
+  // Tap collapsed bar to expand
+  hdr.addEventListener('click',function(e){
+    if(!hdr.classList.contains('collapsed'))return;
+    if(e.target.closest('.headline-toggle'))return;
+    hdr.classList.remove('collapsed');
+    toggle.setAttribute('aria-expanded','true');
+    setTimeout(syncHeight,30);
+  });
+  syncHeight();
+  window.addEventListener('resize',syncHeight);
+  // Auto-collapse on mobile after 6s so the map gets more space
+  if(window.matchMedia('(max-width:768px)').matches){
+    setTimeout(function(){
+      if(!hdr.classList.contains('collapsed')){
+        hdr.classList.add('collapsed');
+        toggle.setAttribute('aria-expanded','false');
+        toggle.setAttribute('aria-label','Expand banner');
+        syncHeight();
+      }
+    },6500);
+  }
+})();
+
+// Buffer helpers
+function offPt(lat,lng,brg,d){var R=6371000,la=lat*Math.PI/180,lo=lng*Math.PI/180,br=brg*Math.PI/180,dr=d/R;var la2=Math.asin(Math.sin(la)*Math.cos(dr)+Math.cos(la)*Math.sin(dr)*Math.cos(br));var lo2=lo+Math.atan2(Math.sin(br)*Math.sin(dr)*Math.cos(la),Math.cos(dr)-Math.sin(la)*Math.sin(la2));return[la2*180/Math.PI,lo2*180/Math.PI]}
+function bear(a,b,c,d){var dl=(d-b)*Math.PI/180,y=Math.sin(dl)*Math.cos(c*Math.PI/180),x=Math.cos(a*Math.PI/180)*Math.sin(c*Math.PI/180)-Math.sin(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.cos(dl);return(Math.atan2(y,x)*180/Math.PI+360)%360}
+function bufLine(coords,rm){var left=[],right=[];for(var i=0;i<coords.length;i++){var lat=coords[i][1],lng=coords[i][0],b;if(i<coords.length-1)b=bear(lat,lng,coords[i+1][1],coords[i+1][0]);else b=bear(coords[i-1][1],coords[i-1][0],lat,lng);left.push(offPt(lat,lng,(b-90+360)%360,rm));right.push(offPt(lat,lng,(b+90)%360,rm))}right.reverse();return left.concat(right).concat([left[0]])}
+
+// ── LOAD ──
+Promise.all([
+  fetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
+  fetch(FLIGHTS_URL+'?t='+Date.now()).then(function(r){return r.json()}),
+  fetch(DEMO_URL+'?t='+Date.now()).then(function(r){return r.json()}),
+  fetch(DIST_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}})
+]).then(function(res){
+  demographics=(res[2].districts||{});compBaseline();
+  if(res[3].features)res[3].features.forEach(function(f){var dn=(f.properties.DistrictName||'').replace(/\D/g,'');if(!dn)return;var geo=f.geometry;districtPolys[dn]=geo.type==='MultiPolygon'?geo.coordinates.flat():geo.coordinates});
+
+  allSites=res[0].sites||[];
+  var typeLabel={school:'School',childcare:'Childcare',playground:'Playground',worship:'Place of worship'};
+  var TYPE_ICON={
+    school:'<path d="M3 10 L12 5 L21 10 L12 15 L3 10 Z"/><path d="M6 12 v3.5 c0 0 2 1.8 6 1.8 s6 -1.8 6 -1.8 V12"/><line x1="21" y1="10" x2="21" y2="14"/>',
+    childcare:'<circle cx="12" cy="8" r="3.5"/><path d="M5 21 v-3 a7 7 0 0 1 14 0 v3"/>',
+    playground:'<path d="M3 18 L3 13 L18 7"/><circle cx="19" cy="6" r="1.6"/><line x1="7" y1="22" x2="7" y2="18"/><line x1="13" y1="22" x2="13" y2="18"/><line x1="3" y1="22" x2="3" y2="18"/>',
+    worship:'<path d="M12 3 L4 10 V21 H20 V10 Z"/><line x1="12" y1="6" x2="12" y2="11.5"/><line x1="10" y1="8.5" x2="14" y2="8.5"/><rect x="10" y="15" width="4" height="6"/>'
+  };
+  window.TYPE_ICON=TYPE_ICON;window.typeLabel=typeLabel;
+  for(var i=0;i<allSites.length;i++){var s=allSites[i];if(!s.lat||!s.lng)continue;
+    var t=s.type||'school';
+    var iconHtml='<div class="site-pin-wrap"><div class="site-pin '+t+'"><svg viewBox="0 0 24 24">'+(TYPE_ICON[t]||'')+'</svg></div></div>';
+    var marker=L.marker([s.lat,s.lng],{
+      icon:L.divIcon({className:'site-marker',html:iconHtml,iconSize:[44,44],iconAnchor:[22,22]}),
+      title:s.name,
+      riseOnHover:true,
+      keyboard:false
+    }).addTo(map);
+    (function(site,type){
+      marker.on('click',function(ev){
+        L.DomEvent.stopPropagation(ev);
+        var label='<strong>'+site.name+'</strong><span class="sub">'+typeLabel[type]+(site.address?' · '+site.address:'')+(site.denomination?' · '+site.denomination:'')+'</span>';
+        selectLocation(site.lat,site.lng,label);
+      });
+    })(s,t);
+  }
+
+  var fb=L.latLngBounds();
+  allFlights=res[1].features.filter(function(f){return f.properties&&f.properties.takeoff&&f.properties.landing});
+  allFlights.forEach(function(f){var coords=exCoords(f.geometry);if(coords.length<2)return;var ll=coords.map(function(c){return[c[1],c[0]]});
+    var simp=coords.filter(function(_,i){return i%3===0||i===coords.length-1});
+    if(simp.length>=2){try{var sw=bufLine(simp,SWATH_M);L.polygon(sw,{color:'rgba(239,68,68,.2)',weight:0,fillColor:'rgba(239,68,68,.12)',fillOpacity:1,interactive:false}).addTo(map)}catch(e){}}
+    var line=L.polyline(ll,{color:'#ef4444',weight:2.5,opacity:0.85}).addTo(map);fb.extend(line.getBounds())});
+  if(fb.isValid())map.fitBounds(fb,{padding:isMobile?[40,40]:[80,80]});
+
+  setTimeout(function(){document.getElementById('splash').classList.add('hide')},200);
+}).catch(function(e){
+  console.error('Load error:',e);
+  document.getElementById('splash').innerHTML='<div style="color:#ef4444;font-family:JetBrains Mono,monospace;font-size:12px;text-align:center;padding:20px">Failed to load flight data.<br>Check your connection and reload.</div>';
+});
+
+// Auto-hide hint after 8s
+setTimeout(function(){document.getElementById('hint').classList.add('hide')},8000);
+
+// Recompute mobile/desktop on resize
+window.addEventListener('resize',function(){
+  var nowMobile=window.matchMedia('(max-width:768px)').matches;
+  if(nowMobile!==isMobile){isMobile=nowMobile;location.reload()}
+});
+</script>
+</body>
+</html>
