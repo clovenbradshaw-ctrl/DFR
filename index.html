@@ -90,9 +90,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 /* Mobile: bottom sheet */
 @media(max-width:768px){
   .panel{bottom:0;left:0;right:0;border-radius:18px 18px 0 0;border-bottom:none;box-shadow:0 -8px 32px rgba(0,0,0,.6);transition:transform .28s cubic-bezier(.32,.72,0,1);transform:translateY(0);will-change:transform;max-height:92dvh}
-  .panel[data-state="peek"]{transform:translateY(calc(100% - 168px))}
-  .panel[data-state="half"]{transform:translateY(0);max-height:62dvh}
-  .panel[data-state="full"]{transform:translateY(0);max-height:92dvh}
+  .panel[data-state="peek"]{transform:translateY(calc(100% - 220px))}
+  .panel[data-state="half"]{transform:translateY(0);max-height:50dvh}
+  .panel[data-state="full"]{transform:translateY(0);max-height:90dvh}
   .panel.dragging{transition:none}
   .sheet-grab{height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
   .sheet-grab::before{content:'';width:38px;height:4px;background:rgba(255,255,255,.25);border-radius:2px}
@@ -443,7 +443,7 @@ function showPanel(lat,lng){
   panelInner.innerHTML=h;
   panelInner.scrollTop=0;
   document.getElementById('panel').classList.add('show');
-  setPanelState(top&&top.under?'half':'half');
+  setPanelState(top&&top.under?'peek':'peek');
 }
 
 // Panel close
@@ -495,7 +495,7 @@ document.getElementById('panelClose').addEventListener('click',function(){
     if(!dragging)return;
     var p=e.touches?e.touches[0]:e;
     var dy=p.clientY-sy;
-    var baseY=startState==='peek'?(h-168):0;
+    var baseY=startState==='peek'?(h-220):0;
     var ty=Math.max(0,baseY+dy);
     sheet.style.transform='translateY('+ty+'px)';
     if(e.cancelable)e.preventDefault();
