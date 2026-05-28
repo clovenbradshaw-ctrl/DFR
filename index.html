@@ -358,6 +358,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
       <div class="li"><div class="lsw" style="background:#ef4444"></div>Drone flight path</div>
       <div class="li"><div class="lsw" style="background:rgba(239,68,68,.3);height:8px"></div>~270 ft camera swath</div>
       <div class="li"><div class="lsw" style="background:transparent;border:1px solid rgba(77,141,245,.7);height:11px;border-radius:2px"></div>Council district boundary</div>
+      <div class="li"><div class="lci" style="background:transparent;border:1.5px dashed #f59e0b;width:11px;height:11px"></div>2-mi launch radius (Dist. 7 carved out)</div>
       <div class="li"><div class="lci" style="background:#34d399"></div>School</div>
       <div class="li"><div class="lci" style="background:#a78bfa"></div>Childcare</div>
       <div class="li"><div class="lci" style="background:#06d6a0"></div>Playground</div>
@@ -769,6 +770,50 @@ function offPt(lat,lng,brg,d){var R=6371000,la=lat*Math.PI/180,lo=lng*Math.PI/18
 function bear(a,b,c,d){var dl=(d-b)*Math.PI/180,y=Math.sin(dl)*Math.cos(c*Math.PI/180),x=Math.cos(a*Math.PI/180)*Math.sin(c*Math.PI/180)-Math.sin(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.cos(dl);return(Math.atan2(y,x)*180/Math.PI+360)%360}
 function bufLine(coords,rm){var left=[],right=[];for(var i=0;i<coords.length;i++){var lat=coords[i][1],lng=coords[i][0],b;if(i<coords.length-1)b=bear(lat,lng,coords[i+1][1],coords[i+1][0]);else b=bear(coords[i-1][1],coords[i-1][0],lat,lng);left.push(offPt(lat,lng,(b-90+360)%360,rm));right.push(offPt(lat,lng,(b+90)%360,rm))}right.reverse();return left.concat(right).concat([left[0]])}
 
+// ── 2-mile launch radius (carved where District 7 overlaps) ──
+var MILE_M=1609.344;
+// Densest cluster of flight endpoints = the shared DFR launch site
+function launchPoint(){
+  var pts=[];
+  for(var i=0;i<allFlights.length;i++){var c=exCoords(allFlights[i].geometry);if(c.length){pts.push([c[0][1],c[0][0]]);pts.push([c[c.length-1][1],c[c.length-1][0]])}}
+  if(!pts.length)return null;
+  var best=null,bestN=-1;
+  for(var i=0;i<pts.length;i++){var n=0,sa=0,so=0;
+    for(var j=0;j<pts.length;j++){if(gdist(pts[i][0],pts[i][1],pts[j][0],pts[j][1])<=80){n++;sa+=pts[j][0];so+=pts[j][1]}}
+    if(n>bestN){bestN=n;best=[sa/n,so/n]}}
+  return best;
+}
+function circleRing(center,radM,steps){var r=[];steps=steps||144;for(var i=0;i<steps;i++)r.push(offPt(center[0],center[1],i/steps*360,radM));return r}
+function ringArea(r){var s=0;for(var i=0;i<r.length;i++){var p=r[i],q=r[(i+1)%r.length];s+=p[0]*q[1]-q[0]*p[1]}return s/2}
+// Sutherland–Hodgman: clip subject polygon to a CONVEX, CCW clip polygon (returns subject ∩ clip)
+function shInside(p,a,b){return (b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0])>=0}
+function shIntersect(s,e,a,b){var dcx=a[0]-b[0],dcy=a[1]-b[1],dpx=s[0]-e[0],dpy=s[1]-e[1];var n1=a[0]*b[1]-a[1]*b[0],n2=s[0]*e[1]-s[1]*e[0],den=dcx*dpy-dcy*dpx;if(!den)return e;return[(n1*dpx-n2*dcx)/den,(n1*dpy-n2*dcy)/den]}
+function clipToConvex(subject,clip){
+  var out=subject;
+  for(var i=0;i<clip.length;i++){var a=clip[i],b=clip[(i+1)%clip.length],input=out;out=[];if(!input.length)break;
+    var s=input[input.length-1];
+    for(var j=0;j<input.length;j++){var e=input[j];
+      if(shInside(e,a,b)){if(!shInside(s,a,b))out.push(shIntersect(s,e,a,b));out.push(e)}
+      else if(shInside(s,a,b))out.push(shIntersect(s,e,a,b));
+      s=e}}
+  return out;
+}
+var launchRadiusLayer=null;
+function buildLaunchRadius(){
+  var c=launchPoint();if(!c)return;
+  var ring=circleRing(c,2*MILE_M,144);          // [lat,lng] ring approximating the 2-mile circle
+  if(ringArea(ring)<0)ring.reverse();           // force CCW so it is a valid convex clip region
+  var holes=[],d7=districtPolys['7'];
+  if(d7)for(var r=0;r<d7.length;r++){
+    var sub=d7[r].map(function(p){return[p[1],p[0]]});  // district ring → [lat,lng]
+    var clipped=clipToConvex(sub,ring);                 // part of District 7 inside the circle
+    if(clipped.length>=3)holes.push(clipped);
+  }
+  if(launchRadiusLayer)map.removeLayer(launchRadiusLayer);
+  // outer circle ring + carved holes; even-odd fill removes the District 7 slice
+  launchRadiusLayer=L.polygon([ring].concat(holes),{color:'#f59e0b',weight:2,opacity:.9,dashArray:'6 5',fillColor:'#f59e0b',fillOpacity:.08,interactive:false}).addTo(map);
+}
+
 // ── LOAD ──
 Promise.all([
   pfetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
@@ -813,6 +858,7 @@ Promise.all([
     var simp=coords.filter(function(_,i){return i%3===0||i===coords.length-1});
     if(simp.length>=2){try{var sw=bufLine(simp,SWATH_M);L.polygon(sw,{color:'rgba(239,68,68,.2)',weight:0,fillColor:'rgba(239,68,68,.12)',fillOpacity:1,interactive:false}).addTo(map)}catch(e){}}
     var line=L.polyline(ll,{color:'#ef4444',weight:2.5,opacity:0.85}).addTo(map);fb.extend(line.getBounds())});
+  buildLaunchRadius();
   if(fb.isValid())map.fitBounds(fb,{padding:isMobile?[40,40]:[80,80]});
 
   setTimeout(function(){document.getElementById('splash').classList.add('hide')},200);
