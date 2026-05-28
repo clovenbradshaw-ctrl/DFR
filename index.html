@@ -73,6 +73,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .modal ul li{margin-bottom:4px}
 .legend-block{background:var(--surf2);border-radius:10px;padding:12px 14px;margin-top:10px}
 .legend-block .legend-t{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-family:'JetBrains Mono',monospace}
+.src-list{list-style:none;padding:0;margin:0}
+.src-list li{font-size:12px;color:var(--mut);line-height:1.5;padding:7px 0;border-top:1px solid var(--line)}
+.src-list li:first-child{border-top:none;padding-top:0}
+.src-list li strong{color:var(--txt);font-weight:600}
+.src-list a{color:var(--acc);text-decoration:none;border-bottom:1px dotted var(--acc);white-space:nowrap}
+.src-list a:hover{color:#9cc3ff;border-bottom-color:#9cc3ff}
 .li{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut);font-family:'JetBrains Mono',monospace;line-height:1.9}
 .lsw{width:16px;height:3px;border-radius:2px;flex-shrink:0}
 .lci{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-left:3px;margin-right:3px}
@@ -460,7 +466,17 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
     <p>Tap any location to see whether drone cameras passed overhead and how your council district compares to the county on race, income, poverty, and housing burden.</p>
     <p><strong>Scrub through time:</strong> use the timeline at the bottom — drag the slider or hit play to replay the flights in order. Drones <span style="color:#ff6b6b">in the air</span> grow their path live; completed flights fade back. Tap <strong>ALL</strong> to show every flight at once again.</p>
     <p><strong>Camera reality:</strong> at ~150 ft altitude, MPD drones can identify faces and license plates at roughly 1.2 cm per pixel.</p>
-    <p style="font-size:12px;color:var(--mut2);margin-top:14px">Data: MPD flight logs · US Census ACS · Metro Nashville GIS · OpenStreetMap</p>
+    <div class="legend-block">
+      <div class="legend-t">Data sources — where every layer comes from</div>
+      <ul class="src-list">
+        <li><strong>Drone flight paths</strong> — MNPD Drone-as-First-Responder flight logs, publicly disclosed. <a href="https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/refs/heads/main/dfr/flight_paths.geojson" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
+        <li><strong>Demographics</strong> &amp; council-district breakdowns — <span id="srcDemoText">U.S. Census Bureau, American Community Survey (ACS) 2017&ndash;2021 5-Year Estimates, compiled by Metropolitan Social Services, Know Your Community 2023</span>. <a href="https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/nashville_council_district_demographics.json" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
+        <li><strong>Sensitive sites</strong> — schools, childcare, playgrounds &amp; places of worship, compiled from Metro Nashville GIS &amp; OpenStreetMap. <a href="https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/dfr/sensitive_sites.json" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
+        <li><strong>Council districts &amp; precincts</strong> — Metro Nashville GIS; boundaries per BL2021-1052 (eff. Jan&nbsp;2022). <a href="https://maps.nashville.gov/arcgis/rest/services/Elections/Precincts/MapServer/1/query?where=1%3D1&outFields=DistrictName&f=geojson" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
+        <li><strong>Satellite imagery</strong> — Metro Nashville 2022 aerial imagery, with Esri World Imagery as fallback.</li>
+      </ul>
+      <div style="font-size:11px;color:var(--mut2);line-height:1.5;margin-top:9px">Which council district each flight and site falls in is computed in-browser (point-in-polygon against the Metro GIS boundaries) and included in every export.</div>
+    </div>
     <div class="legend-block">
       <div class="legend-t">Legend</div>
       <div class="li"><div class="lsw" style="background:#ef4444"></div>Drone flight path</div>
@@ -946,9 +962,11 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   function cell(v){if(v==null)v='';v=String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
   function csv(rows){return rows.map(function(r){return r.map(cell).join(',');}).join('\r\n');}
 
-  // ── Source / provenance ──
-  var SRC_FLIGHTS='MNPD Drone-as-First-Responder flight logs (publicly disclosed)';
-  var SRC_SITES='Metro Nashville GIS · OpenStreetMap';
+  // ── Source / provenance (shared with the About panel "Data sources") ──
+  var SRC_FLIGHTS={name:'MNPD Drone-as-First-Responder flight logs (publicly disclosed)',url:FLIGHTS_URL};
+  var SRC_SITES={name:'Sensitive sites compiled from Metro Nashville GIS & OpenStreetMap',url:SITES_URL};
+  var SRC_DISTRICTS={name:'Metro Nashville Council District boundaries — Metro Nashville GIS (BL2021-1052, eff. Jan 2022)',url:DIST_URL};
+  var DISTRICT_DERIVATION='council district(s) derived by point-in-polygon against '+SRC_DISTRICTS.name;
   function acsSource(){return demoMeta.data_source||'U.S. Census Bureau, American Community Survey (ACS) 5-Year Estimates';}
   function demoSourceObj(){
     return {
@@ -957,12 +975,20 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       citation:demoMeta.citation||'',
       geography:demoMeta.geography||'',
       notes:demoMeta.notes||'',
+      source_url:DEMO_URL,
       generated:new Date().toISOString()
     };
   }
   // Leading rows that put the source citation at the top of a CSV
   function srcRows(lines){
     var r=[];lines.forEach(function(l){if(l)r.push([l]);});r.push([]);return r;
+  }
+  function srcLines(src,extra){
+    var l=['Source: '+src.name];
+    if(src.url)l.push('Source URL: '+src.url);
+    if(extra)l.push(extra);
+    l.push('Generated: '+new Date().toISOString());
+    return l;
   }
   function demoSrcRows(){
     var m=demoSourceObj();
@@ -972,43 +998,56 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       m.citation?'Citation: '+m.citation:'',
       m.geography?'Geography: '+m.geography:'',
       m.notes?'Notes: '+m.notes:'',
+      m.source_url?'Source URL: '+m.source_url:'',
       'Generated: '+m.generated
     ]);
   }
 
+  // Distinct council districts a flight's path passes through (sorted)
+  function flightDistricts(f){
+    var c=exCoords(f.geometry),seen={},out=[];
+    for(var i=0;i<c.length;i++){var dn=findDist(c[i][1],c[i][0]);if(dn&&!seen[dn]){seen[dn]=1;out.push(+dn);}}
+    return out.sort(function(a,b){return a-b;});
+  }
   // Distinct drone flights whose path passes through each council district
   function flightsPerDistrict(){
     var counts={};
     allFlights.forEach(function(f){
-      var c=exCoords(f.geometry),seen={};
-      for(var i=0;i<c.length;i++){var dn=findDist(c[i][1],c[i][0]);if(dn&&!seen[dn]){seen[dn]=1;counts[dn]=(counts[dn]||0)+1;}}
+      flightDistricts(f).forEach(function(dn){counts[dn]=(counts[dn]||0)+1;});
     });
     return counts;
   }
 
   // ── Flight paths ──
-  function flightsGeoJSON(){return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_FLIGHTS,generated:new Date().toISOString()},features:allFlights},null,2);}
+  function flightsGeoJSON(){
+    var feats=allFlights.map(function(f){
+      var props={};for(var k in (f.properties||{}))props[k]=f.properties[k];
+      props.council_districts=flightDistricts(f);
+      return {type:'Feature',geometry:f.geometry,properties:props};
+    });
+    return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_FLIGHTS.name,source_url:SRC_FLIGHTS.url,council_districts:DISTRICT_DERIVATION,generated:new Date().toISOString()},features:feats},null,2);
+  }
   function flightsCSV(){
-    var rows=srcRows(['Source: '+SRC_FLIGHTS,'Generated: '+new Date().toISOString()]);
-    rows.push(['flight','takeoff','landing','duration_min','start_lat','start_lng','end_lat','end_lng','num_points']);
+    var rows=srcRows(srcLines(SRC_FLIGHTS,DISTRICT_DERIVATION));
+    rows.push(['flight','council_districts','takeoff','landing','duration_min','start_lat','start_lng','end_lat','end_lng','num_points']);
     allFlights.forEach(function(f,idx){
       var c=exCoords(f.geometry),p=f.properties||{},t0=new Date(p.takeoff),t1=new Date(p.landing);
       var s=c[0]||[],e=c[c.length-1]||[];
-      rows.push([p.id||p.name||('flight_'+(idx+1)),p.takeoff||'',p.landing||'',Math.round((t1-t0)/60000),s[1]!=null?s[1]:'',s[0]!=null?s[0]:'',e[1]!=null?e[1]:'',e[0]!=null?e[0]:'',c.length]);
+      rows.push([p.id||p.name||('flight_'+(idx+1)),flightDistricts(f).join(';'),p.takeoff||'',p.landing||'',Math.round((t1-t0)/60000),s[1]!=null?s[1]:'',s[0]!=null?s[0]:'',e[1]!=null?e[1]:'',e[0]!=null?e[0]:'',c.length]);
     });
     return csv(rows);
   }
 
-  // ── Sensitive sites (where they are) ──
+  // ── Sensitive sites (where they are + which district) ──
   function sitesGeoJSON(){
-    return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_SITES,generated:new Date().toISOString()},features:allSites.filter(function(s){return s.lat&&s.lng;}).map(function(s){
-      return {type:'Feature',geometry:{type:'Point',coordinates:[s.lng,s.lat]},properties:{name:s.name,type:s.type||'',address:s.address||'',denomination:s.denomination||''}};
+    return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_SITES.name,source_url:SRC_SITES.url,council_district:DISTRICT_DERIVATION,generated:new Date().toISOString()},features:allSites.filter(function(s){return s.lat&&s.lng;}).map(function(s){
+      return {type:'Feature',geometry:{type:'Point',coordinates:[s.lng,s.lat]},properties:{name:s.name,type:s.type||'',address:s.address||'',denomination:s.denomination||'',council_district:findDist(s.lat,s.lng)||''}};
     })},null,2);
   }
   function sitesCSV(){
-    var rows=srcRows(['Source: '+SRC_SITES,'Generated: '+new Date().toISOString()]);
-    rows.push(['name','type','address','denomination','lat','lng']);
-    allSites.forEach(function(s){rows.push([s.name,s.type||'',s.address||'',s.denomination||'',s.lat!=null?s.lat:'',s.lng!=null?s.lng:'']);});
+    var rows=srcRows(srcLines(SRC_SITES,DISTRICT_DERIVATION));
+    rows.push(['name','type','address','denomination','council_district','lat','lng']);
+    allSites.forEach(function(s){var dn=(s.lat&&s.lng)?(findDist(s.lat,s.lng)||''):'';rows.push([s.name,s.type||'',s.address||'',s.denomination||'',dn,s.lat!=null?s.lat:'',s.lng!=null?s.lng:'']);});
     return csv(rows);
   }
 
@@ -1062,6 +1101,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       sources:{
         flight_paths:SRC_FLIGHTS,
         sensitive_sites:SRC_SITES,
+        council_districts:SRC_DISTRICTS,
         demographics:demoSourceObj()
       },
       flight_paths:{type:'FeatureCollection',features:allFlights},
@@ -1365,6 +1405,8 @@ Promise.all([
   pfetch(PRECINCT_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}})
 ]).then(function(res){
   demographics=(res[2].districts||{});demoMeta=(res[2].metadata||{});compBaseline();
+  // Keep the About panel's demographics citation in sync with the live feed
+  if(demoMeta.data_source){var sd=document.getElementById('srcDemoText');if(sd)sd.textContent=demoMeta.data_source+(demoMeta.source?', compiled by '+demoMeta.source:'');}
   if(res[3].features)res[3].features.forEach(function(f){var dn=(f.properties.DistrictName||'').replace(/\D/g,'');if(!dn)return;var geo=f.geometry;districtPolys[dn]=geo.type==='MultiPolygon'?geo.coordinates.flat():geo.coordinates});
   if(res[3].features&&res[3].features.length)buildDistrictOverlay(res[3]);
   if(res[4]&&res[4].features&&res[4].features.length)buildPrecinctOverlay(res[4]);
