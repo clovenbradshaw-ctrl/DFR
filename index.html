@@ -167,10 +167,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .pip-site-tx{display:flex;flex-direction:column;min-width:0;flex:1}
 .pip-site-tx .t{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#fca5a5;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
 .pip-site-tx .n{font-family:'DM Sans',sans-serif;font-size:12.5px;color:#fff;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pip-cap{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.35}
-.pip-cap .l{color:rgba(220,228,240,.7)}
+.pip-cap{display:flex;flex-direction:column;gap:3px;margin-top:7px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.35}
+.pip-cap .row{display:flex;align-items:baseline;gap:6px}
+.pip-cap .row .k{font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:9.5px;flex-shrink:0;padding:1px 5px;border-radius:3px;line-height:1.3}
+.pip-cap .l .k{color:#0a0f17;background:rgba(220,228,240,.55)}
+.pip-cap .l{color:rgba(220,228,240,.75)}
+.pip-cap .v .k{color:#fff;background:#ef4444}
 .pip-cap .v{color:#fff;font-weight:700}
-.pip-foot .warn{display:block;font-size:11px;color:#fca5a5;margin-top:4px;line-height:1.35;font-weight:500;letter-spacing:.005em}
+.pip-foot .warn{display:block;font-size:11px;color:#fca5a5;margin-top:5px;line-height:1.35;font-weight:500;letter-spacing:.005em}
 @media(max-width:768px){
   .pip:not(.expanded) .pip-watermark span{font-size:9px;letter-spacing:.15em}
 }
@@ -291,10 +295,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 
 <!-- Drone PiP -->
 <div class="pip" id="pip" role="region" aria-label="Approximate drone view">
-  <img class="pip-img" id="pipImg" alt="Approximate drone view at 150 ft">
-  <div class="pip-watermark"><span>Not actual footage</span></div>
+  <img class="pip-img" id="pipImg" alt="Blurry satellite stand-in — real drone footage is ~12× sharper">
+  <div class="pip-watermark"><span>Real footage is sharper</span></div>
   <div class="pip-hud"><div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div><div class="crosshair"><span></span></div></div>
-  <div class="pip-tag">Approx. area &mdash; not real footage</div>
+  <div class="pip-tag">Stand-in image &mdash; real drone is ~12&times; sharper</div>
   <button class="pip-btn pip-close" id="pipClose" aria-label="Close drone view">
     <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
   </button>
@@ -304,8 +308,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
   <div class="pip-foot">
     <div class="pip-addr" id="pipAddr">Tap the map to begin</div>
     <div class="pip-sites" id="pipSites"></div>
-    <div class="pip-cap"><span class="l">This preview · ~15 cm/px (2022 satellite)</span><span class="v">Real MPD drone · 1.2 cm/px</span></div>
-    <span class="warn">~12× sharper. Faces and license plates are identifiable.</span>
+    <div class="pip-cap">
+      <div class="row l"><span class="k">You see</span><span>Blurry satellite · ~15 cm/px (2022)</span></div>
+      <div class="row v"><span class="k">Real drone</span><span>~12× sharper · 1.2 cm/px</span></div>
+    </div>
+    <span class="warn">Actual MNPD drone footage is sharp enough to identify faces and license plates — far sharper than this stand-in.</span>
   </div>
 </div>
 
