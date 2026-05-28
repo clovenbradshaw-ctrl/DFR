@@ -270,6 +270,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .dist-label span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1;color:#bcd6ff;background:rgba(8,13,22,.74);border:1px solid rgba(77,141,245,.5);border-radius:5px;padding:2px 5px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6)}
 .dist-label.sel span{color:#fff;background:rgba(77,141,245,.9);border-color:#bcd6ff}
 @media(max-width:768px){.dist-label span{font-size:10px;padding:1px 4px}}
+
+/* ── Time scrubber ───────────────────────────────────── */
+.timebar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + var(--safe-b));z-index:1000;display:none;align-items:center;gap:11px;background:var(--surf);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px;padding:9px 13px;box-shadow:0 6px 28px rgba(0,0,0,.55);width:min(520px,calc(100vw - 20px))}
+.timebar.show{display:flex}
+.tb-btn{flex-shrink:0;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--txt);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s,color .15s}
+.tb-btn:hover{border-color:rgba(255,255,255,.22)}
+.tb-play{width:38px;height:38px;border-radius:50%}
+.tb-play svg{width:15px;height:15px;fill:currentColor;stroke:none}
+.tb-play.playing{background:rgba(77,141,245,.18);border-color:var(--acc);color:var(--acc)}
+.tb-all{flex-shrink:0;width:42px;height:34px;border-radius:9px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em}
+.tb-all.active{border-color:var(--acc);color:var(--acc);background:rgba(77,141,245,.16)}
+.tb-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.tb-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.tb-time{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-stat{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);white-space:nowrap;flex-shrink:0}
+.tb-stat .on{color:#ff6b6b;font-weight:700}
+.tb-slider{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;background:rgba(255,255,255,.14);outline:none;margin:0;cursor:pointer}
+.tb-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--acc);cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.55)}
+.tb-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--acc);cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.55)}
+body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
+@media(max-width:768px){.timebar{gap:9px;padding:8px 11px}.tb-play{width:36px;height:36px}}
+
+/* Drone position head (during scrubbing) */
+.drone-head{background:none!important;border:none!important}
+.drone-head .dot{width:12px;height:12px;border-radius:50%;background:#ff3b3b;border:2px solid #fff;box-shadow:0 0 0 3px rgba(255,59,59,.3),0 0 12px rgba(255,59,59,.85);animation:dronePulse 1.25s ease-in-out infinite}
+@keyframes dronePulse{0%,100%{box-shadow:0 0 0 3px rgba(255,59,59,.3),0 0 10px rgba(255,59,59,.7)}50%{box-shadow:0 0 0 7px rgba(255,59,59,.07),0 0 18px rgba(255,59,59,.95)}}
 </style>
 </head>
 <body>
@@ -300,6 +326,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 <div class="hint" id="hint">
   <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
   Tap anywhere to check that address
+</div>
+
+<!-- Time scrubber -->
+<div class="timebar" id="timebar" role="group" aria-label="Drone flight time scrubber">
+  <button class="tb-btn tb-play" id="tbPlay" aria-label="Play flight timeline">
+    <svg id="tbPlayIcon" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20"/></svg>
+  </button>
+  <div class="tb-main">
+    <div class="tb-top">
+      <span class="tb-time" id="tbTime">All flights</span>
+      <span class="tb-stat" id="tbStat"></span>
+    </div>
+    <input class="tb-slider" id="tbSlider" type="range" min="0" max="1000" value="0" step="1" aria-label="Scrub through flight time">
+  </div>
+  <button class="tb-btn tb-all active" id="tbAll" aria-label="Show all flights at once" title="Show all flights">ALL</button>
 </div>
 
 <div class="panel" id="panel">
@@ -351,6 +392,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
     <h2 id="aboutTitle">Nashville's Drone Surveillance Footprint</h2>
     <p>This map plots <strong>publicly disclosed Metro Nashville Police Drone-as-First-Responder flight paths</strong> against the city's most sensitive sites — schools, childcare, playgrounds, places of worship.</p>
     <p>Tap any location to see whether drone cameras passed overhead and how your council district compares to the county on race, income, poverty, and housing burden.</p>
+    <p><strong>Scrub through time:</strong> use the timeline at the bottom — drag the slider or hit play to replay the flights in order. Drones <span style="color:#ff6b6b">in the air</span> grow their path live; completed flights fade back. Tap <strong>ALL</strong> to show every flight at once again.</p>
     <p><strong>Camera reality:</strong> at ~150 ft altitude, MPD drones can identify faces and license plates at roughly 1.2 cm per pixel.</p>
     <p style="font-size:12px;color:var(--mut2);margin-top:14px">Data: MPD flight logs · US Census ACS · Metro Nashville GIS · OpenStreetMap</p>
     <div class="legend-block">
@@ -393,6 +435,7 @@ map.on('zoomend',updateSiteIconScale);
 updateSiteIconScale();
 
 var allFlights=[],allSites=[],demographics={},baseline={},districtPolys={},clickMarker;
+var flightLayers=[],headLayer=null,timeMode=false,tMin=0,tMax=0,tCur=0,playing=false,rafId=null,lastTs=0,PLAY_MS=22000;
 var districtLayer=null,districtLabelLayer=null,districtLayerByNum={},districtLabelByNum={},districtsVisible=true,selDistrict=null;
 
 function fmtMoney(n){n=Math.round(n);var neg=n<0;n=Math.abs(n);var s=n>=1000?'$'+(n/1000).toFixed(n%1000===0?0:1)+'k':'$'+n;return neg?'-'+s:s}
@@ -703,7 +746,7 @@ function selectLocation(lat,lng,siteLabel){
 
 // Map click
 map.on('click',function(e){
-  if(e.originalEvent.target.closest('.iconbtn,.panel,.modal-bg,.hint,.pip,.headline'))return;
+  if(e.originalEvent.target.closest('.iconbtn,.panel,.modal-bg,.hint,.pip,.headline,.timebar'))return;
   selectLocation(e.latlng.lat,e.latlng.lng);
 });
 
@@ -814,6 +857,107 @@ function buildLaunchRadius(){
   launchRadiusLayer=L.polygon([ring].concat(holes),{color:'#f59e0b',weight:2,opacity:.9,dashArray:'6 5',fillColor:'#f59e0b',fillOpacity:.08,interactive:false}).addTo(map);
 }
 
+// ── Time scrubber ──────────────────────────────────────
+// Returns the path drawn from the start up to `frac` (0..1) of the way
+// along a flight's coordinate list, plus the interpolated head position.
+function pathUpTo(coords,frac){
+  var n=coords.length;
+  if(!n)return{pts:[],end:null};
+  if(frac<=0)return{pts:[coords[0]],end:coords[0]};
+  if(frac>=1)return{pts:coords,end:coords[n-1]};
+  var fIdx=frac*(n-1),i=Math.floor(fIdx),t=fIdx-i;
+  var a=coords[i],b=coords[Math.min(i+1,n-1)];
+  var end=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+  var pts=coords.slice(0,i+1);pts.push(end);
+  return{pts:pts,end:end};
+}
+function fmtScrubTime(t){var d=new Date(t);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});}
+function restoreFlight(fl){
+  fl.line.setLatLngs(fl.ll);
+  fl.line.setStyle({color:'#ef4444',weight:2.5,opacity:.85});
+  if(fl.swath)fl.swath.setStyle({fillColor:'rgba(239,68,68,.12)',fillOpacity:1});
+  if(fl.head){headLayer.removeLayer(fl.head);fl.head=null;}
+}
+function applyTime(t){
+  var active=0,done=0;
+  for(var i=0;i<flightLayers.length;i++){var fl=flightLayers[i];
+    if(t<fl.t0){                                   // not flown yet — hide
+      fl.line.setStyle({opacity:0});
+      if(fl.swath)fl.swath.setStyle({fillOpacity:0});
+      if(fl.head){headLayer.removeLayer(fl.head);fl.head=null;}
+    }else if(t>=fl.t1){                            // completed — dim full path
+      done++;
+      fl.line.setLatLngs(fl.ll);
+      fl.line.setStyle({color:'#ef4444',weight:1.6,opacity:.3});
+      if(fl.swath)fl.swath.setStyle({fillColor:'rgba(239,68,68,.12)',fillOpacity:.34});
+      if(fl.head){headLayer.removeLayer(fl.head);fl.head=null;}
+    }else{                                         // in the air — grow path + head
+      active++;
+      var frac=(t-fl.t0)/Math.max(1,fl.t1-fl.t0),p=pathUpTo(fl.ll,frac);
+      fl.line.setLatLngs(p.pts);
+      fl.line.setStyle({color:'#ff5d5d',weight:3.2,opacity:1});
+      if(fl.swath)fl.swath.setStyle({fillColor:'rgba(239,68,68,.24)',fillOpacity:1});
+      if(p.end){
+        if(!fl.head){fl.head=L.marker(p.end,{icon:DRONE_HEAD_ICON,interactive:false,keyboard:false,zIndexOffset:1500});headLayer.addLayer(fl.head);}
+        else fl.head.setLatLng(p.end);
+      }
+    }
+  }
+  document.getElementById('tbTime').textContent=fmtScrubTime(t);
+  document.getElementById('tbStat').innerHTML=active?('<span class="on">'+active+' in air</span> · '+done+' flown'):(done+' flown');
+}
+var DRONE_HEAD_ICON=null;
+function setupScrubber(){
+  if(flightLayers.length<1)return;
+  tMin=Infinity;tMax=-Infinity;
+  flightLayers.forEach(function(fl){if(fl.t0<tMin)tMin=fl.t0;if(fl.t1>tMax)tMax=fl.t1;});
+  if(!isFinite(tMin)||!isFinite(tMax)||tMax<=tMin)return;
+  tCur=tMin;
+  DRONE_HEAD_ICON=L.divIcon({className:'drone-head',html:'<div class="dot"></div>',iconSize:[12,12],iconAnchor:[6,6]});
+  headLayer=L.layerGroup().addTo(map);
+  var bar=document.getElementById('timebar'),slider=document.getElementById('tbSlider'),
+      playBtn=document.getElementById('tbPlay'),playIcon=document.getElementById('tbPlayIcon'),
+      allBtn=document.getElementById('tbAll'),timeLbl=document.getElementById('tbTime'),statLbl=document.getElementById('tbStat');
+  var ICON_PLAY='<polygon points="6 4 20 12 6 20"/>',ICON_PAUSE='<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>';
+
+  function paint(){var pct=(+slider.value)/10;slider.style.background='linear-gradient(90deg,var(--acc) '+pct+'%,rgba(255,255,255,.14) '+pct+'%)';}
+  function syncSlider(){slider.value=Math.round((tCur-tMin)/(tMax-tMin)*1000);paint();}
+  function stop(){playing=false;playBtn.classList.remove('playing');playIcon.innerHTML=ICON_PLAY;if(rafId){cancelAnimationFrame(rafId);rafId=null;}}
+  function enterTimeMode(){if(timeMode)return;timeMode=true;allBtn.classList.remove('active');}
+  function showAll(){
+    stop();timeMode=false;allBtn.classList.add('active');
+    flightLayers.forEach(restoreFlight);
+    timeLbl.textContent='All flights';statLbl.textContent=flightLayers.length+' total';
+    tCur=tMin;syncSlider();
+  }
+  function frame(ts){
+    if(!playing)return;
+    if(!lastTs)lastTs=ts;
+    var dt=ts-lastTs;lastTs=ts;
+    tCur+=dt/PLAY_MS*(tMax-tMin);
+    if(tCur>=tMax){tCur=tMax;applyTime(tCur);syncSlider();stop();return;}
+    applyTime(tCur);syncSlider();
+    rafId=requestAnimationFrame(frame);
+  }
+  function play(){
+    enterTimeMode();
+    if(tCur>=tMax)tCur=tMin;
+    playing=true;playBtn.classList.add('playing');playIcon.innerHTML=ICON_PAUSE;
+    lastTs=0;rafId=requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing?stop():play();});
+  allBtn.addEventListener('click',showAll);
+  slider.addEventListener('input',function(){
+    enterTimeMode();stop();
+    tCur=tMin+(+slider.value)/1000*(tMax-tMin);
+    paint();applyTime(tCur);
+  });
+  statLbl.textContent=flightLayers.length+' total';
+  paint();
+  bar.classList.add('show');
+  document.body.classList.add('timebar-on');
+}
+
 // ── LOAD ──
 Promise.all([
   pfetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
@@ -856,9 +1000,12 @@ Promise.all([
   allFlights=res[1].features.filter(function(f){return f.properties&&f.properties.takeoff&&f.properties.landing});
   allFlights.forEach(function(f){var coords=exCoords(f.geometry);if(coords.length<2)return;var ll=coords.map(function(c){return[c[1],c[0]]});
     var simp=coords.filter(function(_,i){return i%3===0||i===coords.length-1});
-    if(simp.length>=2){try{var sw=bufLine(simp,SWATH_M);L.polygon(sw,{color:'rgba(239,68,68,.2)',weight:0,fillColor:'rgba(239,68,68,.12)',fillOpacity:1,interactive:false}).addTo(map)}catch(e){}}
-    var line=L.polyline(ll,{color:'#ef4444',weight:2.5,opacity:0.85}).addTo(map);fb.extend(line.getBounds())});
+    var swath=null;
+    if(simp.length>=2){try{var sw=bufLine(simp,SWATH_M);swath=L.polygon(sw,{color:'rgba(239,68,68,.2)',weight:0,fillColor:'rgba(239,68,68,.12)',fillOpacity:1,interactive:false}).addTo(map)}catch(e){}}
+    var line=L.polyline(ll,{color:'#ef4444',weight:2.5,opacity:0.85}).addTo(map);fb.extend(line.getBounds());
+    flightLayers.push({line:line,swath:swath,ll:ll,t0:+new Date(f.properties.takeoff),t1:+new Date(f.properties.landing),head:null});});
   buildLaunchRadius();
+  setupScrubber();
   if(fb.isValid())map.fitBounds(fb,{padding:isMobile?[40,40]:[80,80]});
 
   setTimeout(function(){document.getElementById('splash').classList.add('hide')},200);
