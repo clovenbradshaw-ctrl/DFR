@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#060a10">
 <title>Nashville DFR Surveillance Footprint</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23060a10%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23ef4444%22%20stroke-width%3D%222.5%22%20opacity%3D%22.45%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2211%22%20fill%3D%22none%22%20stroke%3D%22%23ef4444%22%20stroke-width%3D%222.5%22%20opacity%3D%22.8%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%224%22%20fill%3D%22%23ef4444%22%2F%3E%3Cg%20stroke%3D%22%23ef4444%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%3E%3Cline%20x1%3D%2232%22%20y1%3D%226%22%20x2%3D%2232%22%20y2%3D%2215%22%2F%3E%3Cline%20x1%3D%2232%22%20y1%3D%2249%22%20x2%3D%2232%22%20y2%3D%2258%22%2F%3E%3Cline%20x1%3D%226%22%20y1%3D%2232%22%20x2%3D%2215%22%20y2%3D%2232%22%2F%3E%3Cline%20x1%3D%2249%22%20y1%3D%2232%22%20x2%3D%2258%22%20y2%3D%2232%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link href="https://fonts.bunny.net/css?family=dm-sans:400,500,600,700|jetbrains-mono:400,600,700|source-serif-4:400,600,700&display=swap" rel="stylesheet" onerror="this.remove()">
@@ -265,11 +266,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 
 /* ── Council district overlay ────────────────────────── */
 .iconbtn.districts{top:calc(var(--hdr) + 64px + var(--safe-t))}
+.iconbtn.precincts{top:calc(var(--hdr) + 118px + var(--safe-t))}
 .iconbtn.active{border-color:var(--acc);color:var(--acc);background:rgba(77,141,245,.16)}
+.iconbtn.precincts.active{border-color:#22d3ee;color:#22d3ee;background:rgba(34,211,238,.16)}
 .dist-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .dist-label span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1;color:#bcd6ff;background:rgba(8,13,22,.74);border:1px solid rgba(77,141,245,.5);border-radius:5px;padding:2px 5px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6)}
 .dist-label.sel span{color:#fff;background:rgba(77,141,245,.9);border-color:#bcd6ff}
-@media(max-width:768px){.dist-label span{font-size:10px;padding:1px 4px}}
+.prec-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.prec-label span{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;line-height:1;letter-spacing:.04em;text-transform:uppercase;color:#a5f3fc;background:rgba(8,13,22,.78);border:1px solid rgba(34,211,238,.55);border-radius:5px;padding:2px 6px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6)}
+@media(max-width:768px){.dist-label span{font-size:10px;padding:1px 4px}.prec-label span{font-size:9px;padding:1px 4px}}
 
 /* ── Time scrubber ───────────────────────────────────── */
 .timebar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + var(--safe-b));z-index:1000;display:none;align-items:center;gap:11px;background:var(--surf);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px;padding:9px 13px;box-shadow:0 6px 28px rgba(0,0,0,.55);width:min(520px,calc(100vw - 20px))}
@@ -321,6 +326,10 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
 
 <button class="iconbtn districts active" id="districtBtn" aria-label="Toggle council district boundaries" aria-pressed="true" title="Council districts">
   <svg viewBox="0 0 24 24"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>
+</button>
+
+<button class="iconbtn precincts" id="precinctBtn" aria-label="Toggle police precinct boundaries" aria-pressed="false" title="Police precincts">
+  <svg viewBox="0 0 24 24"><path d="M12 2 L20 5 V11 C20 16 16.5 19.5 12 22 C7.5 19.5 4 16 4 11 V5 Z"/><path d="M9.5 12 l1.8 1.8 L15 9.5"/></svg>
 </button>
 
 <div class="hint" id="hint">
@@ -401,6 +410,7 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
       <div class="li"><div class="lsw" style="background:rgba(239,68,68,.3);height:8px"></div>~270 ft camera swath</div>
       <div class="li"><div class="lsw" style="background:transparent;border:1px solid rgba(77,141,245,.7);height:11px;border-radius:2px"></div>Council district boundary</div>
       <div class="li"><div class="lci" style="background:transparent;border:1.5px dashed #f59e0b;width:11px;height:11px"></div>2-mi launch radius (Dist. 7 carved out)</div>
+      <div class="li"><div class="lsw" style="background:transparent;border:1px dashed #22d3ee;height:11px;border-radius:2px"></div>Police precinct (toggle, top-right)</div>
       <div class="li"><div class="lci" style="background:#34d399"></div>School</div>
       <div class="li"><div class="lci" style="background:#a78bfa"></div>Childcare</div>
       <div class="li"><div class="lci" style="background:#06d6a0"></div>Playground</div>
@@ -414,6 +424,7 @@ var SITES_URL='https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/
 var FLIGHTS_URL='https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/refs/heads/main/dfr/flight_paths.geojson';
 var DEMO_URL='https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/nashville_council_district_demographics.json';
 var DIST_URL='https://maps.nashville.gov/arcgis/rest/services/Elections/Precincts/MapServer/1/query?where=1%3D1&outFields=DistrictName&f=geojson&outSR=4326&returnGeometry=true';
+var PRECINCT_URL='https://maps.nashville.gov/arcgis/rest/services/Public_Safety/Police_Precincts/MapServer/0/query?where=1%3D1&outFields=*&f=geojson&outSR=4326&returnGeometry=true';
 var PROXY='https://n8n.intelechia.com/webhook/feed?url=';
 function pfetch(url){return fetch(PROXY+encodeURIComponent(url))}
 var SC={school:'#34d399',childcare:'#a78bfa',playground:'#06d6a0',worship:'#f59e0b'};
@@ -437,6 +448,7 @@ updateSiteIconScale();
 var allFlights=[],allSites=[],demographics={},baseline={},districtPolys={},clickMarker;
 var flightLayers=[],headLayer=null,timeMode=false,tMin=0,tMax=0,tCur=0,playing=false,rafId=null,lastTs=0,PLAY_MS=22000;
 var districtLayer=null,districtLabelLayer=null,districtLayerByNum={},districtLabelByNum={},districtsVisible=true,selDistrict=null;
+var precinctLayer=null,precinctLabelLayer=null,precinctLabels=[],precinctsVisible=false;
 
 function fmtMoney(n){n=Math.round(n);var neg=n<0;n=Math.abs(n);var s=n>=1000?'$'+(n/1000).toFixed(n%1000===0?0:1)+'k':'$'+n;return neg?'-'+s:s}
 function fmtTime(d){return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})}
@@ -505,6 +517,38 @@ function highlightDistrict(dn){
     if(le)le.classList.add('sel');
     selDistrict=dn;
   }
+}
+
+// ── Police precinct overlay (toggleable) ──
+function precName(props){
+  if(!props)return'';
+  var keys=Object.keys(props),skip=/objectid|shape|globalid|^fid$|area|len|perimeter/i;
+  var pri=keys.filter(function(k){return/precinct/i.test(k)&&!skip.test(k)});
+  var sec=keys.filter(function(k){return/(\bname\b|descript|label|prec|zone|sector)/i.test(k)&&!skip.test(k)});
+  var order=pri.concat(sec).concat(keys);
+  for(var i=0;i<order.length;i++){var v=props[order[i]];if(typeof v==='string'&&v.trim()&&!skip.test(order[i]))return v.trim();}
+  return'';
+}
+function buildPrecinctOverlay(gj){
+  if(!gj||!gj.features||!gj.features.length)return;
+  precinctLayer=L.geoJSON(gj,{
+    interactive:false,
+    style:function(){return{color:'#22d3ee',weight:1.6,opacity:.7,dashArray:'5 4',fill:true,fillColor:'#22d3ee',fillOpacity:.05}},
+    onEachFeature:function(f,layer){
+      var nm=precName(f.properties);
+      if(!nm)return;
+      nm=nm.replace(/\s*precinct$/i,'');
+      precinctLabels.push(L.marker(layer.getBounds().getCenter(),{interactive:false,keyboard:false,icon:L.divIcon({className:'prec-label',html:'<span>'+nm+'</span>',iconSize:[80,18],iconAnchor:[40,9]})}));
+    }
+  });
+  precinctLabelLayer=L.layerGroup(precinctLabels);
+}
+function setPrecinctsVisible(v){
+  precinctsVisible=v;
+  if(precinctLayer){if(v)precinctLayer.addTo(map);else map.removeLayer(precinctLayer);}
+  if(precinctLabelLayer){if(v)precinctLabelLayer.addTo(map);else map.removeLayer(precinctLabelLayer);}
+  var btn=document.getElementById('precinctBtn');
+  if(btn){btn.classList.toggle('active',v);btn.setAttribute('aria-pressed',v?'true':'false');}
 }
 function compBaseline(){
   var ks=Object.keys(demographics),n=ks.length;if(!n)return;
@@ -590,6 +634,8 @@ document.getElementById('panelClose').addEventListener('click',function(){
 
 // ── Council district toggle ──
 document.getElementById('districtBtn').addEventListener('click',function(){setDistrictsVisible(!districtsVisible);});
+// ── Police precinct toggle ──
+document.getElementById('precinctBtn').addEventListener('click',function(){setPrecinctsVisible(!precinctsVisible);});
 
 // PiP expand/collapse
 (function(){
@@ -842,19 +888,39 @@ function clipToConvex(subject,clip){
   return out;
 }
 var launchRadiusLayer=null;
+function largestRing(rings){var best=null,bestA=-1;for(var i=0;i<rings.length;i++){var r=rings[i].map(function(p){return[p[1],p[0]]});var a=Math.abs(ringArea(r));if(a>bestA){bestA=a;best=r}}return best}
+// point-in-polygon (ray cast) for [lat,lng] points & rings
+function inPoly(pt,poly){var x=pt[0],y=pt[1],ins=false;for(var i=0,j=poly.length-1;i<poly.length;j=i++){var xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))ins=!ins}return ins}
+// param t along p→q where it crosses segment r→s (or null)
+function segInt(p,q,r,s){var d1x=q[0]-p[0],d1y=q[1]-p[1],d2x=s[0]-r[0],d2y=s[1]-r[1];var den=d1x*d2y-d1y*d2x;if(Math.abs(den)<1e-15)return null;var t=((r[0]-p[0])*d2y-(r[1]-p[1])*d2x)/den;var u=((r[0]-p[0])*d1y-(r[1]-p[1])*d1x)/den;if(u<-1e-9||u>1+1e-9)return null;return t}
+// split A's edges at crossings with B, keep the pieces inside (keepInside) or outside B
+function addEdges(A,B,keepInside,out){
+  for(var i=0;i<A.length;i++){var p=A[i],q=A[(i+1)%A.length],ts=[0,1];
+    for(var j=0;j<B.length;j++){var t=segInt(p,q,B[j],B[(j+1)%B.length]);if(t!==null&&t>1e-9&&t<1-1e-9)ts.push(t)}
+    ts.sort(function(a,b){return a-b});
+    for(var k=0;k<ts.length-1;k++){var t0=ts[k],t1=ts[k+1];if(t1-t0<1e-9)continue;var tm=(t0+t1)/2;
+      if(inPoly([p[0]+(q[0]-p[0])*tm,p[1]+(q[1]-p[1])*tm],B)===keepInside)
+        out.push([[p[0]+(q[0]-p[0])*t0,p[1]+(q[1]-p[1])*t0],[p[0]+(q[0]-p[0])*t1,p[1]+(q[1]-p[1])*t1]])}
+  }
+}
+// boundary of (subj − clip): subj arcs outside clip + clip edges inside subj
+function diffOutline(subj,clip){var out=[];addEdges(subj,clip,false,out);addEdges(clip,subj,true,out);return out}
 function buildLaunchRadius(){
   var c=launchPoint();if(!c)return;
   var ring=circleRing(c,2*MILE_M,144);          // [lat,lng] ring approximating the 2-mile circle
-  if(ringArea(ring)<0)ring.reverse();           // force CCW so it is a valid convex clip region
-  var holes=[],d7=districtPolys['7'];
-  if(d7)for(var r=0;r<d7.length;r++){
-    var sub=d7[r].map(function(p){return[p[1],p[0]]});  // district ring → [lat,lng]
-    var clipped=clipToConvex(sub,ring);                 // part of District 7 inside the circle
-    if(clipped.length>=3)holes.push(clipped);
-  }
+  if(ringArea(ring)<0)ring.reverse();           // CCW so it is a valid convex clip region
   if(launchRadiusLayer)map.removeLayer(launchRadiusLayer);
-  // outer circle ring + carved holes; even-odd fill removes the District 7 slice
-  launchRadiusLayer=L.polygon([ring].concat(holes),{color:'#f59e0b',weight:2,opacity:.9,dashArray:'6 5',fillColor:'#f59e0b',fillOpacity:.08,interactive:false}).addTo(map);
+  var grp=L.layerGroup();
+  var d7=districtPolys['7'],d7ring=d7&&d7.length?largestRing(d7):null;
+  if(d7ring){
+    var hole=clipToConvex(d7ring,ring);          // District 7 ∩ circle → carved hole
+    var fillRings=[ring];if(hole.length>=3)fillRings.push(hole);
+    L.polygon(fillRings,{weight:0,fillColor:'#f59e0b',fillOpacity:.13,interactive:false}).addTo(grp);   // even-odd fill = circle − District 7
+    L.polyline(diffOutline(ring,d7ring),{color:'#f59e0b',weight:2,opacity:.95,dashArray:'6 5',interactive:false}).addTo(grp); // true cut boundary
+  }else{
+    L.polygon([ring],{color:'#f59e0b',weight:2,opacity:.95,dashArray:'6 5',fillColor:'#f59e0b',fillOpacity:.13,interactive:false}).addTo(grp);
+  }
+  launchRadiusLayer=grp.addTo(map);
 }
 
 // ── Time scrubber ──────────────────────────────────────
@@ -963,11 +1029,13 @@ Promise.all([
   pfetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
   pfetch(FLIGHTS_URL+'?t='+Date.now()).then(function(r){return r.json()}),
   pfetch(DEMO_URL+'?t='+Date.now()).then(function(r){return r.json()}),
-  pfetch(DIST_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}})
+  pfetch(DIST_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}}),
+  pfetch(PRECINCT_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}})
 ]).then(function(res){
   demographics=(res[2].districts||{});compBaseline();
   if(res[3].features)res[3].features.forEach(function(f){var dn=(f.properties.DistrictName||'').replace(/\D/g,'');if(!dn)return;var geo=f.geometry;districtPolys[dn]=geo.type==='MultiPolygon'?geo.coordinates.flat():geo.coordinates});
   if(res[3].features&&res[3].features.length)buildDistrictOverlay(res[3]);
+  if(res[4]&&res[4].features&&res[4].features.length)buildPrecinctOverlay(res[4]);
 
   allSites=res[0].sites||[];
   var typeLabel={school:'School',childcare:'Childcare',playground:'Playground',worship:'Place of worship'};
