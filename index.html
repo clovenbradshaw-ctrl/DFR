@@ -266,7 +266,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 
 /* ── Council district overlay ────────────────────────── */
 .iconbtn.layers{top:calc(var(--hdr) + 64px + var(--safe-t))}
+.iconbtn.download{top:calc(var(--hdr) + 118px + var(--safe-t))}
 .iconbtn.active{border-color:var(--acc);color:var(--acc);background:rgba(77,141,245,.16)}
+
+/* ── Data export modal ───────────────────────────────── */
+.export-list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.export-row{display:flex;align-items:center;gap:11px;background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;flex-wrap:wrap}
+.export-tx{flex:1;min-width:120px}
+.export-tx .n{font-size:13.5px;font-weight:600;color:var(--txt);line-height:1.25}
+.export-tx .d{font-size:10.5px;color:var(--mut);font-family:'JetBrains Mono',monospace;margin-top:3px}
+.export-btns{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.ex-btn{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:rgba(77,141,245,.14);border:1px solid rgba(77,141,245,.4);color:#9cc3ff;border-radius:7px;padding:7px 10px;cursor:pointer;transition:background .15s,border-color .15s}
+.ex-btn:hover:not(:disabled){background:rgba(77,141,245,.26);border-color:var(--acc)}
+.ex-btn:disabled{opacity:.35;cursor:not-allowed}
+.export-note{font-size:11.5px;color:var(--mut2);line-height:1.55;margin-top:14px}
+.about-export{display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:rgba(77,141,245,.14);border:1px solid rgba(77,141,245,.4);color:#9cc3ff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;border-radius:9px;padding:9px 13px;cursor:pointer;transition:background .15s,border-color .15s}
+.about-export:hover{background:rgba(77,141,245,.26);border-color:var(--acc)}
+.about-export svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* ── Layers toggle menu ──────────────────────────────── */
 .layers-menu{position:fixed;z-index:1004;top:calc(var(--hdr) + 64px + var(--safe-t));right:64px;width:248px;max-width:calc(100vw - 84px);background:var(--surf);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 44px rgba(0,0,0,.6);padding:8px 6px 9px;display:none;flex-direction:column;gap:1px;transform-origin:top right;animation:lyrIn .16s ease}
@@ -345,6 +361,10 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
 
 <button class="iconbtn layers" id="layersBtn" aria-label="Toggle map layers" aria-haspopup="true" aria-expanded="false" title="Map layers">
   <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+</button>
+
+<button class="iconbtn download" id="exportBtn" aria-label="Export data" aria-haspopup="dialog" title="Export data">
+  <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
 </button>
 
 <div class="layers-menu" id="layersMenu" role="group" aria-label="Map layers">
@@ -453,6 +473,21 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
       <div class="li"><div class="lci" style="background:#06d6a0"></div>Playground</div>
       <div class="li"><div class="lci" style="background:#f59e0b"></div>Place of worship</div>
     </div>
+    <button class="about-export" id="aboutExportBtn" type="button">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download this data
+    </button>
+  </div>
+</div>
+
+<!-- Data export modal -->
+<div class="modal-bg" id="exportBg">
+  <div class="modal" role="dialog" aria-labelledby="exportTitle" aria-modal="true">
+    <button class="close" id="exportClose" aria-label="Close">&times;</button>
+    <h2 id="exportTitle">Export the data</h2>
+    <p>Download the underlying data behind this map — <strong>where the drones flew</strong>, <strong>where the sensitive sites are</strong>, and the <strong>demographic breakdown</strong> of every council district they passed over. Files are built in your browser; nothing is uploaded.</p>
+    <div class="export-list" id="exportList"></div>
+    <p class="export-note">Sources: MNPD DFR flight logs · US Census ACS · Metro Nashville GIS · OpenStreetMap. CSV opens in any spreadsheet; GeoJSON loads in QGIS, Mapbox, geojson.io, etc.</p>
   </div>
 </div>
 
@@ -891,6 +926,168 @@ function closeAbout(){document.getElementById('aboutBg').classList.remove('show'
 document.getElementById('aboutBtn').addEventListener('click',openAbout);
 document.getElementById('aboutClose').addEventListener('click',closeAbout);
 document.getElementById('aboutBg').addEventListener('click',function(e){if(e.target===this)closeAbout()});
+
+// ── Data export ──
+(function(){
+  var btn=document.getElementById('exportBtn'),
+      aboutBtn=document.getElementById('aboutExportBtn'),
+      bg=document.getElementById('exportBg'),
+      closeBtn=document.getElementById('exportClose'),
+      list=document.getElementById('exportList');
+
+  // Trigger a client-side file download
+  function dl(name,text,mime){
+    var blob=new Blob([text],{type:(mime||'text/plain')+';charset=utf-8'});
+    var url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},120);
+  }
+  function stamp(){return new Date().toISOString().slice(0,10);}
+  function cell(v){if(v==null)v='';v=String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+  function csv(rows){return rows.map(function(r){return r.map(cell).join(',');}).join('\r\n');}
+
+  // Distinct drone flights whose path passes through each council district
+  function flightsPerDistrict(){
+    var counts={};
+    allFlights.forEach(function(f){
+      var c=exCoords(f.geometry),seen={};
+      for(var i=0;i<c.length;i++){var dn=findDist(c[i][1],c[i][0]);if(dn&&!seen[dn]){seen[dn]=1;counts[dn]=(counts[dn]||0)+1;}}
+    });
+    return counts;
+  }
+
+  // ── Flight paths ──
+  function flightsGeoJSON(){return JSON.stringify({type:'FeatureCollection',features:allFlights},null,2);}
+  function flightsCSV(){
+    var rows=[['flight','takeoff','landing','duration_min','start_lat','start_lng','end_lat','end_lng','num_points']];
+    allFlights.forEach(function(f,idx){
+      var c=exCoords(f.geometry),p=f.properties||{},t0=new Date(p.takeoff),t1=new Date(p.landing);
+      var s=c[0]||[],e=c[c.length-1]||[];
+      rows.push([p.id||p.name||('flight_'+(idx+1)),p.takeoff||'',p.landing||'',Math.round((t1-t0)/60000),s[1]!=null?s[1]:'',s[0]!=null?s[0]:'',e[1]!=null?e[1]:'',e[0]!=null?e[0]:'',c.length]);
+    });
+    return csv(rows);
+  }
+
+  // ── Sensitive sites (where they are) ──
+  function sitesGeoJSON(){
+    return JSON.stringify({type:'FeatureCollection',features:allSites.filter(function(s){return s.lat&&s.lng;}).map(function(s){
+      return {type:'Feature',geometry:{type:'Point',coordinates:[s.lng,s.lat]},properties:{name:s.name,type:s.type||'',address:s.address||'',denomination:s.denomination||''}};
+    })},null,2);
+  }
+  function sitesCSV(){
+    var rows=[['name','type','address','denomination','lat','lng']];
+    allSites.forEach(function(s){rows.push([s.name,s.type||'',s.address||'',s.denomination||'',s.lat!=null?s.lat:'',s.lng!=null?s.lng:'']);});
+    return csv(rows);
+  }
+
+  // ── District demographics (with flights overhead + county baseline) ──
+  var DEMO_HEAD=['district','council_member','council_phone','flights_overhead','population','median_age',
+    'pct_white','pct_black','pct_hispanic','pct_asian','pct_two_or_more','pct_under_18','pct_65_and_over',
+    'median_household_income','per_capita_income','pct_total_poverty','pct_child_poverty',
+    'median_owner_value','median_monthly_rent','pct_renter_cost_burdened_35plus','unemployment_rate'];
+  function demoRow(label,d,cm,flights){
+    return [label,cm.n||'',cm.p||'',flights,d.population,d.median_age,
+      d.race_ethnicity.pct_white,d.race_ethnicity.pct_black,d.race_ethnicity.pct_hispanic,d.race_ethnicity.pct_asian,d.race_ethnicity.pct_two_or_more,
+      d.age.pct_under_18,d.age.pct_65_and_over,
+      d.income.median_household_income,d.income.per_capita_income,
+      d.poverty.pct_total_poverty,d.poverty.pct_child_poverty,
+      d.housing.median_owner_value,d.housing.median_monthly_rent,d.housing.pct_renter_cost_burdened_35plus,
+      d.employment.unemployment_rate];
+  }
+  function demoCSV(){
+    var fpd=flightsPerDistrict(),rows=[DEMO_HEAD];
+    Object.keys(demographics).sort(function(a,b){return (+a)-(+b);}).forEach(function(dn){
+      rows.push(demoRow('District '+dn,demographics[dn],CM[dn]||{},fpd[dn]||0));
+    });
+    if(baseline&&baseline.population)rows.push(demoRow('County baseline (district avg)',{
+      population:baseline.population,median_age:baseline.median_age,
+      race_ethnicity:{pct_white:baseline.pct_white,pct_black:baseline.pct_black,pct_hispanic:baseline.pct_hispanic,pct_asian:baseline.pct_asian,pct_two_or_more:baseline.pct_two_or_more},
+      age:{pct_under_18:baseline.pct_under_18,pct_65_and_over:baseline.pct_65_and_over},
+      income:{median_household_income:baseline.median_household_income,per_capita_income:baseline.per_capita_income},
+      poverty:{pct_total_poverty:baseline.pct_total_poverty,pct_child_poverty:baseline.pct_child_poverty},
+      housing:{median_owner_value:baseline.median_owner_value,median_monthly_rent:baseline.median_monthly_rent,pct_renter_cost_burdened_35plus:baseline.pct_renter_cost_burdened_35plus},
+      employment:{unemployment_rate:baseline.unemployment_rate}
+    },{},''));
+    return csv(rows);
+  }
+  function demoJSON(){
+    var fpd=flightsPerDistrict(),out={generated:new Date().toISOString(),county_baseline:baseline,districts:{}};
+    Object.keys(demographics).forEach(function(dn){
+      var d=demographics[dn],cm=CM[dn]||{},copy={};
+      for(var k in d)copy[k]=d[k];
+      copy.council_member=cm.n||null;copy.council_phone=cm.p||null;copy.flights_overhead=fpd[dn]||0;
+      out.districts[dn]=copy;
+    });
+    return JSON.stringify(out,null,2);
+  }
+
+  // ── Everything bundle ──
+  function bundleJSON(){
+    return JSON.stringify({
+      generated:new Date().toISOString(),
+      title:'Nashville DFR Surveillance Footprint',
+      flight_paths:{type:'FeatureCollection',features:allFlights},
+      sensitive_sites:allSites,
+      demographics:{county_baseline:baseline,districts:demographics},
+      council_members:CM
+    },null,2);
+  }
+
+  var DATASETS=[
+    {name:'Drone flight paths',
+     count:function(){return allFlights.length+' flight'+(allFlights.length===1?'':'s')+' · where they flew';},
+     ready:function(){return allFlights.length>0;},
+     formats:[
+       {ext:'GeoJSON',fn:function(){dl('dfr_flight_paths_'+stamp()+'.geojson',flightsGeoJSON(),'application/geo+json');}},
+       {ext:'CSV',fn:function(){dl('dfr_flight_log_'+stamp()+'.csv',flightsCSV(),'text/csv');}}
+     ]},
+    {name:'Sensitive sites',
+     count:function(){return allSites.length+' location'+(allSites.length===1?'':'s')+' · schools, childcare, worship';},
+     ready:function(){return allSites.length>0;},
+     formats:[
+       {ext:'GeoJSON',fn:function(){dl('dfr_sensitive_sites_'+stamp()+'.geojson',sitesGeoJSON(),'application/geo+json');}},
+       {ext:'CSV',fn:function(){dl('dfr_sensitive_sites_'+stamp()+'.csv',sitesCSV(),'text/csv');}}
+     ]},
+    {name:'Demographic breakdowns',
+     count:function(){return Object.keys(demographics).length+' council districts · race, income, poverty, housing';},
+     ready:function(){return Object.keys(demographics).length>0;},
+     formats:[
+       {ext:'CSV',fn:function(){dl('dfr_district_demographics_'+stamp()+'.csv',demoCSV(),'text/csv');}},
+       {ext:'JSON',fn:function(){dl('dfr_district_demographics_'+stamp()+'.json',demoJSON(),'application/json');}}
+     ]},
+    {name:'Everything',
+     count:function(){return 'flights + sites + demographics, one file';},
+     ready:function(){return allFlights.length>0||allSites.length>0||Object.keys(demographics).length>0;},
+     formats:[
+       {ext:'JSON',fn:function(){dl('dfr_full_dataset_'+stamp()+'.json',bundleJSON(),'application/json');}}
+     ]}
+  ];
+
+  function render(){
+    list.innerHTML='';
+    DATASETS.forEach(function(ds){
+      var ready=ds.ready(),row=document.createElement('div');row.className='export-row';
+      var tx=document.createElement('div');tx.className='export-tx';
+      tx.innerHTML='<div class="n">'+ds.name+'</div><div class="d">'+(ready?ds.count():'loading…')+'</div>';
+      var btns=document.createElement('div');btns.className='export-btns';
+      ds.formats.forEach(function(fmt){
+        var b=document.createElement('button');b.className='ex-btn';b.type='button';b.textContent=fmt.ext;
+        b.disabled=!ready;
+        b.addEventListener('click',fmt.fn);
+        btns.appendChild(b);
+      });
+      row.appendChild(tx);row.appendChild(btns);list.appendChild(row);
+    });
+  }
+
+  function open(){render();bg.classList.add('show');}
+  function shut(){bg.classList.remove('show');}
+  btn.addEventListener('click',open);
+  if(aboutBtn)aboutBtn.addEventListener('click',function(){closeAbout();open();});
+  closeBtn.addEventListener('click',shut);
+  bg.addEventListener('click',function(e){if(e.target===this)shut();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&bg.classList.contains('show'))shut();});
+})();
 
 // ── TIPA modal ──
 (function(){
