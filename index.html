@@ -265,10 +265,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .hint svg{width:14px;height:14px;stroke:var(--acc);fill:none;stroke-width:2;flex-shrink:0}
 
 /* ── Council district overlay ────────────────────────── */
-.iconbtn.districts{top:calc(var(--hdr) + 64px + var(--safe-t))}
-.iconbtn.precincts{top:calc(var(--hdr) + 118px + var(--safe-t))}
+.iconbtn.layers{top:calc(var(--hdr) + 64px + var(--safe-t))}
 .iconbtn.active{border-color:var(--acc);color:var(--acc);background:rgba(77,141,245,.16)}
-.iconbtn.precincts.active{border-color:#22d3ee;color:#22d3ee;background:rgba(34,211,238,.16)}
+
+/* ── Layers toggle menu ──────────────────────────────── */
+.layers-menu{position:fixed;z-index:1004;top:calc(var(--hdr) + 64px + var(--safe-t));right:64px;width:248px;max-width:calc(100vw - 84px);background:var(--surf);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 44px rgba(0,0,0,.6);padding:8px 6px 9px;display:none;flex-direction:column;gap:1px;transform-origin:top right;animation:lyrIn .16s ease}
+.layers-menu.show{display:flex}
+@keyframes lyrIn{from{opacity:0;transform:scale(.96) translateY(-4px)}to{opacity:1;transform:none}}
+.lyr-title{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;padding:5px 10px 8px}
+.lyr-row{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.lyr-row:hover{background:rgba(255,255,255,.05)}
+.lyr-row:focus-visible{outline:none;background:rgba(77,141,245,.14)}
+.lyr-ic{flex-shrink:0}
+.lyr-ic.line{width:18px;height:3px;border-radius:2px}
+.lyr-ic.dot{width:12px;height:12px;border-radius:50%}
+.lyr-ic.box{width:14px;height:14px;border-radius:3px;border:1.5px solid;background:transparent}
+.lyr-ic.ring{width:14px;height:14px;border-radius:50%;border:1.5px dashed;background:transparent}
+.lyr-name{flex:1;min-width:0;font-size:13px;color:var(--txt);font-weight:500;line-height:1.2}
+.lyr-row:not(.on) .lyr-name{color:var(--mut)}
+.lyr-sw{position:relative;width:36px;height:21px;flex-shrink:0;border-radius:11px;background:rgba(255,255,255,.16);transition:background .18s}
+.lyr-sw::after{content:'';position:absolute;top:2.5px;left:2.5px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+.lyr-row.on .lyr-sw{background:var(--acc)}
+.lyr-row.on .lyr-sw::after{transform:translateX(15px)}
+@media(max-width:768px){.layers-menu{right:62px}}
 .dist-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .dist-label span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1;color:#bcd6ff;background:rgba(8,13,22,.74);border:1px solid rgba(77,141,245,.5);border-radius:5px;padding:2px 5px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6)}
 .dist-label.sel span{color:#fff;background:rgba(77,141,245,.9);border-color:#bcd6ff}
@@ -324,13 +343,31 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
   <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
 </button>
 
-<button class="iconbtn districts active" id="districtBtn" aria-label="Toggle council district boundaries" aria-pressed="true" title="Council districts">
-  <svg viewBox="0 0 24 24"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>
+<button class="iconbtn layers" id="layersBtn" aria-label="Toggle map layers" aria-haspopup="true" aria-expanded="false" title="Map layers">
+  <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
 </button>
 
-<button class="iconbtn precincts" id="precinctBtn" aria-label="Toggle police precinct boundaries" aria-pressed="false" title="Police precincts">
-  <svg viewBox="0 0 24 24"><path d="M12 2 L20 5 V11 C20 16 16.5 19.5 12 22 C7.5 19.5 4 16 4 11 V5 Z"/><path d="M9.5 12 l1.8 1.8 L15 9.5"/></svg>
-</button>
+<div class="layers-menu" id="layersMenu" role="group" aria-label="Map layers">
+  <div class="lyr-title">Map layers</div>
+  <div class="lyr-row on" data-layer="flights" role="switch" aria-checked="true" tabindex="0">
+    <span class="lyr-ic line" style="background:#ef4444"></span><span class="lyr-name">Drone flight paths</span><span class="lyr-sw"></span>
+  </div>
+  <div class="lyr-row on" data-layer="swath" role="switch" aria-checked="true" tabindex="0">
+    <span class="lyr-ic line" style="background:rgba(239,68,68,.4);height:8px"></span><span class="lyr-name">Camera swath</span><span class="lyr-sw"></span>
+  </div>
+  <div class="lyr-row on" data-layer="sites" role="switch" aria-checked="true" tabindex="0">
+    <span class="lyr-ic dot" style="background:#34d399"></span><span class="lyr-name">Sensitive sites</span><span class="lyr-sw"></span>
+  </div>
+  <div class="lyr-row on" data-layer="launch" role="switch" aria-checked="true" tabindex="0">
+    <span class="lyr-ic ring" style="border-color:#f59e0b"></span><span class="lyr-name">2-mi launch radius</span><span class="lyr-sw"></span>
+  </div>
+  <div class="lyr-row on" data-layer="districts" role="switch" aria-checked="true" tabindex="0">
+    <span class="lyr-ic box" style="border-color:rgba(77,141,245,.9)"></span><span class="lyr-name">Council districts</span><span class="lyr-sw"></span>
+  </div>
+  <div class="lyr-row" data-layer="precincts" role="switch" aria-checked="false" tabindex="0">
+    <span class="lyr-ic box" style="border-color:#22d3ee;border-style:dashed"></span><span class="lyr-name">Police precincts</span><span class="lyr-sw"></span>
+  </div>
+</div>
 
 <div class="hint" id="hint">
   <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
@@ -432,23 +469,39 @@ var SWATH_M=82;
 var CM={1:{n:"Joy Kimbrough",p:"615-432-1301"},2:{n:"Kyonzté Toombs",p:"615-432-1302"},3:{n:"Jennifer Gamble",p:"615-432-1303"},4:{n:"Mike Cortese",p:"615-432-1304"},5:{n:"Sean Parker",p:"615-432-1305"},6:{n:"Clay Capp",p:"615-432-1306"},7:{n:"Emily Benedict",p:"615-432-1307"},8:{n:"Deonté Harrell",p:"615-432-1308"},9:{n:"Tonya Hancock",p:"615-432-1309"},10:{n:"Jennifer Frensley Webb",p:"615-432-1310"},11:{n:"Jeff Eslick",p:"615-432-1311"},12:{n:"Erin Evans",p:"615-432-1312"},13:{n:"Russ Bradford",p:"615-432-1313"},14:{n:"Jordan Huffman",p:"615-432-1314"},15:{n:"Jeff Gregg",p:"615-432-1315"},16:{n:"Ginny Welsch",p:"615-432-1316"},17:{n:"Terry Vo",p:"615-432-1317"},18:{n:"Tom Cash",p:"615-432-1318"},19:{n:"Jacob Kupin",p:"615-432-1319"},20:{n:"Rollin Horton",p:"615-432-1320"},21:{n:"Brandon Taylor",p:"615-432-1321"},22:{n:"Sheri Weiner",p:"615-432-1322"},23:{n:"Thom Druffel",p:"615-432-1323"},24:{n:"Brenda Gadd",p:"615-432-1324"},25:{n:"Jeff Preptit",p:"615-432-1325"},26:{n:"Courtney Johnston",p:"615-432-1326"},27:{n:"Robert Nash",p:"615-432-1327"},28:{n:"David Benton",p:"615-432-1328"},29:{n:"Tasha Ellis",p:"615-432-1329"},30:{n:"Sandra Sepulveda",p:"615-432-1330"},31:{n:"John Rutherford",p:"615-432-1331"},32:{n:"Joy Styles",p:"615-432-1332"},33:{n:"Antoinette Lee",p:"615-432-1333"},34:{n:"Sandy Ewing",p:"615-432-1334"},35:{n:"Jason Spain",p:"615-432-1335"}};
 
 var isMobile=window.matchMedia('(max-width:768px)').matches;
-var map=L.map('map',{zoomControl:!isMobile,attributionControl:false}).setView([36.165,-86.78],12);
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}).addTo(map);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
+var map=L.map('map',{
+  zoomControl:!isMobile,
+  attributionControl:false,
+  minZoom:10,maxZoom:19,
+  zoomSnap:0.5,zoomDelta:0.5,          // finer, smoother zoom steps
+  wheelPxPerZoomLevel:130,             // gentler scroll-wheel zoom
+  wheelDebounceTime:34,
+  bounceAtZoomLimits:false,            // no rubber-band glitch at min/max zoom
+  zoomAnimation:true,markerZoomAnimation:true
+}).setView([36.165,-86.78],12);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:19,updateWhenZooming:false,keepBuffer:4}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,maxNativeZoom:19,subdomains:'abcd',updateWhenZooming:false,keepBuffer:4}).addTo(map);
 
-// Scale site icons with zoom so the map stays legible when zoomed out
-function updateSiteIconScale(){
-  var z=map.getZoom();
-  var s=z>=16?1:z<=10?0.32:0.32+(z-10)/6*0.68;
-  document.documentElement.style.setProperty('--site-scale',s.toFixed(2));
+// Scale site icons with zoom so the map stays legible when zoomed out.
+// Update during the zoom animation (and live pinch) so pins glide smoothly
+// instead of popping to their new size after the zoom finishes.
+function siteScaleFor(z){return z>=16?1:z<=10?0.32:0.32+(z-10)/6*0.68;}
+function updateSiteIconScale(z){
+  if(z==null||isNaN(z))z=map.getZoom();
+  document.documentElement.style.setProperty('--site-scale',siteScaleFor(z).toFixed(2));
 }
-map.on('zoomend',updateSiteIconScale);
+map.on('zoomanim',function(e){updateSiteIconScale(e.zoom);}); // animated zoom: ease to target
+map.on('zoom',function(){updateSiteIconScale();});            // live pinch zoom
+map.on('zoomend',function(){updateSiteIconScale();});
 updateSiteIconScale();
 
 var allFlights=[],allSites=[],demographics={},baseline={},districtPolys={},clickMarker;
 var flightLayers=[],headLayer=null,timeMode=false,tMin=0,tMax=0,tCur=0,playing=false,rafId=null,lastTs=0,PLAY_MS=22000;
 var districtLayer=null,districtLabelLayer=null,districtLayerByNum={},districtLabelByNum={},districtsVisible=true,selDistrict=null;
 var precinctLayer=null,precinctLabelLayer=null,precinctLabels=[],precinctsVisible=false;
+// Toggleable feature layer-groups + their visibility state
+var flightGroup=L.layerGroup().addTo(map),swathGroup=L.layerGroup().addTo(map),siteGroup=L.layerGroup().addTo(map);
+var flightsVisible=true,swathVisible=true,sitesVisible=true,launchVisible=true,launchRadiusLayer=null;
 
 function fmtMoney(n){n=Math.round(n);var neg=n<0;n=Math.abs(n);var s=n>=1000?'$'+(n/1000).toFixed(n%1000===0?0:1)+'k':'$'+n;return neg?'-'+s:s}
 function fmtTime(d){return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})}
@@ -502,8 +555,7 @@ function setDistrictsVisible(v){
   districtsVisible=v;
   if(districtLayer){if(v)districtLayer.addTo(map);else map.removeLayer(districtLayer);}
   updateDistrictLabels();
-  var btn=document.getElementById('districtBtn');
-  if(btn){btn.classList.toggle('active',v);btn.setAttribute('aria-pressed',v?'true':'false');}
+  setLayerRow('districts',v);
 }
 function highlightDistrict(dn){
   if(selDistrict&&districtLayerByNum[selDistrict]){districtLayerByNum[selDistrict].setStyle(distStyle(false));}
@@ -547,8 +599,34 @@ function setPrecinctsVisible(v){
   precinctsVisible=v;
   if(precinctLayer){if(v)precinctLayer.addTo(map);else map.removeLayer(precinctLayer);}
   if(precinctLabelLayer){if(v)precinctLabelLayer.addTo(map);else map.removeLayer(precinctLabelLayer);}
-  var btn=document.getElementById('precinctBtn');
-  if(btn){btn.classList.toggle('active',v);btn.setAttribute('aria-pressed',v?'true':'false');}
+  setLayerRow('precincts',v);
+}
+
+// ── Toggleable map-feature layers (flight paths, swath, sites, launch radius) ──
+function setFlightsVisible(v){
+  flightsVisible=v;
+  if(v)flightGroup.addTo(map);else map.removeLayer(flightGroup);
+  if(headLayer){if(v)headLayer.addTo(map);else map.removeLayer(headLayer);}
+  setLayerRow('flights',v);
+}
+function setSwathVisible(v){
+  swathVisible=v;
+  if(v)swathGroup.addTo(map);else map.removeLayer(swathGroup);
+  setLayerRow('swath',v);
+}
+function setSitesVisible(v){
+  sitesVisible=v;
+  if(v)siteGroup.addTo(map);else map.removeLayer(siteGroup);
+  setLayerRow('sites',v);
+}
+function setLaunchVisible(v){
+  launchVisible=v;
+  if(launchRadiusLayer){if(v)launchRadiusLayer.addTo(map);else map.removeLayer(launchRadiusLayer);}
+  setLayerRow('launch',v);
+}
+function setLayerRow(name,on){
+  var row=document.querySelector('.lyr-row[data-layer="'+name+'"]');
+  if(row){row.classList.toggle('on',on);row.setAttribute('aria-checked',on?'true':'false');}
 }
 function compBaseline(){
   var ks=Object.keys(demographics),n=ks.length;if(!n)return;
@@ -632,10 +710,21 @@ document.getElementById('panelClose').addEventListener('click',function(){
   highlightDistrict(null);
 });
 
-// ── Council district toggle ──
-document.getElementById('districtBtn').addEventListener('click',function(){setDistrictsVisible(!districtsVisible);});
-// ── Police precinct toggle ──
-document.getElementById('precinctBtn').addEventListener('click',function(){setPrecinctsVisible(!precinctsVisible);});
+// ── Layers menu (toggle every map feature on/off) ──
+(function(){
+  var btn=document.getElementById('layersBtn'),menu=document.getElementById('layersMenu');
+  var toggles={flights:setFlightsVisible,swath:setSwathVisible,sites:setSitesVisible,launch:setLaunchVisible,districts:setDistrictsVisible,precincts:setPrecinctsVisible};
+  function openMenu(o){menu.classList.toggle('show',o);btn.classList.toggle('active',o);btn.setAttribute('aria-expanded',o?'true':'false');}
+  btn.addEventListener('click',function(e){e.stopPropagation();openMenu(!menu.classList.contains('show'));});
+  menu.addEventListener('click',function(e){e.stopPropagation();});
+  document.addEventListener('click',function(){if(menu.classList.contains('show'))openMenu(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&menu.classList.contains('show'))openMenu(false);});
+  Array.prototype.forEach.call(menu.querySelectorAll('.lyr-row'),function(row){
+    function flip(){var fn=toggles[row.dataset.layer];if(fn)fn(!row.classList.contains('on'));}
+    row.addEventListener('click',flip);
+    row.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();flip();}});
+  });
+})();
 
 // PiP expand/collapse
 (function(){
@@ -792,7 +881,7 @@ function selectLocation(lat,lng,siteLabel){
 
 // Map click
 map.on('click',function(e){
-  if(e.originalEvent.target.closest('.iconbtn,.panel,.modal-bg,.hint,.pip,.headline,.timebar'))return;
+  if(e.originalEvent.target.closest('.iconbtn,.layers-menu,.panel,.modal-bg,.hint,.pip,.headline,.timebar'))return;
   selectLocation(e.latlng.lat,e.latlng.lng);
 });
 
@@ -887,7 +976,6 @@ function clipToConvex(subject,clip){
       s=e}}
   return out;
 }
-var launchRadiusLayer=null;
 function largestRing(rings){var best=null,bestA=-1;for(var i=0;i<rings.length;i++){var r=rings[i].map(function(p){return[p[1],p[0]]});var a=Math.abs(ringArea(r));if(a>bestA){bestA=a;best=r}}return best}
 // point-in-polygon (ray cast) for [lat,lng] points & rings
 function inPoly(pt,poly){var x=pt[0],y=pt[1],ins=false;for(var i=0,j=poly.length-1;i<poly.length;j=i++){var xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))ins=!ins}return ins}
@@ -920,7 +1008,8 @@ function buildLaunchRadius(){
   }else{
     L.polygon([ring],{color:'#f59e0b',weight:2,opacity:.95,dashArray:'6 5',fillColor:'#f59e0b',fillOpacity:.13,interactive:false}).addTo(grp);
   }
-  launchRadiusLayer=grp.addTo(map);
+  launchRadiusLayer=grp;
+  if(launchVisible)grp.addTo(map);
 }
 
 // ── Time scrubber ──────────────────────────────────────
@@ -980,7 +1069,7 @@ function setupScrubber(){
   if(!isFinite(tMin)||!isFinite(tMax)||tMax<=tMin)return;
   tCur=tMin;
   DRONE_HEAD_ICON=L.divIcon({className:'drone-head',html:'<div class="dot"></div>',iconSize:[12,12],iconAnchor:[6,6]});
-  headLayer=L.layerGroup().addTo(map);
+  headLayer=L.layerGroup();if(flightsVisible)headLayer.addTo(map);
   var bar=document.getElementById('timebar'),slider=document.getElementById('tbSlider'),
       playBtn=document.getElementById('tbPlay'),playIcon=document.getElementById('tbPlayIcon'),
       allBtn=document.getElementById('tbAll'),timeLbl=document.getElementById('tbTime'),statLbl=document.getElementById('tbStat');
@@ -1054,7 +1143,7 @@ Promise.all([
       title:s.name,
       riseOnHover:true,
       keyboard:false
-    }).addTo(map);
+    }).addTo(siteGroup);
     (function(site,type){
       marker.on('click',function(ev){
         L.DomEvent.stopPropagation(ev);
@@ -1069,8 +1158,8 @@ Promise.all([
   allFlights.forEach(function(f){var coords=exCoords(f.geometry);if(coords.length<2)return;var ll=coords.map(function(c){return[c[1],c[0]]});
     var simp=coords.filter(function(_,i){return i%3===0||i===coords.length-1});
     var swath=null;
-    if(simp.length>=2){try{var sw=bufLine(simp,SWATH_M);swath=L.polygon(sw,{color:'rgba(239,68,68,.2)',weight:0,fillColor:'rgba(239,68,68,.12)',fillOpacity:1,interactive:false}).addTo(map)}catch(e){}}
-    var line=L.polyline(ll,{color:'#ef4444',weight:2.5,opacity:0.85}).addTo(map);fb.extend(line.getBounds());
+    if(simp.length>=2){try{var sw=bufLine(simp,SWATH_M);swath=L.polygon(sw,{color:'rgba(239,68,68,.2)',weight:0,fillColor:'rgba(239,68,68,.12)',fillOpacity:1,interactive:false}).addTo(swathGroup)}catch(e){}}
+    var line=L.polyline(ll,{color:'#ef4444',weight:2.5,opacity:0.85}).addTo(flightGroup);fb.extend(line.getBounds());
     flightLayers.push({line:line,swath:swath,ll:ll,t0:+new Date(f.properties.takeoff),t1:+new Date(f.properties.landing),head:null});});
   buildLaunchRadius();
   setupScrubber();
