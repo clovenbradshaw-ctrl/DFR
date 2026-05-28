@@ -262,6 +262,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .hint{position:fixed;bottom:calc(20px + var(--safe-b));left:50%;transform:translateX(-50%);z-index:998;background:var(--surf);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:24px;padding:10px 18px;font-size:13px;color:var(--mut);box-shadow:0 6px 24px rgba(0,0,0,.5);display:flex;align-items:center;gap:8px;transition:opacity .3s,transform .3s;max-width:calc(100vw - 24px);text-align:center}
 .hint.hide{opacity:0;transform:translateX(-50%) translateY(10px);pointer-events:none}
 .hint svg{width:14px;height:14px;stroke:var(--acc);fill:none;stroke-width:2;flex-shrink:0}
+
+/* ── Council district overlay ────────────────────────── */
+.iconbtn.districts{top:calc(var(--hdr) + 64px + var(--safe-t))}
+.iconbtn.active{border-color:var(--acc);color:var(--acc);background:rgba(77,141,245,.16)}
+.dist-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.dist-label span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1;color:#bcd6ff;background:rgba(8,13,22,.74);border:1px solid rgba(77,141,245,.5);border-radius:5px;padding:2px 5px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.dist-label.sel span{color:#fff;background:rgba(77,141,245,.9);border-color:#bcd6ff}
+@media(max-width:768px){.dist-label span{font-size:10px;padding:1px 4px}}
 </style>
 </head>
 <body>
@@ -283,6 +291,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 
 <button class="iconbtn" id="aboutBtn" aria-label="About this map">
   <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+</button>
+
+<button class="iconbtn districts active" id="districtBtn" aria-label="Toggle council district boundaries" aria-pressed="true" title="Council districts">
+  <svg viewBox="0 0 24 24"><polygon points="1 6 8 3 16 6 23 3 23 18 16 21 8 18 1 21"/><line x1="8" y1="3" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="21"/></svg>
 </button>
 
 <div class="hint" id="hint">
@@ -345,6 +357,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
       <div class="legend-t">Legend</div>
       <div class="li"><div class="lsw" style="background:#ef4444"></div>Drone flight path</div>
       <div class="li"><div class="lsw" style="background:rgba(239,68,68,.3);height:8px"></div>~270 ft camera swath</div>
+      <div class="li"><div class="lsw" style="background:transparent;border:1px solid rgba(77,141,245,.7);height:11px;border-radius:2px"></div>Council district boundary</div>
       <div class="li"><div class="lci" style="background:#34d399"></div>School</div>
       <div class="li"><div class="lci" style="background:#a78bfa"></div>Childcare</div>
       <div class="li"><div class="lci" style="background:#06d6a0"></div>Playground</div>
@@ -379,6 +392,7 @@ map.on('zoomend',updateSiteIconScale);
 updateSiteIconScale();
 
 var allFlights=[],allSites=[],demographics={},baseline={},districtPolys={},clickMarker;
+var districtLayer=null,districtLabelLayer=null,districtLayerByNum={},districtLabelByNum={},districtsVisible=true,selDistrict=null;
 
 function fmtMoney(n){n=Math.round(n);var neg=n<0;n=Math.abs(n);var s=n>=1000?'$'+(n/1000).toFixed(n%1000===0?0:1)+'k':'$'+n;return neg?'-'+s:s}
 function fmtTime(d){return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})}
@@ -403,6 +417,51 @@ function sitesInFrame(lat,lng){
 }
 function pip(lat,lng,ring){var ins=false;for(var i=0,j=ring.length-1;i<ring.length;j=i++){var yi=ring[i][0],xi=ring[i][1],yj=ring[j][0],xj=ring[j][1];if(((yi>lng)!==(yj>lng))&&(lat<(xj-xi)*(lng-yi)/(yj-yi)+xi))ins=!ins}return ins}
 function findDist(lat,lng){for(var dn in districtPolys){for(var r=0;r<districtPolys[dn].length;r++){if(pip(lat,lng,districtPolys[dn][r]))return dn}}return null}
+
+// ── Council district overlay (boundaries + labels) ──
+function distStyle(sel){return{color:sel?'#9cc3ff':'#4d8df5',weight:sel?2.6:1.3,opacity:sel?.95:.5,fill:true,fillColor:'#4d8df5',fillOpacity:sel?.12:.035};}
+function buildDistrictOverlay(gj){
+  districtLayer=L.geoJSON(gj,{
+    interactive:false,
+    style:function(){return distStyle(false)},
+    onEachFeature:function(f,layer){
+      var dn=(f.properties.DistrictName||'').replace(/\D/g,'');
+      if(!dn)return;
+      districtLayerByNum[dn]=layer;
+      var c=layer.getBounds().getCenter();
+      districtLabelByNum[dn]=L.marker(c,{interactive:false,keyboard:false,icon:L.divIcon({className:'dist-label',html:'<span>'+dn+'</span>',iconSize:[30,18],iconAnchor:[15,9]})});
+    }
+  }).addTo(map);
+  districtLabelLayer=L.layerGroup(Object.keys(districtLabelByNum).map(function(k){return districtLabelByNum[k]}));
+  map.on('zoomend',updateDistrictLabels);
+  updateDistrictLabels();
+}
+function updateDistrictLabels(){
+  if(!districtLabelLayer)return;
+  var show=districtsVisible&&map.getZoom()>=12;
+  if(show&&!map.hasLayer(districtLabelLayer))districtLabelLayer.addTo(map);
+  else if(!show&&map.hasLayer(districtLabelLayer))map.removeLayer(districtLabelLayer);
+}
+function setDistrictsVisible(v){
+  districtsVisible=v;
+  if(districtLayer){if(v)districtLayer.addTo(map);else map.removeLayer(districtLayer);}
+  updateDistrictLabels();
+  var btn=document.getElementById('districtBtn');
+  if(btn){btn.classList.toggle('active',v);btn.setAttribute('aria-pressed',v?'true':'false');}
+}
+function highlightDistrict(dn){
+  if(selDistrict&&districtLayerByNum[selDistrict]){districtLayerByNum[selDistrict].setStyle(distStyle(false));}
+  if(selDistrict&&districtLabelByNum[selDistrict]){var pe=districtLabelByNum[selDistrict].getElement();if(pe)pe.classList.remove('sel');}
+  selDistrict=null;
+  if(dn&&districtLayerByNum[dn]){
+    var lyr=districtLayerByNum[dn];
+    lyr.setStyle(distStyle(true));
+    if(lyr.bringToFront)lyr.bringToFront();
+    var le=districtLabelByNum[dn]&&districtLabelByNum[dn].getElement();
+    if(le)le.classList.add('sel');
+    selDistrict=dn;
+  }
+}
 function compBaseline(){
   var ks=Object.keys(demographics),n=ks.length;if(!n)return;
   var b={pct_white:0,pct_black:0,pct_hispanic:0,pct_asian:0,pct_two_or_more:0,pct_under_18:0,pct_65_and_over:0,median_household_income:0,per_capita_income:0,pct_total_poverty:0,pct_child_poverty:0,median_owner_value:0,median_monthly_rent:0,pct_renter_cost_burdened_35plus:0,unemployment_rate:0,median_age:0,population:0};
@@ -419,6 +478,7 @@ function setPanelState(s){
 function showPanel(lat,lng){
   var dn=findDist(lat,lng);
   document.getElementById('hint').classList.add('hide');
+  highlightDistrict(dn&&CM[dn]?dn:null);
   if(!dn||!CM[dn]){
     document.getElementById('panel').classList.remove('show');
     return;
@@ -481,7 +541,11 @@ function showPanel(lat,lng){
 document.getElementById('panelClose').addEventListener('click',function(){
   document.getElementById('panel').classList.remove('show');
   if(clickMarker){map.removeLayer(clickMarker);clickMarker=null}
+  highlightDistrict(null);
 });
+
+// ── Council district toggle ──
+document.getElementById('districtBtn').addEventListener('click',function(){setDistrictsVisible(!districtsVisible);});
 
 // PiP expand/collapse
 (function(){
@@ -542,6 +606,7 @@ document.getElementById('panelClose').addEventListener('click',function(){
     if(dy>180&&s==='peek'){
       document.getElementById('panel').classList.remove('show');
       if(clickMarker){map.removeLayer(clickMarker);clickMarker=null}
+      highlightDistrict(null);
       return;
     }
     setPanelState(s);
@@ -713,6 +778,7 @@ Promise.all([
 ]).then(function(res){
   demographics=(res[2].districts||{});compBaseline();
   if(res[3].features)res[3].features.forEach(function(f){var dn=(f.properties.DistrictName||'').replace(/\D/g,'');if(!dn)return;var geo=f.geometry;districtPolys[dn]=geo.type==='MultiPolygon'?geo.coordinates.flat():geo.coordinates});
+  if(res[3].features&&res[3].features.length)buildDistrictOverlay(res[3]);
 
   allSites=res[0].sites||[];
   var typeLabel={school:'School',childcare:'Childcare',playground:'Playground',worship:'Place of worship'};
