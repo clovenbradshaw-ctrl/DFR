@@ -487,7 +487,7 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
     <h2 id="exportTitle">Export the data</h2>
     <p>Download the underlying data behind this map — <strong>where the drones flew</strong>, <strong>where the sensitive sites are</strong>, and the <strong>demographic breakdown</strong> of every council district they passed over. Files are built in your browser; nothing is uploaded.</p>
     <div class="export-list" id="exportList"></div>
-    <p class="export-note">Sources: MNPD DFR flight logs · US Census ACS · Metro Nashville GIS · OpenStreetMap. CSV opens in any spreadsheet; GeoJSON loads in QGIS, Mapbox, geojson.io, etc.</p>
+    <p class="export-note">Demographics: <strong>U.S. Census Bureau, American Community Survey (ACS) 2017–2021 5-Year Estimates</strong>, compiled by Metro Social Services (Know Your Community 2023). Flights: MNPD DFR logs · Sites: Metro Nashville GIS &amp; OpenStreetMap. Every exported file carries its source citation. CSV opens in any spreadsheet; GeoJSON loads in QGIS, Mapbox, geojson.io, etc.</p>
   </div>
 </div>
 
@@ -530,7 +530,7 @@ map.on('zoom',function(){updateSiteIconScale();});            // live pinch zoom
 map.on('zoomend',function(){updateSiteIconScale();});
 updateSiteIconScale();
 
-var allFlights=[],allSites=[],demographics={},baseline={},districtPolys={},clickMarker;
+var allFlights=[],allSites=[],demographics={},demoMeta={},baseline={},districtPolys={},clickMarker;
 var flightLayers=[],headLayer=null,timeMode=false,tMin=0,tMax=0,tCur=0,playing=false,rafId=null,lastTs=0,PLAY_MS=22000;
 var districtLayer=null,districtLabelLayer=null,districtLayerByNum={},districtLabelByNum={},districtsVisible=true,selDistrict=null;
 var precinctLayer=null,precinctLabelLayer=null,precinctLabels=[],precinctsVisible=false;
@@ -946,6 +946,36 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   function cell(v){if(v==null)v='';v=String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
   function csv(rows){return rows.map(function(r){return r.map(cell).join(',');}).join('\r\n');}
 
+  // ── Source / provenance ──
+  var SRC_FLIGHTS='MNPD Drone-as-First-Responder flight logs (publicly disclosed)';
+  var SRC_SITES='Metro Nashville GIS · OpenStreetMap';
+  function acsSource(){return demoMeta.data_source||'U.S. Census Bureau, American Community Survey (ACS) 5-Year Estimates';}
+  function demoSourceObj(){
+    return {
+      data_source:acsSource(),
+      compiled_by:demoMeta.source||'Metropolitan Social Services, Know Your Community',
+      citation:demoMeta.citation||'',
+      geography:demoMeta.geography||'',
+      notes:demoMeta.notes||'',
+      generated:new Date().toISOString()
+    };
+  }
+  // Leading rows that put the source citation at the top of a CSV
+  function srcRows(lines){
+    var r=[];lines.forEach(function(l){if(l)r.push([l]);});r.push([]);return r;
+  }
+  function demoSrcRows(){
+    var m=demoSourceObj();
+    return srcRows([
+      'Source: '+m.data_source,
+      m.compiled_by?'Compiled by: '+m.compiled_by:'',
+      m.citation?'Citation: '+m.citation:'',
+      m.geography?'Geography: '+m.geography:'',
+      m.notes?'Notes: '+m.notes:'',
+      'Generated: '+m.generated
+    ]);
+  }
+
   // Distinct drone flights whose path passes through each council district
   function flightsPerDistrict(){
     var counts={};
@@ -957,9 +987,10 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   }
 
   // ── Flight paths ──
-  function flightsGeoJSON(){return JSON.stringify({type:'FeatureCollection',features:allFlights},null,2);}
+  function flightsGeoJSON(){return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_FLIGHTS,generated:new Date().toISOString()},features:allFlights},null,2);}
   function flightsCSV(){
-    var rows=[['flight','takeoff','landing','duration_min','start_lat','start_lng','end_lat','end_lng','num_points']];
+    var rows=srcRows(['Source: '+SRC_FLIGHTS,'Generated: '+new Date().toISOString()]);
+    rows.push(['flight','takeoff','landing','duration_min','start_lat','start_lng','end_lat','end_lng','num_points']);
     allFlights.forEach(function(f,idx){
       var c=exCoords(f.geometry),p=f.properties||{},t0=new Date(p.takeoff),t1=new Date(p.landing);
       var s=c[0]||[],e=c[c.length-1]||[];
@@ -970,12 +1001,13 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
 
   // ── Sensitive sites (where they are) ──
   function sitesGeoJSON(){
-    return JSON.stringify({type:'FeatureCollection',features:allSites.filter(function(s){return s.lat&&s.lng;}).map(function(s){
+    return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_SITES,generated:new Date().toISOString()},features:allSites.filter(function(s){return s.lat&&s.lng;}).map(function(s){
       return {type:'Feature',geometry:{type:'Point',coordinates:[s.lng,s.lat]},properties:{name:s.name,type:s.type||'',address:s.address||'',denomination:s.denomination||''}};
     })},null,2);
   }
   function sitesCSV(){
-    var rows=[['name','type','address','denomination','lat','lng']];
+    var rows=srcRows(['Source: '+SRC_SITES,'Generated: '+new Date().toISOString()]);
+    rows.push(['name','type','address','denomination','lat','lng']);
     allSites.forEach(function(s){rows.push([s.name,s.type||'',s.address||'',s.denomination||'',s.lat!=null?s.lat:'',s.lng!=null?s.lng:'']);});
     return csv(rows);
   }
@@ -995,7 +1027,8 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       d.employment.unemployment_rate];
   }
   function demoCSV(){
-    var fpd=flightsPerDistrict(),rows=[DEMO_HEAD];
+    var fpd=flightsPerDistrict(),rows=demoSrcRows();
+    rows.push(DEMO_HEAD);
     Object.keys(demographics).sort(function(a,b){return (+a)-(+b);}).forEach(function(dn){
       rows.push(demoRow('District '+dn,demographics[dn],CM[dn]||{},fpd[dn]||0));
     });
@@ -1011,7 +1044,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     return csv(rows);
   }
   function demoJSON(){
-    var fpd=flightsPerDistrict(),out={generated:new Date().toISOString(),county_baseline:baseline,districts:{}};
+    var fpd=flightsPerDistrict(),out={generated:new Date().toISOString(),source:demoSourceObj(),county_baseline:baseline,districts:{}};
     Object.keys(demographics).forEach(function(dn){
       var d=demographics[dn],cm=CM[dn]||{},copy={};
       for(var k in d)copy[k]=d[k];
@@ -1026,9 +1059,14 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     return JSON.stringify({
       generated:new Date().toISOString(),
       title:'Nashville DFR Surveillance Footprint',
+      sources:{
+        flight_paths:SRC_FLIGHTS,
+        sensitive_sites:SRC_SITES,
+        demographics:demoSourceObj()
+      },
       flight_paths:{type:'FeatureCollection',features:allFlights},
       sensitive_sites:allSites,
-      demographics:{county_baseline:baseline,districts:demographics},
+      demographics:{source:demoSourceObj(),county_baseline:baseline,districts:demographics},
       council_members:CM
     },null,2);
   }
@@ -1049,7 +1087,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
        {ext:'CSV',fn:function(){dl('dfr_sensitive_sites_'+stamp()+'.csv',sitesCSV(),'text/csv');}}
      ]},
     {name:'Demographic breakdowns',
-     count:function(){return Object.keys(demographics).length+' council districts · race, income, poverty, housing';},
+     count:function(){return Object.keys(demographics).length+' council districts · ACS 5-yr: race, income, poverty, housing';},
      ready:function(){return Object.keys(demographics).length>0;},
      formats:[
        {ext:'CSV',fn:function(){dl('dfr_district_demographics_'+stamp()+'.csv',demoCSV(),'text/csv');}},
@@ -1326,7 +1364,7 @@ Promise.all([
   pfetch(DIST_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}}),
   pfetch(PRECINCT_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}})
 ]).then(function(res){
-  demographics=(res[2].districts||{});compBaseline();
+  demographics=(res[2].districts||{});demoMeta=(res[2].metadata||{});compBaseline();
   if(res[3].features)res[3].features.forEach(function(f){var dn=(f.properties.DistrictName||'').replace(/\D/g,'');if(!dn)return;var geo=f.geometry;districtPolys[dn]=geo.type==='MultiPolygon'?geo.coordinates.flat():geo.coordinates});
   if(res[3].features&&res[3].features.length)buildDistrictOverlay(res[3]);
   if(res[4]&&res[4].features&&res[4].features.length)buildPrecinctOverlay(res[4]);
