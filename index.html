@@ -988,6 +988,8 @@ function setupScrubber(){
 
   function paint(){var pct=(+slider.value)/10;slider.style.background='linear-gradient(90deg,var(--acc) '+pct+'%,rgba(255,255,255,.14) '+pct+'%)';}
   function syncSlider(){slider.value=Math.round((tCur-tMin)/(tMax-tMin)*1000);paint();}
+  // Current real-world time, clamped into the flight window
+  function liveNow(){return Math.max(tMin,Math.min(tMax,Date.now()));}
   function stop(){playing=false;playBtn.classList.remove('playing');playIcon.innerHTML=ICON_PLAY;if(rafId){cancelAnimationFrame(rafId);rafId=null;}}
   function enterTimeMode(){if(timeMode)return;timeMode=true;allBtn.classList.remove('active');}
   function showAll(){
@@ -1007,7 +1009,8 @@ function setupScrubber(){
   }
   function play(){
     enterTimeMode();
-    if(tCur>=tMax)tCur=tMin;
+    tCur=tMin;                       // always restart from the beginning — no flights flown yet
+    applyTime(tCur);syncSlider();
     playing=true;playBtn.classList.add('playing');playIcon.innerHTML=ICON_PAUSE;
     lastTs=0;rafId=requestAnimationFrame(frame);
   }
@@ -1018,8 +1021,13 @@ function setupScrubber(){
     tCur=tMin+(+slider.value)/1000*(tMax-tMin);
     paint();applyTime(tCur);
   });
-  statLbl.textContent=flightLayers.length+' total';
-  paint();
+  // Start positioned at "now" (clamped into the flight window), in time mode —
+  // past flights read as flown, anything currently airborne grows live.
+  timeMode=true;
+  allBtn.classList.remove('active');
+  tCur=liveNow();
+  applyTime(tCur);
+  syncSlider();
   bar.classList.add('show');
   document.body.classList.add('timebar-on');
 }
