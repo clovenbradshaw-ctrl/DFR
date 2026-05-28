@@ -33,6 +33,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .headline-bullet{display:flex;gap:8px;margin-top:9px;font-size:12.5px;color:var(--mut);line-height:1.5;align-items:flex-start}
 .headline-bullet::before{content:'';flex-shrink:0;width:5px;height:5px;border-radius:50%;background:#ef4444;margin-top:7px;opacity:.85}
 .headline-bullet strong{color:#dce4f0;font-weight:600}
+.tipa-ref{font:inherit;background:transparent;border:none;color:#dce4f0;font-weight:600;cursor:pointer;padding:0 1px;border-bottom:1px dotted rgba(252,165,165,.6);transition:color .15s,border-bottom-color .15s;line-height:inherit}
+.tipa-ref:hover,.tipa-ref:focus-visible{color:#fca5a5;border-bottom-color:#fca5a5;outline:none}
+.tipa-ref::after{content:'';display:inline-block;width:4px;height:4px;border-radius:50%;background:currentColor;margin:0 0 7px 4px;opacity:.55;vertical-align:middle}
 .headline-toggle{position:absolute;top:calc(10px + var(--safe-t));right:12px;width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;z-index:2}
 .headline-toggle:hover{background:rgba(255,255,255,.1)}
 .headline-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
@@ -268,7 +271,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
   <div class="headline-mark">LIVE&nbsp;&middot;&nbsp;DFR</div>
   <div class="headline-body">
     <h1>MNPD Drone Trial: Is your child's <em>playground, school</em>, your <em>home</em>, or your <em>place of worship</em> being recorded?</h1>
-    <div class="headline-bullet"><div><strong>These are the actual flight paths</strong> from MNPD's Drone-as-First-Responder trial, which began <strong>May 26</strong>. MNPD says they're not sharing the footage &mdash; but they have no control over what their vendor does with it. Under <strong>TIPA</strong>, the footage can be shared with any law enforcement agency, and local government is restricted from limiting that.</div></div>
+    <div class="headline-bullet"><div><strong>These are the actual flight paths</strong> from MNPD's Drone-as-First-Responder trial, which began <strong>May 26</strong>. MNPD says they're not sharing the footage &mdash; but they have no control over what their vendor does with it. Under <button class="tipa-ref" id="tipaRef" type="button" aria-label="What is TIPA? Tap for explanation" aria-haspopup="dialog">TIPA</button>, the footage can be shared with any law enforcement agency, and local government is preempted from limiting that.</div></div>
     <div class="headline-collapsed-text">MNPD Drone Trial &middot; actual flight paths since <em>May 26</em>. <span style="color:var(--mut)">Tap to read more</span></div>
   </div>
   <button class="headline-toggle" id="headlineToggle" aria-label="Collapse banner" aria-expanded="true">
@@ -313,6 +316,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
       <div class="row v"><span class="k">Real drone</span><span>~12× sharper · 1.2 cm/px</span></div>
     </div>
     <span class="warn">Actual MNPD drone footage is sharp enough to identify faces and license plates — far sharper than this stand-in.</span>
+  </div>
+</div>
+
+<!-- TIPA modal -->
+<div class="modal-bg" id="tipaBg">
+  <div class="modal" role="dialog" aria-labelledby="tipaTitle" aria-modal="true">
+    <button class="close" id="tipaClose" aria-label="Close">&times;</button>
+    <h2 id="tipaTitle">Why TIPA blocks Nashville from limiting this</h2>
+    <p>The <strong>Tennessee Information Protection Act</strong> (eff. July 1, 2025) reads on its face as a consumer-privacy statute. Two of its provisions matter here:</p>
+    <p><strong>&sect;&nbsp;47-18-3208(a)(3)</strong> &mdash; the law-enforcement exemption. A data <em>controller or processor</em> (MNPD's drone vendor, Skydio) may disclose personal data to any law-enforcement agency whenever it &ldquo;reasonably and in good faith&rdquo; believes a law or rule may have been violated. No warrant. No oversight trigger. No Metro agency in the loop.</p>
+    <p><strong>&sect;&nbsp;47-18-3315</strong> &mdash; preemption of conflicting provisions. Any local ordinance that conflicts with TIPA is preempted by state law.</p>
+    <p><strong>Combined effect:</strong> a Metro ordinance trying to bar Skydio from handing MNPD drone footage to TBI, ICE, DEA, or any other agency would conflict with the state-level permission, and so would be preempted. MNPD&rsquo;s pledge that it won&rsquo;t share the footage does not bind the vendor &mdash; and the city is not legally able to make it.</p>
+    <p style="font-size:12px;color:var(--mut2);margin-top:14px">Full analysis: <a href="https://readrichtext.substack.com/p/fallout-from-the-surveillance-mou" target="_blank" rel="noopener" style="color:var(--acc);text-decoration:none;border-bottom:1px dotted var(--acc)">Fallout from the {Surveillance MOU} &middot; Rich Text</a></p>
   </div>
 </div>
 
@@ -631,6 +647,19 @@ function closeAbout(){document.getElementById('aboutBg').classList.remove('show'
 document.getElementById('aboutBtn').addEventListener('click',openAbout);
 document.getElementById('aboutClose').addEventListener('click',closeAbout);
 document.getElementById('aboutBg').addEventListener('click',function(e){if(e.target===this)closeAbout()});
+
+// ── TIPA modal ──
+(function(){
+  var bg=document.getElementById('tipaBg');
+  var ref=document.getElementById('tipaRef');
+  var closeBtn=document.getElementById('tipaClose');
+  function open(e){if(e){e.stopPropagation();e.preventDefault()}bg.classList.add('show')}
+  function shut(){bg.classList.remove('show')}
+  ref.addEventListener('click',open);
+  closeBtn.addEventListener('click',shut);
+  bg.addEventListener('click',function(e){if(e.target===this)shut()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&bg.classList.contains('show'))shut()});
+})();
 
 // ── Headline collapse + auto-size ──
 (function(){
