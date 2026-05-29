@@ -87,7 +87,10 @@ function endpoints(geom) {
 export function splitFeature(feature) {
   const p = feature.properties || {};
   const geom = feature.geometry || null;
-  const { start, end, npts } = endpoints(geom);
+  // Recompute endpoints from geometry when present; otherwise trust any
+  // endpoint fields already on the record (re-importing our own NDJSON).
+  const ep = geom ? endpoints(geom)
+                  : { start: p.start_coords ?? null, end: p.end_coords ?? null, npts: p.num_points ?? 0 };
   const takeoff = p.takeoff ?? null;
   const landing = p.landing ?? null;
   const meta = {
@@ -96,16 +99,29 @@ export function splitFeature(feature) {
     flight_purpose: p.flight_purpose || '',
     takeoff,
     landing,
-    duration_min: (takeoff && landing) ? +((landing - takeoff) / 60000).toFixed(1) : null,
-    object_id: p.ObjectId ?? null,
+    duration_min: (takeoff && landing) ? +((landing - takeoff) / 60000).toFixed(1) : (p.duration_min ?? null),
+    object_id: p.ObjectId ?? p.object_id ?? null,
     organization_id: p.organization_id || '',
-    shape_length: p.Shape__Length ?? null,
-    geometry_type: geom ? geom.type : '',
-    num_points: npts,
-    start_coords: start, // [lng, lat]
-    end_coords: end,
+    shape_length: p.Shape__Length ?? p.shape_length ?? null,
+    geometry_type: geom ? geom.type : (p.geometry_type || ''),
+    num_points: ep.npts,
+    start_coords: ep.start, // [lng, lat]
+    end_coords: ep.end,
   };
   return { meta, geometry: geom };
+}
+
+/**
+ * Normalise a GeoJSON Feature *or* an already-flat row/record into the canonical
+ * flight record (metadata + inline geometry). Idempotent: re-importing a record
+ * this function produced yields the same record.
+ */
+export function toRecord(el) {
+  const feature = el && el.type === 'Feature'
+    ? el
+    : { properties: (el && el.properties) || el, geometry: (el && el.geometry) || null };
+  const { meta, geometry } = splitFeature(feature);
+  return { ...meta, geometry: geometry || null };
 }
 
 /** Stable identity for a flight feature (used for dedup against fold state). */

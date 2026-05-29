@@ -28,15 +28,18 @@ input,select{font:inherit;background:var(--surf);color:var(--txt);
 label{display:block;font-size:11px;color:var(--mut);margin:8px 0 3px;text-transform:uppercase;letter-spacing:.04em}
 .hidden{display:none!important}
 
-/* ── login ── */
-#login{position:fixed;inset:0;display:grid;place-items:center;
+/* ── login + hydration gate (shared overlay) ── */
+#login,#hydrateGate{position:fixed;inset:0;display:grid;place-items:center;
   background:radial-gradient(1200px 800px at 50% -10%,#16202e,#0a0c10);z-index:1000}
-#login .card{width:360px;max-width:92vw;background:var(--surf);border:1px solid var(--line);
+#hydrateGate{z-index:1100}
+#login .card,#hydrateGate .card{width:360px;max-width:92vw;background:var(--surf);border:1px solid var(--line);
   border-radius:16px;padding:26px 24px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
-#login h1{margin:0 0 2px;font-size:20px}
-#login .sub{color:var(--mut);font-size:12px;margin-bottom:14px}
-#login .status{margin-top:12px;font-size:12px;color:var(--mut);min-height:16px;font-family:var(--mono)}
-#login .status.err{color:var(--err)}
+#login h1,#hydrateGate h1{margin:0 0 2px;font-size:20px}
+#login .sub,#hydrateGate .sub{color:var(--mut);font-size:12px;margin-bottom:14px}
+#login .sub code,#hydrateGate .sub code{background:var(--surf2);padding:1px 4px;border-radius:4px}
+#login .status,#hydrateGate .status{margin-top:12px;font-size:12px;color:var(--mut);min-height:16px;font-family:var(--mono)}
+#login .status.err,#hydrateGate .status.err{color:var(--err)}
+#login .status.ok,#hydrateGate .status.ok{color:var(--ok)}
 .row{display:flex;gap:8px;align-items:center}
 .chk{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:12px;color:var(--mut)}
 .chk input{width:auto}
@@ -119,9 +122,9 @@ tbody tr:hover{background:var(--surf2)}
         <h2>Dataset</h2>
         <div class="stat-grid">
           <div class="stat"><div class="n" id="sFlights">0</div><div class="l">flights</div></div>
-          <div class="stat"><div class="n" id="sSites">0</div><div class="l">sites</div></div>
-          <div class="stat"><div class="n" id="sGeom">0</div><div class="l">path blocks</div></div>
-          <div class="stat"><div class="n" id="sSnap">0</div><div class="l">poll snapshots</div></div>
+          <div class="stat"><div class="n" id="sGeom">0</div><div class="l">with path</div></div>
+          <div class="stat"><div class="n" id="sSnap">0</div><div class="l">snapshot v</div></div>
+          <div class="stat"><div class="n" id="sSites">0</div><div class="l">unpublished</div></div>
         </div>
         <div class="hint" id="span"></div>
       </div>
@@ -141,21 +144,16 @@ tbody tr:hover{background:var(--surf2)}
       </div>
 
       <div class="panel">
-        <h2>Hydrate</h2>
-        <div class="hint">Load a historical dataset (GeoJSON / NDJSON, optionally
-          gzip). Streamed and decompressed in-browser — never fully buffered.</div>
-        <label>Dataset URL</label>
-        <input id="hydrateUrl" placeholder="https://…/flight_paths.geojson.gz">
-        <label>Row cap (safety valve)</label>
-        <input id="hydrateMax" type="number" min="1" value="5000">
+        <h2>Dataset sync</h2>
+        <div class="hint" id="syncStatus">—</div>
         <div class="row" style="margin-top:10px">
-          <button id="hydrateUrlBtn" class="primary" style="flex:1">Load from URL</button>
-          <button id="hydrateAbort" disabled>Stop</button>
+          <button id="publishNow" class="primary" style="flex:1">Publish snapshot</button>
+          <button id="syncNow">Sync</button>
         </div>
-        <label style="margin-top:12px">…or a local file</label>
-        <input id="hydrateFile" type="file" accept=".json,.geojson,.ndjson,.gz">
-        <div class="bar"><i id="hydrateBar"></i></div>
-        <div class="hint" id="hydrateProg"></div>
+        <button id="rehydrateBtn" style="margin-top:8px;width:100%">Import more…</button>
+        <div class="hint" style="margin-top:8px">Updates live in OPFS as a binary
+          blob; snapshots upload to Matrix media and bump one room-state pointer
+          — peers download only when the version advances.</div>
       </div>
 
       <div class="panel">
@@ -172,6 +170,34 @@ tbody tr:hover{background:var(--surf2)}
       <div class="view" id="mapView"><div id="map"></div></div>
       <div class="view hidden" id="tableView"></div>
     </section>
+  </div>
+</div>
+
+<!-- ── hydration gate (first run per dataset; also reused for "import more") ── -->
+<div id="hydrateGate" class="hidden">
+  <div class="card">
+    <h1 id="gateTitle">Hydrate this dataset</h1>
+    <div class="sub">This dataset hasn't been loaded yet. Point it at the
+      hydration file (hosted elsewhere for now) or pick a local copy. Accepts
+      JSONL/GeoJSON or a binary (<code>.gz</code>) snapshot. It's converted to a
+      compact binary, cached in OPFS, and uploaded to Matrix media if it fits.</div>
+    <label>Hydration file URL</label>
+    <input id="gateUrl" placeholder="https://…/dfr.jsonl  (or .geojson / .gz)">
+    <label>Format</label>
+    <select id="gateFormat">
+      <option value="auto">Auto-detect</option>
+      <option value="jsonl">JSONL / NDJSON</option>
+      <option value="binary">Binary (.gz NDJSON)</option>
+    </select>
+    <label style="margin-top:10px">…or a local file</label>
+    <input id="gateFile" type="file" accept=".json,.geojson,.ndjson,.jsonl,.gz,.bin">
+    <div class="row" style="margin-top:14px">
+      <button id="gateLoad" class="primary" style="flex:1">Load</button>
+      <button id="gateStop" disabled>Stop</button>
+      <button id="gateSkip" title="Start empty and let the scraper fill it">Skip</button>
+    </div>
+    <div class="bar"><i id="gateBar"></i></div>
+    <div id="gateStatus" class="status"></div>
   </div>
 </div>
 

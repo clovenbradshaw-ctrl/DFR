@@ -18,53 +18,60 @@ https://<pages-domain>/explorer/   ← this app
 - **Sign in with Matrix.** Bring your own homeserver (default `matrix.org`).
   No backend, no API keys — your account *is* the auth, an encrypted room *is*
   the database.
-- **Explore the data.** A Leaflet map of flight start points (click a flight to
-  lazily fetch + draw its full path) and sensitive sites, plus a sortable table
-  and live dataset stats.
-- **Run the scraper in the background.** A browser-native port of
-  `dfr_scraper.py`: it polls Skydio's ArcGIS FeatureServer on an interval *on
-  your machine*, diffs against flights already recorded, and writes each new
-  flight into the room.
-- **Hydrate from history.** Point it at a large (optionally gzip) GeoJSON /
-  NDJSON dataset by URL or local file; it is streamed and decompressed
-  in-browser (never fully buffered) and recorded into the room.
+- **Hydrate once.** On first open, a gate asks for the hydration file (hosted
+  elsewhere for now). It accepts **JSONL / GeoJSON** (streamed + gunzipped
+  in-browser, never fully buffered) **or a binary `.gz` snapshot**. The data is
+  converted to a compact binary, cached in OPFS, and uploaded to Matrix media
+  if it fits. The completion status is saved in **room state**, so no client
+  asks again. The gate keeps asking until it succeeds.
+- **Explore the data.** A Leaflet map of flight start points (click to draw the
+  full path), a sortable table, and live stats — all reading the in-memory
+  working set, so it's fast.
+- **Self-update in the background.** A browser port of `dfr_scraper.py` polls
+  Skydio's ArcGIS FeatureServer on your machine, diffs against the working set,
+  and appends new flights — **without spamming Matrix** (see below).
 
-## How an update is recorded
+## The data model — binary blob, not per-row events
 
-Per the requirement, every update is recorded **as either a block to Matrix
-media or as in-room events**:
+The dataset is **one gzip-NDJSON binary blob** (flight metadata *and* path
+geometry, inline). It lives in three places:
 
-| Part of a flight | Recorded as |
+| Where | Role |
 |---|---|
-| Path geometry (bulky — thousands of vertices) | an **encrypted Matrix media block** (`uploadEncrypted`), referenced by `DEF geometry = {__media:2,…}` |
-| Lean metadata (id, purpose, takeoff/landing, endpoints…) | **in-room events** — `INS flight {…}` |
-| Each scraper poll | an in-room `INS snapshot {…}` (provenance) |
+| **OPFS** (vault-encrypted, one file per room) | the fast local working set — written on every local change, read once on open |
+| **Matrix media** (encrypted, when within the server's upload limit) | the durable, shareable copy |
+| **a single room-state event** (`org.dfr.explorer.dataset`) | the pointer: hydration status, version, count, the media ref / external URL |
 
-State is never stored: it is always `fold(timeline)`. The room timeline is the
-audit trail; reloads rehydrate from it, and the scraper's diff resumes where it
-left off.
+This is deliberate. A naïve "one INS event per flight" would flood the timeline
+and force a fold over thousands of rows on every open. Instead:
+
+- **Scraped updates** append to the OPFS blob **instantly** (no Matrix write).
+- A Matrix **snapshot** (one media upload + one room-state pointer bump) is
+  published only when it's worth it — `DataStore`'s threshold/interval throttle
+  (default: 25 new flights, or 30 min) — so the room never fills with noise.
+- **Peers sync intelligently**: a client downloads a new snapshot only when the
+  pointer's `version` is ahead of its own, and `getMediaBytes` serves the OPFS
+  mirror first, so an up-to-date client never hits the network.
 
 ## Architecture
 
 This app **mirrors the bare-metal-eo-matrix-app foundation** — only its basic
-Matrix **auth** and event-sourced **database** logic. Those modules are copied
-verbatim into [`src/`](./src) and treated as a library (do not fork them; see
-`BUILDING.md` in the foundation repo). All DFR-specific code lives in
+Matrix **auth** and **database/storage** logic (client, vault, rooms, media,
+OPFS, binary `pack`). Those modules are copied verbatim into [`src/`](./src) and
+treated as a library (do not fork them). All DFR-specific code lives in
 [`app/`](./app):
 
 | File | Role |
 |---|---|
-| `app/dfr.js` | The interop contract: namespace `org.dfr.explorer`, entity types (`flight`/`site`/`snapshot`/`dataset`), field paths, schema-as-log, the ArcGIS feed URL, feature↔record split. |
-| `app/recorder.js` | The shared write path: geometry → media block, metadata → INS/DEF events. |
-| `app/scraper.js` | The background poller (timer-driven, survives reloads via the room). |
-| `app/hydrate.js` | Streaming dataset ingestion (gzip-aware), built on `jsonstream.js`. |
-| `app/jsonstream.js` | Dependency-free streaming JSON/NDJSON reader (unit-tested). |
-| `app/selectors.js` | Pure projections of fold state into views. |
-| `app/mapview.js` | Leaflet rendering. |
-| `app/main.js` | Bootstrap + UI wiring: auth → room → `fold(timeline)` → render → emit. |
-
-The loop is exactly the foundation's: **`state = fold(timeline); UI =
-render(state); action = emit(operator)`.**
+| `app/dfr.js` | Domain: namespace `org.dfr.explorer`, the ArcGIS feed URL, feature→record normalization (`toRecord`). |
+| `app/packset.js` | The dataset codec: flights ⇄ gzip-NDJSON, merge/dedupe, hashing. Unit-tested. |
+| `app/opfsbin.js` | Vault-encrypted OPFS persistence of the blob, one file per room. |
+| `app/roomstate.js` | The single room-state pointer (status + version + blob ref). |
+| `app/datastore.js` | Orchestrates working set ↔ OPFS ↔ media ↔ pointer; hydration, publish (throttled), intelligent sync. |
+| `app/scraper.js` | Background updater → `DataStore.addFlights` + `maybePublish`. |
+| `app/jsonstream.js` | Dependency-free streaming JSON/NDJSON reader (gzip-aware). Unit-tested. |
+| `app/selectors.js` / `app/mapview.js` | Pure projections + Leaflet rendering of the working set. |
+| `app/main.js` | Bootstrap + UI wiring: auth → open room → load OPFS → sync → render. |
 
 ## Build & deploy
 
@@ -82,17 +89,23 @@ regenerated `../explorer`.
 
 ## The hydration file
 
-The full historical dataset (a multi-GB compressed JSON) is loaded **at
-runtime** — paste its URL into the *Hydrate* panel (or pick the local file).
-The loader auto-detects gzip and GeoJSON-FeatureCollection / top-level-array /
-NDJSON shapes. The in-app **row cap** is a safety valve; raise it to ingest
-more. For a file too large to expand into per-row events, `hydrate.js` also
-offers `archiveDatasetBlob()` to capture the whole file as a single encrypted
-media block for provenance.
+The full historical dataset is loaded **at runtime** through the first-run gate:
+paste its URL (it can be hosted anywhere) or pick a local file. Formats:
+
+- **JSONL / NDJSON** — one JSON record (or GeoJSON feature) per line.
+- **GeoJSON / JSON array** — auto-detected (top-level array or `features`).
+- **Binary `.gz`** — gzipped NDJSON (e.g. a snapshot this app produced).
+
+Large text inputs are streamed and gunzipped incrementally (never fully
+buffered). The result is converted to the binary blob, cached in OPFS, and —
+**if within the homeserver's media upload limit** — uploaded to Matrix media;
+otherwise it stays in OPFS and the external URL is kept in the pointer as the
+source of record. Either way, room state is marked hydrated so no client asks
+again.
 
 > No code change is needed when the link is provided — it is a runtime input.
-> If the dataset's shape differs from the auto-detected ones, set the
-> `rootKey` / `ndjson` / `classify` options in `hydrateStreaming`.
+> If a JSON dataset's shape is unusual, the `format` selector (`auto` / `jsonl`
+> / `binary`) and `DataStore.hydrateFrom` options cover it.
 
 ## Notes
 
