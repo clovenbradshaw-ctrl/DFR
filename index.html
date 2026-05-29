@@ -8,6 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23060a10%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23ef4444%22%20stroke-width%3D%222.5%22%20opacity%3D%22.45%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2211%22%20fill%3D%22none%22%20stroke%3D%22%23ef4444%22%20stroke-width%3D%222.5%22%20opacity%3D%22.8%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%224%22%20fill%3D%22%23ef4444%22%2F%3E%3Cg%20stroke%3D%22%23ef4444%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%3E%3Cline%20x1%3D%2232%22%20y1%3D%226%22%20x2%3D%2232%22%20y2%3D%2215%22%2F%3E%3Cline%20x1%3D%2232%22%20y1%3D%2249%22%20x2%3D%2232%22%20y2%3D%2258%22%2F%3E%3Cline%20x1%3D%226%22%20y1%3D%2232%22%20x2%3D%2215%22%20y2%3D%2232%22%2F%3E%3Cline%20x1%3D%2249%22%20y1%3D%2232%22%20x2%3D%2258%22%20y2%3D%2232%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link href="https://fonts.bunny.net/css?family=dm-sans:400,500,600,700|jetbrains-mono:400,600,700|source-serif-4:400,600,700&display=swap" rel="stylesheet" onerror="this.remove()">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1184,6 +1185,11 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     a.href=url;a.download=name;document.body.appendChild(a);a.click();
     setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},120);
   }
+  function dlBlob(name,blob){
+    var url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},150);
+  }
   function stamp(){return new Date().toISOString().slice(0,10);}
   function cell(v){if(v==null)v='';v=String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
   function csv(rows){return rows.map(function(r){return r.map(cell).join(',');}).join('\r\n');}
@@ -1449,7 +1455,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
         for(var k in t.vals)props[k]=t.vals[k];
         return {type:'Feature',geometry:t.geometry,properties:props};})},null,2);
   }
-  function tractReportHTML(){
+  function tractReportHTML(withFiles){
     var rows=tractAnalysis().slice().sort(function(a,b){return (b.drones_per_100_calls||-1)-(a.drones_per_100_calls||-1)||b.drones-a.drones;});
     var totD=0,totC=0,totI=0;rows.forEach(function(t){totD+=t.drones;totC+=t.calls;totI+=t.incidents;});
     var src=SRC_TRACTS(),gen=new Date();
@@ -1462,23 +1468,90 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       '<td class="num">'+(d.median_household_income!=null?'$'+Math.round(d.median_household_income).toLocaleString():'—')+'</td>'+
       num(d.pct_total_poverty,'%')+num(d.pct_child_poverty,'%')+'</tr>';}
     var head='<tr><th>Census tract</th><th>Drone deployments</th><th>Calls</th><th>Incidents</th><th>Drones/100 calls</th><th>Drones/100 inc.</th><th>Population</th><th>White</th><th>Black</th><th>Hispanic</th><th>Med. HH income</th><th>Poverty</th><th>Child pov.</th></tr>';
+    // When packaged in the bundle, link the sibling raw data files for direct loading
+    var FILES=[['data/tract_analysis.csv','Tract analysis · CSV'],['data/tract_analysis.geojson','Tract analysis · GeoJSON'],
+      ['data/flight_paths.geojson','Drone flight paths · GeoJSON'],['data/calls_for_service.geojson','Calls for service · GeoJSON'],
+      ['data/incidents.geojson','Incidents · GeoJSON'],['data/sensitive_sites.geojson','Sensitive sites · GeoJSON'],
+      ['data/full_dataset.json','Everything · JSON']];
+    var filesBlock = withFiles ? ('<section class="prov"><h2>Source files in this bundle</h2><p class="note">The same numbers, as raw files you can load into a spreadsheet, QGIS, Mapbox or geojson.io. They sit next to this page in the <code>data/</code> folder.</p><ul>'+
+      FILES.map(function(f){return '<li><a href="'+f[0]+'">'+esc(f[1])+'</a> — <code>'+esc(f[0])+'</code></li>';}).join('')+'</ul></section>') : '';
+    var SORT_JS='<script>document.querySelectorAll("th").forEach(function(th,i){th.style.cursor="pointer";th.title="Sort";th.addEventListener("click",function(){var tb=th.closest("table").tBodies[0],rs=[].slice.call(tb.rows);var asc=th._asc=!th._asc;rs.sort(function(a,b){var x=a.cells[i].textContent.trim(),y=b.cells[i].textContent.trim();var nx=parseFloat(x.replace(/[$,%]/g,"")),ny=parseFloat(y.replace(/[$,%]/g,""));if(!isNaN(nx)&&!isNaN(ny))return asc?nx-ny:ny-nx;return asc?x.localeCompare(y):y.localeCompare(x);});rs.forEach(function(r){tb.appendChild(r);});});});<\/script>';
     return [
       '<!DOCTYPE html>','<html lang="en"><head><meta charset="utf-8">','<meta name="viewport" content="width=device-width, initial-scale=1">',
-      '<title>Nashville DFR — Drone deployments by census tract</title>','<style>'+REPORT_CSS+'</style></head><body>',
+      '<title>Nashville DFR — census-tract explorer</title>','<style>'+REPORT_CSS+'th{cursor:pointer}</style></head><body>',
       '<header><h1>Drone deployments vs. calls &amp; incidents, by census tract</h1>',
-      '<p class="sub">Each census tract inside the 2-mile Madison Precinct flight radius. <strong>Numerator</strong>: drone deployments (distinct DFR flights crossing the tract). <strong>Denominators</strong>: MNPD calls for service and incidents inside the radius. Sorted by drones per 100 calls — the tracts getting the most drone activity relative to actual call volume rise to the top. Generated '+esc(gen.toLocaleString())+'.</p>',
+      '<p class="sub">Each census tract inside the 2-mile Madison Precinct flight radius. <strong>Numerator</strong>: drone deployments (distinct DFR flights crossing the tract). <strong>Denominators</strong>: MNPD calls for service and incidents inside the radius. <em>Click any column header to sort.</em> Default sort: drones per 100 calls — the tracts getting the most drone activity relative to actual call volume rise to the top. Generated '+esc(gen.toLocaleString())+'.</p>',
       '<div class="stats"><div class="stat"><b>'+rows.length+'</b><span>tracts in radius</span></div><div class="stat"><b>'+totD.toLocaleString()+'</b><span>drone deployments</span></div><div class="stat"><b>'+totC.toLocaleString()+'</b><span>calls for service</span></div><div class="stat"><b>'+totI.toLocaleString()+'</b><span>incidents</span></div></div></header>',
       '<div class="tablewrap"><table><thead>'+head+'</thead><tbody>'+rows.map(row).join('')+'</tbody></table></div>',
+      filesBlock,
       '<section class="prov"><h2>Sources &amp; methodology</h2><ul>'+
         '<li><strong>Drone deployments</strong> — '+esc(SRC_FLIGHTS.name)+(SRC_FLIGHTS.url?' · <a href="'+esc(SRC_FLIGHTS.url)+'" target="_blank" rel="noopener">source</a>':'')+'</li>'+
         '<li><strong>Calls for service</strong> — '+esc(SRC_CALLS.name)+' · <a href="'+esc(SRC_CALLS.url)+'" target="_blank" rel="noopener">source</a></li>'+
         '<li><strong>Incidents</strong> — '+esc(SRC_INCIDENTS.name)+' · <a href="'+esc(SRC_INCIDENTS.url)+'" target="_blank" rel="noopener">source</a></li>'+
         '<li><strong>Demographics &amp; tracts</strong> — '+esc(src.name)+' · <a href="'+esc(src.url)+'" target="_blank" rel="noopener">source</a></li>'+
-      '</ul><p class="note">'+esc(TRACT_METHOD)+' A drone counts toward a tract when any point on its path falls inside the tract (point-in-polygon), so one flight can count toward several tracts.</p></section></body></html>'
+      '</ul><p class="note">'+esc(TRACT_METHOD)+' A drone counts toward a tract when any point on its path falls inside the tract (point-in-polygon), so one flight can count toward several tracts.</p></section>'+SORT_JS+'</body></html>'
     ].join('\n');
   }
 
+  // ── One-file bundle: the HTML explorer (main) + raw sources, zipped ──
+  function bundleReadme(){
+    return [
+      'Nashville Drone-as-First-Responder — data bundle',
+      'Generated: '+new Date().toISOString(),
+      '',
+      'START HERE: open index.html in any web browser. It is a self-contained,',
+      'sortable explorer of drone deployments vs. MNPD calls for service and',
+      'incidents, by census tract, with each tract\'s ACS demographics. No',
+      'internet connection needed — all the numbers are baked into the page.',
+      '',
+      'The data/ folder has the same information as raw files you can load into a',
+      'spreadsheet, QGIS, Mapbox, or geojson.io:',
+      '  data/tract_analysis.csv / .geojson  — drones (numerator) vs calls & incidents',
+      '                                         (denominators) + ACS demographics, per tract',
+      '  data/flight_paths.geojson           — DFR flight paths',
+      '  data/calls_for_service.geojson/.csv — MNPD calls inside the radius (since '+PILOT_START+')',
+      '  data/incidents.geojson/.csv         — MNPD incidents inside the radius',
+      '  data/sensitive_sites.geojson/.csv   — schools, childcare, playgrounds, worship',
+      '  data/district_demographics.csv      — council-district ACS breakdown',
+      '  data/full_dataset.json              — everything in one JSON file',
+      '',
+      'Method: '+TRACT_METHOD,
+      '',
+      'Sources:',
+      '  Drone flight paths — '+SRC_FLIGHTS.name+' ('+SRC_FLIGHTS.url+')',
+      '  Calls for service  — '+SRC_CALLS.name+' ('+SRC_CALLS.url+')',
+      '  Incidents          — '+SRC_INCIDENTS.name+' ('+SRC_INCIDENTS.url+')',
+      '  Demographics/tracts— '+SRC_TRACTS().name+' ('+SRC_TRACTS().url+')',
+      '  Council districts  — '+SRC_DISTRICTS.name+' ('+SRC_DISTRICTS.url+')',
+      '',
+      'Built in-browser by the Nashville DFR Surveillance Footprint map. Verify',
+      'against the linked sources before publishing.'
+    ].join('\n');
+  }
+  function buildBundle(){
+    return Promise.resolve(typeof ensureTractData==='function'?ensureTractData():null).then(function(){
+      var zip=new JSZip();
+      zip.file('index.html', tractReportHTML(true));          // the explorer most people want
+      zip.file('README.txt', bundleReadme());
+      var d=zip.folder('data');
+      if(tractFeatures&&tractFeatures.length){d.file('tract_analysis.csv',tractCSV());d.file('tract_analysis.geojson',tractGeoJSON());}
+      if(allFlights.length){d.file('flight_paths.geojson',flightsGeoJSON());d.file('flight_log.csv',flightsCSV());}
+      if(allSites.length){d.file('sensitive_sites.geojson',sitesGeoJSON());d.file('sensitive_sites.csv',sitesCSV());}
+      if(allCalls.length){d.file('calls_for_service.geojson',csiGeoJSON(allCalls,SRC_CALLS));d.file('calls_for_service.csv',csiCSV(allCalls,SRC_CALLS));}
+      if(allIncidents.length){d.file('incidents.geojson',csiGeoJSON(allIncidents,SRC_INCIDENTS));d.file('incidents.csv',csiCSV(allIncidents,SRC_INCIDENTS));}
+      if(Object.keys(demographics).length){d.file('district_demographics.csv',demoCSV());}
+      d.file('full_dataset.json',bundleJSON());
+      return zip.generateAsync({type:'blob',compression:'DEFLATE'});
+    }).then(function(blob){dlBlob('nashville_dfr_bundle_'+stamp()+'.zip',blob);});
+  }
+
   var DATASETS=[
+    {name:'Complete bundle — HTML explorer + sources (.zip)',
+     count:function(){return 'open index.html to explore · CSV/GeoJSON inside for loading elsewhere';},
+     ready:function(){return typeof JSZip!=='undefined';},
+     formats:[
+       {ext:'ZIP',fn:function(){buildBundle().catch(function(e){alert('Could not build the bundle: '+(e&&e.message||e)+'\\nDownloading the explorer on its own instead.');dl('nashville_dfr_explorer_'+stamp()+'.html',tractReportHTML(false),'text/html');});}}
+     ]},
     {name:'Census tract analysis — drones vs calls/incidents × demographics',
      count:function(){return (tractFeatures&&tractFeatures.length?tractFeatures.length+' tracts in radius':'loading tracts')+' · numerator/denominator + ACS';},
      ready:function(){return !!(tractFeatures&&tractFeatures.length);},
@@ -1868,10 +1941,11 @@ function plotPointLayer(def,features,o){
     var dn=findDist(ll[0],ll[1]);if(dn)perDist[dn]=(perDist[dn]||0)+1;
     store.push({lat:ll[0],lng:ll[1],type:t,district:dn||'',props:ft.properties});
     var iconHtml='<div class="site-pin-wrap"><div class="csi-pin '+def.key+'"><svg viewBox="0 0 24 24">'+(def.svg||'')+'</svg></div></div>';
-    (function(feat){L.marker(ll,{pane:'csiPane',icon:L.divIcon({className:'site-marker',html:iconHtml,iconSize:[44,44],iconAnchor:[22,22]}),title:String(t),riseOnHover:true,keyboard:false})
+    (function(feat,label){L.marker(ll,{pane:'csiPane',icon:L.divIcon({className:'site-marker',html:iconHtml,iconSize:[44,44],iconAnchor:[22,22]}),title:label,riseOnHover:true,keyboard:false})
+      .bindTooltip(label,{direction:'top',sticky:true,opacity:0.95})
       .bindPopup(csiPopup(feat,o,def),{maxWidth:300,className:'callpopup'})
       .on('click',function(e){L.DomEvent.stopPropagation(e);})
-      .addTo(grp);})(ft);
+      .addTo(grp);})(ft,String(t));
   }
   if(def.key==='calls'){allCalls=store;callsByDistrict=perDist;}else{allIncidents=store;incidentsByDistrict=perDist;}
   var row=document.querySelector('.lyr-row[data-layer="'+def.key+'"] .lyr-name');
