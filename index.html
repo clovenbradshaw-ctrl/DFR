@@ -330,6 +330,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .dist-label.incircle .dl-ct.hit{color:#fff;background:var(--hit)}
 .dist-label.incircle:hover span{background:rgba(40,24,6,.92);border-color:#ffd9a0}
 .dist-label.incircle.sel span{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35),0 1px 5px rgba(0,0,0,.6)}
+/* Calls-for-service / incident popups */
+.csi-pop{max-height:230px;overflow:auto}
+.csi-pop table{border-collapse:collapse;font-size:11.5px;font-family:'JetBrains Mono',monospace}
+.csi-pop th{text-align:left;color:var(--mut);font-weight:500;padding:2px 10px 2px 0;vertical-align:top;white-space:nowrap}
+.csi-pop td{color:var(--txt);padding:2px 0;word-break:break-word}
+.csi-pop .csi-h{font-family:'DM Sans',sans-serif;font-weight:700;font-size:12.5px;color:var(--txt);margin-bottom:6px}
 /* District-wide drone tally inside the address panel */
 .p-distflights{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);line-height:1.5;background:rgba(255,255,255,.02)}
 .p-distflights b{color:#fca5a5}
@@ -419,6 +425,12 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
   <div class="lyr-row" data-layer="precincts" role="switch" aria-checked="false" tabindex="0">
     <span class="lyr-ic box" style="border-color:#22d3ee;border-style:dashed"></span><span class="lyr-name">Police precincts</span><span class="lyr-sw"></span>
   </div>
+  <div class="lyr-row on" data-layer="calls" role="switch" aria-checked="true" tabindex="0">
+    <span class="lyr-ic dot" style="background:#6fd3ff"></span><span class="lyr-name">Calls for service</span><span class="lyr-sw"></span>
+  </div>
+  <div class="lyr-row on" data-layer="incidents" role="switch" aria-checked="true" tabindex="0">
+    <span class="lyr-ic dot" style="background:#ffd166"></span><span class="lyr-name">Incident reports</span><span class="lyr-sw"></span>
+  </div>
 </div>
 
 <div class="hint" id="hint">
@@ -501,6 +513,8 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
         <li><strong>Demographics</strong> &amp; council-district breakdowns — <span id="srcDemoText">U.S. Census Bureau, American Community Survey (ACS) 2017&ndash;2021 5-Year Estimates, compiled by Metropolitan Social Services, Know Your Community 2023</span>. <a href="https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/nashville_council_district_demographics.json" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
         <li><strong>Sensitive sites</strong> — schools, childcare, playgrounds &amp; places of worship, compiled from Metro Nashville GIS &amp; OpenStreetMap. <a href="https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/dfr/sensitive_sites.json" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
         <li><strong>Council districts &amp; precincts</strong> — Metro Nashville GIS; boundaries per BL2021-1052 (eff. Jan&nbsp;2022). <a href="https://maps.nashville.gov/arcgis/rest/services/Elections/Precincts/MapServer/1/query?where=1%3D1&outFields=DistrictName&f=geojson" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
+        <li><strong>Calls for service</strong> — MNPD “Calls for Service” (data.nashville.gov), since the May&nbsp;26 pilot launch and filtered to points inside the 2-mile flight radius. <a href="https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Calls-for-Servic/kwnd-qrrm" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
+        <li><strong>Incident reports</strong> — MNPD reported incidents (data.nashville.gov), same date and in-radius filters. <a href="https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Incidents/2u6v-ujjs" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
         <li><strong>Satellite imagery</strong> — Metro Nashville 2022 aerial imagery, with Esri World Imagery as fallback.</li>
       </ul>
       <div style="font-size:11px;color:var(--mut2);line-height:1.5;margin-top:9px">Which council district each flight and site falls in is computed in-browser (point-in-polygon against the Metro GIS boundaries) and included in every export.</div>
@@ -512,6 +526,8 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
       <div class="li"><div class="lsw" style="background:transparent;border:1px solid rgba(77,141,245,.7);height:11px;border-radius:2px"></div>Council district boundary</div>
       <div class="li"><div class="lci" style="background:transparent;border:1.5px dashed #f59e0b;width:11px;height:11px"></div>2-mi launch radius (Dist. 7 carved out)</div>
       <div class="li"><div class="lsw" style="background:transparent;border:1px dashed #22d3ee;height:11px;border-radius:2px"></div>Police precinct (toggle, top-right)</div>
+      <div class="li"><div class="lci" style="background:#6fd3ff"></div>MNPD call for service (in radius · since May&nbsp;26)</div>
+      <div class="li"><div class="lci" style="background:#ffd166"></div>MNPD incident report (in radius · since May&nbsp;26)</div>
       <div class="li"><div class="lci" style="background:#34d399"></div>School</div>
       <div class="li"><div class="lci" style="background:#a78bfa"></div>Childcare</div>
       <div class="li"><div class="lci" style="background:#06d6a0"></div>Playground</div>
@@ -841,6 +857,14 @@ function showDistrictSummary(dn){
     h+='<div class="p-verdict miss"><div class="p-verdict-t" style="color:#34d399">No recorded DFR flights here</div>'+
        '<div class="p-verdict-b">No disclosed flight path crosses District '+dn+'.</div></div>';
   }
+  // MNPD calls + incidents logged inside the flight radius within this district
+  if(inC){
+    var calls=callsByDistrict[dn]||0,incs=incidentsByDistrict[dn]||0;
+    h+='<div class="sect"><div class="sect-t">Police activity in the flight radius</div>'+
+       '<div class="km-row"><div class="km"><div class="km-v" style="color:#6fd3ff">'+calls.toLocaleString()+'</div><div class="km-l">Calls for service</div><div class="km-off" style="color:var(--mut)">in-radius · since May 26</div></div>'+
+       '<div class="km"><div class="km-v" style="color:#ffd166">'+incs.toLocaleString()+'</div><div class="km-l">Incident reports</div><div class="km-off" style="color:var(--mut)">in-radius · since May 26</div></div></div>'+
+       '<div style="font-size:11px;color:var(--mut2);margin-top:8px;line-height:1.5">MNPD records logged inside the 2-mile radius that fall within District '+dn+'. Toggle the points via the layers menu.</div></div>';
+  }
   if(d)h+=demoBlock(d);
   else h+='<div class="sect"><div class="sect-t">Demographics</div><div style="font-size:12.5px;color:var(--mut);line-height:1.5">No ACS demographic record for District '+dn+' in the loaded dataset.</div></div>';
   var panelInner=document.getElementById('panelInner');
@@ -906,7 +930,7 @@ document.getElementById('panelClose').addEventListener('click',function(){
 // ── Layers menu (toggle every map feature on/off) ──
 (function(){
   var btn=document.getElementById('layersBtn'),menu=document.getElementById('layersMenu');
-  var toggles={flights:setFlightsVisible,swath:setSwathVisible,sites:setSitesVisible,launch:setLaunchVisible,districts:setDistrictsVisible,precincts:setPrecinctsVisible};
+  var toggles={flights:setFlightsVisible,swath:setSwathVisible,sites:setSitesVisible,launch:setLaunchVisible,districts:setDistrictsVisible,precincts:setPrecinctsVisible,calls:setCallsVisible,incidents:setIncidentsVisible};
   function openMenu(o){menu.classList.toggle('show',o);btn.classList.toggle('active',o);btn.setAttribute('aria-expanded',o?'true':'false');}
   btn.addEventListener('click',function(e){e.stopPropagation();openMenu(!menu.classList.contains('show'));});
   menu.addEventListener('click',function(e){e.stopPropagation();});
@@ -1250,11 +1274,15 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
         flight_paths:SRC_FLIGHTS,
         sensitive_sites:SRC_SITES,
         council_districts:SRC_DISTRICTS,
-        demographics:demoSourceObj()
+        demographics:demoSourceObj(),
+        calls_for_service:SRC_CALLS,
+        incidents:SRC_INCIDENTS
       },
       flight_paths:{type:'FeatureCollection',features:allFlights},
       sensitive_sites:allSites,
       demographics:{source:demoSourceObj(),county_baseline:baseline,districts:demographics},
+      calls_for_service:{source:SRC_CALLS,by_district:callsByDistrict,points:allCalls},
+      incidents:{source:SRC_INCIDENTS,by_district:incidentsByDistrict,points:allIncidents},
       council_members:CM
     },null,2);
   }
@@ -1319,6 +1347,21 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     ].join('\n');
   }
 
+  // ── MNPD calls for service / incidents (in-radius, since the pilot launch) ──
+  var SRC_CALLS={name:'MNPD Calls for Service (data.nashville.gov) — points inside the 2-mile flight radius, since the May 26 pilot launch',url:'https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Calls-for-Servic/kwnd-qrrm'};
+  var SRC_INCIDENTS={name:'MNPD Incidents (data.nashville.gov) — points inside the 2-mile flight radius, since the May 26 pilot launch',url:'https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Incidents/2u6v-ujjs'};
+  function csiGeoJSON(rows,src){
+    return JSON.stringify({type:'FeatureCollection',metadata:{source:src.name,source_url:src.url,filter:'inside the 2-mile flight radius, since '+PILOT_START,council_district:DISTRICT_DERIVATION,generated:new Date().toISOString()},
+      features:rows.map(function(x){var props={};for(var k in (x.props||{}))props[k]=x.props[k];props.type=x.type;props.council_district=x.district;
+        return {type:'Feature',geometry:{type:'Point',coordinates:[x.lng,x.lat]},properties:props};})},null,2);
+  }
+  function csiCSV(rows,src){
+    var out=srcRows(srcLines(src,DISTRICT_DERIVATION));
+    out.push(['type','council_district','lat','lng']);
+    rows.forEach(function(x){out.push([x.type,x.district,x.lat,x.lng]);});
+    return csv(out);
+  }
+
   var DATASETS=[
     {name:'Drone flight paths',
      count:function(){return allFlights.length+' flight'+(allFlights.length===1?'':'s')+' · where they flew';},
@@ -1349,8 +1392,22 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
        {ext:'HTML',fn:function(){dl('dfr_district_report_'+stamp()+'.html',districtReportHTML(),'text/html');}},
        {ext:'JSON',fn:function(){dl('dfr_district_report_'+stamp()+'.json',demoJSON(),'application/json');}}
      ]},
+    {name:'Calls for service (in radius)',
+     count:function(){return allCalls.length+' call'+(allCalls.length===1?'':'s')+' · inside the 2-mi radius, since May 26';},
+     ready:function(){return allCalls.length>0;},
+     formats:[
+       {ext:'GeoJSON',fn:function(){dl('dfr_calls_for_service_'+stamp()+'.geojson',csiGeoJSON(allCalls,SRC_CALLS),'application/geo+json');}},
+       {ext:'CSV',fn:function(){dl('dfr_calls_for_service_'+stamp()+'.csv',csiCSV(allCalls,SRC_CALLS),'text/csv');}}
+     ]},
+    {name:'Incident reports (in radius)',
+     count:function(){return allIncidents.length+' incident'+(allIncidents.length===1?'':'s')+' · inside the 2-mi radius, since May 26';},
+     ready:function(){return allIncidents.length>0;},
+     formats:[
+       {ext:'GeoJSON',fn:function(){dl('dfr_incidents_'+stamp()+'.geojson',csiGeoJSON(allIncidents,SRC_INCIDENTS),'application/geo+json');}},
+       {ext:'CSV',fn:function(){dl('dfr_incidents_'+stamp()+'.csv',csiCSV(allIncidents,SRC_INCIDENTS),'text/csv');}}
+     ]},
     {name:'Everything',
-     count:function(){return 'flights + sites + demographics, one file';},
+     count:function(){return 'flights + sites + demographics + calls + incidents, one file';},
      ready:function(){return allFlights.length>0||allSites.length>0||Object.keys(demographics).length>0;},
      formats:[
        {ext:'JSON',fn:function(){dl('dfr_full_dataset_'+stamp()+'.json',bundleJSON(),'application/json');}}
@@ -1612,6 +1669,92 @@ function setupScrubber(){
   document.body.classList.add('timebar-on');
 }
 
+// ── MNPD calls for service + incident reports (live, inside the 2-mile radius) ──
+// Both come from data.nashville.gov ArcGIS items. We resolve the live FeatureServer
+// from the item id, query everything since the pilot launch within the radius bbox,
+// then keep only points that fall inside the exact 2-mile circle.
+var PRECINCT={lat:36.2734813,lng:-86.6906344};   // Madison Precinct rooftop (radius fallback center)
+var PILOT_START='2026-05-26';                     // DFR trial launch
+var radiusCenter=null;
+var callsGroup=L.layerGroup(),incidentsGroup=L.layerGroup();
+var callsVisible=true,incidentsVisible=true;
+var csiRenderer=L.canvas({padding:0.5});          // dedicated canvas so thousands of dots stay fast
+var allCalls=[],allIncidents=[],callsByDistrict={},incidentsByDistrict={};
+var CSI_DEFS=[
+  {key:'calls',label:'Calls for service',itemId:'f8b1bdf0612647cfb9c9ccce31ac411a',color:'#6fd3ff',noun:'calls for service',
+   group:function(){return callsGroup;},typePats:[/tencode description/i,/disposition description/i,/description/i,/tencode/i],
+   datePats:[/call received/i,/received/i,/^date$/i,/date/i]},
+  {key:'incidents',label:'Incident reports',itemId:'d747436243e9439e968fce056545016a',color:'#ffd166',noun:'incidents',
+   group:function(){return incidentsGroup;},typePats:[/offense description/i,/offense/i,/description/i],
+   datePats:[/incident occurred/i,/occurred/i,/reported/i,/incident date/i,/date/i]}
+];
+var CSI_DENY={OBJECTID:1,OBJECTID_1:1,FID:1,x:1,y:1,POINT_X:1,POINT_Y:1,Latitude:1,Longitude:1,'Mapped Location':1,MappedLocation:1,GlobalID:1,Shape:1,Shape__Area:1,Shape__Length:1};
+
+function csiField(fields,pats){for(var p=0;p<pats.length;p++){for(var i=0;i<fields.length;i++){var f=fields[i];if(pats[p].test(f.alias||'')||pats[p].test(f.name||''))return f.name;}}return null;}
+function csiFmt(v,type){if(v==null||v==='')return null;if(type==='esriFieldTypeDate'){var d=(typeof v==='number')?new Date(v):new Date(Date.parse(v));if(!isNaN(d))return d.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}return String(v);}
+function csiPopup(ft,o,def){var props=ft.properties||{},byName={};(o.meta.fields||[]).forEach(function(f){byName[f.name]=f;});var rows='';for(var k in props){if(CSI_DENY[k])continue;var f=byName[k]||{alias:k,type:''};var val=csiFmt(props[k],f.type);if(val==null)continue;rows+='<tr><th>'+(f.alias||k)+'</th><td>'+val+'</td></tr>';}return '<div class="csi-pop"><div class="csi-h">'+def.label+'</div><table>'+rows+'</table></div>';}
+function csiLatLng(ft,o){if(o.isPoint&&ft.geometry&&ft.geometry.type==='Point'){var c=ft.geometry.coordinates;return [c[1],c[0]];}var p=ft.properties||{};var la=o.latField?parseFloat(p[o.latField]):NaN,lo=o.lonField?parseFloat(p[o.lonField]):NaN;return (isFinite(la)&&isFinite(lo))?[la,lo]:null;}
+function csiBbox(center,r){var dLat=r/111320,dLng=r/(111320*Math.cos(center[0]*Math.PI/180));return [center[1]-dLng,center[0]-dLat,center[1]+dLng,center[0]+dLat];}
+
+// ArcGIS Online is CORS-enabled, so try a direct fetch first; fall back to the
+// shared proxy (used for the Metro GIS endpoints) if the direct call is blocked.
+function csiFetch(url){
+  return fetch(url,{cache:'no-store',mode:'cors'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .catch(function(){return pfetch(url).then(function(r){return r.json();});});
+}
+
+function loadPointLayer(def){
+  return csiFetch('https://www.arcgis.com/sharing/rest/content/items/'+def.itemId+'?f=json').then(function(item){
+    if(!item||!item.url)throw new Error('no service url on item');
+    var base=item.url.replace(/\/+$/,'');
+    return csiFetch(base+'/0?f=json').then(function(meta){
+      var fields=meta.fields||[];
+      var o={meta:meta,typeField:csiField(fields,def.typePats),dateField:csiField(fields,def.datePats),
+        latField:csiField(fields,[/^latitude$/i,/lat/i]),lonField:csiField(fields,[/^longitude$/i,/^long/i,/lon/i]),
+        isPoint:(meta.geometryType==='esriGeometryPoint')};
+      var bb=csiBbox(radiusCenter,2*MILE_M);
+      var where=o.dateField?(o.dateField+" >= TIMESTAMP '"+PILOT_START+" 00:00:00'"):'1=1';
+      function q(offset){var params={where:where,geometry:bb.join(','),geometryType:'esriGeometryEnvelope',inSR:'4326',spatialRel:'esriSpatialRelIntersects',outFields:'*',outSR:'4326',returnGeometry:'true',f:'geojson',resultRecordCount:'2000',resultOffset:String(offset)};if(o.dateField)params.orderByFields=o.dateField+' DESC';return base+'/0/query?'+new URLSearchParams(params).toString();}
+      var all=[],CAP=8000;
+      function page(offset){return csiFetch(q(offset)).then(function(gj){var fs=(gj&&gj.features)||[];all=all.concat(fs);if(fs.length<2000||all.length>=CAP)return all;return page(offset+2000);});}
+      return page(0).then(function(feats){plotPointLayer(def,feats,o);});
+    });
+  }).catch(function(e){
+    console.warn('CSI '+def.key+' load failed',e);
+    var row=document.querySelector('.lyr-row[data-layer="'+def.key+'"] .lyr-name');
+    if(row)row.textContent=def.label+' (unavailable)';
+  });
+}
+
+function plotPointLayer(def,features,o){
+  var grp=def.group();grp.clearLayers();
+  var counts={},perDist={},inside=0,store=[];
+  for(var i=0;i<features.length;i++){var ft=features[i];var ll=csiLatLng(ft,o);if(!ll)continue;
+    if(gdist(radiusCenter[0],radiusCenter[1],ll[0],ll[1])>2*MILE_M)continue;   // exact circle, not just bbox
+    inside++;
+    var t=(o.typeField&&ft.properties&&ft.properties[o.typeField])||'Unspecified';
+    counts[t]=(counts[t]||0)+1;
+    var dn=findDist(ll[0],ll[1]);if(dn)perDist[dn]=(perDist[dn]||0)+1;
+    store.push({lat:ll[0],lng:ll[1],type:t,district:dn||'',props:ft.properties});
+    (function(feat){L.circleMarker(ll,{renderer:csiRenderer,radius:3,stroke:false,fillColor:def.color,fillOpacity:.6})
+      .bindPopup(csiPopup(feat,o,def),{maxWidth:300})
+      .on('click',function(e){L.DomEvent.stopPropagation(e);})
+      .addTo(grp);})(ft);
+  }
+  if(def.key==='calls'){allCalls=store;callsByDistrict=perDist;}else{allIncidents=store;incidentsByDistrict=perDist;}
+  var row=document.querySelector('.lyr-row[data-layer="'+def.key+'"] .lyr-name');
+  if(row)row.textContent=def.label+' ('+inside.toLocaleString()+')';
+}
+
+function setCallsVisible(v){callsVisible=v;if(v)callsGroup.addTo(map);else map.removeLayer(callsGroup);setLayerRow('calls',v);}
+function setIncidentsVisible(v){incidentsVisible=v;if(v)incidentsGroup.addTo(map);else map.removeLayer(incidentsGroup);setLayerRow('incidents',v);}
+
+function loadCSI(){
+  radiusCenter=launchPoint()||[PRECINCT.lat,PRECINCT.lng];
+  callsGroup.addTo(map);incidentsGroup.addTo(map);
+  CSI_DEFS.forEach(function(def){loadPointLayer(def);});
+}
+
 // ── LOAD ──
 Promise.all([
   pfetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
@@ -1666,6 +1809,7 @@ Promise.all([
   computeFlightsByDistrict();   // drones per district
   computeInCircle();            // which districts the 2-mi radius touches
   refreshDistrictLabels();      // re-render labels with names + counts inside the circle
+  loadCSI();                    // MNPD calls for service + incidents inside the radius
   setupScrubber();
   if(fb.isValid())map.fitBounds(fb,{padding:isMobile?[40,40]:[80,80]});
 
