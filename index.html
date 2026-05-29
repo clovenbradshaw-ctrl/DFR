@@ -1811,6 +1811,7 @@ function loadCSI(){
 // tract geometry comes from the Census TIGERweb service. Lazy-loaded the first time
 // the layer is switched on. Variables mirror the council-district panel set.
 var CENSUS_YEAR='2022';
+var CENSUS_KEY='02123594ad60bb42acd69d5369b81060dc94c53a';   // Census API key (raises query limit; public-data, rate-limit only)
 var tractGroup=L.layerGroup(),tractsLoaded=false,tractFeatures=[],tractVarKey='income';
 var PAL_COOL=['#0b2f4a','#16567d','#2a86a8','#5cb3cf','#a7e0f2'];   // low → high (neutral)
 var PAL_WARM=['#3a1d10','#7a3415','#b85420','#e0792e','#ffc06b'];   // low → high (burden)
@@ -1845,7 +1846,7 @@ function tractVals(o){
   };
 }
 function loadACSProfiles(){
-  var base='https://api.census.gov/data/'+CENSUS_YEAR+'/acs/acs5/profile',pred='&for=tract:*&in=state:47%20county:037';
+  var base='https://api.census.gov/data/'+CENSUS_YEAR+'/acs/acs5/profile',pred='&for=tract:*&in=state:47%20county:037'+(CENSUS_KEY?'&key='+CENSUS_KEY:'');
   // group() always returns every variable in the table, so a single bad code can't 400 the request
   return Promise.all(['DP05','DP03','DP04'].map(function(g){return csiFetch(base+'?get=group('+g+')'+pred);})).then(function(res){
     var by={};
