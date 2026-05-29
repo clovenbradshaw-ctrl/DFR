@@ -518,6 +518,9 @@ function pfetch(url){return fetch(PROXY+encodeURIComponent(url))}
 var SC={school:'#34d399',childcare:'#a78bfa',playground:'#06d6a0',worship:'#f59e0b'};
 var SWATH_M=82;
 var CM={1:{n:"Joy Kimbrough",p:"615-432-1301"},2:{n:"Kyonzté Toombs",p:"615-432-1302"},3:{n:"Jennifer Gamble",p:"615-432-1303"},4:{n:"Mike Cortese",p:"615-432-1304"},5:{n:"Sean Parker",p:"615-432-1305"},6:{n:"Clay Capp",p:"615-432-1306"},7:{n:"Emily Benedict",p:"615-432-1307"},8:{n:"Deonté Harrell",p:"615-432-1308"},9:{n:"Tonya Hancock",p:"615-432-1309"},10:{n:"Jennifer Frensley Webb",p:"615-432-1310"},11:{n:"Jeff Eslick",p:"615-432-1311"},12:{n:"Erin Evans",p:"615-432-1312"},13:{n:"Russ Bradford",p:"615-432-1313"},14:{n:"Jordan Huffman",p:"615-432-1314"},15:{n:"Jeff Gregg",p:"615-432-1315"},16:{n:"Ginny Welsch",p:"615-432-1316"},17:{n:"Terry Vo",p:"615-432-1317"},18:{n:"Tom Cash",p:"615-432-1318"},19:{n:"Jacob Kupin",p:"615-432-1319"},20:{n:"Rollin Horton",p:"615-432-1320"},21:{n:"Brandon Taylor",p:"615-432-1321"},22:{n:"Sheri Weiner",p:"615-432-1322"},23:{n:"Thom Druffel",p:"615-432-1323"},24:{n:"Brenda Gadd",p:"615-432-1324"},25:{n:"Jeff Preptit",p:"615-432-1325"},26:{n:"Courtney Johnston",p:"615-432-1326"},27:{n:"Robert Nash",p:"615-432-1327"},28:{n:"David Benton",p:"615-432-1328"},29:{n:"Tasha Ellis",p:"615-432-1329"},30:{n:"Sandra Sepulveda",p:"615-432-1330"},31:{n:"John Rutherford",p:"615-432-1331"},32:{n:"Joy Styles",p:"615-432-1332"},33:{n:"Antoinette Lee",p:"615-432-1333"},34:{n:"Sandy Ewing",p:"615-432-1334"},35:{n:"Jason Spain",p:"615-432-1335"}};
+// Council districts inside the trial's 2-mi flight radius of the Madison Precinct
+// (MNPD announcement, May 26: members Gamble, Hancock, Frensley Webb, Eslick, Gregg)
+var TRIAL_DISTRICTS=['3','9','10','11','15'];
 
 var isMobile=window.matchMedia('(max-width:768px)').matches;
 var map=L.map('map',{
@@ -532,6 +535,12 @@ var map=L.map('map',{
 }).setView([36.165,-86.78],12);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:19,updateWhenZooming:false,keepBuffer:4}).addTo(map);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,maxNativeZoom:19,subdomains:'abcd',updateWhenZooming:false,keepBuffer:4}).addTo(map);
+
+// Dedicated pane so drone flight lines render above site markers & overlays.
+// pointer-events:none lets map clicks pass through the lines to the basemap.
+map.createPane('flightPane');
+map.getPane('flightPane').style.zIndex=650;
+map.getPane('flightPane').style.pointerEvents='none';
 
 // Scale site icons with zoom so the map stays legible when zoomed out.
 // Update during the zoom animation (and live pinch) so pins glide smoothly
@@ -978,7 +987,10 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   var SRC_FLIGHTS={name:'MNPD Drone-as-First-Responder flight logs (publicly disclosed)',url:FLIGHTS_URL};
   var SRC_SITES={name:'Sensitive sites compiled from Metro Nashville GIS & OpenStreetMap',url:SITES_URL};
   var SRC_DISTRICTS={name:'Metro Nashville Council District boundaries — Metro Nashville GIS (BL2021-1052, eff. Jan 2022)',url:DIST_URL};
+  var SRC_TRIAL={name:'MNPD "Drone as First Responder" limited trial, Madison Precinct — the 5 council districts within the 2-mile flight radius (members Gamble, Hancock, Frensley Webb, Eslick, Gregg), began May 26',url:'https://www.nashville.gov/departments/police/news/mnpd-begin-limited-drone-first-responder-trial-may-26'};
   var DISTRICT_DERIVATION='council district(s) derived by point-in-polygon against '+SRC_DISTRICTS.name;
+  // The trial districts that actually exist in the loaded demographics, in numeric order
+  function trialDistricts(){return TRIAL_DISTRICTS.filter(function(dn){return demographics[dn];});}
   function acsSource(){return demoMeta.data_source||'U.S. Census Bureau, American Community Survey (ACS) 5-Year Estimates';}
   function demoSourceObj(){
     return {
@@ -1079,8 +1091,9 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   }
   function demoCSV(){
     var fpd=flightsPerDistrict(),rows=demoSrcRows();
+    rows.push(['Scope: '+SRC_TRIAL.name]);rows.push(['Scope URL: '+SRC_TRIAL.url]);rows.push([]);
     rows.push(DEMO_HEAD);
-    Object.keys(demographics).sort(function(a,b){return (+a)-(+b);}).forEach(function(dn){
+    trialDistricts().forEach(function(dn){
       rows.push(demoRow('District '+dn,demographics[dn],CM[dn]||{},fpd[dn]||0));
     });
     if(baseline&&baseline.population)rows.push(demoRow('County baseline (district avg)',{
@@ -1095,8 +1108,8 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     return csv(rows);
   }
   function demoJSON(){
-    var fpd=flightsPerDistrict(),out={generated:new Date().toISOString(),source:demoSourceObj(),county_baseline:baseline,districts:{}};
-    Object.keys(demographics).forEach(function(dn){
+    var fpd=flightsPerDistrict(),out={generated:new Date().toISOString(),scope:{districts:TRIAL_DISTRICTS,source:SRC_TRIAL},source:demoSourceObj(),county_baseline:baseline,districts:{}};
+    trialDistricts().forEach(function(dn){
       var d=demographics[dn],cm=CM[dn]||{},copy={};
       for(var k in d)copy[k]=d[k];
       copy.council_member=cm.n||null;copy.council_phone=cm.p||null;copy.flights_overhead=fpd[dn]||0;
@@ -1110,6 +1123,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     return JSON.stringify({
       generated:new Date().toISOString(),
       title:'Nashville DFR Surveillance Footprint',
+      trial_scope:{districts:TRIAL_DISTRICTS,source:SRC_TRIAL},
       sources:{
         flight_paths:SRC_FLIGHTS,
         sensitive_sites:SRC_SITES,
@@ -1141,7 +1155,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     '.prov{padding:8px 24px 0;max-width:880px}.prov h2{font-size:15px;color:#fff;margin:20px 0 8px}.prov ul{padding-left:18px;margin:0 0 12px}.prov li{font-size:13px;color:#7e92b8;margin-bottom:5px}.prov li strong{color:#dce4f0}.prov a{color:#4d8df5}'+
     '.note{font-size:12px;color:#7e92b8;line-height:1.6;max-width:880px}.note strong{color:#dce4f0}';
   function districtReportHTML(){
-    var fpd=flightsPerDistrict(),src=demoSourceObj(),nums=Object.keys(demographics);
+    var fpd=flightsPerDistrict(),src=demoSourceObj(),nums=trialDistricts();
     var ordered=nums.slice().sort(function(a,b){return (fpd[b]||0)-(fpd[a]||0)||(+a)-(+b);});
     var covered=nums.filter(function(dn){return (fpd[dn]||0)>0;}).length,gen=new Date();
     var haveBounds=Object.keys(districtPolys).length>0;
@@ -1161,6 +1175,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       refPP(baseline.pct_total_poverty)+refPP(baseline.pct_child_poverty)+refPP(baseline.unemployment_rate)+refPP(baseline.pct_renter_cost_burdened_35plus)+'</tr>';
     var head='<tr><th>Dist.</th><th>Council member</th><th>Drone flights</th><th>Population</th><th>White</th><th>Black</th><th>Hispanic</th><th>Asian</th><th>Under 18</th><th>65+</th><th>Med. HH income</th><th>Poverty</th><th>Child pov.</th><th>Unemp.</th><th>Rent burden</th></tr>';
     var provItems=[
+      ['Trial scope',esc(SRC_TRIAL.name),SRC_TRIAL.url],
       ['Drone flight paths',esc(SRC_FLIGHTS.name),SRC_FLIGHTS.url],
       ['Demographics',esc(src.data_source)+(src.compiled_by?', compiled by '+esc(src.compiled_by):''),src.source_url],
       ['Council district boundaries',esc(SRC_DISTRICTS.name),SRC_DISTRICTS.url]
@@ -1171,12 +1186,12 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       '<!DOCTYPE html>','<html lang="en"><head><meta charset="utf-8">','<meta name="viewport" content="width=device-width, initial-scale=1">',
       '<title>Nashville DFR — Drone Flights by Council District</title>','<style>'+REPORT_CSS+'</style></head><body>',
       '<header><h1>Nashville Drone-as-First-Responder: flights by council district</h1>',
-      '<p class="sub">Drone flights recorded over each Metro Council district, with that district’s demographics measured against the county average. Generated '+esc(gen.toLocaleString())+'.</p>',
+      '<p class="sub">Limited to the '+nums.length+' Metro Council districts inside the trial’s 2-mile flight radius of the Madison Precinct ('+nums.map(function(dn){return 'D'+dn+' · '+esc((CM[dn]||{}).n||'');}).join(', ')+'). Each district’s demographics are measured against the county average. Generated '+esc(gen.toLocaleString())+'.</p>',
       warn,
-      '<div class="stats"><div class="stat"><b>'+allFlights.length+'</b><span>flights logged</span></div><div class="stat"><b>'+covered+'</b><span>of '+nums.length+' districts overflown</span></div><div class="stat"><b>'+(topD?('District '+topD+' · '+(fpd[topD]||0)+' flights'):'—')+'</b><span>most-flown district</span></div></div></header>',
+      '<div class="stats"><div class="stat"><b>'+allFlights.length+'</b><span>total flights logged</span></div><div class="stat"><b>'+covered+'</b><span>of '+nums.length+' trial districts overflown</span></div><div class="stat"><b>'+(topD?('District '+topD+' · '+(fpd[topD]||0)+' flights'):'—')+'</b><span>most-flown trial district</span></div></div></header>',
       '<div class="tablewrap"><table><thead>'+head+'</thead><tbody>'+refRow+ordered.map(row).join('')+'</tbody></table></div>',
       '<section class="prov"><h2>Sources &amp; methodology</h2><ul>'+prov+'</ul>',
-      '<p class="note"><strong>Drone flights</strong>: a flight counts toward a district when any point on its recorded path falls inside that district’s boundary (point-in-polygon), so one flight can count toward several districts. <strong>County average</strong>: the mean across all '+nums.length+' council districts; each district’s figures show the difference from that average (pp = percentage points). '+(src.citation?'<strong>Citation</strong>: '+esc(src.citation)+'. ':'')+(src.geography?esc(src.geography)+'. ':'')+'</p>',
+      '<p class="note"><strong>Drone flights</strong>: a flight counts toward a district when any point on its recorded path falls inside that district’s boundary (point-in-polygon), so one flight can count toward several districts. <strong>County average</strong>: the mean across all '+Object.keys(demographics).length+' Metro Council districts (not just the trial districts); each district’s figures show the difference from that average (pp = percentage points). '+(src.citation?'<strong>Citation</strong>: '+esc(src.citation)+'. ':'')+(src.geography?esc(src.geography)+'. ':'')+'</p>',
       '<p class="note">Generated by the Nashville DFR Surveillance Footprint map. Every figure derives from the sources listed above.</p>',
       '</section></body></html>'
     ].join('\n');
@@ -1198,14 +1213,14 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
        {ext:'CSV',fn:function(){dl('dfr_sensitive_sites_'+stamp()+'.csv',sitesCSV(),'text/csv');}}
      ]},
     {name:'Demographic breakdowns',
-     count:function(){return Object.keys(demographics).length+' council districts · ACS 5-yr: race, income, poverty, housing';},
+     count:function(){return trialDistricts().length+' trial districts (Madison Precinct radius) · ACS 5-yr vs county avg';},
      ready:function(){return Object.keys(demographics).length>0;},
      formats:[
        {ext:'CSV',fn:function(){dl('dfr_district_demographics_'+stamp()+'.csv',demoCSV(),'text/csv');}},
        {ext:'JSON',fn:function(){dl('dfr_district_demographics_'+stamp()+'.json',demoJSON(),'application/json');}}
      ]},
     {name:'District report — drones × demographics',
-     count:function(){return 'flights per district vs county average + provenance · opens in browser';},
+     count:function(){return trialDistricts().length+' trial districts · flights vs county average + provenance · opens in browser';},
      ready:function(){return Object.keys(demographics).length>0;},
      formats:[
        {ext:'View',fn:function(){var u=URL.createObjectURL(new Blob([districtReportHTML()],{type:'text/html'}));window.open(u,'_blank');setTimeout(function(){URL.revokeObjectURL(u);},60000);}},
@@ -1383,7 +1398,7 @@ function pathUpTo(coords,frac){
 function fmtScrubTime(t){var d=new Date(t);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});}
 function restoreFlight(fl){
   fl.line.setLatLngs(fl.ll);
-  fl.line.setStyle({color:'#ef4444',weight:flightWeightFor(),opacity:.85});
+  fl.line.setStyle({color:'#ef4444',weight:flightWeightFor(),opacity:1});
   if(fl.swath)fl.swath.setStyle({fillColor:'rgba(239,68,68,.12)',fillOpacity:1});
   if(fl.head){headLayer.removeLayer(fl.head);fl.head=null;}
 }
@@ -1397,7 +1412,7 @@ function applyTime(t){
     }else if(t>=fl.t1){                            // completed — dim full path
       done++;
       fl.line.setLatLngs(fl.ll);
-      fl.line.setStyle({color:'#ef4444',weight:w*0.64,opacity:.3});
+      fl.line.setStyle({color:'#ef4444',weight:w*0.82,opacity:.7});
       if(fl.swath)fl.swath.setStyle({fillColor:'rgba(239,68,68,.12)',fillOpacity:.34});
       if(fl.head){headLayer.removeLayer(fl.head);fl.head=null;}
     }else{                                         // in the air — grow path + head
@@ -1407,7 +1422,7 @@ function applyTime(t){
       fl.line.setStyle({color:'#ff5d5d',weight:w*1.3,opacity:1});
       if(fl.swath)fl.swath.setStyle({fillColor:'rgba(239,68,68,.24)',fillOpacity:1});
       if(p.end){
-        if(!fl.head){fl.head=L.marker(p.end,{icon:DRONE_HEAD_ICON,interactive:false,keyboard:false,zIndexOffset:1500});headLayer.addLayer(fl.head);}
+        if(!fl.head){fl.head=L.marker(p.end,{icon:DRONE_HEAD_ICON,interactive:false,keyboard:false,zIndexOffset:1500,pane:'flightPane'});headLayer.addLayer(fl.head);}
         else fl.head.setLatLng(p.end);
       }
     }
@@ -1523,7 +1538,7 @@ Promise.all([
     var simp=coords.filter(function(_,i){return i%3===0||i===coords.length-1});
     var swath=null;
     if(simp.length>=2){try{var sw=bufLine(simp,SWATH_M);swath=L.polygon(sw,{color:'rgba(239,68,68,.2)',weight:0,fillColor:'rgba(239,68,68,.12)',fillOpacity:1,interactive:false}).addTo(swathGroup)}catch(e){}}
-    var line=L.polyline(ll,{color:'#ef4444',weight:flightWeightFor(),opacity:0.85}).addTo(flightGroup);fb.extend(line.getBounds());
+    var line=L.polyline(ll,{color:'#ef4444',weight:flightWeightFor(),opacity:1,pane:'flightPane'}).addTo(flightGroup);fb.extend(line.getBounds());
     flightLayers.push({line:line,swath:swath,ll:ll,t0:+new Date(f.properties.takeoff),t1:+new Date(f.properties.landing),head:null});});
   buildLaunchRadius();
   setupScrubber();
