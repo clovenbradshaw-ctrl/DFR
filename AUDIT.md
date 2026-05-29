@@ -203,6 +203,130 @@ these need the actual output, which this repo does not contain.
 
 ---
 
+## Output-level results — run against the uploaded bundle (`nashville_dfr_bundle_20260529_2`, generated 2026-05-29 19:24 UTC)
+
+A complete generated bundle was provided, so Tests A–H were run against the
+actual `data/*` files. Results below either **confirm**, **quantify**, or
+**clear** the code-level findings above.
+
+**Test A — dedup (confirms F-01).** `flight_paths.geojson`: **38 features,
+37 unique `flight_id`.** The duplicate is `9a7b3519-…`, ObjectIds **28 & 29**,
+**identical geometry**, `council_districts: [9]`. The non-dedup propagated
+straight into every count.
+
+**F-01 impact, quantified.** The duplicated flight crosses **4 tracts**
+(104.01, 104.03, 104.04, 107.01) and **District 9**. So the published totals
+are inflated as follows:
+
+| Figure | As published | After dedup |
+|---|---|---|
+| Total "drone deployments" (Σ per-tract) | **109** | **105** |
+| Tract 104.01 | 38 | 37 |
+| Tract 104.03 | 27 | 26 |
+| Tract 104.04 | 27 | 26 |
+| Tract 107.01 | 14 | 13 |
+| District 9 flights | 38 | 37 |
+| District-report "County average" flights row | 38 | 37 |
+
+**Test B — race sums (clears F-RACE).** All **12** tracts sum to **95.0–100.1**
+(well inside [85, 110]); the slight sub-100 is the intended AIAN/NHPI/other-NH
+exclusion. **B03002 mapping confirmed correct in output.**
+
+**109 confirmed (F-02).** Σ `drone_deployments` across the 12 tracts = **109**,
+i.e. flight-tract crossing pairs, not flights. Tract 104.01 = 38 = every
+flight (incl. the duplicate) crosses the launch-area tract.
+
+**Test D — District 7 / outside the five (F-06).** **No flight** carries any
+council district outside the trial set. `council_districts` only ever contains
+**3, 9, 10**. No District 7 appears on any flight. So the D7 concern is **not**
+triggered for flights (only the calls/incidents carve-out logic referenced it).
+
+**NEW finding — "5 impacted districts" overstates flight activity (Layer 3 /
+3.2).** Of the five named districts (3, 9, 10, 11, 15), only **three** have any
+recorded flight: **D9 = 38, D10 = 10, D3 = 2. Districts 11 and 15 have ZERO
+recorded DFR flights**, yet `district_demographics.csv` and `trial_scope` still
+present all five as the impacted set. This is MNPD's framing reproduced; the
+data shows activity concentrated in D9. *(F-03a — document where "5 districts"
+appears.)*
+
+**Tests E/F + F-11 — denominators are entirely empty (NEW, significant).**
+`calls_for_service` and `incidents` each have **0 points** in this bundle
+(`full_dataset.json` → both nodes length 0; no `calls_for_service.geojson`
+emitted). Consequently **every tract has `calls = 0` and `incidents = 0`**, and
+**every `drones_per_100_calls` / `drones_per_100_incidents` cell is empty (`""`,
+i.e. null)** — including the column the report **sorts on by default**
+(`index.html:1530`). The bundle's headline construct ("drones vs. calls &
+incidents") therefore ships with **no denominator data at all** in this run, so
+the rate analysis is undefined end-to-end. (The null handling itself is correct
+per F-11 — the issue is that there is nothing to divide by.) Test E match rate
+is 0/38 by construction; one flight has a combined `external_id` (contains "/").
+
+**F-PURPOSE — `flight_purpose` frequencies (F-05).** Present on all 38 features,
+no nulls:
+
+```
+VEHICLE ACCIDENT - PROPERTY DAMAGE  7
+PERSON WITH WEAPON                  6
+DISORDERLY PERSON                   6
+DOMESTIC DISTURBANCE                5
+SAFETY HAZARD                       3
+THEFT                               3
+SUSPICIOUS PERSON                   2
+SHOTS FIRED                         2
+HOLDUP / ROBBERY                    1
+FIRE                                1
+PERSON INDECENTLY EXPOSED           1
+FIGHT / ASSAULT                     1
+```
+
+This is the richest call-type signal in the bundle and is **never surfaced** in
+the explorer or any export view.
+
+**Redaction (confirms F-04).** `vehicle_serial`, `dock_serial`, `user_email`
+are `null` on **every** feature.
+
+**Sensitive sites (confirms F-12).** **1,743** sites (worship 985, school 380,
+playground 352, childcare 26). Names pass through **unnormalized** — confirmed
+defects in source data: **"Shwab School"** (→ Schwab), **"University of Tennesse
+Agriculture Extension"** (→ Tennessee), **"Saint Edwards  Catholic Church and
+School"** (double space). 985 "worship" + only 26 "childcare" suggests an OSM
+amenity extract with uneven category coverage; **count-based claims remain
+unverified** pending the upstream build provenance.
+
+### F-15 — Exported metadata literally reads "…on undefined" (NEW output bug)
+- **LAYER:** Computed (output defect)
+- **FILE/FUNCTION:** `TRACT_METHOD` built at `index.html:1475` inside the IIFE that opens at `:1216`; `PILOT_START` not assigned until `:1929`.
+- **DESCRIPTION:** The IIFE runs at parse time and eagerly evaluates `var TRACT_METHOD = '… since 12:00 AM CT on ' + PILOT_START + '.'`. Because `PILOT_START` is a `var` hoisted but **not assigned until 454 lines later**, it is `undefined` at that moment. The string is baked once and never recomputed.
+- **OBSERVED:** `tract_analysis.csv`, `tract_analysis.geojson`, and
+  `full_dataset.json` all contain **"…inside the 2-mile flight radius since
+  12:00 AM CT on undefined."** (The `acsYearLabel()` half of the same sentence
+  renders correctly because it is a function called lazily.)
+- **EXPECTED:** "…on 2026-05-26."
+- **DIFFERENCE:** A pure string-ordering defect; the date is right everywhere it
+  is computed lazily, wrong only in this eagerly-built constant.
+- **IMPACT:** The published methodology note in three exported files reads
+  "undefined" instead of the pilot start date — a credibility/correctness hit on
+  the very datasets meant to be the audit trail.
+- **RESOLUTION:** **Fix — trivial.** Either move the `PILOT_START*` declarations
+  (`:1929-1931`) above the IIFE at `:1216`, or make `TRACT_METHOD` a lazily-
+  called function like the neighboring `SRC_TRACTS()` (`:1474`).
+
+---
+
+## Updated clearance status after the output run
+
+- **F-DUPL:** still **BLOCKS** — confirmed in output; impact quantified (109 → 105; D9 38 → 37).
+- **F-109:** still needs caveat — confirmed 109 = crossing pairs.
+- **F-RACE:** ✅ **CLEARED in output** — all tracts 95.0–100.1.
+- **F-PROJ:** ✅ cleared (geodesic).
+- **F-D7:** ✅ **resolved** — no flight outside {3,9,10}; no D7 on flights.
+- **F-PURPOSE:** frequencies now documented above; still unsurfaced in the tool.
+- **NEW F-15:** "undefined" in exported metadata — trivial fix.
+- **NEW (denominators):** calls/incidents empty in this bundle → all rate columns null; the lead comparison has no denominator data this run.
+- **NEW (3.2):** D11 and D15 have zero flights yet are presented as impacted.
+
+---
+
 ## Notes on what could NOT be audited here
 
 This repository holds the generator, not the generated `data/`. The
