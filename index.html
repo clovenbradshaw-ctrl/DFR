@@ -37,11 +37,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .tipa-ref{font:inherit;background:transparent;border:none;color:#dce4f0;font-weight:600;cursor:pointer;padding:0 1px;border-bottom:1px dotted rgba(252,165,165,.6);transition:color .15s,border-bottom-color .15s;line-height:inherit}
 .tipa-ref:hover,.tipa-ref:focus-visible{color:#fca5a5;border-bottom-color:#fca5a5;outline:none}
 .tipa-ref::after{content:'';display:inline-block;width:4px;height:4px;border-radius:50%;background:currentColor;margin:0 0 7px 4px;opacity:.55;vertical-align:middle}
+.headline-note{display:flex;gap:7px;margin-top:9px;font-size:11.5px;color:var(--mut2);line-height:1.5;align-items:flex-start;padding-top:9px;border-top:1px solid var(--line)}
+.headline-note svg{flex-shrink:0;width:13px;height:13px;stroke:var(--mut);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:2px;opacity:.8}
+.headline-note strong{color:var(--mut);font-weight:600}
+.headline-note a{color:var(--mut);text-decoration:none;border-bottom:1px dotted var(--mut2)}
+.headline-note a:hover{color:var(--acc);border-bottom-color:var(--acc)}
 .headline-toggle{position:absolute;top:calc(10px + var(--safe-t));right:12px;width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;z-index:2}
 .headline-toggle:hover{background:rgba(255,255,255,.1)}
 .headline-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
 .headline.collapsed .headline-toggle svg{transform:rotate(180deg)}
 .headline.collapsed .headline-body .headline-bullet,
+.headline.collapsed .headline-body .headline-note,
 .headline.collapsed .headline-body h1{display:none}
 .headline.collapsed .headline-collapsed-text{display:block}
 .headline-collapsed-text{display:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#fff;line-height:1.3;padding-right:8px}
@@ -52,6 +58,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
   .headline-body{padding-right:48px}
   .headline h1{font-size:16.5px;line-height:1.25}
   .headline-bullet{font-size:11.5px;margin-top:7px;line-height:1.45}
+  .headline-note{font-size:10.5px;margin-top:7px;padding-top:7px}
   .headline-mark{font-size:9.5px;letter-spacing:.1em}
   .headline-toggle{top:calc(8px + var(--safe-t));right:9px;width:32px;height:32px}
 }
@@ -352,6 +359,10 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
   <div class="headline-body">
     <h1>MNPD Drone Trial: Is your child's <em>playground, school</em>, your <em>home</em>, or your <em>place of worship</em> being recorded?</h1>
     <div class="headline-bullet"><div><strong>These are the actual flight paths</strong> from MNPD's Drone-as-First-Responder trial, which began <strong>May 26</strong>. MNPD says they're not sharing the footage &mdash; but they have no control over what their vendor does with it. Under <button class="tipa-ref" id="tipaRef" type="button" aria-label="What is TIPA? Tap for explanation" aria-haspopup="dialog">TIPA</button>, the footage can be shared with any law enforcement agency, and local government is preempted from limiting that.</div></div>
+    <div class="headline-note">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span>This is a <strong>citizen-led data project</strong>, not an official government source. Every layer links to its origin &mdash; <a href="#" id="headlineSrcLink">follow through to the sources</a> to verify the evidence yourself. Questions? <a href="mailto:scores.patch.points@proton.me">scores.patch.points@proton.me</a></span>
+    </div>
     <div class="headline-collapsed-text">MNPD Drone Trial &middot; actual flight paths since <em>May 26</em>. <span style="color:var(--mut)">Tap to read more</span></div>
   </div>
   <button class="headline-toggle" id="headlineToggle" aria-label="Collapse banner" aria-expanded="true">
@@ -466,7 +477,8 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
     <p>Tap any location to see whether drone cameras passed overhead and how your council district compares to the county on race, income, poverty, and housing burden.</p>
     <p><strong>Scrub through time:</strong> use the timeline at the bottom — drag the slider or hit play to replay the flights in order. Drones <span style="color:#ff6b6b">in the air</span> grow their path live; completed flights fade back. Tap <strong>ALL</strong> to show every flight at once again.</p>
     <p><strong>Camera reality:</strong> at ~150 ft altitude, MPD drones can identify faces and license plates at roughly 1.2 cm per pixel.</p>
-    <div class="legend-block">
+    <p style="font-size:12.5px;color:var(--mut2);line-height:1.6;border-left:2px solid var(--line);padding-left:11px">This is a <strong style="color:var(--mut);font-weight:600">citizen-led data project</strong>, not an official Metro or MNPD product. It compiles public records and open data into one view. Don't take it on faith — follow each link below to the original source and verify the evidence yourself.</p>
+    <div class="legend-block" id="aboutSources">
       <div class="legend-t">Data sources — where every layer comes from</div>
       <ul class="src-list">
         <li><strong>Drone flight paths</strong> — MNPD Drone-as-First-Responder flight logs, publicly disclosed. <a href="https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/refs/heads/main/dfr/flight_paths.geojson" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
@@ -493,6 +505,7 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
       <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Download this data
     </button>
+    <p style="font-size:12px;color:var(--mut2);line-height:1.6;margin-top:14px;text-align:center">Questions, corrections, or a source to add? <a href="mailto:scores.patch.points@proton.me" style="color:var(--acc);text-decoration:none;border-bottom:1px dotted var(--acc)">scores.patch.points@proton.me</a></p>
   </div>
 </div>
 
@@ -963,6 +976,7 @@ function closeAbout(){document.getElementById('aboutBg').classList.remove('show'
 document.getElementById('aboutBtn').addEventListener('click',openAbout);
 document.getElementById('aboutClose').addEventListener('click',closeAbout);
 document.getElementById('aboutBg').addEventListener('click',function(e){if(e.target===this)closeAbout()});
+(function(){var sl=document.getElementById('headlineSrcLink');if(sl)sl.addEventListener('click',function(e){e.preventDefault();openAbout();var blk=document.getElementById('aboutSources');if(blk)setTimeout(function(){blk.scrollIntoView({behavior:'smooth',block:'start'})},80);});})();
 
 // ── Data export ──
 (function(){
