@@ -1144,6 +1144,8 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     var fpd=flightsPerDistrict(),src=demoSourceObj(),nums=Object.keys(demographics);
     var ordered=nums.slice().sort(function(a,b){return (fpd[b]||0)-(fpd[a]||0)||(+a)-(+b);});
     var covered=nums.filter(function(dn){return (fpd[dn]||0)>0;}).length,gen=new Date();
+    var haveBounds=Object.keys(districtPolys).length>0;
+    var warn=haveBounds?'':'<p class="sub" style="color:#fca5a5;font-weight:600">⚠ Council-district boundaries did not load, so flights could not be matched to districts — the counts below are not reliable. Reopen the map with a working connection and try again.</p>';
     function row(dn){
       var d=demographics[dn],cm=CM[dn]||{},re=d.race_ethnicity,f=fpd[dn]||0;
       return '<tr'+(f>0?' class="hit"':'')+'><td class="dn">'+dn+'</td><td class="cm">'+esc(cm.n)+'</td><td class="flights">'+f+'</td><td class="num">'+(+d.population).toLocaleString()+'</td>'+
@@ -1170,6 +1172,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       '<title>Nashville DFR — Drone Flights by Council District</title>','<style>'+REPORT_CSS+'</style></head><body>',
       '<header><h1>Nashville Drone-as-First-Responder: flights by council district</h1>',
       '<p class="sub">Drone flights recorded over each Metro Council district, with that district’s demographics measured against the county average. Generated '+esc(gen.toLocaleString())+'.</p>',
+      warn,
       '<div class="stats"><div class="stat"><b>'+allFlights.length+'</b><span>flights logged</span></div><div class="stat"><b>'+covered+'</b><span>of '+nums.length+' districts overflown</span></div><div class="stat"><b>'+(topD?('District '+topD+' · '+(fpd[topD]||0)+' flights'):'—')+'</b><span>most-flown district</span></div></div></header>',
       '<div class="tablewrap"><table><thead>'+head+'</thead><tbody>'+refRow+ordered.map(row).join('')+'</tbody></table></div>',
       '<section class="prov"><h2>Sources &amp; methodology</h2><ul>'+prov+'</ul>',
