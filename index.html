@@ -1865,7 +1865,8 @@ function loadTractGeom(){
     if(lid==null)layers.forEach(function(l){if(lid==null&&/tract/i.test(l.name))lid=l.id;});
     if(lid==null)lid=0;
     var bb=csiBbox(radiusCenter,2*MILE_M);
-    var params={where:"STATE='47' AND COUNTY='037'",geometry:bb.join(','),geometryType:'esriGeometryEnvelope',inSR:'4326',spatialRel:'esriSpatialRelIntersects',outFields:'*',outSR:'4326',returnGeometry:'true',f:'geojson'};
+    // Esri JSON (f=json) is always supported; esriToGeoJSON() converts the rings.
+    var params={where:"STATE='47' AND COUNTY='037'",geometry:bb.join(','),geometryType:'esriGeometryEnvelope',inSR:'4326',spatialRel:'esriSpatialRelIntersects',outFields:'*',outSR:'4326',returnGeometry:'true',f:'json'};
     return csiFetch(svc+'/'+lid+'/query?'+new URLSearchParams(params).toString());
   });
 }
@@ -1971,14 +1972,22 @@ function loadTracts(){
   tractsLoaded=true;
   radiusCenter=radiusCenter||launchPoint()||[PRECINCT.lat,PRECINCT.lng];
   var st=document.getElementById('tractStatus');if(st)st.textContent='loading…';
-  Promise.all([loadTractGeom(),loadACSProfiles()]).then(function(r){
-    plotTracts(r[0],r[1]);
+  // Geometry and ACS load independently: if ACS is blocked we still draw the
+  // tract outlines (greyed); if geometry fails there's nothing to draw.
+  var pGeom=loadTractGeom().catch(function(e){console.warn('tract geometry failed',e);return null;});
+  var pAcs=loadACSProfiles().catch(function(e){console.warn('ACS fetch failed',e);return {};});
+  Promise.all([pGeom,pAcs]).then(function(r){
+    var geom=r[0],acs=r[1]||{};
+    if(!geom||!((geom.features&&geom.features.length))){
+      if(st)st.textContent='geometry unavailable';
+      var row=document.querySelector('.lyr-row[data-layer="tracts"] .lyr-name');if(row)row.textContent='Census tracts (unavailable)';
+      return;
+    }
+    plotTracts(geom,acs);
     tractGroup.addTo(map);
-    if(st)st.textContent=tractFeatures.length+' tracts';
-  }).catch(function(e){
-    console.warn('tracts load failed',e);
-    if(st)st.textContent='unavailable';
-    var row=document.querySelector('.lyr-row[data-layer="tracts"] .lyr-name');if(row)row.textContent='Census tracts (unavailable)';
+    var withAcs=tractFeatures.filter(function(f){return f.properties._vals;}).length;
+    console.log('Census tracts: '+tractFeatures.length+' in radius, '+withAcs+' with ACS, '+Object.keys(acs).length+' ACS rows');
+    if(st)st.textContent=tractFeatures.length?(tractFeatures.length+' tracts'+(withAcs<tractFeatures.length?' · ACS partial':'')):'no tracts in range';
   });
 }
 // Wire the variable picker (built once)
