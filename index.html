@@ -670,6 +670,33 @@ function findDist(lat,lng){for(var dn in districtPolys){for(var r=0;r<districtPo
 
 // ── Council district overlay (boundaries + labels) ──
 function distStyle(sel){return{color:sel?'#9cc3ff':'#4d8df5',weight:sel?2.6:1.3,opacity:sel?.95:.5,fill:true,fillColor:'#4d8df5',fillOpacity:sel?.12:.035};}
+// A point guaranteed to sit *inside* the district (not just its bbox center, which
+// can fall in a concave gap or a neighbor for L-shaped districts). Picks the widest
+// interior horizontal span across the largest ring — a lightweight pole-of-inaccessibility.
+function ringAreaLL(ring){var s=0;for(var i=0,j=ring.length-1;i<ring.length;j=i++)s+=ring[j][0]*ring[i][1]-ring[i][0]*ring[j][1];return s/2;}
+function insideDistrict(xy,rings){var c=false;for(var r=0;r<rings.length;r++)if(inPoly(xy,rings[r]))c=!c;return c;}   // even-odd: respects holes
+function districtLabelLatLng(dn){
+  var rings=districtPolys[dn];if(!rings||!rings.length)return null;
+  var outer=rings[0],bestA=-1;
+  for(var i=0;i<rings.length;i++){var a=Math.abs(ringAreaLL(rings[i]));if(a>bestA){bestA=a;outer=rings[i];}}
+  var minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+  for(var i=0;i<outer.length;i++){var p=outer[i];if(p[0]<minX)minX=p[0];if(p[0]>maxX)maxX=p[0];if(p[1]<minY)minY=p[1];if(p[1]>maxY)maxY=p[1];}
+  var best=null,bestW=-1,STEPS=17;
+  for(var s=1;s<STEPS;s++){
+    var y=minY+(maxY-minY)*s/STEPS,xs=[];
+    for(var i=0,j=outer.length-1;i<outer.length;j=i++){
+      var yi=outer[i][1],yj=outer[j][1];
+      if((yi>y)!==(yj>y))xs.push(outer[i][0]+(outer[j][0]-outer[i][0])*(y-yi)/(yj-yi));
+    }
+    xs.sort(function(a,b){return a-b;});
+    for(var k=0;k+1<xs.length;k+=2){
+      var w=xs[k+1]-xs[k];if(w<=bestW)continue;
+      var mx=(xs[k]+xs[k+1])/2;
+      if(insideDistrict([mx,y],rings)){bestW=w;best=[y,mx];}   // [lat,lng]
+    }
+  }
+  return best;
+}
 function buildDistrictOverlay(gj){
   districtLayer=L.geoJSON(gj,{
     interactive:false,
@@ -678,7 +705,8 @@ function buildDistrictOverlay(gj){
       var dn=(f.properties.DistrictName||'').replace(/\D/g,'');
       if(!dn)return;
       districtLayerByNum[dn]=layer;
-      var c=layer.getBounds().getCenter();
+      var ip=districtLabelLatLng(dn);
+      var c=ip?L.latLng(ip[0],ip[1]):layer.getBounds().getCenter();
       var m=L.marker(c,{interactive:true,keyboard:false,riseOnHover:true,
         icon:L.divIcon({className:'dist-label',html:distLabelHTML(dn),iconSize:[30,18],iconAnchor:[15,9]})});
       m.on('click',function(ev){L.DomEvent.stopPropagation(ev);showDistrictSummary(dn);});
