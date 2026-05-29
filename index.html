@@ -317,9 +317,41 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .lyr-row.on .lyr-sw{background:var(--acc)}
 .lyr-row.on .lyr-sw::after{transform:translateX(15px)}
 @media(max-width:768px){.layers-menu{right:62px}}
-.dist-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.dist-label span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1;color:#bcd6ff;background:rgba(8,13,22,.74);border:1px solid rgba(77,141,245,.5);border-radius:5px;padding:2px 5px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.dist-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer}
+.dist-label span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1;color:#bcd6ff;background:rgba(8,13,22,.74);border:1px solid rgba(77,141,245,.5);border-radius:5px;padding:2px 5px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6);transition:background .12s,border-color .12s}
+.dist-label:hover span{background:rgba(77,141,245,.4);border-color:#bcd6ff;color:#fff}
 .dist-label.sel span{color:#fff;background:rgba(77,141,245,.9);border-color:#bcd6ff}
+/* Districts inside the 2-mile flight radius: a brighter, named pill so you can tell which is which */
+.dist-label.incircle{gap:0}
+.dist-label.incircle span{display:inline-flex;align-items:center;font-size:11px;background:rgba(20,12,4,.82);border:1px solid var(--warn);box-shadow:0 1px 5px rgba(0,0,0,.6)}
+.dist-label.incircle .dl-num{color:#0a0f17;background:var(--warn);font-weight:800;border-radius:4px 0 0 4px;border:none;padding:3px 6px}
+.dist-label.incircle .dl-nm{color:#ffd9a0;padding:3px 6px;border-radius:0;font-family:'DM Sans',sans-serif;font-weight:700;letter-spacing:.01em}
+.dist-label.incircle .dl-ct{color:#ffb4a8;border-radius:0 4px 4px 0;border-left:1px solid rgba(245,158,11,.45);padding:3px 6px;font-weight:800}
+.dist-label.incircle .dl-ct.hit{color:#fff;background:var(--hit)}
+.dist-label.incircle:hover span{background:rgba(40,24,6,.92);border-color:#ffd9a0}
+.dist-label.incircle.sel span{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35),0 1px 5px rgba(0,0,0,.6)}
+/* Census-tract ACS choropleth control */
+.tract-ctl{position:fixed;left:14px;bottom:calc(16px + var(--safe-b));z-index:1000;display:none;width:240px;max-width:calc(100vw - 28px);background:var(--surf);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:13px;box-shadow:0 12px 40px rgba(0,0,0,.6);padding:11px 12px}
+.tract-ctl-t{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.tract-ctl-t #tractStatus{color:var(--acc);text-transform:none;letter-spacing:0;font-weight:500}
+.tract-ctl select{width:100%;background:#0c1018;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.tract-legend{display:flex;flex-direction:column;gap:3px;margin-top:9px}
+.tract-legend .tl-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--mut);font-family:'JetBrains Mono',monospace}
+.tract-legend .tl-sw{width:15px;height:11px;border-radius:3px;flex-shrink:0}
+.tract-ctl-note{font-size:10.5px;color:var(--mut2);line-height:1.45;margin-top:8px}
+body.timebar-on .tract-ctl{bottom:calc(82px + var(--safe-b))}
+@media(max-width:768px){.tract-ctl{left:10px;bottom:calc(82px + var(--safe-b));width:210px}}
+/* Calls-for-service / incident popups */
+.csi-pop{max-height:230px;overflow:auto}
+.csi-pop table{border-collapse:collapse;font-size:11.5px;font-family:'JetBrains Mono',monospace}
+.csi-pop th{text-align:left;color:var(--mut);font-weight:500;padding:2px 10px 2px 0;vertical-align:top;white-space:nowrap}
+.csi-pop td{color:var(--txt);padding:2px 0;word-break:break-word}
+.csi-pop .csi-h{font-family:'DM Sans',sans-serif;font-weight:700;font-size:12.5px;color:var(--txt);margin-bottom:6px}
+/* District-wide drone tally inside the address panel */
+.p-distflights{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);line-height:1.5;background:rgba(255,255,255,.02)}
+.p-distflights b{color:#fca5a5}
+.p-distflights a{color:var(--acc);text-decoration:none;border-bottom:1px dotted var(--acc);cursor:pointer}
+.p-distflights a:hover{color:#9cc3ff}
 .prec-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .prec-label span{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;line-height:1;letter-spacing:.04em;text-transform:uppercase;color:#a5f3fc;background:rgba(8,13,22,.78);border:1px solid rgba(34,211,238,.55);border-radius:5px;padding:2px 6px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6)}
 @media(max-width:768px){.dist-label span{font-size:10px;padding:1px 4px}.prec-label span{font-size:9px;padding:1px 4px}}
@@ -404,11 +436,28 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
   <div class="lyr-row" data-layer="precincts" role="switch" aria-checked="false" tabindex="0">
     <span class="lyr-ic box" style="border-color:#22d3ee;border-style:dashed"></span><span class="lyr-name">Police precincts</span><span class="lyr-sw"></span>
   </div>
+  <div class="lyr-row on" data-layer="calls" role="switch" aria-checked="true" tabindex="0">
+    <span class="lyr-ic dot" style="background:#6fd3ff"></span><span class="lyr-name">Calls for service</span><span class="lyr-sw"></span>
+  </div>
+  <div class="lyr-row on" data-layer="incidents" role="switch" aria-checked="true" tabindex="0">
+    <span class="lyr-ic dot" style="background:#ffd166"></span><span class="lyr-name">Incident reports</span><span class="lyr-sw"></span>
+  </div>
+  <div class="lyr-row" data-layer="tracts" role="switch" aria-checked="false" tabindex="0">
+    <span class="lyr-ic box" style="border-color:#a7e0f2;background:rgba(167,224,242,.25)"></span><span class="lyr-name">Census tracts (ACS)</span><span class="lyr-sw"></span>
+  </div>
+</div>
+
+<!-- Census-tract choropleth control (shown when the ACS tracts layer is on) -->
+<div class="tract-ctl" id="tractCtl">
+  <div class="tract-ctl-t">Census tracts · ACS 2018–2022 <span id="tractStatus"></span></div>
+  <select id="tractVar" aria-label="Census-tract variable to shade by"></select>
+  <div class="tract-legend" id="tractLegend"></div>
+  <div class="tract-ctl-note">Tracts intersecting the 2-mile radius. Click a tract for its full ACS profile.</div>
 </div>
 
 <div class="hint" id="hint">
   <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-  Tap anywhere to check that address
+  Tap an address to check it — or a district number to explore it
 </div>
 
 <!-- Time scrubber -->
@@ -475,6 +524,7 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
     <h2 id="aboutTitle">Nashville's Drone Surveillance Footprint</h2>
     <p>This map plots <strong>publicly disclosed Metro Nashville Police Drone-as-First-Responder flight paths</strong> against the city's most sensitive sites — schools, childcare, playgrounds, places of worship.</p>
     <p>Tap any location to see whether drone cameras passed overhead and how your council district compares to the county on race, income, poverty, and housing burden.</p>
+    <p><strong>Explore by district:</strong> the districts inside the 2-mile flight radius are labeled with their member’s name and a running count of DFR flights that have crossed them. Tap any district number on the map (or “Explore this district” in the panel) to see that district’s demographics and how many drones have entered it.</p>
     <p><strong>Scrub through time:</strong> use the timeline at the bottom — drag the slider or hit play to replay the flights in order. Drones <span style="color:#ff6b6b">in the air</span> grow their path live; completed flights fade back. Tap <strong>ALL</strong> to show every flight at once again.</p>
     <p><strong>Camera reality:</strong> at ~150 ft altitude, MPD drones can identify faces and license plates at roughly 1.2 cm per pixel.</p>
     <p style="font-size:12.5px;color:var(--mut2);line-height:1.6;border-left:2px solid var(--line);padding-left:11px">This is a <strong style="color:var(--mut);font-weight:600">citizen-led data project</strong>, not an official Metro or MNPD product. It compiles public records and open data into one view. Don't take it on faith — follow each link below to the original source and verify the evidence yourself.</p>
@@ -485,6 +535,9 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
         <li><strong>Demographics</strong> &amp; council-district breakdowns — <span id="srcDemoText">U.S. Census Bureau, American Community Survey (ACS) 2017&ndash;2021 5-Year Estimates, compiled by Metropolitan Social Services, Know Your Community 2023</span>. <a href="https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/nashville_council_district_demographics.json" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
         <li><strong>Sensitive sites</strong> — schools, childcare, playgrounds &amp; places of worship, compiled from Metro Nashville GIS &amp; OpenStreetMap. <a href="https://raw.githubusercontent.com/clovenbradshaw-ctrl/plain-text/main/dfr/sensitive_sites.json" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
         <li><strong>Council districts &amp; precincts</strong> — Metro Nashville GIS; boundaries per BL2021-1052 (eff. Jan&nbsp;2022). <a href="https://maps.nashville.gov/arcgis/rest/services/Elections/Precincts/MapServer/1/query?where=1%3D1&outFields=DistrictName&f=geojson" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
+        <li><strong>Calls for service</strong> — MNPD “Calls for Service” (data.nashville.gov), since the May&nbsp;26 pilot launch and filtered to points inside the 2-mile flight radius. <a href="https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Calls-for-Servic/kwnd-qrrm" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
+        <li><strong>Incident reports</strong> — MNPD reported incidents (data.nashville.gov), same date and in-radius filters. <a href="https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Incidents/2u6v-ujjs" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
+        <li><strong>Census tracts (ACS)</strong> — U.S. Census Bureau ACS 2018–2022 5-Year Estimates by tract (Davidson County), pulled live from the Census API; tract boundaries from Census TIGERweb. Shown for tracts intersecting the 2-mile radius. <a href="https://www.census.gov/data/developers/data-sets/acs-5year.html" target="_blank" rel="noopener">data&nbsp;&#8599;</a></li>
         <li><strong>Satellite imagery</strong> — Metro Nashville 2022 aerial imagery, with Esri World Imagery as fallback.</li>
       </ul>
       <div style="font-size:11px;color:var(--mut2);line-height:1.5;margin-top:9px">Which council district each flight and site falls in is computed in-browser (point-in-polygon against the Metro GIS boundaries) and included in every export.</div>
@@ -496,6 +549,8 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
       <div class="li"><div class="lsw" style="background:transparent;border:1px solid rgba(77,141,245,.7);height:11px;border-radius:2px"></div>Council district boundary</div>
       <div class="li"><div class="lci" style="background:transparent;border:1.5px dashed #f59e0b;width:11px;height:11px"></div>2-mi launch radius (Dist. 7 carved out)</div>
       <div class="li"><div class="lsw" style="background:transparent;border:1px dashed #22d3ee;height:11px;border-radius:2px"></div>Police precinct (toggle, top-right)</div>
+      <div class="li"><div class="lci" style="background:#6fd3ff"></div>MNPD call for service (in radius · since May&nbsp;26)</div>
+      <div class="li"><div class="lci" style="background:#ffd166"></div>MNPD incident report (in radius · since May&nbsp;26)</div>
       <div class="li"><div class="lci" style="background:#34d399"></div>School</div>
       <div class="li"><div class="lci" style="background:#a78bfa"></div>Childcare</div>
       <div class="li"><div class="lci" style="background:#06d6a0"></div>Playground</div>
@@ -583,6 +638,7 @@ map.on('zoomend',function(){
 var allFlights=[],allSites=[],demographics={},demoMeta={},baseline={},districtPolys={},clickMarker;
 var flightLayers=[],headLayer=null,timeMode=false,tMin=0,tMax=0,tCur=0,playing=false,rafId=null,lastTs=0,PLAY_MS=22000;
 var districtLayer=null,districtLabelLayer=null,districtLayerByNum={},districtLabelByNum={},districtsVisible=true,selDistrict=null;
+var flightsByDistrict={},inCircleSet={};   // drones per district + which districts the 2-mi radius touches
 var precinctLayer=null,precinctLabelLayer=null,precinctLabels=[],precinctsVisible=false;
 // Toggleable feature layer-groups + their visibility state
 var flightGroup=L.layerGroup().addTo(map),swathGroup=L.layerGroup().addTo(map),siteGroup=L.layerGroup().addTo(map);
@@ -623,12 +679,60 @@ function buildDistrictOverlay(gj){
       if(!dn)return;
       districtLayerByNum[dn]=layer;
       var c=layer.getBounds().getCenter();
-      districtLabelByNum[dn]=L.marker(c,{interactive:false,keyboard:false,icon:L.divIcon({className:'dist-label',html:'<span>'+dn+'</span>',iconSize:[30,18],iconAnchor:[15,9]})});
+      var m=L.marker(c,{interactive:true,keyboard:false,riseOnHover:true,
+        icon:L.divIcon({className:'dist-label',html:distLabelHTML(dn),iconSize:[30,18],iconAnchor:[15,9]})});
+      m.on('click',function(ev){L.DomEvent.stopPropagation(ev);showDistrictSummary(dn);});
+      districtLabelByNum[dn]=m;
     }
   }).addTo(map);
   districtLabelLayer=L.layerGroup(Object.keys(districtLabelByNum).map(function(k){return districtLabelByNum[k]}));
   map.on('zoomend',updateDistrictLabels);
   updateDistrictLabels();
+}
+// Label content: bare number, or — for districts the 2-mile radius touches —
+// a brighter pill with the member's surname and the running drone-flight count.
+function distLabelHTML(dn){
+  if(inCircleSet[dn]){
+    var cm=CM[dn]||{},last=(cm.n||'').trim().split(/\s+/).pop()||'',ct=flightsByDistrict[dn]||0;
+    return '<span class="dl-num">'+dn+'</span>'+(last?'<span class="dl-nm">'+last+'</span>':'')+
+           '<span class="dl-ct'+(ct>0?' hit':'')+'" title="DFR flights that have crossed this district">'+ct+'</span>';
+  }
+  return '<span>'+dn+'</span>';
+}
+// Re-render every label once drone counts and the in-circle set are known
+function refreshDistrictLabels(){
+  for(var dn in districtLabelByNum){
+    var m=districtLabelByNum[dn],el=m.getElement(),wasSel=el&&el.classList.contains('sel');
+    m.setIcon(L.divIcon({className:'dist-label'+(inCircleSet[dn]?' incircle':'')+(wasSel?' sel':''),
+      html:distLabelHTML(dn),iconSize:inCircleSet[dn]?null:[30,18],iconAnchor:inCircleSet[dn]?[34,11]:[15,9]}));
+    // keep the click handler after the icon swap
+    m.off('click');
+    (function(d){m.on('click',function(ev){L.DomEvent.stopPropagation(ev);showDistrictSummary(d);});})(dn);
+  }
+  updateDistrictLabels();
+}
+// Distinct DFR flights whose recorded path crosses each council district
+function flightDistrictsOf(f){
+  var c=exCoords(f.geometry),seen={},out=[];
+  for(var i=0;i<c.length;i++){var dn=findDist(c[i][1],c[i][0]);if(dn&&!seen[dn]){seen[dn]=1;out.push(dn);}}
+  return out;
+}
+function computeFlightsByDistrict(){
+  flightsByDistrict={};
+  allFlights.forEach(function(f){flightDistrictsOf(f).forEach(function(dn){flightsByDistrict[dn]=(flightsByDistrict[dn]||0)+1;});});
+}
+// Which council districts the 2-mile launch radius actually touches
+function computeInCircle(){
+  inCircleSet={};
+  var c=launchPoint();if(!c)return;
+  var R=2*MILE_M+40;
+  for(var dn in districtPolys){
+    var rings=districtPolys[dn],hit=false;
+    for(var r=0;r<rings.length&&!hit;r++){if(pip(c[0],c[1],rings[r]))hit=true;}     // launch point sits inside
+    for(var r=0;r<rings.length&&!hit;r++){var ring=rings[r];
+      for(var i=0;i<ring.length;i++){if(gdist(c[0],c[1],ring[i][1],ring[i][0])<=R){hit=true;break;}}}
+    if(hit)inCircleSet[dn]=true;
+  }
 }
 function updateDistrictLabels(){
   if(!districtLabelLayer)return;
@@ -726,6 +830,73 @@ function setPanelState(s){
   document.getElementById('panel').dataset.state=s;
 }
 
+// Demographics block (race/poverty/age bars vs county + key-metric cards) — shared
+// by the address panel and the per-district explorer so both read identically.
+function demoBlock(d){
+  if(!d)return'';
+  var re=d.race_ethnicity,h='';
+  h+='<div class="sect"><div class="sect-t">District vs. County Baseline</div><div class="dv-hdr"><div class="dv-label"></div><div class="dv-track"><span>← below</span><span>above →</span></div><div class="dv-val"></div></div>';
+  h+=dvB('White',re.pct_white,baseline.pct_white,'pp','#93a8d0');
+  h+=dvB('Black',re.pct_black,baseline.pct_black,'pp','#a78bfa');
+  h+=dvB('Hispanic',re.pct_hispanic,baseline.pct_hispanic,'pp','#f59e0b');
+  h+=dvB('Asian',re.pct_asian,baseline.pct_asian,'pp','#06d6a0');
+  h+='<div class="dv-sep"></div>';
+  h+=dvB('Poverty',d.poverty.pct_total_poverty,baseline.pct_total_poverty,'pp',null,true);
+  h+=dvB('Child pov.',d.poverty.pct_child_poverty,baseline.pct_child_poverty,'pp',null,true);
+  h+=dvB('Unemp.',d.employment.unemployment_rate,baseline.unemployment_rate,'pp',null,true);
+  h+=dvB('Rent burden',d.housing.pct_renter_cost_burdened_35plus,baseline.pct_renter_cost_burdened_35plus,'pp',null,true);
+  h+='<div class="dv-sep"></div>';
+  h+=dvB('Under 18',d.age.pct_under_18,baseline.pct_under_18,'pp','#06d6a0');
+  h+=dvB('Over 65',d.age.pct_65_and_over,baseline.pct_65_and_over,'pp','#7e92b8');
+  h+='</div>';
+  var io=Math.round(d.income.median_household_income-baseline.median_household_income),ho=Math.round(d.housing.median_owner_value-baseline.median_owner_value);
+  h+='<div class="sect"><div class="sect-t">Key metrics</div>';
+  h+='<div class="km-row"><div class="km"><div class="km-v">'+fmtMoney(d.income.median_household_income)+'</div><div class="km-l">Med. household</div><div class="km-off" style="color:'+(io<0?'#ef4444':'#34d399')+'">'+(io>=0?'+':'')+fmtMoney(io)+' vs county</div></div><div class="km"><div class="km-v">'+fmtMoney(d.housing.median_owner_value)+'</div><div class="km-l">Home value</div><div class="km-off" style="color:'+(ho<0?'#ef4444':'#34d399')+'">'+(ho>=0?'+':'')+fmtMoney(ho)+' vs county</div></div></div>';
+  h+='<div class="km-row"><div class="km"><div class="km-v">'+d.population.toLocaleString()+'</div><div class="km-l">Population</div><div class="km-off" style="color:var(--mut)">'+d.age.pct_under_18+'% under 18</div></div><div class="km"><div class="km-v">$'+d.housing.median_monthly_rent+'</div><div class="km-l">Med. rent</div><div class="km-off" style="color:var(--mut)">'+d.housing.pct_renter_cost_burdened_35plus+'% burdened</div></div></div></div>';
+  return h;
+}
+
+// District explorer — click a district (its number on the map, or "Explore" in the
+// address panel) to see who represents it, how many DFR flights have crossed it,
+// and its demographics against the county.
+function showDistrictSummary(dn){
+  dn=String(dn).replace(/\D/g,'');
+  if(!dn)return;
+  var d=demographics[dn],cm=CM[dn]||{},ct=flightsByDistrict[dn]||0,inC=inCircleSet[dn];
+  document.getElementById('hint').classList.add('hide');
+  document.getElementById('pip').classList.remove('show');          // district view isn't tied to one address
+  if(clickMarker){map.removeLayer(clickMarker);clickMarker=null;}
+  highlightDistrict(dn);
+  if(districtLayerByNum[dn]){try{map.fitBounds(districtLayerByNum[dn].getBounds(),{padding:isMobile?[40,40]:[80,80],maxZoom:14});}catch(e){}}
+  var h='';
+  h+='<div class="p-head"><div class="p-dist">Council District '+dn+(inC?' · in flight radius':'')+'</div>'+
+     (cm.n?'<div class="p-name">'+cm.n+'</div>':'<div class="p-name">District '+dn+'</div>')+
+     (cm.p?'<div class="p-phone"><a href="tel:'+cm.p.replace(/-/g,'')+'">'+cm.p+'</a></div>':'')+
+     '<div class="p-addr">'+(inC?'Inside the 2-mile Madison Precinct DFR flight radius.':'Outside the trial’s 2-mile flight radius.')+'</div></div>';
+  if(ct>0){
+    h+='<div class="p-verdict hit"><div class="p-verdict-t" style="color:#ef4444">'+ct+' drone flight'+(ct>1?'s have':' has')+' entered this district</div>'+
+       '<div class="p-verdict-b">Counted whenever a recorded DFR flight path crosses District '+dn+' (point-in-polygon). One flight can cross several districts.</div></div>';
+  }else{
+    h+='<div class="p-verdict miss"><div class="p-verdict-t" style="color:#34d399">No recorded DFR flights here</div>'+
+       '<div class="p-verdict-b">No disclosed flight path crosses District '+dn+'.</div></div>';
+  }
+  // MNPD calls + incidents logged inside the flight radius within this district
+  if(inC){
+    var calls=callsByDistrict[dn]||0,incs=incidentsByDistrict[dn]||0;
+    h+='<div class="sect"><div class="sect-t">Police activity in the flight radius</div>'+
+       '<div class="km-row"><div class="km"><div class="km-v" style="color:#6fd3ff">'+calls.toLocaleString()+'</div><div class="km-l">Calls for service</div><div class="km-off" style="color:var(--mut)">in-radius · since May 26</div></div>'+
+       '<div class="km"><div class="km-v" style="color:#ffd166">'+incs.toLocaleString()+'</div><div class="km-l">Incident reports</div><div class="km-off" style="color:var(--mut)">in-radius · since May 26</div></div></div>'+
+       '<div style="font-size:11px;color:var(--mut2);margin-top:8px;line-height:1.5">MNPD records logged inside the 2-mile radius that fall within District '+dn+'. Toggle the points via the layers menu.</div></div>';
+  }
+  if(d)h+=demoBlock(d);
+  else h+='<div class="sect"><div class="sect-t">Demographics</div><div style="font-size:12.5px;color:var(--mut);line-height:1.5">No ACS demographic record for District '+dn+' in the loaded dataset.</div></div>';
+  var panelInner=document.getElementById('panelInner');
+  panelInner.innerHTML=h;
+  panelInner.scrollTop=0;
+  document.getElementById('panel').classList.add('show');
+  setPanelState('half');
+}
+
 function showPanel(lat,lng){
   var dn=findDist(lat,lng);
   document.getElementById('hint').classList.add('hide');
@@ -761,26 +932,10 @@ function showPanel(lat,lng){
     var ds=ft>=5280?((ft/5280).toFixed(1)+' mi'):(ft+' ft');
     h+='<div class="p-verdict miss"><div class="p-verdict-t" style="color:#34d399">No recorded flights here</div><div class="p-verdict-b">Nearest path: '+ds+' away</div></div>';
   }
-  if(d){var re=d.race_ethnicity;
-    h+='<div class="sect"><div class="sect-t">District vs. County Baseline</div><div class="dv-hdr"><div class="dv-label"></div><div class="dv-track"><span>← below</span><span>above →</span></div><div class="dv-val"></div></div>';
-    h+=dvB('White',re.pct_white,baseline.pct_white,'pp','#93a8d0');
-    h+=dvB('Black',re.pct_black,baseline.pct_black,'pp','#a78bfa');
-    h+=dvB('Hispanic',re.pct_hispanic,baseline.pct_hispanic,'pp','#f59e0b');
-    h+=dvB('Asian',re.pct_asian,baseline.pct_asian,'pp','#06d6a0');
-    h+='<div class="dv-sep"></div>';
-    h+=dvB('Poverty',d.poverty.pct_total_poverty,baseline.pct_total_poverty,'pp',null,true);
-    h+=dvB('Child pov.',d.poverty.pct_child_poverty,baseline.pct_child_poverty,'pp',null,true);
-    h+=dvB('Unemp.',d.employment.unemployment_rate,baseline.unemployment_rate,'pp',null,true);
-    h+=dvB('Rent burden',d.housing.pct_renter_cost_burdened_35plus,baseline.pct_renter_cost_burdened_35plus,'pp',null,true);
-    h+='<div class="dv-sep"></div>';
-    h+=dvB('Under 18',d.age.pct_under_18,baseline.pct_under_18,'pp','#06d6a0');
-    h+=dvB('Over 65',d.age.pct_65_and_over,baseline.pct_65_and_over,'pp','#7e92b8');
-    h+='</div>';
-    var io=Math.round(d.income.median_household_income-baseline.median_household_income),ho=Math.round(d.housing.median_owner_value-baseline.median_owner_value);
-    h+='<div class="sect"><div class="sect-t">Key metrics</div>';
-    h+='<div class="km-row"><div class="km"><div class="km-v">'+fmtMoney(d.income.median_household_income)+'</div><div class="km-l">Med. household</div><div class="km-off" style="color:'+(io<0?'#ef4444':'#34d399')+'">'+(io>=0?'+':'')+fmtMoney(io)+' vs county</div></div><div class="km"><div class="km-v">'+fmtMoney(d.housing.median_owner_value)+'</div><div class="km-l">Home value</div><div class="km-off" style="color:'+(ho<0?'#ef4444':'#34d399')+'">'+(ho>=0?'+':'')+fmtMoney(ho)+' vs county</div></div></div>';
-    h+='<div class="km-row"><div class="km"><div class="km-v">'+d.population.toLocaleString()+'</div><div class="km-l">Population</div><div class="km-off" style="color:var(--mut)">'+d.age.pct_under_18+'% under 18</div></div><div class="km"><div class="km-v">$'+d.housing.median_monthly_rent+'</div><div class="km-l">Med. rent</div><div class="km-off" style="color:var(--mut)">'+d.housing.pct_renter_cost_burdened_35plus+'% burdened</div></div></div></div>';
-  }
+  // District-wide drone tally — how many DFR flights have crossed the whole district this point sits in
+  var distCt=flightsByDistrict[dn]||0;
+  h+='<div class="p-distflights">District-wide: <b>'+distCt+'</b> DFR flight'+(distCt!==1?'s':'')+' '+(distCt!==1?'have':'has')+' crossed District '+dn+'. <a onclick="showDistrictSummary(\''+dn+'\')">Explore this district →</a></div>';
+  if(d){h+=demoBlock(d);}
   var panelInner=document.getElementById('panelInner');
   panelInner.innerHTML=h;
   panelInner.scrollTop=0;
@@ -798,7 +953,7 @@ document.getElementById('panelClose').addEventListener('click',function(){
 // ── Layers menu (toggle every map feature on/off) ──
 (function(){
   var btn=document.getElementById('layersBtn'),menu=document.getElementById('layersMenu');
-  var toggles={flights:setFlightsVisible,swath:setSwathVisible,sites:setSitesVisible,launch:setLaunchVisible,districts:setDistrictsVisible,precincts:setPrecinctsVisible};
+  var toggles={flights:setFlightsVisible,swath:setSwathVisible,sites:setSitesVisible,launch:setLaunchVisible,districts:setDistrictsVisible,precincts:setPrecinctsVisible,calls:setCallsVisible,incidents:setIncidentsVisible,tracts:setTractsVisible};
   function openMenu(o){menu.classList.toggle('show',o);btn.classList.toggle('active',o);btn.setAttribute('aria-expanded',o?'true':'false');}
   btn.addEventListener('click',function(e){e.stopPropagation();openMenu(!menu.classList.contains('show'));});
   menu.addEventListener('click',function(e){e.stopPropagation();});
@@ -1142,11 +1297,15 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
         flight_paths:SRC_FLIGHTS,
         sensitive_sites:SRC_SITES,
         council_districts:SRC_DISTRICTS,
-        demographics:demoSourceObj()
+        demographics:demoSourceObj(),
+        calls_for_service:SRC_CALLS,
+        incidents:SRC_INCIDENTS
       },
       flight_paths:{type:'FeatureCollection',features:allFlights},
       sensitive_sites:allSites,
       demographics:{source:demoSourceObj(),county_baseline:baseline,districts:demographics},
+      calls_for_service:{source:SRC_CALLS,by_district:callsByDistrict,points:allCalls},
+      incidents:{source:SRC_INCIDENTS,by_district:incidentsByDistrict,points:allIncidents},
       council_members:CM
     },null,2);
   }
@@ -1211,6 +1370,21 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     ].join('\n');
   }
 
+  // ── MNPD calls for service / incidents (in-radius, since the pilot launch) ──
+  var SRC_CALLS={name:'MNPD Calls for Service (data.nashville.gov) — points inside the 2-mile flight radius, since the May 26 pilot launch',url:'https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Calls-for-Servic/kwnd-qrrm'};
+  var SRC_INCIDENTS={name:'MNPD Incidents (data.nashville.gov) — points inside the 2-mile flight radius, since the May 26 pilot launch',url:'https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Incidents/2u6v-ujjs'};
+  function csiGeoJSON(rows,src){
+    return JSON.stringify({type:'FeatureCollection',metadata:{source:src.name,source_url:src.url,filter:'inside the 2-mile flight radius, since '+PILOT_START,council_district:DISTRICT_DERIVATION,generated:new Date().toISOString()},
+      features:rows.map(function(x){var props={};for(var k in (x.props||{}))props[k]=x.props[k];props.type=x.type;props.council_district=x.district;
+        return {type:'Feature',geometry:{type:'Point',coordinates:[x.lng,x.lat]},properties:props};})},null,2);
+  }
+  function csiCSV(rows,src){
+    var out=srcRows(srcLines(src,DISTRICT_DERIVATION));
+    out.push(['type','council_district','lat','lng']);
+    rows.forEach(function(x){out.push([x.type,x.district,x.lat,x.lng]);});
+    return csv(out);
+  }
+
   var DATASETS=[
     {name:'Drone flight paths',
      count:function(){return allFlights.length+' flight'+(allFlights.length===1?'':'s')+' · where they flew';},
@@ -1241,8 +1415,22 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
        {ext:'HTML',fn:function(){dl('dfr_district_report_'+stamp()+'.html',districtReportHTML(),'text/html');}},
        {ext:'JSON',fn:function(){dl('dfr_district_report_'+stamp()+'.json',demoJSON(),'application/json');}}
      ]},
+    {name:'Calls for service (in radius)',
+     count:function(){return allCalls.length+' call'+(allCalls.length===1?'':'s')+' · inside the 2-mi radius, since May 26';},
+     ready:function(){return allCalls.length>0;},
+     formats:[
+       {ext:'GeoJSON',fn:function(){dl('dfr_calls_for_service_'+stamp()+'.geojson',csiGeoJSON(allCalls,SRC_CALLS),'application/geo+json');}},
+       {ext:'CSV',fn:function(){dl('dfr_calls_for_service_'+stamp()+'.csv',csiCSV(allCalls,SRC_CALLS),'text/csv');}}
+     ]},
+    {name:'Incident reports (in radius)',
+     count:function(){return allIncidents.length+' incident'+(allIncidents.length===1?'':'s')+' · inside the 2-mi radius, since May 26';},
+     ready:function(){return allIncidents.length>0;},
+     formats:[
+       {ext:'GeoJSON',fn:function(){dl('dfr_incidents_'+stamp()+'.geojson',csiGeoJSON(allIncidents,SRC_INCIDENTS),'application/geo+json');}},
+       {ext:'CSV',fn:function(){dl('dfr_incidents_'+stamp()+'.csv',csiCSV(allIncidents,SRC_INCIDENTS),'text/csv');}}
+     ]},
     {name:'Everything',
-     count:function(){return 'flights + sites + demographics, one file';},
+     count:function(){return 'flights + sites + demographics + calls + incidents, one file';},
      ready:function(){return allFlights.length>0||allSites.length>0||Object.keys(demographics).length>0;},
      formats:[
        {ext:'JSON',fn:function(){dl('dfr_full_dataset_'+stamp()+'.json',bundleJSON(),'application/json');}}
@@ -1504,6 +1692,275 @@ function setupScrubber(){
   document.body.classList.add('timebar-on');
 }
 
+// ── MNPD calls for service + incident reports (live, inside the 2-mile radius) ──
+// Both come from data.nashville.gov ArcGIS items. We resolve the live FeatureServer
+// from the item id, query everything since the pilot launch within the radius bbox,
+// then keep only points that fall inside the exact 2-mile circle.
+var PRECINCT={lat:36.2734813,lng:-86.6906344};   // Madison Precinct rooftop (radius fallback center)
+var PILOT_START='2026-05-26';                     // DFR trial launch
+var radiusCenter=null;
+var callsGroup=L.layerGroup(),incidentsGroup=L.layerGroup();
+var callsVisible=true,incidentsVisible=true;
+var csiRenderer=L.canvas({padding:0.5});          // dedicated canvas so thousands of dots stay fast
+var allCalls=[],allIncidents=[],callsByDistrict={},incidentsByDistrict={};
+var CSI_DEFS=[
+  {key:'calls',label:'Calls for service',itemId:'f8b1bdf0612647cfb9c9ccce31ac411a',color:'#6fd3ff',noun:'calls for service',
+   group:function(){return callsGroup;},typePats:[/tencode description/i,/disposition description/i,/description/i,/tencode/i],
+   datePats:[/call received/i,/received/i,/^date$/i,/date/i]},
+  {key:'incidents',label:'Incident reports',itemId:'d747436243e9439e968fce056545016a',color:'#ffd166',noun:'incidents',
+   group:function(){return incidentsGroup;},typePats:[/offense description/i,/offense/i,/description/i],
+   datePats:[/incident occurred/i,/occurred/i,/reported/i,/incident date/i,/date/i]}
+];
+var CSI_DENY={OBJECTID:1,OBJECTID_1:1,FID:1,x:1,y:1,POINT_X:1,POINT_Y:1,Latitude:1,Longitude:1,'Mapped Location':1,MappedLocation:1,GlobalID:1,Shape:1,Shape__Area:1,Shape__Length:1};
+
+function csiField(fields,pats){for(var p=0;p<pats.length;p++){for(var i=0;i<fields.length;i++){var f=fields[i];if(pats[p].test(f.alias||'')||pats[p].test(f.name||''))return f.name;}}return null;}
+function csiFmt(v,type){if(v==null||v==='')return null;if(type==='esriFieldTypeDate'){var d=(typeof v==='number')?new Date(v):new Date(Date.parse(v));if(!isNaN(d))return d.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}return String(v);}
+function csiPopup(ft,o,def){var props=ft.properties||{},byName={};(o.meta.fields||[]).forEach(function(f){byName[f.name]=f;});var rows='';for(var k in props){if(CSI_DENY[k])continue;var f=byName[k]||{alias:k,type:''};var val=csiFmt(props[k],f.type);if(val==null)continue;rows+='<tr><th>'+(f.alias||k)+'</th><td>'+val+'</td></tr>';}return '<div class="csi-pop"><div class="csi-h">'+def.label+'</div><table>'+rows+'</table></div>';}
+function csiLatLng(ft,o){if(o.isPoint&&ft.geometry&&ft.geometry.type==='Point'){var c=ft.geometry.coordinates;return [c[1],c[0]];}var p=ft.properties||{};var la=o.latField?parseFloat(p[o.latField]):NaN,lo=o.lonField?parseFloat(p[o.lonField]):NaN;return (isFinite(la)&&isFinite(lo))?[la,lo]:null;}
+function csiBbox(center,r){var dLat=r/111320,dLng=r/(111320*Math.cos(center[0]*Math.PI/180));return [center[1]-dLng,center[0]-dLat,center[1]+dLng,center[0]+dLat];}
+
+// ArcGIS Online is CORS-enabled, so try a direct fetch first; fall back to the
+// shared proxy (used for the Metro GIS endpoints) if the direct call is blocked.
+function csiFetch(url){
+  return fetch(url,{cache:'no-store',mode:'cors'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .catch(function(){return pfetch(url).then(function(r){return r.json();});});
+}
+
+function loadPointLayer(def){
+  return csiFetch('https://www.arcgis.com/sharing/rest/content/items/'+def.itemId+'?f=json').then(function(item){
+    if(!item||!item.url)throw new Error('no service url on item');
+    var base=item.url.replace(/\/+$/,'');
+    return csiFetch(base+'/0?f=json').then(function(meta){
+      var fields=meta.fields||[];
+      var o={meta:meta,typeField:csiField(fields,def.typePats),dateField:csiField(fields,def.datePats),
+        latField:csiField(fields,[/^latitude$/i,/lat/i]),lonField:csiField(fields,[/^longitude$/i,/^long/i,/lon/i]),
+        isPoint:(meta.geometryType==='esriGeometryPoint')};
+      var bb=csiBbox(radiusCenter,2*MILE_M);
+      var where=o.dateField?(o.dateField+" >= TIMESTAMP '"+PILOT_START+" 00:00:00'"):'1=1';
+      function q(offset){var params={where:where,geometry:bb.join(','),geometryType:'esriGeometryEnvelope',inSR:'4326',spatialRel:'esriSpatialRelIntersects',outFields:'*',outSR:'4326',returnGeometry:'true',f:'geojson',resultRecordCount:'2000',resultOffset:String(offset)};if(o.dateField)params.orderByFields=o.dateField+' DESC';return base+'/0/query?'+new URLSearchParams(params).toString();}
+      var all=[],CAP=8000;
+      function page(offset){return csiFetch(q(offset)).then(function(gj){var fs=(gj&&gj.features)||[];all=all.concat(fs);if(fs.length<2000||all.length>=CAP)return all;return page(offset+2000);});}
+      return page(0).then(function(feats){plotPointLayer(def,feats,o);});
+    });
+  }).catch(function(e){
+    console.warn('CSI '+def.key+' load failed',e);
+    var row=document.querySelector('.lyr-row[data-layer="'+def.key+'"] .lyr-name');
+    if(row)row.textContent=def.label+' (unavailable)';
+  });
+}
+
+function plotPointLayer(def,features,o){
+  var grp=def.group();grp.clearLayers();
+  var counts={},perDist={},inside=0,store=[];
+  for(var i=0;i<features.length;i++){var ft=features[i];var ll=csiLatLng(ft,o);if(!ll)continue;
+    if(gdist(radiusCenter[0],radiusCenter[1],ll[0],ll[1])>2*MILE_M)continue;   // exact circle, not just bbox
+    inside++;
+    var t=(o.typeField&&ft.properties&&ft.properties[o.typeField])||'Unspecified';
+    counts[t]=(counts[t]||0)+1;
+    var dn=findDist(ll[0],ll[1]);if(dn)perDist[dn]=(perDist[dn]||0)+1;
+    store.push({lat:ll[0],lng:ll[1],type:t,district:dn||'',props:ft.properties});
+    (function(feat){L.circleMarker(ll,{renderer:csiRenderer,radius:3,stroke:false,fillColor:def.color,fillOpacity:.6})
+      .bindPopup(csiPopup(feat,o,def),{maxWidth:300})
+      .on('click',function(e){L.DomEvent.stopPropagation(e);})
+      .addTo(grp);})(ft);
+  }
+  if(def.key==='calls'){allCalls=store;callsByDistrict=perDist;}else{allIncidents=store;incidentsByDistrict=perDist;}
+  var row=document.querySelector('.lyr-row[data-layer="'+def.key+'"] .lyr-name');
+  if(row)row.textContent=def.label+' ('+inside.toLocaleString()+')';
+}
+
+function setCallsVisible(v){callsVisible=v;if(v)callsGroup.addTo(map);else map.removeLayer(callsGroup);setLayerRow('calls',v);}
+function setIncidentsVisible(v){incidentsVisible=v;if(v)incidentsGroup.addTo(map);else map.removeLayer(incidentsGroup);setLayerRow('incidents',v);}
+
+function loadCSI(){
+  radiusCenter=launchPoint()||[PRECINCT.lat,PRECINCT.lng];
+  callsGroup.addTo(map);incidentsGroup.addTo(map);
+  CSI_DEFS.forEach(function(def){loadPointLayer(def);});
+}
+
+// ── Census-tract ACS choropleth (tracts intersecting the 2-mile radius) ──
+// ACS values come straight from the Census API by tract (Davidson Co., FIPS 47037);
+// tract geometry comes from the Census TIGERweb service. Lazy-loaded the first time
+// the layer is switched on. Variables mirror the council-district panel set.
+var CENSUS_YEAR='2022';
+var tractGroup=L.layerGroup(),tractsLoaded=false,tractFeatures=[],tractVarKey='income';
+var PAL_COOL=['#0b2f4a','#16567d','#2a86a8','#5cb3cf','#a7e0f2'];   // low → high (neutral)
+var PAL_WARM=['#3a1d10','#7a3415','#b85420','#e0792e','#ffc06b'];   // low → high (burden)
+var TRACT_VARS=[
+  {key:'income',label:'Median household income',pal:'cool',money:true,get:function(d){return d.median_household_income;}},
+  {key:'poverty',label:'Poverty rate',pal:'warm',get:function(d){return d.pct_total_poverty;}},
+  {key:'child_poverty',label:'Child poverty rate',pal:'warm',get:function(d){return d.pct_child_poverty;}},
+  {key:'rent_burden',label:'Renter cost burden 35%+',pal:'warm',get:function(d){return d.pct_renter_cost_burdened_35plus;}},
+  {key:'unemployment',label:'Unemployment rate',pal:'warm',get:function(d){return d.unemployment_rate;}},
+  {key:'white',label:'% White (non-Hispanic)',pal:'cool',get:function(d){return d.pct_white;}},
+  {key:'black',label:'% Black',pal:'cool',get:function(d){return d.pct_black;}},
+  {key:'hispanic',label:'% Hispanic',pal:'cool',get:function(d){return d.pct_hispanic;}},
+  {key:'under18',label:'% under 18',pal:'cool',get:function(d){return d.pct_under_18;}},
+  {key:'over65',label:'% 65 and over',pal:'cool',get:function(d){return d.pct_65_and_over;}}
+];
+function tractVarDef(k){for(var i=0;i<TRACT_VARS.length;i++)if(TRACT_VARS[i].key===k)return TRACT_VARS[i];return TRACT_VARS[0];}
+function tractFmt(def,v){if(v==null)return 'n/a';return def.money?fmtMoney(v):(Math.round(v*10)/10)+'%';}
+
+// Census API returns array-of-arrays; first row is the header
+function censusRows(json){if(!json||!json.length)return [];var head=json[0],out=[];for(var i=1;i<json.length;i++){var o={},r=json[i];for(var j=0;j<head.length;j++)o[head[j]]=r[j];out.push(o);}return out;}
+function cNum(v){var n=parseFloat(v);return (isFinite(n)&&n>-666666000)?n:null;}   // Census flags nulls with huge negatives
+function tractVals(o){
+  return {
+    population:cNum(o.DP05_0001E),median_age:cNum(o.DP05_0018E),
+    pct_under_18:cNum(o.DP05_0019PE),pct_65_and_over:cNum(o.DP05_0024PE),
+    pct_white:cNum(o.DP05_0077PE),pct_black:cNum(o.DP05_0078PE),pct_asian:cNum(o.DP05_0080PE),
+    pct_two_or_more:cNum(o.DP05_0083PE),pct_hispanic:cNum(o.DP05_0071PE),
+    median_household_income:cNum(o.DP03_0062E),per_capita_income:cNum(o.DP03_0088E),
+    unemployment_rate:cNum(o.DP03_0009PE),pct_total_poverty:cNum(o.DP03_0128PE),pct_child_poverty:cNum(o.DP03_0129PE),
+    median_owner_value:cNum(o.DP04_0089E),median_monthly_rent:cNum(o.DP04_0134E),
+    pct_renter_cost_burdened_35plus:cNum(o.DP04_0142PE)
+  };
+}
+function loadACSProfiles(){
+  var base='https://api.census.gov/data/'+CENSUS_YEAR+'/acs/acs5/profile',pred='&for=tract:*&in=state:47%20county:037';
+  // group() always returns every variable in the table, so a single bad code can't 400 the request
+  return Promise.all(['DP05','DP03','DP04'].map(function(g){return csiFetch(base+'?get=group('+g+')'+pred);})).then(function(res){
+    var by={};
+    res.forEach(function(json){censusRows(json).forEach(function(o){
+      var geoid=(o.state||'')+(o.county||'')+(o.tract||'');if(!geoid)return;
+      var cur=by[geoid]||{};for(var k in o)cur[k]=o[k];by[geoid]=cur;
+    });});
+    return by;
+  });
+}
+
+function loadTractGeom(){
+  var svc='https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer';
+  return csiFetch(svc+'?f=json').then(function(meta){
+    var lid=null,layers=(meta&&meta.layers)||[];
+    layers.forEach(function(l){if(lid==null&&/census tracts/i.test(l.name))lid=l.id;});
+    if(lid==null)layers.forEach(function(l){if(lid==null&&/tract/i.test(l.name))lid=l.id;});
+    if(lid==null)lid=0;
+    var bb=csiBbox(radiusCenter,2*MILE_M);
+    var params={where:"STATE='47' AND COUNTY='037'",geometry:bb.join(','),geometryType:'esriGeometryEnvelope',inSR:'4326',spatialRel:'esriSpatialRelIntersects',outFields:'*',outSR:'4326',returnGeometry:'true',f:'geojson'};
+    return csiFetch(svc+'/'+lid+'/query?'+new URLSearchParams(params).toString());
+  });
+}
+
+// Walk every [lng,lat] vertex of a GeoJSON geometry
+function eachCoord(geom,cb){if(!geom||!geom.coordinates)return;(function w(a){if(typeof a[0]==='number')cb(a);else for(var i=0;i<a.length;i++)w(a[i]);})(geom.coordinates);}
+function ringsOf(geom){if(!geom)return [];if(geom.type==='Polygon')return geom.coordinates;if(geom.type==='MultiPolygon'){var r=[];geom.coordinates.forEach(function(p){r=r.concat(p);});return r;}return [];}
+// Convert Esri-JSON polygon (rings) to a GeoJSON geometry if TIGERweb ignored f=geojson
+function esriToGeoJSON(f){if(f.geometry&&f.geometry.rings)return {type:'Feature',properties:f.attributes||f.properties||{},geometry:{type:'MultiPolygon',coordinates:f.geometry.rings.map(function(r){return [r];})}};return f;}
+function tractTouchesRadius(f){
+  var R=2*MILE_M,hit=false;
+  eachCoord(f.geometry,function(pt){if(!hit&&gdist(radiusCenter[0],radiusCenter[1],pt[1],pt[0])<=R)hit=true;});
+  if(hit)return true;
+  var rings=ringsOf(f.geometry);
+  for(var i=0;i<rings.length;i++){if(inPoly([radiusCenter[1],radiusCenter[0]],rings[i]))return true;}
+  return false;
+}
+
+function quantileBreaks(vals,n){var s=vals.filter(function(v){return v!=null;}).slice().sort(function(a,b){return a-b;});if(!s.length)return [];var br=[];for(var i=1;i<n;i++)br.push(s[Math.floor(i/n*s.length)]);return br;}
+function binIndex(v,breaks){if(v==null)return -1;var i=0;while(i<breaks.length&&v>=breaks[i])i++;return i;}
+
+function tractPopup(f){
+  var d=f.properties._vals,nm=f.properties._name||('Tract '+f.properties._geoid);
+  if(!d)return '<div class="csi-pop"><div class="csi-h">'+nm+'</div><table><tr><td>No ACS match for this tract.</td></tr></table></div>';
+  function r(l,v){return '<tr><th>'+l+'</th><td>'+v+'</td></tr>';}
+  var rows=r('Population',d.population!=null?d.population.toLocaleString():'n/a')+
+    r('Median age',d.median_age!=null?d.median_age:'n/a')+
+    r('White (NH) / Black',(d.pct_white!=null?d.pct_white+'%':'—')+' / '+(d.pct_black!=null?d.pct_black+'%':'—'))+
+    r('Hispanic / Asian',(d.pct_hispanic!=null?d.pct_hispanic+'%':'—')+' / '+(d.pct_asian!=null?d.pct_asian+'%':'—'))+
+    r('Under 18 / 65+',(d.pct_under_18!=null?d.pct_under_18+'%':'—')+' / '+(d.pct_65_and_over!=null?d.pct_65_and_over+'%':'—'))+
+    r('Median HH income',d.median_household_income!=null?fmtMoney(d.median_household_income):'n/a')+
+    r('Per-capita income',d.per_capita_income!=null?fmtMoney(d.per_capita_income):'n/a')+
+    r('Poverty / child pov.',(d.pct_total_poverty!=null?d.pct_total_poverty+'%':'—')+' / '+(d.pct_child_poverty!=null?d.pct_child_poverty+'%':'—'))+
+    r('Unemployment',d.unemployment_rate!=null?d.unemployment_rate+'%':'n/a')+
+    r('Median home value',d.median_owner_value!=null?fmtMoney(d.median_owner_value):'n/a')+
+    r('Median gross rent',d.median_monthly_rent!=null?'$'+d.median_monthly_rent:'n/a')+
+    r('Renter burden 35%+',d.pct_renter_cost_burdened_35plus!=null?d.pct_renter_cost_burdened_35plus+'%':'n/a');
+  return '<div class="csi-pop"><div class="csi-h">'+nm+'</div><table>'+rows+'</table></div>';
+}
+
+function buildTractLegend(def,breaks,pal){
+  var leg=document.getElementById('tractLegend');if(!leg)return;
+  function lo(i){return i===0?null:breaks[i-1];}
+  function hi(i){return i<breaks.length?breaks[i]:null;}
+  var html='';
+  for(var i=0;i<pal.length;i++){
+    var a=lo(i),b=hi(i),txt;
+    if(a==null)txt='< '+tractFmt(def,b);
+    else if(b==null)txt='≥ '+tractFmt(def,a);
+    else txt=tractFmt(def,a)+' – '+tractFmt(def,b);
+    html+='<div class="tl-row"><span class="tl-sw" style="background:'+pal[i]+'"></span>'+txt+'</div>';
+  }
+  html+='<div class="tl-row"><span class="tl-sw" style="background:#3a3a3a"></span>no data</div>';
+  leg.innerHTML=html;
+}
+
+function recolorTracts(){
+  tractGroup.clearLayers();
+  var def=tractVarDef(tractVarKey),pal=def.pal==='warm'?PAL_WARM:PAL_COOL;
+  var vals=tractFeatures.map(function(f){return f.properties._vals?def.get(f.properties._vals):null;});
+  var breaks=quantileBreaks(vals,pal.length);
+  tractFeatures.forEach(function(f){
+    var v=f.properties._vals?def.get(f.properties._vals):null,bi=binIndex(v,breaks);
+    var color=bi<0?'#3a3a3a':pal[Math.min(bi,pal.length-1)];
+    var gl=L.geoJSON(f,{style:{color:'#0d0b0a',weight:1,opacity:.55,fillColor:color,fillOpacity:v==null?0.12:0.62}});
+    gl.bindPopup(tractPopup(f),{maxWidth:300,className:'callpopup'});
+    gl.on('click',function(e){L.DomEvent.stopPropagation(e);});
+    gl.addTo(tractGroup);
+  });
+  buildTractLegend(def,breaks,pal);
+}
+
+function plotTracts(geojson,byGeoid){
+  tractFeatures=[];
+  var feats=(geojson&&geojson.features)||[];
+  feats.forEach(function(raw){
+    var f=esriToGeoJSON(raw);
+    if(!f.geometry||!f.geometry.coordinates)return;
+    var p=f.properties||{},geoid=p.GEOID||p.geoid||p.GEOID20||'';
+    if(!geoid)return;
+    if(!tractTouchesRadius(f))return;
+    f.properties=p;
+    f.properties._geoid=geoid;
+    f.properties._name=p.NAMELSAD||p.NAME||p.BASENAME&&('Census Tract '+p.BASENAME)||('Tract '+geoid);
+    f.properties._vals=byGeoid[geoid]?tractVals(byGeoid[geoid]):null;
+    tractFeatures.push(f);
+  });
+  recolorTracts();
+}
+
+function setTractsVisible(v){
+  var ctl=document.getElementById('tractCtl');
+  if(v){
+    if(!tractsLoaded)loadTracts();else tractGroup.addTo(map);
+    if(ctl)ctl.style.display='block';
+  }else{
+    map.removeLayer(tractGroup);
+    if(ctl)ctl.style.display='none';
+  }
+  setLayerRow('tracts',v);
+}
+function loadTracts(){
+  tractsLoaded=true;
+  radiusCenter=radiusCenter||launchPoint()||[PRECINCT.lat,PRECINCT.lng];
+  var st=document.getElementById('tractStatus');if(st)st.textContent='loading…';
+  Promise.all([loadTractGeom(),loadACSProfiles()]).then(function(r){
+    plotTracts(r[0],r[1]);
+    tractGroup.addTo(map);
+    if(st)st.textContent=tractFeatures.length+' tracts';
+  }).catch(function(e){
+    console.warn('tracts load failed',e);
+    if(st)st.textContent='unavailable';
+    var row=document.querySelector('.lyr-row[data-layer="tracts"] .lyr-name');if(row)row.textContent='Census tracts (unavailable)';
+  });
+}
+// Wire the variable picker (built once)
+(function(){
+  var sel=document.getElementById('tractVar');if(!sel)return;
+  TRACT_VARS.forEach(function(v){var o=document.createElement('option');o.value=v.key;o.textContent=v.label;sel.appendChild(o);});
+  sel.value=tractVarKey;
+  sel.addEventListener('change',function(){tractVarKey=sel.value;if(tractFeatures.length)recolorTracts();});
+})();
+
 // ── LOAD ──
 Promise.all([
   pfetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
@@ -1555,6 +2012,10 @@ Promise.all([
     var line=L.polyline(ll,{color:'#ef4444',weight:flightWeightFor(),opacity:1,pane:'flightPane'}).addTo(flightGroup);fb.extend(line.getBounds());
     flightLayers.push({line:line,swath:swath,ll:ll,t0:+new Date(f.properties.takeoff),t1:+new Date(f.properties.landing),head:null});});
   buildLaunchRadius();
+  computeFlightsByDistrict();   // drones per district
+  computeInCircle();            // which districts the 2-mi radius touches
+  refreshDistrictLabels();      // re-render labels with names + counts inside the circle
+  loadCSI();                    // MNPD calls for service + incidents inside the radius
   setupScrubber();
   if(fb.isValid())map.fitBounds(fb,{padding:isMobile?[40,40]:[80,80]});
 
