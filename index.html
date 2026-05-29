@@ -454,12 +454,10 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
   </div>
 </div>
 
-<!-- Census-tract choropleth control (shown when the ACS tracts layer is on) -->
+<!-- Census-tract control (shown when the ACS tracts layer is on) -->
 <div class="tract-ctl" id="tractCtl">
   <div class="tract-ctl-t">Census tracts · ACS 5-year <span id="tractStatus"></span></div>
-  <select id="tractVar" aria-label="Census-tract variable to shade by"></select>
-  <div class="tract-legend" id="tractLegend"></div>
-  <div class="tract-ctl-note">Tracts intersecting the 2-mile radius. Click a tract for its full ACS profile.</div>
+  <div class="tract-ctl-note">Tract outlines intersecting the 2-mile radius. Click a tract for its drone / call / incident counts and ACS profile.</div>
 </div>
 
 <div class="hint" id="hint">
@@ -2226,19 +2224,15 @@ function buildTractLegend(def,breaks,pal){
   leg.innerHTML=html;
 }
 
+// Tract outlines only — no choropleth. A near-transparent fill keeps the whole
+// tract clickable; clicking opens the per-tract drone/call/incident + ACS panel.
 function recolorTracts(){
   tractGroup.clearLayers();
-  var def=tractVarDef(tractVarKey),pal=def.pal==='warm'?PAL_WARM:PAL_COOL;
-  var vals=tractFeatures.map(function(f){return def.get(f.properties._vals||{},f.properties);});
-  var breaks=quantileBreaks(vals,pal.length);
   tractFeatures.forEach(function(f){
-    var v=def.get(f.properties._vals||{},f.properties),bi=binIndex(v,breaks);
-    var color=bi<0?'#3a3a3a':pal[Math.min(bi,pal.length-1)];
-    var gl=L.geoJSON(f,{style:{color:'#0d0b0a',weight:1,opacity:.55,fillColor:color,fillOpacity:v==null?0.12:0.62}});
+    var gl=L.geoJSON(f,{style:{color:'#a7e0f2',weight:1.2,opacity:.7,fill:true,fillColor:'#a7e0f2',fillOpacity:0.03}});
     (function(feat){gl.on('click',function(e){L.DomEvent.stopPropagation(e);showTractSummary(feat);});})(f);
     gl.addTo(tractGroup);
   });
-  buildTractLegend(def,breaks,pal);
 }
 
 function plotTracts(geojson,byGeoid){
