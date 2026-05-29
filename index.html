@@ -1390,7 +1390,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       demographics:{source:demoSourceObj(),county_baseline:baseline,districts:demographics},
       calls_for_service:{source:SRC_CALLS,by_district:callsByDistrict,points:allCalls},
       incidents:{source:SRC_INCIDENTS,by_district:incidentsByDistrict,points:allIncidents},
-      tract_analysis:{source:SRC_TRACTS(),method:TRACT_METHOD,tracts:tractAnalysis().map(function(t){var o={tract_geoid:t.geoid,tract_name:t.name,drone_deployments:t.drones,calls_for_service:t.calls,incidents:t.incidents,drones_per_100_calls:t.drones_per_100_calls,drones_per_100_incidents:t.drones_per_100_incidents};for(var k in t.vals)o[k]=t.vals[k];return o;})},
+      tract_analysis:{source:SRC_TRACTS(),method:TRACT_METHOD(),tracts:tractAnalysis().map(function(t){var o={tract_geoid:t.geoid,tract_name:t.name,drone_deployments:t.drones,calls_for_service:t.calls,incidents:t.incidents,drones_per_100_calls:t.drones_per_100_calls,drones_per_100_incidents:t.drones_per_100_incidents};for(var k in t.vals)o[k]=t.vals[k];return o;})},
       council_members:CM
     },null,2);
   }
@@ -1472,7 +1472,9 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
 
   // ── Census-tract analysis: drones (numerator) vs calls/incidents (denominators) × ACS ──
   function SRC_TRACTS(){return {name:'U.S. Census Bureau '+acsYearLabel()+' by tract (Davidson County), detailed tables (B03002/B17001/B17020/B19013/B19301/B23025/B25064/B25070/B25077/B01001/B09001) via the Census API; tract geometry from Census TIGERweb. Limited to tracts intersecting the 2-mile flight radius.',url:'https://www.census.gov/data/developers/data-sets/acs-5year.html'};}
-  var TRACT_METHOD='Numerator = drone deployments (distinct DFR flights crossing the tract). Denominators = MNPD calls for service and incidents inside the radius. drones_per_100_x = numerator / denominator × 100. All counts limited to inside the 2-mile flight radius since 12:00 AM CT on '+PILOT_START+'.';
+  // Lazy (like SRC_TRACTS) so PILOT_START is read at download time, not when this
+  // IIFE first runs — PILOT_START is assigned later in the script, so eager use baked "undefined".
+  function TRACT_METHOD(){return 'Numerator = drone deployments (distinct DFR flights crossing the tract). Denominators = MNPD calls for service and incidents inside the radius. drones_per_100_x = numerator / denominator × 100. All counts limited to inside the 2-mile flight radius since 12:00 AM CT on '+PILOT_START+'.';}
   function tractAnalysis(){
     if(typeof computeTractTallies==='function')computeTractTallies();   // fresh tallies from current flights/calls/incidents
     return (tractFeatures||[]).map(function(f){
@@ -1486,13 +1488,13 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   var TRACT_HEAD=['tract_geoid','tract_name','drone_deployments','calls_for_service','incidents','drones_per_100_calls','drones_per_100_incidents','population','median_age','pct_white','pct_black','pct_hispanic','pct_asian','pct_two_or_more','pct_under_18','pct_65_and_over','median_household_income','per_capita_income','pct_total_poverty','pct_child_poverty','median_owner_value','median_monthly_rent','pct_renter_cost_burdened_35plus','unemployment_rate'];
   function tractValRow(t){var d=t.vals;return [t.geoid,t.name,t.drones,t.calls,t.incidents,t.drones_per_100_calls,t.drones_per_100_incidents,d.population,d.median_age,d.pct_white,d.pct_black,d.pct_hispanic,d.pct_asian,d.pct_two_or_more,d.pct_under_18,d.pct_65_and_over,d.median_household_income,d.per_capita_income,d.pct_total_poverty,d.pct_child_poverty,d.median_owner_value,d.median_monthly_rent,d.pct_renter_cost_burdened_35plus,d.unemployment_rate];}
   function tractCSV(){
-    var rows=srcRows(srcLines(SRC_TRACTS(),TRACT_METHOD+' Demographics: U.S. Census Bureau '+acsYearLabel()+', detailed tables by tract.'));
+    var rows=srcRows(srcLines(SRC_TRACTS(),TRACT_METHOD()+' Demographics: U.S. Census Bureau '+acsYearLabel()+', detailed tables by tract.'));
     rows.push(TRACT_HEAD);
     tractAnalysis().forEach(function(t){rows.push(tractValRow(t));});
     return csv(rows);
   }
   function tractGeoJSON(){
-    return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_TRACTS().name,source_url:SRC_TRACTS().url,method:TRACT_METHOD,demographics:'U.S. Census Bureau '+acsYearLabel()+', detailed tables by tract',generated:new Date().toISOString()},
+    return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_TRACTS().name,source_url:SRC_TRACTS().url,method:TRACT_METHOD(),demographics:'U.S. Census Bureau '+acsYearLabel()+', detailed tables by tract',generated:new Date().toISOString()},
       features:tractAnalysis().map(function(t){var props={tract_geoid:t.geoid,tract_name:t.name,drone_deployments:t.drones,calls_for_service:t.calls,incidents:t.incidents,drones_per_100_calls:t.drones_per_100_calls,drones_per_100_incidents:t.drones_per_100_incidents};
         for(var k in t.vals)props[k]=t.vals[k];
         return {type:'Feature',geometry:t.geometry,properties:props};})},null,2);
@@ -1536,7 +1538,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
         '<li><strong>Calls for service</strong> — '+esc(SRC_CALLS.name)+' · <a href="'+esc(SRC_CALLS.url)+'" target="_blank" rel="noopener">source</a></li>'+
         '<li><strong>Incidents</strong> — '+esc(SRC_INCIDENTS.name)+' · <a href="'+esc(SRC_INCIDENTS.url)+'" target="_blank" rel="noopener">source</a></li>'+
         '<li><strong>Demographics &amp; tracts</strong> — '+esc(src.name)+' · <a href="'+esc(src.url)+'" target="_blank" rel="noopener">source</a></li>'+
-      '</ul><p class="note">'+esc(TRACT_METHOD)+' A drone counts toward a tract when any point on its path falls inside the tract (point-in-polygon), so one flight can count toward several tracts.</p></section>'+SORT_JS+'</body></html>'
+      '</ul><p class="note">'+esc(TRACT_METHOD())+' A drone counts toward a tract when any point on its path falls inside the tract (point-in-polygon), so one flight can count toward several tracts.</p></section>'+SORT_JS+'</body></html>'
     ].join('\n');
   }
 
@@ -1562,7 +1564,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       '  data/district_demographics.csv      — council-district ACS breakdown',
       '  data/full_dataset.json              — everything in one JSON file',
       '',
-      'Method: '+TRACT_METHOD,
+      'Method: '+TRACT_METHOD(),
       '',
       'Sources:',
       '  Drone flight paths — '+SRC_FLIGHTS.name+' ('+SRC_FLIGHTS.url+')',
