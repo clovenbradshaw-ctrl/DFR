@@ -133,6 +133,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .csi-pin svg{width:16px;height:16px;stroke:#10141b;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .csi-pin.calls{background:#6fd3ff}
 .csi-pin.incidents{background:#ffd166}
+.csi-pin.carve{border-color:#e85b8a;box-shadow:0 0 0 3px #e85b8a,0 2px 8px rgba(0,0,0,.6)}   /* District 7 carve-out */
 .site-pin.school{background:#1f8a5b}
 .site-pin.childcare{background:#7c5cd9}
 .site-pin.playground{background:#0c9c79}
@@ -556,6 +557,7 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
       <div class="li"><div class="lsw" style="background:transparent;border:1px dashed #22d3ee;height:11px;border-radius:2px"></div>Police precinct (toggle, top-right)</div>
       <div class="li"><div class="lci" style="background:#6fd3ff"></div>MNPD call for service (in radius · since May&nbsp;26)</div>
       <div class="li"><div class="lci" style="background:#ffd166"></div>MNPD incident report (in radius · since May&nbsp;26)</div>
+      <div class="li"><div class="lci" style="background:transparent;border:2px solid #e85b8a;width:11px;height:11px;border-radius:50%"></div>Call/incident in the District&nbsp;7 carve-out (in radius, excluded from the trial)</div>
       <div class="li"><div class="lci" style="background:#34d399"></div>School</div>
       <div class="li"><div class="lci" style="background:#a78bfa"></div>Childcare</div>
       <div class="li"><div class="lci" style="background:#06d6a0"></div>Playground</div>
@@ -1457,14 +1459,14 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   var SRC_CALLS={name:'MNPD Calls for Service (data.nashville.gov) — points inside the 2-mile flight radius, since the May 26 pilot launch',url:'https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Calls-for-Servic/kwnd-qrrm'};
   var SRC_INCIDENTS={name:'MNPD Incidents (data.nashville.gov) — points inside the 2-mile flight radius, since the May 26 pilot launch',url:'https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Incidents/2u6v-ujjs'};
   function csiGeoJSON(rows,src){
-    return JSON.stringify({type:'FeatureCollection',metadata:{source:src.name,source_url:src.url,filter:'inside the 2-mile flight radius, since '+PILOT_START,council_district:DISTRICT_DERIVATION,generated:new Date().toISOString()},
-      features:rows.map(function(x){var props={};for(var k in (x.props||{}))props[k]=x.props[k];props.type=x.type;props.council_district=x.district;
+    return JSON.stringify({type:'FeatureCollection',metadata:{source:src.name,source_url:src.url,filter:'inside the 2-mile flight radius, since '+PILOT_START,segments:'segment = trial_radius (in the flight zone) or d7_carveout (in District 7, inside the radius but excluded from the trial)',council_district:DISTRICT_DERIVATION,generated:new Date().toISOString()},
+      features:rows.map(function(x){var props={};for(var k in (x.props||{}))props[k]=x.props[k];props.type=x.type;props.council_district=x.district;props.segment=x.segment;props.d7_carveout=!!x.carve_out;
         return {type:'Feature',geometry:{type:'Point',coordinates:[x.lng,x.lat]},properties:props};})},null,2);
   }
   function csiCSV(rows,src){
-    var out=srcRows(srcLines(src,DISTRICT_DERIVATION));
-    out.push(['type','council_district','lat','lng']);
-    rows.forEach(function(x){out.push([x.type,x.district,x.lat,x.lng]);});
+    var out=srcRows(srcLines(src,DISTRICT_DERIVATION+'. segment = trial_radius or d7_carveout (District 7, in radius but excluded from the trial)'));
+    out.push(['type','segment','d7_carveout','council_district','lat','lng']);
+    rows.forEach(function(x){out.push([x.type,x.segment,x.carve_out?'yes':'no',x.district,x.lat,x.lng]);});
     return csv(out);
   }
 
@@ -1856,6 +1858,7 @@ function applyTime(t){
   }
   document.getElementById('tbTime').textContent=fmtScrubTime(t);
   document.getElementById('tbStat').innerHTML=active?('<span class="on">'+active+' in air</span> · '+done+' flown'):(done+' flown');
+  if(typeof applyTimeToCSI==='function')applyTimeToCSI(t);   // calls/incidents follow the cursor too
 }
 var DRONE_HEAD_ICON=null;
 function setupScrubber(){
@@ -1880,6 +1883,7 @@ function setupScrubber(){
   function showAll(){
     stop();timeMode=false;allBtn.classList.add('active');
     flightLayers.forEach(restoreFlight);
+    applyTimeToCSI(tMax);                       // timeMode off → all calls/incidents visible
     timeLbl.textContent='All flights';statLbl.textContent=flightLayers.length+' total';
     tCur=tMin;syncSlider();
   }
@@ -1927,6 +1931,7 @@ var radiusCenter=null;
 var callsGroup=L.layerGroup(),incidentsGroup=L.layerGroup();
 var callsVisible=true,incidentsVisible=true;
 var allCalls=[],allIncidents=[],callsByDistrict={},incidentsByDistrict={};
+var csiRecs={calls:[],incidents:[]};   // {m:marker, ts:epoch|null} for the time scrubber
 var CSI_DEFS=[
   {key:'calls',label:'Calls for service',itemId:'f8b1bdf0612647cfb9c9ccce31ac411a',color:'#6fd3ff',noun:'calls for service',
    group:function(){return callsGroup;},typePats:[/tencode description/i,/disposition description/i,/description/i,/tencode/i],
@@ -1975,27 +1980,50 @@ function loadPointLayer(def){
   });
 }
 
+function csiTimestamp(ft,o){
+  if(!o.dateField)return null;
+  var raw=ft.properties&&ft.properties[o.dateField];
+  if(raw==null||raw==='')return null;
+  var ts=(typeof raw==='number')?raw:Date.parse(raw);
+  return isFinite(ts)?ts:null;
+}
 function plotPointLayer(def,features,o){
   var grp=def.group();grp.clearLayers();
-  var counts={},perDist={},inside=0,store=[];
+  csiRecs[def.key]=[];
+  var counts={},perDist={},inside=0,carveCount=0,store=[],recs=csiRecs[def.key];
   for(var i=0;i<features.length;i++){var ft=features[i];var ll=csiLatLng(ft,o);if(!ll)continue;
     if(gdist(radiusCenter[0],radiusCenter[1],ll[0],ll[1])>2*MILE_M)continue;   // exact circle, not just bbox
     inside++;
     var t=(o.typeField&&ft.properties&&ft.properties[o.typeField])||'Unspecified';
     counts[t]=(counts[t]||0)+1;
     var dn=findDist(ll[0],ll[1]);if(dn)perDist[dn]=(perDist[dn]||0)+1;
-    store.push({lat:ll[0],lng:ll[1],type:t,district:dn||'',props:ft.properties});
-    var iconHtml='<div class="site-pin-wrap"><div class="csi-pin '+def.key+'"><svg viewBox="0 0 24 24">'+(def.svg||'')+'</svg></div></div>';
-    (function(feat,label){L.marker(ll,{pane:'csiPane',icon:L.divIcon({className:'site-marker',html:iconHtml,iconSize:[44,44],iconAnchor:[22,22]}),title:label,riseOnHover:true,keyboard:false})
-      .bindTooltip(label,{direction:'top',sticky:true,opacity:0.95})
+    var carve=(dn==='7');if(carve)carveCount++;            // D7 carve-out: in-radius but in the excluded district
+    var ts=csiTimestamp(ft,o);
+    store.push({lat:ll[0],lng:ll[1],type:t,district:dn||'',carve_out:carve,segment:carve?'d7_carveout':'trial_radius',ts:ts,props:ft.properties});
+    var iconHtml='<div class="site-pin-wrap"><div class="csi-pin '+def.key+(carve?' carve':'')+'"><svg viewBox="0 0 24 24">'+(def.svg||'')+'</svg></div></div>';
+    (function(feat,label){var mk=L.marker(ll,{pane:'csiPane',icon:L.divIcon({className:'site-marker',html:iconHtml,iconSize:[44,44],iconAnchor:[22,22]}),title:label,riseOnHover:true,keyboard:false})
+      .bindTooltip(label+(carve?' · D7 carve-out':''),{direction:'top',sticky:true,opacity:0.95})
       .bindPopup(csiPopup(feat,o,def),{maxWidth:300,className:'callpopup'})
       .on('click',function(e){L.DomEvent.stopPropagation(e);})
-      .addTo(grp);})(ft,String(t));
+      .addTo(grp);
+      recs.push({m:mk,ts:ts});})(ft,String(t));
   }
   if(def.key==='calls'){allCalls=store;callsByDistrict=perDist;}else{allIncidents=store;incidentsByDistrict=perDist;}
   var row=document.querySelector('.lyr-row[data-layer="'+def.key+'"] .lyr-name');
-  if(row)row.textContent=def.label+' ('+inside.toLocaleString()+')';
+  if(row)row.textContent=def.label+' ('+inside.toLocaleString()+(carveCount?' · '+carveCount+' in D7 carve-out':'')+')';
   if(typeof refreshTractTallies==='function')refreshTractTallies();   // update tract numerator/denominator
+  if(tMax>0){recs.forEach(function(r){if(r.ts!=null){if(r.ts<tMin)tMin=r.ts;if(r.ts>tMax)tMax=r.ts;}});}  // widen scrubber to cover these
+  applyTimeToCSI(typeof tCur==='number'?tCur:0);                      // sync to the current scrubber position
+}
+// Show/hide call & incident markers by the time cursor (only when scrubbing/playing)
+function applyTimeToCSI(t){
+  ['calls','incidents'].forEach(function(k){
+    var recs=csiRecs[k];
+    for(var i=0;i<recs.length;i++){var r=recs[i];
+      var vis=(!timeMode)||(r.ts==null)||(r.ts<=t);
+      if(r._vis!==vis){r._vis=vis;if(r.m.setOpacity)r.m.setOpacity(vis?1:0);}
+    }
+  });
 }
 
 function setCallsVisible(v){callsVisible=v;if(v)callsGroup.addTo(map);else map.removeLayer(callsGroup);setLayerRow('calls',v);}
