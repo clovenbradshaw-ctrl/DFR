@@ -454,12 +454,10 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
   </div>
 </div>
 
-<!-- Census-tract choropleth control (shown when the ACS tracts layer is on) -->
+<!-- Census-tract control (shown when the ACS tracts layer is on) -->
 <div class="tract-ctl" id="tractCtl">
   <div class="tract-ctl-t">Census tracts · ACS 5-year <span id="tractStatus"></span></div>
-  <select id="tractVar" aria-label="Census-tract variable to shade by"></select>
-  <div class="tract-legend" id="tractLegend"></div>
-  <div class="tract-ctl-note">Tracts intersecting the 2-mile radius. Click a tract for its full ACS profile.</div>
+  <div class="tract-ctl-note">Tract outlines intersecting the 2-mile radius. Click a tract for its drone / call / incident counts and ACS profile.</div>
 </div>
 
 <div class="hint" id="hint">
@@ -874,26 +872,27 @@ function setPanelState(s){
 
 // Demographics block (race/poverty/age bars vs county + key-metric cards) — shared
 // by the address panel and the per-district explorer so both read identically.
-function demoBlock(d,unitLabel){
+function demoBlock(d,unitLabel,bl){
   if(!d)return'';
+  var B=bl||baseline;                                                    // tracts pass the tract-derived county baseline
   var re=d.race_ethnicity,h='';
   var M=function(n){return (n==null||isNaN(n))?'—':fmtMoney(n);};        // null-safe money (tracts can have gaps)
   var off=function(v,b){return (v==null||isNaN(v)||b==null||isNaN(b))?null:Math.round(v-b);};
   h+='<div class="sect"><div class="sect-t">'+(unitLabel||'District')+' vs. County Baseline</div><div class="dv-hdr"><div class="dv-label"></div><div class="dv-track"><span>← below</span><span>above →</span></div><div class="dv-val"></div></div>';
-  h+=dvB('White',re.pct_white,baseline.pct_white,'pp','#93a8d0');
-  h+=dvB('Black',re.pct_black,baseline.pct_black,'pp','#a78bfa');
-  h+=dvB('Hispanic',re.pct_hispanic,baseline.pct_hispanic,'pp','#f59e0b');
-  h+=dvB('Asian',re.pct_asian,baseline.pct_asian,'pp','#06d6a0');
+  h+=dvB('White',re.pct_white,B.pct_white,'pp','#93a8d0');
+  h+=dvB('Black',re.pct_black,B.pct_black,'pp','#a78bfa');
+  h+=dvB('Hispanic',re.pct_hispanic,B.pct_hispanic,'pp','#f59e0b');
+  h+=dvB('Asian',re.pct_asian,B.pct_asian,'pp','#06d6a0');
   h+='<div class="dv-sep"></div>';
-  h+=dvB('Poverty',d.poverty.pct_total_poverty,baseline.pct_total_poverty,'pp',null,true);
-  h+=dvB('Child pov.',d.poverty.pct_child_poverty,baseline.pct_child_poverty,'pp',null,true);
-  h+=dvB('Unemp.',d.employment.unemployment_rate,baseline.unemployment_rate,'pp',null,true);
-  h+=dvB('Rent burden',d.housing.pct_renter_cost_burdened_35plus,baseline.pct_renter_cost_burdened_35plus,'pp',null,true);
+  h+=dvB('Poverty',d.poverty.pct_total_poverty,B.pct_total_poverty,'pp',null,true);
+  h+=dvB('Child pov.',d.poverty.pct_child_poverty,B.pct_child_poverty,'pp',null,true);
+  h+=dvB('Unemp.',d.employment.unemployment_rate,B.unemployment_rate,'pp',null,true);
+  h+=dvB('Rent burden',d.housing.pct_renter_cost_burdened_35plus,B.pct_renter_cost_burdened_35plus,'pp',null,true);
   h+='<div class="dv-sep"></div>';
-  h+=dvB('Under 18',d.age.pct_under_18,baseline.pct_under_18,'pp','#06d6a0');
-  h+=dvB('Over 65',d.age.pct_65_and_over,baseline.pct_65_and_over,'pp','#7e92b8');
+  h+=dvB('Under 18',d.age.pct_under_18,B.pct_under_18,'pp','#06d6a0');
+  h+=dvB('Over 65',d.age.pct_65_and_over,B.pct_65_and_over,'pp','#7e92b8');
   h+='</div>';
-  var io=off(d.income.median_household_income,baseline.median_household_income),ho=off(d.housing.median_owner_value,baseline.median_owner_value);
+  var io=off(d.income.median_household_income,B.median_household_income),ho=off(d.housing.median_owner_value,B.median_owner_value);
   h+='<div class="sect"><div class="sect-t">Key metrics</div>';
   h+='<div class="km-row"><div class="km"><div class="km-v">'+M(d.income.median_household_income)+'</div><div class="km-l">Med. household</div><div class="km-off" style="color:'+(io==null?'var(--mut)':(io<0?'#ef4444':'#34d399'))+'">'+(io==null?'—':((io>=0?'+':'')+fmtMoney(io)+' vs county'))+'</div></div><div class="km"><div class="km-v">'+M(d.housing.median_owner_value)+'</div><div class="km-l">Home value</div><div class="km-off" style="color:'+(ho==null?'var(--mut)':(ho<0?'#ef4444':'#34d399'))+'">'+(ho==null?'—':((ho>=0?'+':'')+fmtMoney(ho)+' vs county'))+'</div></div></div>';
   h+='<div class="km-row"><div class="km"><div class="km-v">'+(d.population!=null?d.population.toLocaleString():'—')+'</div><div class="km-l">Population</div><div class="km-off" style="color:var(--mut)">'+(d.age.pct_under_18!=null?d.age.pct_under_18+'% under 18':'')+'</div></div><div class="km"><div class="km-v">'+(d.housing.median_monthly_rent!=null?'$'+d.housing.median_monthly_rent:'—')+'</div><div class="km-l">Med. rent</div><div class="km-off" style="color:var(--mut)">'+(d.housing.pct_renter_cost_burdened_35plus!=null?d.housing.pct_renter_cost_burdened_35plus+'% burdened':'')+'</div></div></div></div>';
@@ -967,7 +966,7 @@ function showTractSummary(f){
   h+='<div class="p-verdict '+(dr>0?'hit':'miss')+'"><div class="p-verdict-t" style="color:'+(dr>0?'#ff8a6a':'#34d399')+'">'+dr+' drone deployment'+(dr!==1?'s':'')+' over this tract</div>'+
      '<div class="p-verdict-b">Against <b>'+ca+'</b> call'+(ca!==1?'s':'')+' for service · <b>'+ic+'</b> incident'+(ic!==1?'s':'')+' in the radius'+
      (ca?'<br>'+(dr/ca*100).toFixed(0)+' drones per 100 calls':'')+(ic?' · '+(dr/ic*100).toFixed(0)+' per 100 incidents':'')+'</div></div>';
-  if(v)h+=demoBlock(tractToDemo(v),'Tract');
+  if(v)h+=demoBlock(tractToDemo(v),'Tract',tractBaseline);
   else h+='<div class="sect"><div class="sect-t">Demographics</div><div style="font-size:12.5px;color:var(--mut);line-height:1.5">No ACS demographic record for this tract.</div></div>';
   var panelInner=document.getElementById('panelInner');
   panelInner.innerHTML=h;panelInner.scrollTop=0;
@@ -1509,6 +1508,11 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       '<td class="num">'+(d.median_household_income!=null?'$'+Math.round(d.median_household_income).toLocaleString():'—')+'</td>'+
       num(d.pct_total_poverty,'%')+num(d.pct_child_poverty,'%')+'</tr>';}
     var head='<tr><th>Census tract</th><th>Drone deployments</th><th>Calls</th><th>Incidents</th><th>Drones/100 calls</th><th>Drones/100 inc.</th><th>Population</th><th>White</th><th>Black</th><th>Hispanic</th><th>Med. HH income</th><th>Poverty</th><th>Child pov.</th></tr>';
+    // Davidson County reference row (all tracts) — the baseline the bars compare against
+    var bl=tractBaseline,refRow=bl?('<tr class="ref"><td class="cm">Davidson County (all tracts)</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td>'+
+      num(bl.population)+num(bl.pct_white,'%')+num(bl.pct_black,'%')+num(bl.pct_hispanic,'%')+
+      '<td class="num">'+(bl.median_household_income!=null?'$'+Math.round(bl.median_household_income).toLocaleString():'—')+'</td>'+
+      num(bl.pct_total_poverty,'%')+num(bl.pct_child_poverty,'%')+'</tr>'):'';
     // When packaged in the bundle, link the sibling raw data files for direct loading
     var FILES=[['data/tract_analysis.csv','Tract analysis · CSV'],['data/tract_analysis.geojson','Tract analysis · GeoJSON'],
       ['data/flight_paths.geojson','Drone flight paths · GeoJSON'],['data/calls_for_service.geojson','Calls for service · GeoJSON'],
@@ -1523,7 +1527,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       '<header><h1>Drone deployments vs. calls &amp; incidents, by census tract</h1>',
       '<p class="sub">Each census tract inside the 2-mile Madison Precinct flight radius. <strong>Numerator</strong>: drone deployments (distinct DFR flights crossing the tract). <strong>Denominators</strong>: MNPD calls for service and incidents inside the radius. <em>Click any column header to sort.</em> Default sort: drones per 100 calls — the tracts getting the most drone activity relative to actual call volume rise to the top. Generated '+esc(gen.toLocaleString())+'.</p>',
       '<div class="stats"><div class="stat"><b>'+rows.length+'</b><span>tracts in radius</span></div><div class="stat"><b>'+totD.toLocaleString()+'</b><span>drone deployments</span></div><div class="stat"><b>'+totC.toLocaleString()+'</b><span>calls for service</span></div><div class="stat"><b>'+totI.toLocaleString()+'</b><span>incidents</span></div></div></header>',
-      '<div class="tablewrap"><table><thead>'+head+'</thead><tbody>'+rows.map(row).join('')+'</tbody></table></div>',
+      '<div class="tablewrap"><table><thead>'+head+'</thead><tbody>'+refRow+rows.map(row).join('')+'</tbody></table></div>',
       filesBlock,
       '<section class="prov"><h2>Sources &amp; methodology</h2><ul>'+
         '<li><strong>Drone deployments</strong> — '+esc(SRC_FLIGHTS.name)+(SRC_FLIGHTS.url?' · <a href="'+esc(SRC_FLIGHTS.url)+'" target="_blank" rel="noopener">source</a>':'')+'</li>'+
@@ -2009,7 +2013,7 @@ function loadCSI(){
 // the layer is switched on. Variables mirror the council-district panel set.
 var CENSUS_YEAR='2021';
 var CENSUS_KEY='02123594ad60bb42acd69d5369b81060dc94c53a';   // Census API key (raises query limit; public-data, rate-limit only)
-var tractGroup=L.layerGroup(),tractsLoaded=false,tractFeatures=[],tractVarKey='drones',tractDataPromise=null;
+var tractGroup=L.layerGroup(),tractsLoaded=false,tractFeatures=[],tractVarKey='drones',tractDataPromise=null,tractBaseline=null;
 var PAL_COOL=['#0b2f4a','#16567d','#2a86a8','#5cb3cf','#a7e0f2'];   // low → high (neutral)
 var PAL_WARM=['#3a1d10','#7a3415','#b85420','#e0792e','#ffc06b'];   // low → high (burden / activity)
 // get(vals, props): vals = ACS values for the tract; props = feature props incl. _drones/_calls/_incidents tallies
@@ -2074,6 +2078,39 @@ function tractVals(o){
     median_monthly_rent:cNum(o.B25064_001E),
     pct_renter_cost_burdened_35plus:cPct(cSum(o,['B25070_008E','B25070_009E','B25070_010E']),rentDen),  // 35%+ of income on rent
     unemployment_rate:cPct(cNum(o.B23025_005E),cNum(o.B23025_003E))
+  };
+}
+// True Davidson-County baseline from the SAME tract pull: exact county rates by
+// summing each B-table numerator/denominator across ALL county tracts (so the
+// comparison is apples-to-apples with the tract values); medians population-weighted.
+function computeTractBaseline(byGeoid){
+  var SUMV=['B03002_001E','B03002_003E','B03002_004E','B03002_006E','B03002_009E','B03002_012E',
+    'B01003_001E','B09001_001E','B01001_001E',
+    'B01001_020E','B01001_021E','B01001_022E','B01001_023E','B01001_024E','B01001_025E',
+    'B01001_044E','B01001_045E','B01001_046E','B01001_047E','B01001_048E','B01001_049E',
+    'B17001_001E','B17001_002E','B17020_003E','B17020_004E','B17020_005E','B17020_011E','B17020_012E','B17020_013E',
+    'B23025_003E','B23025_005E','B25070_001E','B25070_008E','B25070_009E','B25070_010E','B25070_011E'];
+  var MEDV=['B01002_001E','B19013_001E','B19301_001E','B25077_001E','B25064_001E'];
+  var agg={},medAcc={},medW={},popSum=0,n=0;
+  SUMV.forEach(function(k){agg[k]=0;});MEDV.forEach(function(k){medAcc[k]=0;medW[k]=0;});
+  for(var g in byGeoid){var o=byGeoid[g];n++;var pop=cNum(o.B01003_001E)||0;popSum+=pop;
+    SUMV.forEach(function(k){var v=cNum(o[k]);if(v!=null)agg[k]+=v;});
+    MEDV.forEach(function(k){var v=cNum(o[k]);if(v!=null&&pop>0){medAcc[k]+=v*pop;medW[k]+=pop;}});}
+  if(!n)return null;
+  function med(k){return medW[k]>0?Math.round(medAcc[k]/medW[k]):null;}
+  var sum65=agg.B01001_020E+agg.B01001_021E+agg.B01001_022E+agg.B01001_023E+agg.B01001_024E+agg.B01001_025E+agg.B01001_044E+agg.B01001_045E+agg.B01001_046E+agg.B01001_047E+agg.B01001_048E+agg.B01001_049E;
+  return {
+    population:Math.round(popSum),median_age:med('B01002_001E'),
+    pct_white:cPct(agg.B03002_003E,agg.B03002_001E),pct_black:cPct(agg.B03002_004E,agg.B03002_001E),
+    pct_asian:cPct(agg.B03002_006E,agg.B03002_001E),pct_two_or_more:cPct(agg.B03002_009E,agg.B03002_001E),
+    pct_hispanic:cPct(agg.B03002_012E,agg.B03002_001E),
+    pct_under_18:cPct(agg.B09001_001E,agg.B01003_001E),pct_65_and_over:cPct(sum65,agg.B01001_001E),
+    median_household_income:med('B19013_001E'),per_capita_income:med('B19301_001E'),
+    pct_total_poverty:cPct(agg.B17001_002E,agg.B17001_001E),
+    pct_child_poverty:cPct(agg.B17020_003E+agg.B17020_004E+agg.B17020_005E,agg.B17020_003E+agg.B17020_004E+agg.B17020_005E+agg.B17020_011E+agg.B17020_012E+agg.B17020_013E),
+    median_owner_value:med('B25077_001E'),median_monthly_rent:med('B25064_001E'),
+    pct_renter_cost_burdened_35plus:cPct(agg.B25070_008E+agg.B25070_009E+agg.B25070_010E,agg.B25070_001E-(agg.B25070_011E||0)),
+    unemployment_rate:cPct(agg.B23025_005E,agg.B23025_003E)
   };
 }
 // One ACS 5-yr query per tract (Davidson Co.), keyed on GEOID = state+county+tract.
@@ -2187,23 +2224,20 @@ function buildTractLegend(def,breaks,pal){
   leg.innerHTML=html;
 }
 
+// Tract outlines only — no choropleth. A near-transparent fill keeps the whole
+// tract clickable; clicking opens the per-tract drone/call/incident + ACS panel.
 function recolorTracts(){
   tractGroup.clearLayers();
-  var def=tractVarDef(tractVarKey),pal=def.pal==='warm'?PAL_WARM:PAL_COOL;
-  var vals=tractFeatures.map(function(f){return def.get(f.properties._vals||{},f.properties);});
-  var breaks=quantileBreaks(vals,pal.length);
   tractFeatures.forEach(function(f){
-    var v=def.get(f.properties._vals||{},f.properties),bi=binIndex(v,breaks);
-    var color=bi<0?'#3a3a3a':pal[Math.min(bi,pal.length-1)];
-    var gl=L.geoJSON(f,{style:{color:'#0d0b0a',weight:1,opacity:.55,fillColor:color,fillOpacity:v==null?0.12:0.62}});
+    var gl=L.geoJSON(f,{style:{color:'#a7e0f2',weight:1.2,opacity:.7,fill:true,fillColor:'#a7e0f2',fillOpacity:0.03}});
     (function(feat){gl.on('click',function(e){L.DomEvent.stopPropagation(e);showTractSummary(feat);});})(f);
     gl.addTo(tractGroup);
   });
-  buildTractLegend(def,breaks,pal);
 }
 
 function plotTracts(geojson,byGeoid){
   tractFeatures=[];
+  tractBaseline=computeTractBaseline(byGeoid);   // true county baseline from all Davidson Co. tracts
   var feats=(geojson&&geojson.features)||[];
   feats.forEach(function(raw){
     var f=esriToGeoJSON(raw);
