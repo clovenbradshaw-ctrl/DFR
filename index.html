@@ -8,6 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23060a10%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23ef4444%22%20stroke-width%3D%222.5%22%20opacity%3D%22.45%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2211%22%20fill%3D%22none%22%20stroke%3D%22%23ef4444%22%20stroke-width%3D%222.5%22%20opacity%3D%22.8%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%224%22%20fill%3D%22%23ef4444%22%2F%3E%3Cg%20stroke%3D%22%23ef4444%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%3E%3Cline%20x1%3D%2232%22%20y1%3D%226%22%20x2%3D%2232%22%20y2%3D%2215%22%2F%3E%3Cline%20x1%3D%2232%22%20y1%3D%2249%22%20x2%3D%2232%22%20y2%3D%2258%22%2F%3E%3Cline%20x1%3D%226%22%20y1%3D%2232%22%20x2%3D%2215%22%20y2%3D%2232%22%2F%3E%3Cline%20x1%3D%2249%22%20y1%3D%2232%22%20x2%3D%2258%22%20y2%3D%2232%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link href="https://fonts.bunny.net/css?family=dm-sans:400,500,600,700|jetbrains-mono:400,600,700|source-serif-4:400,600,700&display=swap" rel="stylesheet" onerror="this.remove()">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -127,6 +128,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .site-pin{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.55),0 0 0 4px rgba(0,0,0,.22);transition:transform .2s,box-shadow .15s;transform:scale(var(--site-scale,1))}
 .site-pin-wrap:hover .site-pin,.site-pin-wrap:active .site-pin{transform:scale(calc(var(--site-scale,1) * 1.18));box-shadow:0 4px 14px rgba(0,0,0,.7),0 0 0 5px rgba(0,0,0,.28)}
 .site-pin svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.csi-pin{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.55),0 0 0 4px rgba(0,0,0,.22);transition:transform .2s,box-shadow .15s;transform:scale(var(--site-scale,1))}
+.site-pin-wrap:hover .csi-pin{transform:scale(calc(var(--site-scale,1) * 1.18));box-shadow:0 4px 14px rgba(0,0,0,.7),0 0 0 5px rgba(0,0,0,.28)}
+.csi-pin svg{width:16px;height:16px;stroke:#10141b;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.csi-pin.calls{background:#6fd3ff}
+.csi-pin.incidents{background:#ffd166}
 .site-pin.school{background:#1f8a5b}
 .site-pin.childcare{background:#7c5cd9}
 .site-pin.playground{background:#0c9c79}
@@ -569,7 +575,7 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
   <div class="modal" role="dialog" aria-labelledby="exportTitle" aria-modal="true">
     <button class="close" id="exportClose" aria-label="Close">&times;</button>
     <h2 id="exportTitle">Export the data</h2>
-    <p>Download the underlying data behind this map — <strong>where the drones flew</strong>, <strong>where the sensitive sites are</strong>, and the <strong>demographic breakdown</strong> of every council district they passed over. Files are built in your browser; nothing is uploaded.</p>
+    <p>Download the data behind this map. The lead dataset is the <strong>census-tract analysis</strong>: <strong>drone deployments</strong> (numerator) against <strong>calls for service and incidents</strong> (denominators), joined to each tract's <strong>ACS demographics</strong> — so you can see whether drone activity tracks actual demand, and who lives where it concentrates. Files are built in your browser; nothing is uploaded.</p>
     <div class="export-list" id="exportList"></div>
     <p class="export-note">Demographics: <strong>U.S. Census Bureau, American Community Survey (ACS) 2017–2021 5-Year Estimates</strong>, compiled by Metro Social Services (Know Your Community 2023). Flights: MNPD DFR logs · Sites: Metro Nashville GIS &amp; OpenStreetMap. Every exported file carries its source citation. CSV opens in any spreadsheet; GeoJSON loads in QGIS, Mapbox, geojson.io, etc.</p>
   </div>
@@ -609,6 +615,9 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.p
 map.createPane('flightPane');
 map.getPane('flightPane').style.zIndex=650;
 map.getPane('flightPane').style.pointerEvents='none';
+// Calls/incidents above the flight lines; sensitive sites on top of everything.
+map.createPane('csiPane');  map.getPane('csiPane').style.zIndex=655;
+map.createPane('sitePane'); map.getPane('sitePane').style.zIndex=665;
 
 // Scale site icons with zoom so the map stays legible when zoomed out.
 // Update during the zoom animation (and live pinch) so pins glide smoothly
@@ -670,6 +679,33 @@ function findDist(lat,lng){for(var dn in districtPolys){for(var r=0;r<districtPo
 
 // ── Council district overlay (boundaries + labels) ──
 function distStyle(sel){return{color:sel?'#9cc3ff':'#4d8df5',weight:sel?2.6:1.3,opacity:sel?.95:.5,fill:true,fillColor:'#4d8df5',fillOpacity:sel?.12:.035};}
+// A point guaranteed to sit *inside* the district (not just its bbox center, which
+// can fall in a concave gap or a neighbor for L-shaped districts). Picks the widest
+// interior horizontal span across the largest ring — a lightweight pole-of-inaccessibility.
+function ringAreaLL(ring){var s=0;for(var i=0,j=ring.length-1;i<ring.length;j=i++)s+=ring[j][0]*ring[i][1]-ring[i][0]*ring[j][1];return s/2;}
+function insideDistrict(xy,rings){var c=false;for(var r=0;r<rings.length;r++)if(inPoly(xy,rings[r]))c=!c;return c;}   // even-odd: respects holes
+function districtLabelLatLng(dn){
+  var rings=districtPolys[dn];if(!rings||!rings.length)return null;
+  var outer=rings[0],bestA=-1;
+  for(var i=0;i<rings.length;i++){var a=Math.abs(ringAreaLL(rings[i]));if(a>bestA){bestA=a;outer=rings[i];}}
+  var minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+  for(var i=0;i<outer.length;i++){var p=outer[i];if(p[0]<minX)minX=p[0];if(p[0]>maxX)maxX=p[0];if(p[1]<minY)minY=p[1];if(p[1]>maxY)maxY=p[1];}
+  var best=null,bestW=-1,STEPS=17;
+  for(var s=1;s<STEPS;s++){
+    var y=minY+(maxY-minY)*s/STEPS,xs=[];
+    for(var i=0,j=outer.length-1;i<outer.length;j=i++){
+      var yi=outer[i][1],yj=outer[j][1];
+      if((yi>y)!==(yj>y))xs.push(outer[i][0]+(outer[j][0]-outer[i][0])*(y-yi)/(yj-yi));
+    }
+    xs.sort(function(a,b){return a-b;});
+    for(var k=0;k+1<xs.length;k+=2){
+      var w=xs[k+1]-xs[k];if(w<=bestW)continue;
+      var mx=(xs[k]+xs[k+1])/2;
+      if(insideDistrict([mx,y],rings)){bestW=w;best=[y,mx];}   // [lat,lng]
+    }
+  }
+  return best;
+}
 function buildDistrictOverlay(gj){
   districtLayer=L.geoJSON(gj,{
     interactive:false,
@@ -678,7 +714,8 @@ function buildDistrictOverlay(gj){
       var dn=(f.properties.DistrictName||'').replace(/\D/g,'');
       if(!dn)return;
       districtLayerByNum[dn]=layer;
-      var c=layer.getBounds().getCenter();
+      var ip=districtLabelLatLng(dn);
+      var c=ip?L.latLng(ip[0],ip[1]):layer.getBounds().getCenter();
       var m=L.marker(c,{interactive:true,keyboard:false,riseOnHover:true,
         icon:L.divIcon({className:'dist-label',html:distLabelHTML(dn),iconSize:[30,18],iconAnchor:[15,9]})});
       m.on('click',function(ev){L.DomEvent.stopPropagation(ev);showDistrictSummary(dn);});
@@ -1148,6 +1185,11 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     a.href=url;a.download=name;document.body.appendChild(a);a.click();
     setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},120);
   }
+  function dlBlob(name,blob){
+    var url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},150);
+  }
   function stamp(){return new Date().toISOString().slice(0,10);}
   function cell(v){if(v==null)v='';v=String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
   function csv(rows){return rows.map(function(r){return r.map(cell).join(',');}).join('\r\n');}
@@ -1306,6 +1348,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       demographics:{source:demoSourceObj(),county_baseline:baseline,districts:demographics},
       calls_for_service:{source:SRC_CALLS,by_district:callsByDistrict,points:allCalls},
       incidents:{source:SRC_INCIDENTS,by_district:incidentsByDistrict,points:allIncidents},
+      tract_analysis:{source:SRC_TRACTS(),method:TRACT_METHOD,tracts:tractAnalysis().map(function(t){var o={tract_geoid:t.geoid,tract_name:t.name,drone_deployments:t.drones,calls_for_service:t.calls,incidents:t.incidents,drones_per_100_calls:t.drones_per_100_calls,drones_per_100_incidents:t.drones_per_100_incidents};for(var k in t.vals)o[k]=t.vals[k];return o;})},
       council_members:CM
     },null,2);
   }
@@ -1385,7 +1428,138 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     return csv(out);
   }
 
+  // ── Census-tract analysis: drones (numerator) vs calls/incidents (denominators) × ACS ──
+  function SRC_TRACTS(){return {name:'U.S. Census Bureau ACS '+CENSUS_YEAR+' 5-Year Estimates by tract (Davidson County) via the Census API; tract geometry from Census TIGERweb. Limited to tracts intersecting the 2-mile flight radius.',url:'https://www.census.gov/data/developers/data-sets/acs-5year.html'};}
+  var TRACT_METHOD='Numerator = drone deployments (distinct DFR flights crossing the tract). Denominators = MNPD calls for service and incidents inside the radius. drones_per_100_x = numerator / denominator × 100. All counts limited to inside the 2-mile flight radius since '+PILOT_START+'.';
+  function tractAnalysis(){
+    if(typeof computeTractTallies==='function')computeTractTallies();   // fresh tallies from current flights/calls/incidents
+    return (tractFeatures||[]).map(function(f){
+      var p=f.properties,d=p._vals||{},dr=p._drones||0,ca=p._calls||0,ic=p._incidents||0;
+      return {geoid:p._geoid,name:p._name,drones:dr,calls:ca,incidents:ic,
+        drones_per_100_calls:ca?+(dr/ca*100).toFixed(1):null,
+        drones_per_100_incidents:ic?+(dr/ic*100).toFixed(1):null,
+        vals:d,geometry:f.geometry};
+    });
+  }
+  var TRACT_HEAD=['tract_geoid','tract_name','drone_deployments','calls_for_service','incidents','drones_per_100_calls','drones_per_100_incidents','population','median_age','pct_white','pct_black','pct_hispanic','pct_asian','pct_two_or_more','pct_under_18','pct_65_and_over','median_household_income','per_capita_income','pct_total_poverty','pct_child_poverty','median_owner_value','median_monthly_rent','pct_renter_cost_burdened_35plus','unemployment_rate'];
+  function tractValRow(t){var d=t.vals;return [t.geoid,t.name,t.drones,t.calls,t.incidents,t.drones_per_100_calls,t.drones_per_100_incidents,d.population,d.median_age,d.pct_white,d.pct_black,d.pct_hispanic,d.pct_asian,d.pct_two_or_more,d.pct_under_18,d.pct_65_and_over,d.median_household_income,d.per_capita_income,d.pct_total_poverty,d.pct_child_poverty,d.median_owner_value,d.median_monthly_rent,d.pct_renter_cost_burdened_35plus,d.unemployment_rate];}
+  function tractCSV(){
+    var rows=srcRows(srcLines(SRC_TRACTS(),TRACT_METHOD+' Demographics: '+acsSource()+'.'));
+    rows.push(TRACT_HEAD);
+    tractAnalysis().forEach(function(t){rows.push(tractValRow(t));});
+    return csv(rows);
+  }
+  function tractGeoJSON(){
+    return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_TRACTS().name,source_url:SRC_TRACTS().url,method:TRACT_METHOD,demographics:acsSource(),generated:new Date().toISOString()},
+      features:tractAnalysis().map(function(t){var props={tract_geoid:t.geoid,tract_name:t.name,drone_deployments:t.drones,calls_for_service:t.calls,incidents:t.incidents,drones_per_100_calls:t.drones_per_100_calls,drones_per_100_incidents:t.drones_per_100_incidents};
+        for(var k in t.vals)props[k]=t.vals[k];
+        return {type:'Feature',geometry:t.geometry,properties:props};})},null,2);
+  }
+  function tractReportHTML(withFiles){
+    var rows=tractAnalysis().slice().sort(function(a,b){return (b.drones_per_100_calls||-1)-(a.drones_per_100_calls||-1)||b.drones-a.drones;});
+    var totD=0,totC=0,totI=0;rows.forEach(function(t){totD+=t.drones;totC+=t.calls;totI+=t.incidents;});
+    var src=SRC_TRACTS(),gen=new Date();
+    function num(v,suf){return '<td class="num">'+(v==null||v===''?'—':(v.toLocaleString?v.toLocaleString():v)+(suf||''))+'</td>';}
+    function row(t){var d=t.vals;return '<tr><td class="cm">'+esc(t.name||t.geoid)+'</td>'+
+      '<td class="num" style="color:#ff8a6a;font-weight:700">'+t.drones+'</td>'+num(t.calls)+num(t.incidents)+
+      '<td class="num" style="color:#fca5a5;font-weight:700">'+(t.drones_per_100_calls==null?'—':t.drones_per_100_calls)+'</td>'+
+      '<td class="num">'+(t.drones_per_100_incidents==null?'—':t.drones_per_100_incidents)+'</td>'+
+      num(d.population)+num(d.pct_white,'%')+num(d.pct_black,'%')+num(d.pct_hispanic,'%')+
+      '<td class="num">'+(d.median_household_income!=null?'$'+Math.round(d.median_household_income).toLocaleString():'—')+'</td>'+
+      num(d.pct_total_poverty,'%')+num(d.pct_child_poverty,'%')+'</tr>';}
+    var head='<tr><th>Census tract</th><th>Drone deployments</th><th>Calls</th><th>Incidents</th><th>Drones/100 calls</th><th>Drones/100 inc.</th><th>Population</th><th>White</th><th>Black</th><th>Hispanic</th><th>Med. HH income</th><th>Poverty</th><th>Child pov.</th></tr>';
+    // When packaged in the bundle, link the sibling raw data files for direct loading
+    var FILES=[['data/tract_analysis.csv','Tract analysis · CSV'],['data/tract_analysis.geojson','Tract analysis · GeoJSON'],
+      ['data/flight_paths.geojson','Drone flight paths · GeoJSON'],['data/calls_for_service.geojson','Calls for service · GeoJSON'],
+      ['data/incidents.geojson','Incidents · GeoJSON'],['data/sensitive_sites.geojson','Sensitive sites · GeoJSON'],
+      ['data/full_dataset.json','Everything · JSON']];
+    var filesBlock = withFiles ? ('<section class="prov"><h2>Source files in this bundle</h2><p class="note">The same numbers, as raw files you can load into a spreadsheet, QGIS, Mapbox or geojson.io. They sit next to this page in the <code>data/</code> folder.</p><ul>'+
+      FILES.map(function(f){return '<li><a href="'+f[0]+'">'+esc(f[1])+'</a> — <code>'+esc(f[0])+'</code></li>';}).join('')+'</ul></section>') : '';
+    var SORT_JS='<script>document.querySelectorAll("th").forEach(function(th,i){th.style.cursor="pointer";th.title="Sort";th.addEventListener("click",function(){var tb=th.closest("table").tBodies[0],rs=[].slice.call(tb.rows);var asc=th._asc=!th._asc;rs.sort(function(a,b){var x=a.cells[i].textContent.trim(),y=b.cells[i].textContent.trim();var nx=parseFloat(x.replace(/[$,%]/g,"")),ny=parseFloat(y.replace(/[$,%]/g,""));if(!isNaN(nx)&&!isNaN(ny))return asc?nx-ny:ny-nx;return asc?x.localeCompare(y):y.localeCompare(x);});rs.forEach(function(r){tb.appendChild(r);});});});<\/script>';
+    return [
+      '<!DOCTYPE html>','<html lang="en"><head><meta charset="utf-8">','<meta name="viewport" content="width=device-width, initial-scale=1">',
+      '<title>Nashville DFR — census-tract explorer</title>','<style>'+REPORT_CSS+'th{cursor:pointer}</style></head><body>',
+      '<header><h1>Drone deployments vs. calls &amp; incidents, by census tract</h1>',
+      '<p class="sub">Each census tract inside the 2-mile Madison Precinct flight radius. <strong>Numerator</strong>: drone deployments (distinct DFR flights crossing the tract). <strong>Denominators</strong>: MNPD calls for service and incidents inside the radius. <em>Click any column header to sort.</em> Default sort: drones per 100 calls — the tracts getting the most drone activity relative to actual call volume rise to the top. Generated '+esc(gen.toLocaleString())+'.</p>',
+      '<div class="stats"><div class="stat"><b>'+rows.length+'</b><span>tracts in radius</span></div><div class="stat"><b>'+totD.toLocaleString()+'</b><span>drone deployments</span></div><div class="stat"><b>'+totC.toLocaleString()+'</b><span>calls for service</span></div><div class="stat"><b>'+totI.toLocaleString()+'</b><span>incidents</span></div></div></header>',
+      '<div class="tablewrap"><table><thead>'+head+'</thead><tbody>'+rows.map(row).join('')+'</tbody></table></div>',
+      filesBlock,
+      '<section class="prov"><h2>Sources &amp; methodology</h2><ul>'+
+        '<li><strong>Drone deployments</strong> — '+esc(SRC_FLIGHTS.name)+(SRC_FLIGHTS.url?' · <a href="'+esc(SRC_FLIGHTS.url)+'" target="_blank" rel="noopener">source</a>':'')+'</li>'+
+        '<li><strong>Calls for service</strong> — '+esc(SRC_CALLS.name)+' · <a href="'+esc(SRC_CALLS.url)+'" target="_blank" rel="noopener">source</a></li>'+
+        '<li><strong>Incidents</strong> — '+esc(SRC_INCIDENTS.name)+' · <a href="'+esc(SRC_INCIDENTS.url)+'" target="_blank" rel="noopener">source</a></li>'+
+        '<li><strong>Demographics &amp; tracts</strong> — '+esc(src.name)+' · <a href="'+esc(src.url)+'" target="_blank" rel="noopener">source</a></li>'+
+      '</ul><p class="note">'+esc(TRACT_METHOD)+' A drone counts toward a tract when any point on its path falls inside the tract (point-in-polygon), so one flight can count toward several tracts.</p></section>'+SORT_JS+'</body></html>'
+    ].join('\n');
+  }
+
+  // ── One-file bundle: the HTML explorer (main) + raw sources, zipped ──
+  function bundleReadme(){
+    return [
+      'Nashville Drone-as-First-Responder — data bundle',
+      'Generated: '+new Date().toISOString(),
+      '',
+      'START HERE: open index.html in any web browser. It is a self-contained,',
+      'sortable explorer of drone deployments vs. MNPD calls for service and',
+      'incidents, by census tract, with each tract\'s ACS demographics. No',
+      'internet connection needed — all the numbers are baked into the page.',
+      '',
+      'The data/ folder has the same information as raw files you can load into a',
+      'spreadsheet, QGIS, Mapbox, or geojson.io:',
+      '  data/tract_analysis.csv / .geojson  — drones (numerator) vs calls & incidents',
+      '                                         (denominators) + ACS demographics, per tract',
+      '  data/flight_paths.geojson           — DFR flight paths',
+      '  data/calls_for_service.geojson/.csv — MNPD calls inside the radius (since '+PILOT_START+')',
+      '  data/incidents.geojson/.csv         — MNPD incidents inside the radius',
+      '  data/sensitive_sites.geojson/.csv   — schools, childcare, playgrounds, worship',
+      '  data/district_demographics.csv      — council-district ACS breakdown',
+      '  data/full_dataset.json              — everything in one JSON file',
+      '',
+      'Method: '+TRACT_METHOD,
+      '',
+      'Sources:',
+      '  Drone flight paths — '+SRC_FLIGHTS.name+' ('+SRC_FLIGHTS.url+')',
+      '  Calls for service  — '+SRC_CALLS.name+' ('+SRC_CALLS.url+')',
+      '  Incidents          — '+SRC_INCIDENTS.name+' ('+SRC_INCIDENTS.url+')',
+      '  Demographics/tracts— '+SRC_TRACTS().name+' ('+SRC_TRACTS().url+')',
+      '  Council districts  — '+SRC_DISTRICTS.name+' ('+SRC_DISTRICTS.url+')',
+      '',
+      'Built in-browser by the Nashville DFR Surveillance Footprint map. Verify',
+      'against the linked sources before publishing.'
+    ].join('\n');
+  }
+  function buildBundle(){
+    return Promise.resolve(typeof ensureTractData==='function'?ensureTractData():null).then(function(){
+      var zip=new JSZip();
+      zip.file('index.html', tractReportHTML(true));          // the explorer most people want
+      zip.file('README.txt', bundleReadme());
+      var d=zip.folder('data');
+      if(tractFeatures&&tractFeatures.length){d.file('tract_analysis.csv',tractCSV());d.file('tract_analysis.geojson',tractGeoJSON());}
+      if(allFlights.length){d.file('flight_paths.geojson',flightsGeoJSON());d.file('flight_log.csv',flightsCSV());}
+      if(allSites.length){d.file('sensitive_sites.geojson',sitesGeoJSON());d.file('sensitive_sites.csv',sitesCSV());}
+      if(allCalls.length){d.file('calls_for_service.geojson',csiGeoJSON(allCalls,SRC_CALLS));d.file('calls_for_service.csv',csiCSV(allCalls,SRC_CALLS));}
+      if(allIncidents.length){d.file('incidents.geojson',csiGeoJSON(allIncidents,SRC_INCIDENTS));d.file('incidents.csv',csiCSV(allIncidents,SRC_INCIDENTS));}
+      if(Object.keys(demographics).length){d.file('district_demographics.csv',demoCSV());}
+      d.file('full_dataset.json',bundleJSON());
+      return zip.generateAsync({type:'blob',compression:'DEFLATE'});
+    }).then(function(blob){dlBlob('nashville_dfr_bundle_'+stamp()+'.zip',blob);});
+  }
+
   var DATASETS=[
+    {name:'Complete bundle — HTML explorer + sources (.zip)',
+     count:function(){return 'open index.html to explore · CSV/GeoJSON inside for loading elsewhere';},
+     ready:function(){return typeof JSZip!=='undefined';},
+     formats:[
+       {ext:'ZIP',fn:function(){buildBundle().catch(function(e){alert('Could not build the bundle: '+(e&&e.message||e)+'\\nDownloading the explorer on its own instead.');dl('nashville_dfr_explorer_'+stamp()+'.html',tractReportHTML(false),'text/html');});}}
+     ]},
+    {name:'Census tract analysis — drones vs calls/incidents × demographics',
+     count:function(){return (tractFeatures&&tractFeatures.length?tractFeatures.length+' tracts in radius':'loading tracts')+' · numerator/denominator + ACS';},
+     ready:function(){return !!(tractFeatures&&tractFeatures.length);},
+     formats:[
+       {ext:'View',fn:function(){var u=URL.createObjectURL(new Blob([tractReportHTML()],{type:'text/html'}));window.open(u,'_blank');setTimeout(function(){URL.revokeObjectURL(u);},60000);}},
+       {ext:'CSV',fn:function(){dl('dfr_tract_analysis_'+stamp()+'.csv',tractCSV(),'text/csv');}},
+       {ext:'GeoJSON',fn:function(){dl('dfr_tract_analysis_'+stamp()+'.geojson',tractGeoJSON(),'application/geo+json');}}
+     ]},
     {name:'Drone flight paths',
      count:function(){return allFlights.length+' flight'+(allFlights.length===1?'':'s')+' · where they flew';},
      ready:function(){return allFlights.length>0;},
@@ -1454,7 +1628,13 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
     });
   }
 
-  function open(){render();bg.classList.add('show');}
+  function open(){
+    render();bg.classList.add('show');
+    // tract analysis is the centerpiece — make sure its data is loading, re-render when ready
+    if(typeof ensureTractData==='function'&&!(tractFeatures&&tractFeatures.length)){
+      ensureTractData().then(function(){if(bg.classList.contains('show'))render();});
+    }
+  }
   function shut(){bg.classList.remove('show');}
   btn.addEventListener('click',open);
   if(aboutBtn)aboutBtn.addEventListener('click',function(){closeAbout();open();});
@@ -1701,15 +1881,16 @@ var PILOT_START='2026-05-26';                     // DFR trial launch
 var radiusCenter=null;
 var callsGroup=L.layerGroup(),incidentsGroup=L.layerGroup();
 var callsVisible=true,incidentsVisible=true;
-var csiRenderer=L.canvas({padding:0.5});          // dedicated canvas so thousands of dots stay fast
 var allCalls=[],allIncidents=[],callsByDistrict={},incidentsByDistrict={};
 var CSI_DEFS=[
   {key:'calls',label:'Calls for service',itemId:'f8b1bdf0612647cfb9c9ccce31ac411a',color:'#6fd3ff',noun:'calls for service',
    group:function(){return callsGroup;},typePats:[/tencode description/i,/disposition description/i,/description/i,/tencode/i],
-   datePats:[/call received/i,/received/i,/^date$/i,/date/i]},
+   datePats:[/call received/i,/received/i,/^date$/i,/date/i],
+   svg:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.7 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.74.34 1.53.57 2.34.7A2 2 0 0 1 22 16.92z"/>'},
   {key:'incidents',label:'Incident reports',itemId:'d747436243e9439e968fce056545016a',color:'#ffd166',noun:'incidents',
    group:function(){return incidentsGroup;},typePats:[/offense description/i,/offense/i,/description/i],
-   datePats:[/incident occurred/i,/occurred/i,/reported/i,/incident date/i,/date/i]}
+   datePats:[/incident occurred/i,/occurred/i,/reported/i,/incident date/i,/date/i],
+   svg:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'}
 ];
 var CSI_DENY={OBJECTID:1,OBJECTID_1:1,FID:1,x:1,y:1,POINT_X:1,POINT_Y:1,Latitude:1,Longitude:1,'Mapped Location':1,MappedLocation:1,GlobalID:1,Shape:1,Shape__Area:1,Shape__Length:1};
 
@@ -1759,14 +1940,17 @@ function plotPointLayer(def,features,o){
     counts[t]=(counts[t]||0)+1;
     var dn=findDist(ll[0],ll[1]);if(dn)perDist[dn]=(perDist[dn]||0)+1;
     store.push({lat:ll[0],lng:ll[1],type:t,district:dn||'',props:ft.properties});
-    (function(feat){L.circleMarker(ll,{renderer:csiRenderer,radius:3,stroke:false,fillColor:def.color,fillOpacity:.6})
-      .bindPopup(csiPopup(feat,o,def),{maxWidth:300})
+    var iconHtml='<div class="site-pin-wrap"><div class="csi-pin '+def.key+'"><svg viewBox="0 0 24 24">'+(def.svg||'')+'</svg></div></div>';
+    (function(feat,label){L.marker(ll,{pane:'csiPane',icon:L.divIcon({className:'site-marker',html:iconHtml,iconSize:[44,44],iconAnchor:[22,22]}),title:label,riseOnHover:true,keyboard:false})
+      .bindTooltip(label,{direction:'top',sticky:true,opacity:0.95})
+      .bindPopup(csiPopup(feat,o,def),{maxWidth:300,className:'callpopup'})
       .on('click',function(e){L.DomEvent.stopPropagation(e);})
-      .addTo(grp);})(ft);
+      .addTo(grp);})(ft,String(t));
   }
   if(def.key==='calls'){allCalls=store;callsByDistrict=perDist;}else{allIncidents=store;incidentsByDistrict=perDist;}
   var row=document.querySelector('.lyr-row[data-layer="'+def.key+'"] .lyr-name');
   if(row)row.textContent=def.label+' ('+inside.toLocaleString()+')';
+  if(typeof refreshTractTallies==='function')refreshTractTallies();   // update tract numerator/denominator
 }
 
 function setCallsVisible(v){callsVisible=v;if(v)callsGroup.addTo(map);else map.removeLayer(callsGroup);setLayerRow('calls',v);}
@@ -1783,10 +1967,17 @@ function loadCSI(){
 // tract geometry comes from the Census TIGERweb service. Lazy-loaded the first time
 // the layer is switched on. Variables mirror the council-district panel set.
 var CENSUS_YEAR='2022';
-var tractGroup=L.layerGroup(),tractsLoaded=false,tractFeatures=[],tractVarKey='income';
+var CENSUS_KEY='02123594ad60bb42acd69d5369b81060dc94c53a';   // Census API key (raises query limit; public-data, rate-limit only)
+var tractGroup=L.layerGroup(),tractsLoaded=false,tractFeatures=[],tractVarKey='drones',tractDataPromise=null;
 var PAL_COOL=['#0b2f4a','#16567d','#2a86a8','#5cb3cf','#a7e0f2'];   // low → high (neutral)
-var PAL_WARM=['#3a1d10','#7a3415','#b85420','#e0792e','#ffc06b'];   // low → high (burden)
+var PAL_WARM=['#3a1d10','#7a3415','#b85420','#e0792e','#ffc06b'];   // low → high (burden / activity)
+// get(vals, props): vals = ACS values for the tract; props = feature props incl. _drones/_calls/_incidents tallies
 var TRACT_VARS=[
+  {key:'drones',label:'Drone deployments',pal:'warm',int:true,get:function(d,p){return p._drones||0;}},
+  {key:'drones_per_call',label:'Drones per 100 calls',pal:'warm',ratio:true,get:function(d,p){return p._calls?(p._drones||0)/p._calls*100:null;}},
+  {key:'drones_per_incident',label:'Drones per 100 incidents',pal:'warm',ratio:true,get:function(d,p){return p._incidents?(p._drones||0)/p._incidents*100:null;}},
+  {key:'calls',label:'Calls for service',pal:'cool',int:true,get:function(d,p){return p._calls||0;}},
+  {key:'incidents',label:'Incidents',pal:'cool',int:true,get:function(d,p){return p._incidents||0;}},
   {key:'income',label:'Median household income',pal:'cool',money:true,get:function(d){return d.median_household_income;}},
   {key:'poverty',label:'Poverty rate',pal:'warm',get:function(d){return d.pct_total_poverty;}},
   {key:'child_poverty',label:'Child poverty rate',pal:'warm',get:function(d){return d.pct_child_poverty;}},
@@ -1799,7 +1990,7 @@ var TRACT_VARS=[
   {key:'over65',label:'% 65 and over',pal:'cool',get:function(d){return d.pct_65_and_over;}}
 ];
 function tractVarDef(k){for(var i=0;i<TRACT_VARS.length;i++)if(TRACT_VARS[i].key===k)return TRACT_VARS[i];return TRACT_VARS[0];}
-function tractFmt(def,v){if(v==null)return 'n/a';return def.money?fmtMoney(v):(Math.round(v*10)/10)+'%';}
+function tractFmt(def,v){if(v==null)return 'n/a';if(def.money)return fmtMoney(v);if(def.int)return Math.round(v).toLocaleString();if(def.ratio)return (Math.round(v*10)/10).toString();return (Math.round(v*10)/10)+'%';}
 
 // Census API returns array-of-arrays; first row is the header
 function censusRows(json){if(!json||!json.length)return [];var head=json[0],out=[];for(var i=1;i<json.length;i++){var o={},r=json[i];for(var j=0;j<head.length;j++)o[head[j]]=r[j];out.push(o);}return out;}
@@ -1816,30 +2007,61 @@ function tractVals(o){
     pct_renter_cost_burdened_35plus:cNum(o.DP04_0142PE)
   };
 }
+// ACS 5-yr Data Profiles by tract (Davidson Co.), newest year that responds.
+// group() always returns every variable in the table, so a bad code can't 400 it.
 function loadACSProfiles(){
-  var base='https://api.census.gov/data/'+CENSUS_YEAR+'/acs/acs5/profile',pred='&for=tract:*&in=state:47%20county:037';
-  // group() always returns every variable in the table, so a single bad code can't 400 the request
-  return Promise.all(['DP05','DP03','DP04'].map(function(g){return csiFetch(base+'?get=group('+g+')'+pred);})).then(function(res){
-    var by={};
-    res.forEach(function(json){censusRows(json).forEach(function(o){
-      var geoid=(o.state||'')+(o.county||'')+(o.tract||'');if(!geoid)return;
-      var cur=by[geoid]||{};for(var k in o)cur[k]=o[k];by[geoid]=cur;
-    });});
-    return by;
-  });
+  var years=[2023,2022,2021];
+  function tryYear(i){
+    if(i>=years.length)return Promise.resolve({});
+    var base='https://api.census.gov/data/'+years[i]+'/acs/acs5/profile',
+        pred='&for=tract:*&in=state:47%20county:037'+(CENSUS_KEY?'&key='+CENSUS_KEY:'');
+    return Promise.all(['DP05','DP03','DP04'].map(function(g){
+      return csiFetch(base+'?get=group('+g+')'+pred).catch(function(){return null;});
+    })).then(function(res){
+      var by={},ok=false;
+      res.forEach(function(json){
+        if(!Array.isArray(json)||json.length<2)return; ok=true;
+        censusRows(json).forEach(function(o){
+          var geoid=(o.state||'')+(o.county||'')+(o.tract||'');if(!geoid)return;
+          var cur=by[geoid]||{};for(var k in o)cur[k]=o[k];by[geoid]=cur;
+        });
+      });
+      if(ok){CENSUS_YEAR=String(years[i]);return by;}
+      return tryYear(i+1);
+    });
+  }
+  return tryYear(0);
 }
 
+// Tract geometry from Census TIGERweb. Tries both tract services, the discovered
+// "Census Tracts" layer (and known id fallbacks), and both geojson/json — whichever
+// answers first. Whole county; tractTouchesRadius() then keeps only in-radius tracts.
 function loadTractGeom(){
-  var svc='https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer';
-  return csiFetch(svc+'?f=json').then(function(meta){
-    var lid=null,layers=(meta&&meta.layers)||[];
-    layers.forEach(function(l){if(lid==null&&/census tracts/i.test(l.name))lid=l.id;});
-    if(lid==null)layers.forEach(function(l){if(lid==null&&/tract/i.test(l.name))lid=l.id;});
-    if(lid==null)lid=0;
-    var bb=csiBbox(radiusCenter,2*MILE_M);
-    var params={where:"STATE='47' AND COUNTY='037'",geometry:bb.join(','),geometryType:'esriGeometryEnvelope',inSR:'4326',spatialRel:'esriSpatialRelIntersects',outFields:'*',outSR:'4326',returnGeometry:'true',f:'geojson'};
-    return csiFetch(svc+'/'+lid+'/query?'+new URLSearchParams(params).toString());
-  });
+  var services=['https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer',
+                'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Tracts_Blocks/MapServer'];
+  function tryFormat(layerBase,asGeo){
+    var p={where:"STATE='47' AND COUNTY='037'",outFields:'*',returnGeometry:'true',outSR:'4326',f:asGeo?'geojson':'json',resultRecordCount:'4000'};
+    return csiFetch(layerBase+'/query?'+new URLSearchParams(p).toString()).then(function(d){return {features:(d&&d.features)||[]};});
+  }
+  function tryIds(svc,ids,k){
+    if(k>=ids.length)return Promise.resolve(null);
+    var lb=svc+'/'+ids[k];
+    return tryFormat(lb,true).then(function(r){if(r&&r.features&&r.features.length)return r;
+      return tryFormat(lb,false).then(function(r2){if(r2&&r2.features&&r2.features.length)return r2;return tryIds(svc,ids,k+1);},
+        function(){return tryIds(svc,ids,k+1);});
+    },function(){return tryFormat(lb,false).then(function(r2){if(r2&&r2.features&&r2.features.length)return r2;return tryIds(svc,ids,k+1);},function(){return tryIds(svc,ids,k+1);});});
+  }
+  function tryService(si){
+    if(si>=services.length)return Promise.reject(new Error('no tract service responded'));
+    var svc=services[si];
+    return csiFetch(svc+'?f=json').catch(function(){return null;}).then(function(meta){
+      var ids=[];
+      if(meta&&meta.layers)meta.layers.forEach(function(l){if(/census tracts/i.test(l.name)&&!/block/i.test(l.name))ids.push(l.id);});
+      if(!ids.length)ids=[8,6,10,0,1,2,3];
+      return tryIds(svc,ids,0);
+    }).then(function(res){return res||tryService(si+1);},function(){return tryService(si+1);});
+  }
+  return tryService(0);
 }
 
 // Walk every [lng,lat] vertex of a GeoJSON geometry
@@ -1860,9 +2082,19 @@ function quantileBreaks(vals,n){var s=vals.filter(function(v){return v!=null;}).
 function binIndex(v,breaks){if(v==null)return -1;var i=0;while(i<breaks.length&&v>=breaks[i])i++;return i;}
 
 function tractPopup(f){
-  var d=f.properties._vals,nm=f.properties._name||('Tract '+f.properties._geoid);
-  if(!d)return '<div class="csi-pop"><div class="csi-h">'+nm+'</div><table><tr><td>No ACS match for this tract.</td></tr></table></div>';
+  var p=f.properties,d=p._vals,nm=p._name||('Tract '+p._geoid);
   function r(l,v){return '<tr><th>'+l+'</th><td>'+v+'</td></tr>';}
+  // Numerator (drone deployments) vs denominators (calls / incidents)
+  var dr=p._drones||0,ca=p._calls||0,ic=p._incidents||0;
+  var perCall=ca?(dr/ca*100).toFixed(0):'—',perInc=ic?(dr/ic*100).toFixed(0):'—';
+  var analysis='<div style="font-size:10px;letter-spacing:.06em;color:var(--mut);text-transform:uppercase;margin:2px 0 4px;font-family:\'JetBrains Mono\',monospace">Drones vs. activity (in radius)</div><table>'+
+    r('Drone deployments','<b style="color:#ff8a6a">'+dr+'</b>')+
+    r('Calls for service','<b style="color:#6fd3ff">'+ca+'</b>')+
+    r('Incidents','<b style="color:#ffd166">'+ic+'</b>')+
+    r('Drones per 100 calls',perCall)+
+    r('Drones per 100 incidents',perInc)+'</table>';
+  if(!d)return '<div class="csi-pop"><div class="csi-h">'+nm+'</div>'+analysis+'<div style="color:var(--mut2);font-size:11px;margin-top:8px">No ACS match for this tract.</div></div>';
+  function r2(l,v){return r(l,v);}
   var rows=r('Population',d.population!=null?d.population.toLocaleString():'n/a')+
     r('Median age',d.median_age!=null?d.median_age:'n/a')+
     r('White (NH) / Black',(d.pct_white!=null?d.pct_white+'%':'—')+' / '+(d.pct_black!=null?d.pct_black+'%':'—'))+
@@ -1875,7 +2107,7 @@ function tractPopup(f){
     r('Median home value',d.median_owner_value!=null?fmtMoney(d.median_owner_value):'n/a')+
     r('Median gross rent',d.median_monthly_rent!=null?'$'+d.median_monthly_rent:'n/a')+
     r('Renter burden 35%+',d.pct_renter_cost_burdened_35plus!=null?d.pct_renter_cost_burdened_35plus+'%':'n/a');
-  return '<div class="csi-pop"><div class="csi-h">'+nm+'</div><table>'+rows+'</table></div>';
+  return '<div class="csi-pop"><div class="csi-h">'+nm+'</div>'+analysis+'<div style="height:8px"></div><table>'+rows+'</table></div>';
 }
 
 function buildTractLegend(def,breaks,pal){
@@ -1897,10 +2129,10 @@ function buildTractLegend(def,breaks,pal){
 function recolorTracts(){
   tractGroup.clearLayers();
   var def=tractVarDef(tractVarKey),pal=def.pal==='warm'?PAL_WARM:PAL_COOL;
-  var vals=tractFeatures.map(function(f){return f.properties._vals?def.get(f.properties._vals):null;});
+  var vals=tractFeatures.map(function(f){return def.get(f.properties._vals||{},f.properties);});
   var breaks=quantileBreaks(vals,pal.length);
   tractFeatures.forEach(function(f){
-    var v=f.properties._vals?def.get(f.properties._vals):null,bi=binIndex(v,breaks);
+    var v=def.get(f.properties._vals||{},f.properties),bi=binIndex(v,breaks);
     var color=bi<0?'#3a3a3a':pal[Math.min(bi,pal.length-1)];
     var gl=L.geoJSON(f,{style:{color:'#0d0b0a',weight:1,opacity:.55,fillColor:color,fillOpacity:v==null?0.12:0.62}});
     gl.bindPopup(tractPopup(f),{maxWidth:300,className:'callpopup'});
@@ -1918,20 +2150,42 @@ function plotTracts(geojson,byGeoid){
     if(!f.geometry||!f.geometry.coordinates)return;
     var p=f.properties||{},geoid=p.GEOID||p.geoid||p.GEOID20||'';
     if(!geoid)return;
-    if(!tractTouchesRadius(f))return;
+    if(!tractTouchesRadius(f))return;   // keep only tracts touching the circle — nothing outside is retained
     f.properties=p;
     f.properties._geoid=geoid;
-    f.properties._name=p.NAMELSAD||p.NAME||p.BASENAME&&('Census Tract '+p.BASENAME)||('Tract '+geoid);
+    f.properties._name=p.NAMELSAD||p.NAME||(p.BASENAME&&('Census Tract '+p.BASENAME))||('Tract '+geoid);
     f.properties._vals=byGeoid[geoid]?tractVals(byGeoid[geoid]):null;
     tractFeatures.push(f);
   });
+  computeTractTallies();   // drones / calls / incidents per in-radius tract
   recolorTracts();
 }
+
+// ── Per-tract numerator/denominator tallies ──────────────────────────────
+// drones = distinct DFR flights crossing the tract (numerator);
+// calls + incidents = MNPD records inside the radius that fall in the tract (denominators).
+function pointTractGeoid(lat,lng){
+  for(var i=0;i<tractFeatures.length;i++){var f=tractFeatures[i];if(insideDistrict([lng,lat],ringsOf(f.geometry)))return f.properties._geoid;}
+  return null;
+}
+function computeTractTallies(){
+  if(!tractFeatures.length)return;
+  var dr={},ca={},inc={};
+  allFlights.forEach(function(f){
+    var coords=exCoords(f.geometry),seen={};
+    for(var i=0;i<coords.length;i+=2){var g=pointTractGeoid(coords[i][1],coords[i][0]);if(g&&!seen[g]){seen[g]=1;dr[g]=(dr[g]||0)+1;}}
+  });
+  allCalls.forEach(function(c){var g=pointTractGeoid(c.lat,c.lng);if(g)ca[g]=(ca[g]||0)+1;});
+  allIncidents.forEach(function(c){var g=pointTractGeoid(c.lat,c.lng);if(g)inc[g]=(inc[g]||0)+1;});
+  tractFeatures.forEach(function(f){var g=f.properties._geoid;f.properties._drones=dr[g]||0;f.properties._calls=ca[g]||0;f.properties._incidents=inc[g]||0;});
+}
+// Recompute tallies when calls/incidents arrive after the tracts are built
+function refreshTractTallies(){if(!tractFeatures.length)return;computeTractTallies();if(map.hasLayer(tractGroup))recolorTracts();}
 
 function setTractsVisible(v){
   var ctl=document.getElementById('tractCtl');
   if(v){
-    if(!tractsLoaded)loadTracts();else tractGroup.addTo(map);
+    ensureTractData().then(function(){if(tractFeatures.length)tractGroup.addTo(map);});
     if(ctl)ctl.style.display='block';
   }else{
     map.removeLayer(tractGroup);
@@ -1939,19 +2193,29 @@ function setTractsVisible(v){
   }
   setLayerRow('tracts',v);
 }
-function loadTracts(){
+// Loads tract geometry + ACS once (cached), builds the in-radius tract features &
+// tallies. Does NOT change layer visibility — used by the toggle and by exports.
+function ensureTractData(){
+  if(tractDataPromise)return tractDataPromise;
   tractsLoaded=true;
   radiusCenter=radiusCenter||launchPoint()||[PRECINCT.lat,PRECINCT.lng];
   var st=document.getElementById('tractStatus');if(st)st.textContent='loading…';
-  Promise.all([loadTractGeom(),loadACSProfiles()]).then(function(r){
-    plotTracts(r[0],r[1]);
-    tractGroup.addTo(map);
-    if(st)st.textContent=tractFeatures.length+' tracts';
-  }).catch(function(e){
-    console.warn('tracts load failed',e);
-    if(st)st.textContent='unavailable';
-    var row=document.querySelector('.lyr-row[data-layer="tracts"] .lyr-name');if(row)row.textContent='Census tracts (unavailable)';
+  var pGeom=loadTractGeom().catch(function(e){console.warn('tract geometry failed',e);return null;});
+  var pAcs=loadACSProfiles().catch(function(e){console.warn('ACS fetch failed',e);return {};});
+  tractDataPromise=Promise.all([pGeom,pAcs]).then(function(r){
+    var geom=r[0],acs=r[1]||{};
+    if(!geom||!(geom.features&&geom.features.length)){
+      if(st)st.textContent='geometry unavailable';
+      var row=document.querySelector('.lyr-row[data-layer="tracts"] .lyr-name');if(row)row.textContent='Census tracts (unavailable)';
+      return tractFeatures;
+    }
+    plotTracts(geom,acs);
+    var withAcs=tractFeatures.filter(function(f){return f.properties._vals;}).length;
+    console.log('Census tracts: '+tractFeatures.length+' in radius, '+withAcs+' with ACS, '+Object.keys(acs).length+' ACS rows');
+    if(st)st.textContent=tractFeatures.length?(tractFeatures.length+' tracts'+(withAcs<tractFeatures.length?' · ACS partial':'')):'no tracts in range';
+    return tractFeatures;
   });
+  return tractDataPromise;
 }
 // Wire the variable picker (built once)
 (function(){
@@ -1989,6 +2253,7 @@ Promise.all([
     var t=s.type||'school';
     var iconHtml='<div class="site-pin-wrap"><div class="site-pin '+t+'"><svg viewBox="0 0 24 24">'+(TYPE_ICON[t]||'')+'</svg></div></div>';
     var marker=L.marker([s.lat,s.lng],{
+      pane:'sitePane',
       icon:L.divIcon({className:'site-marker',html:iconHtml,iconSize:[44,44],iconAnchor:[22,22]}),
       title:s.name,
       riseOnHover:true,
@@ -2016,6 +2281,7 @@ Promise.all([
   computeInCircle();            // which districts the 2-mi radius touches
   refreshDistrictLabels();      // re-render labels with names + counts inside the circle
   loadCSI();                    // MNPD calls for service + incidents inside the radius
+  ensureTractData();            // census-tract ACS + numerator/denominator tallies (in-radius only)
   setupScrubber();
   if(fb.isValid())map.fitBounds(fb,{padding:isMobile?[40,40]:[80,80]});
 
