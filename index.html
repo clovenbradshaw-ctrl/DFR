@@ -555,8 +555,8 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
       <div class="li"><div class="lsw" style="background:transparent;border:1px solid rgba(77,141,245,.7);height:11px;border-radius:2px"></div>Council district boundary</div>
       <div class="li"><div class="lci" style="background:transparent;border:1.5px dashed #f59e0b;width:11px;height:11px"></div>2-mi launch radius (Dist. 7 carved out)</div>
       <div class="li"><div class="lsw" style="background:transparent;border:1px dashed #22d3ee;height:11px;border-radius:2px"></div>Police precinct (toggle, top-right)</div>
-      <div class="li"><div class="lci" style="background:#6fd3ff"></div>MNPD call for service (in radius · since May&nbsp;26)</div>
-      <div class="li"><div class="lci" style="background:#ffd166"></div>MNPD incident report (in radius · since May&nbsp;26)</div>
+      <div class="li"><div class="lci" style="background:#6fd3ff"></div>MNPD call for service (in radius · since 12:00&nbsp;AM&nbsp;CT, May&nbsp;26)</div>
+      <div class="li"><div class="lci" style="background:#ffd166"></div>MNPD incident report (in radius · since 12:00&nbsp;AM&nbsp;CT, May&nbsp;26)</div>
       <div class="li"><div class="lci" style="background:transparent;border:2px solid #e85b8a;width:11px;height:11px;border-radius:50%"></div>Call/incident in the District&nbsp;7 carve-out (in radius, excluded from the trial)</div>
       <div class="li"><div class="lci" style="background:#34d399"></div>School</div>
       <div class="li"><div class="lci" style="background:#a78bfa"></div>Childcare</div>
@@ -1459,7 +1459,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   var SRC_CALLS={name:'MNPD Calls for Service (data.nashville.gov) — points inside the 2-mile flight radius, since the May 26 pilot launch',url:'https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Calls-for-Servic/kwnd-qrrm'};
   var SRC_INCIDENTS={name:'MNPD Incidents (data.nashville.gov) — points inside the 2-mile flight radius, since the May 26 pilot launch',url:'https://data.nashville.gov/Police/Metro-Nashville-Police-Department-Incidents/2u6v-ujjs'};
   function csiGeoJSON(rows,src){
-    return JSON.stringify({type:'FeatureCollection',metadata:{source:src.name,source_url:src.url,filter:'inside the 2-mile flight radius, since '+PILOT_START,segments:'segment = trial_radius (in the flight zone) or d7_carveout (in District 7, inside the radius but excluded from the trial)',council_district:DISTRICT_DERIVATION,generated:new Date().toISOString()},
+    return JSON.stringify({type:'FeatureCollection',metadata:{source:src.name,source_url:src.url,filter:'inside the 2-mile flight radius, since 12:00 AM CT (CDT, UTC-5) on '+PILOT_START,segments:'segment = trial_radius (in the flight zone) or d7_carveout (in District 7, inside the radius but excluded from the trial)',council_district:DISTRICT_DERIVATION,generated:new Date().toISOString()},
       features:rows.map(function(x){var props={};for(var k in (x.props||{}))props[k]=x.props[k];props.type=x.type;props.council_district=x.district;props.segment=x.segment;props.d7_carveout=!!x.carve_out;
         return {type:'Feature',geometry:{type:'Point',coordinates:[x.lng,x.lat]},properties:props};})},null,2);
   }
@@ -1472,7 +1472,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
 
   // ── Census-tract analysis: drones (numerator) vs calls/incidents (denominators) × ACS ──
   function SRC_TRACTS(){return {name:'U.S. Census Bureau '+acsYearLabel()+' by tract (Davidson County), detailed tables (B03002/B17001/B17020/B19013/B19301/B23025/B25064/B25070/B25077/B01001/B09001) via the Census API; tract geometry from Census TIGERweb. Limited to tracts intersecting the 2-mile flight radius.',url:'https://www.census.gov/data/developers/data-sets/acs-5year.html'};}
-  var TRACT_METHOD='Numerator = drone deployments (distinct DFR flights crossing the tract). Denominators = MNPD calls for service and incidents inside the radius. drones_per_100_x = numerator / denominator × 100. All counts limited to inside the 2-mile flight radius since '+PILOT_START+'.';
+  var TRACT_METHOD='Numerator = drone deployments (distinct DFR flights crossing the tract). Denominators = MNPD calls for service and incidents inside the radius. drones_per_100_x = numerator / denominator × 100. All counts limited to inside the 2-mile flight radius since 12:00 AM CT on '+PILOT_START+'.';
   function tractAnalysis(){
     if(typeof computeTractTallies==='function')computeTractTallies();   // fresh tallies from current flights/calls/incidents
     return (tractFeatures||[]).map(function(f){
@@ -1556,7 +1556,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       '  data/tract_analysis.csv / .geojson  — drones (numerator) vs calls & incidents',
       '                                         (denominators) + ACS demographics, per tract',
       '  data/flight_paths.geojson           — DFR flight paths',
-      '  data/calls_for_service.geojson/.csv — MNPD calls inside the radius (since '+PILOT_START+')',
+      '  data/calls_for_service.geojson/.csv — MNPD calls inside the radius (since 12:00 AM CT, '+PILOT_START+')',
       '  data/incidents.geojson/.csv         — MNPD incidents inside the radius',
       '  data/sensitive_sites.geojson/.csv   — schools, childcare, playgrounds, worship',
       '  data/district_demographics.csv      — council-district ACS breakdown',
@@ -1926,7 +1926,9 @@ function setupScrubber(){
 // from the item id, query everything since the pilot launch within the radius bbox,
 // then keep only points that fall inside the exact 2-mile circle.
 var PRECINCT={lat:36.2734813,lng:-86.6906344};   // Madison Precinct rooftop (radius fallback center)
-var PILOT_START='2026-05-26';                     // DFR trial launch
+var PILOT_START='2026-05-26';                     // DFR trial launch (date label)
+var PILOT_START_TS=Date.parse('2026-05-26T00:00:00-05:00');   // 12:00 AM Central (CDT) May 26 — the hard floor
+var PILOT_START_SQL='2026-05-26 05:00:00';        // same instant in UTC for the ArcGIS date query
 var radiusCenter=null;
 var callsGroup=L.layerGroup(),incidentsGroup=L.layerGroup();
 var callsVisible=true,incidentsVisible=true;
@@ -1967,7 +1969,7 @@ function loadPointLayer(def){
         latField:csiField(fields,[/^latitude$/i,/lat/i]),lonField:csiField(fields,[/^longitude$/i,/^long/i,/lon/i]),
         isPoint:(meta.geometryType==='esriGeometryPoint')};
       var bb=csiBbox(radiusCenter,2*MILE_M);
-      var where=o.dateField?(o.dateField+" >= TIMESTAMP '"+PILOT_START+" 00:00:00'"):'1=1';
+      var where=o.dateField?(o.dateField+" >= TIMESTAMP '"+PILOT_START_SQL+"'"):'1=1';
       function q(offset){var params={where:where,geometry:bb.join(','),geometryType:'esriGeometryEnvelope',inSR:'4326',spatialRel:'esriSpatialRelIntersects',outFields:'*',outSR:'4326',returnGeometry:'true',f:'geojson',resultRecordCount:'2000',resultOffset:String(offset)};if(o.dateField)params.orderByFields=o.dateField+' DESC';return base+'/0/query?'+new URLSearchParams(params).toString();}
       var all=[],CAP=8000;
       function page(offset){return csiFetch(q(offset)).then(function(gj){var fs=(gj&&gj.features)||[];all=all.concat(fs);if(fs.length<2000||all.length>=CAP)return all;return page(offset+2000);});}
@@ -1993,12 +1995,13 @@ function plotPointLayer(def,features,o){
   var counts={},perDist={},inside=0,carveCount=0,store=[],recs=csiRecs[def.key];
   for(var i=0;i<features.length;i++){var ft=features[i];var ll=csiLatLng(ft,o);if(!ll)continue;
     if(gdist(radiusCenter[0],radiusCenter[1],ll[0],ll[1])>2*MILE_M)continue;   // exact circle, not just bbox
+    var ts=csiTimestamp(ft,o);
+    if(ts!=null&&ts<PILOT_START_TS)continue;               // hard floor: 12:00 AM Central, May 26 (drops anything earlier)
     inside++;
     var t=(o.typeField&&ft.properties&&ft.properties[o.typeField])||'Unspecified';
     counts[t]=(counts[t]||0)+1;
     var dn=findDist(ll[0],ll[1]);if(dn)perDist[dn]=(perDist[dn]||0)+1;
     var carve=(dn==='7');if(carve)carveCount++;            // D7 carve-out: in-radius but in the excluded district
-    var ts=csiTimestamp(ft,o);
     store.push({lat:ll[0],lng:ll[1],type:t,district:dn||'',carve_out:carve,segment:carve?'d7_carveout':'trial_radius',ts:ts,props:ft.properties});
     var iconHtml='<div class="site-pin-wrap"><div class="csi-pin '+def.key+(carve?' carve':'')+'"><svg viewBox="0 0 24 24">'+(def.svg||'')+'</svg></div></div>';
     (function(feat,label){var mk=L.marker(ll,{pane:'csiPane',icon:L.divIcon({className:'site-marker',html:iconHtml,iconSize:[44,44],iconAnchor:[22,22]}),title:label,riseOnHover:true,keyboard:false})
