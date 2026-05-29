@@ -317,9 +317,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .lyr-row.on .lyr-sw{background:var(--acc)}
 .lyr-row.on .lyr-sw::after{transform:translateX(15px)}
 @media(max-width:768px){.layers-menu{right:62px}}
-.dist-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.dist-label span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1;color:#bcd6ff;background:rgba(8,13,22,.74);border:1px solid rgba(77,141,245,.5);border-radius:5px;padding:2px 5px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.dist-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer}
+.dist-label span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1;color:#bcd6ff;background:rgba(8,13,22,.74);border:1px solid rgba(77,141,245,.5);border-radius:5px;padding:2px 5px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6);transition:background .12s,border-color .12s}
+.dist-label:hover span{background:rgba(77,141,245,.4);border-color:#bcd6ff;color:#fff}
 .dist-label.sel span{color:#fff;background:rgba(77,141,245,.9);border-color:#bcd6ff}
+/* Districts inside the 2-mile flight radius: a brighter, named pill so you can tell which is which */
+.dist-label.incircle{gap:0}
+.dist-label.incircle span{display:inline-flex;align-items:center;font-size:11px;background:rgba(20,12,4,.82);border:1px solid var(--warn);box-shadow:0 1px 5px rgba(0,0,0,.6)}
+.dist-label.incircle .dl-num{color:#0a0f17;background:var(--warn);font-weight:800;border-radius:4px 0 0 4px;border:none;padding:3px 6px}
+.dist-label.incircle .dl-nm{color:#ffd9a0;padding:3px 6px;border-radius:0;font-family:'DM Sans',sans-serif;font-weight:700;letter-spacing:.01em}
+.dist-label.incircle .dl-ct{color:#ffb4a8;border-radius:0 4px 4px 0;border-left:1px solid rgba(245,158,11,.45);padding:3px 6px;font-weight:800}
+.dist-label.incircle .dl-ct.hit{color:#fff;background:var(--hit)}
+.dist-label.incircle:hover span{background:rgba(40,24,6,.92);border-color:#ffd9a0}
+.dist-label.incircle.sel span{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35),0 1px 5px rgba(0,0,0,.6)}
+/* District-wide drone tally inside the address panel */
+.p-distflights{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);line-height:1.5;background:rgba(255,255,255,.02)}
+.p-distflights b{color:#fca5a5}
+.p-distflights a{color:var(--acc);text-decoration:none;border-bottom:1px dotted var(--acc);cursor:pointer}
+.p-distflights a:hover{color:#9cc3ff}
 .prec-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .prec-label span{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;line-height:1;letter-spacing:.04em;text-transform:uppercase;color:#a5f3fc;background:rgba(8,13,22,.78);border:1px solid rgba(34,211,238,.55);border-radius:5px;padding:2px 6px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6)}
 @media(max-width:768px){.dist-label span{font-size:10px;padding:1px 4px}.prec-label span{font-size:9px;padding:1px 4px}}
@@ -408,7 +423,7 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
 
 <div class="hint" id="hint">
   <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-  Tap anywhere to check that address
+  Tap an address to check it — or a district number to explore it
 </div>
 
 <!-- Time scrubber -->
@@ -475,6 +490,7 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
     <h2 id="aboutTitle">Nashville's Drone Surveillance Footprint</h2>
     <p>This map plots <strong>publicly disclosed Metro Nashville Police Drone-as-First-Responder flight paths</strong> against the city's most sensitive sites — schools, childcare, playgrounds, places of worship.</p>
     <p>Tap any location to see whether drone cameras passed overhead and how your council district compares to the county on race, income, poverty, and housing burden.</p>
+    <p><strong>Explore by district:</strong> the districts inside the 2-mile flight radius are labeled with their member’s name and a running count of DFR flights that have crossed them. Tap any district number on the map (or “Explore this district” in the panel) to see that district’s demographics and how many drones have entered it.</p>
     <p><strong>Scrub through time:</strong> use the timeline at the bottom — drag the slider or hit play to replay the flights in order. Drones <span style="color:#ff6b6b">in the air</span> grow their path live; completed flights fade back. Tap <strong>ALL</strong> to show every flight at once again.</p>
     <p><strong>Camera reality:</strong> at ~150 ft altitude, MPD drones can identify faces and license plates at roughly 1.2 cm per pixel.</p>
     <p style="font-size:12.5px;color:var(--mut2);line-height:1.6;border-left:2px solid var(--line);padding-left:11px">This is a <strong style="color:var(--mut);font-weight:600">citizen-led data project</strong>, not an official Metro or MNPD product. It compiles public records and open data into one view. Don't take it on faith — follow each link below to the original source and verify the evidence yourself.</p>
@@ -583,6 +599,7 @@ map.on('zoomend',function(){
 var allFlights=[],allSites=[],demographics={},demoMeta={},baseline={},districtPolys={},clickMarker;
 var flightLayers=[],headLayer=null,timeMode=false,tMin=0,tMax=0,tCur=0,playing=false,rafId=null,lastTs=0,PLAY_MS=22000;
 var districtLayer=null,districtLabelLayer=null,districtLayerByNum={},districtLabelByNum={},districtsVisible=true,selDistrict=null;
+var flightsByDistrict={},inCircleSet={};   // drones per district + which districts the 2-mi radius touches
 var precinctLayer=null,precinctLabelLayer=null,precinctLabels=[],precinctsVisible=false;
 // Toggleable feature layer-groups + their visibility state
 var flightGroup=L.layerGroup().addTo(map),swathGroup=L.layerGroup().addTo(map),siteGroup=L.layerGroup().addTo(map);
@@ -623,12 +640,60 @@ function buildDistrictOverlay(gj){
       if(!dn)return;
       districtLayerByNum[dn]=layer;
       var c=layer.getBounds().getCenter();
-      districtLabelByNum[dn]=L.marker(c,{interactive:false,keyboard:false,icon:L.divIcon({className:'dist-label',html:'<span>'+dn+'</span>',iconSize:[30,18],iconAnchor:[15,9]})});
+      var m=L.marker(c,{interactive:true,keyboard:false,riseOnHover:true,
+        icon:L.divIcon({className:'dist-label',html:distLabelHTML(dn),iconSize:[30,18],iconAnchor:[15,9]})});
+      m.on('click',function(ev){L.DomEvent.stopPropagation(ev);showDistrictSummary(dn);});
+      districtLabelByNum[dn]=m;
     }
   }).addTo(map);
   districtLabelLayer=L.layerGroup(Object.keys(districtLabelByNum).map(function(k){return districtLabelByNum[k]}));
   map.on('zoomend',updateDistrictLabels);
   updateDistrictLabels();
+}
+// Label content: bare number, or — for districts the 2-mile radius touches —
+// a brighter pill with the member's surname and the running drone-flight count.
+function distLabelHTML(dn){
+  if(inCircleSet[dn]){
+    var cm=CM[dn]||{},last=(cm.n||'').trim().split(/\s+/).pop()||'',ct=flightsByDistrict[dn]||0;
+    return '<span class="dl-num">'+dn+'</span>'+(last?'<span class="dl-nm">'+last+'</span>':'')+
+           '<span class="dl-ct'+(ct>0?' hit':'')+'" title="DFR flights that have crossed this district">'+ct+'</span>';
+  }
+  return '<span>'+dn+'</span>';
+}
+// Re-render every label once drone counts and the in-circle set are known
+function refreshDistrictLabels(){
+  for(var dn in districtLabelByNum){
+    var m=districtLabelByNum[dn],el=m.getElement(),wasSel=el&&el.classList.contains('sel');
+    m.setIcon(L.divIcon({className:'dist-label'+(inCircleSet[dn]?' incircle':'')+(wasSel?' sel':''),
+      html:distLabelHTML(dn),iconSize:inCircleSet[dn]?null:[30,18],iconAnchor:inCircleSet[dn]?[34,11]:[15,9]}));
+    // keep the click handler after the icon swap
+    m.off('click');
+    (function(d){m.on('click',function(ev){L.DomEvent.stopPropagation(ev);showDistrictSummary(d);});})(dn);
+  }
+  updateDistrictLabels();
+}
+// Distinct DFR flights whose recorded path crosses each council district
+function flightDistrictsOf(f){
+  var c=exCoords(f.geometry),seen={},out=[];
+  for(var i=0;i<c.length;i++){var dn=findDist(c[i][1],c[i][0]);if(dn&&!seen[dn]){seen[dn]=1;out.push(dn);}}
+  return out;
+}
+function computeFlightsByDistrict(){
+  flightsByDistrict={};
+  allFlights.forEach(function(f){flightDistrictsOf(f).forEach(function(dn){flightsByDistrict[dn]=(flightsByDistrict[dn]||0)+1;});});
+}
+// Which council districts the 2-mile launch radius actually touches
+function computeInCircle(){
+  inCircleSet={};
+  var c=launchPoint();if(!c)return;
+  var R=2*MILE_M+40;
+  for(var dn in districtPolys){
+    var rings=districtPolys[dn],hit=false;
+    for(var r=0;r<rings.length&&!hit;r++){if(pip(c[0],c[1],rings[r]))hit=true;}     // launch point sits inside
+    for(var r=0;r<rings.length&&!hit;r++){var ring=rings[r];
+      for(var i=0;i<ring.length;i++){if(gdist(c[0],c[1],ring[i][1],ring[i][0])<=R){hit=true;break;}}}
+    if(hit)inCircleSet[dn]=true;
+  }
 }
 function updateDistrictLabels(){
   if(!districtLabelLayer)return;
@@ -726,6 +791,65 @@ function setPanelState(s){
   document.getElementById('panel').dataset.state=s;
 }
 
+// Demographics block (race/poverty/age bars vs county + key-metric cards) — shared
+// by the address panel and the per-district explorer so both read identically.
+function demoBlock(d){
+  if(!d)return'';
+  var re=d.race_ethnicity,h='';
+  h+='<div class="sect"><div class="sect-t">District vs. County Baseline</div><div class="dv-hdr"><div class="dv-label"></div><div class="dv-track"><span>← below</span><span>above →</span></div><div class="dv-val"></div></div>';
+  h+=dvB('White',re.pct_white,baseline.pct_white,'pp','#93a8d0');
+  h+=dvB('Black',re.pct_black,baseline.pct_black,'pp','#a78bfa');
+  h+=dvB('Hispanic',re.pct_hispanic,baseline.pct_hispanic,'pp','#f59e0b');
+  h+=dvB('Asian',re.pct_asian,baseline.pct_asian,'pp','#06d6a0');
+  h+='<div class="dv-sep"></div>';
+  h+=dvB('Poverty',d.poverty.pct_total_poverty,baseline.pct_total_poverty,'pp',null,true);
+  h+=dvB('Child pov.',d.poverty.pct_child_poverty,baseline.pct_child_poverty,'pp',null,true);
+  h+=dvB('Unemp.',d.employment.unemployment_rate,baseline.unemployment_rate,'pp',null,true);
+  h+=dvB('Rent burden',d.housing.pct_renter_cost_burdened_35plus,baseline.pct_renter_cost_burdened_35plus,'pp',null,true);
+  h+='<div class="dv-sep"></div>';
+  h+=dvB('Under 18',d.age.pct_under_18,baseline.pct_under_18,'pp','#06d6a0');
+  h+=dvB('Over 65',d.age.pct_65_and_over,baseline.pct_65_and_over,'pp','#7e92b8');
+  h+='</div>';
+  var io=Math.round(d.income.median_household_income-baseline.median_household_income),ho=Math.round(d.housing.median_owner_value-baseline.median_owner_value);
+  h+='<div class="sect"><div class="sect-t">Key metrics</div>';
+  h+='<div class="km-row"><div class="km"><div class="km-v">'+fmtMoney(d.income.median_household_income)+'</div><div class="km-l">Med. household</div><div class="km-off" style="color:'+(io<0?'#ef4444':'#34d399')+'">'+(io>=0?'+':'')+fmtMoney(io)+' vs county</div></div><div class="km"><div class="km-v">'+fmtMoney(d.housing.median_owner_value)+'</div><div class="km-l">Home value</div><div class="km-off" style="color:'+(ho<0?'#ef4444':'#34d399')+'">'+(ho>=0?'+':'')+fmtMoney(ho)+' vs county</div></div></div>';
+  h+='<div class="km-row"><div class="km"><div class="km-v">'+d.population.toLocaleString()+'</div><div class="km-l">Population</div><div class="km-off" style="color:var(--mut)">'+d.age.pct_under_18+'% under 18</div></div><div class="km"><div class="km-v">$'+d.housing.median_monthly_rent+'</div><div class="km-l">Med. rent</div><div class="km-off" style="color:var(--mut)">'+d.housing.pct_renter_cost_burdened_35plus+'% burdened</div></div></div></div>';
+  return h;
+}
+
+// District explorer — click a district (its number on the map, or "Explore" in the
+// address panel) to see who represents it, how many DFR flights have crossed it,
+// and its demographics against the county.
+function showDistrictSummary(dn){
+  dn=String(dn).replace(/\D/g,'');
+  if(!dn)return;
+  var d=demographics[dn],cm=CM[dn]||{},ct=flightsByDistrict[dn]||0,inC=inCircleSet[dn];
+  document.getElementById('hint').classList.add('hide');
+  document.getElementById('pip').classList.remove('show');          // district view isn't tied to one address
+  if(clickMarker){map.removeLayer(clickMarker);clickMarker=null;}
+  highlightDistrict(dn);
+  if(districtLayerByNum[dn]){try{map.fitBounds(districtLayerByNum[dn].getBounds(),{padding:isMobile?[40,40]:[80,80],maxZoom:14});}catch(e){}}
+  var h='';
+  h+='<div class="p-head"><div class="p-dist">Council District '+dn+(inC?' · in flight radius':'')+'</div>'+
+     (cm.n?'<div class="p-name">'+cm.n+'</div>':'<div class="p-name">District '+dn+'</div>')+
+     (cm.p?'<div class="p-phone"><a href="tel:'+cm.p.replace(/-/g,'')+'">'+cm.p+'</a></div>':'')+
+     '<div class="p-addr">'+(inC?'Inside the 2-mile Madison Precinct DFR flight radius.':'Outside the trial’s 2-mile flight radius.')+'</div></div>';
+  if(ct>0){
+    h+='<div class="p-verdict hit"><div class="p-verdict-t" style="color:#ef4444">'+ct+' drone flight'+(ct>1?'s have':' has')+' entered this district</div>'+
+       '<div class="p-verdict-b">Counted whenever a recorded DFR flight path crosses District '+dn+' (point-in-polygon). One flight can cross several districts.</div></div>';
+  }else{
+    h+='<div class="p-verdict miss"><div class="p-verdict-t" style="color:#34d399">No recorded DFR flights here</div>'+
+       '<div class="p-verdict-b">No disclosed flight path crosses District '+dn+'.</div></div>';
+  }
+  if(d)h+=demoBlock(d);
+  else h+='<div class="sect"><div class="sect-t">Demographics</div><div style="font-size:12.5px;color:var(--mut);line-height:1.5">No ACS demographic record for District '+dn+' in the loaded dataset.</div></div>';
+  var panelInner=document.getElementById('panelInner');
+  panelInner.innerHTML=h;
+  panelInner.scrollTop=0;
+  document.getElementById('panel').classList.add('show');
+  setPanelState('half');
+}
+
 function showPanel(lat,lng){
   var dn=findDist(lat,lng);
   document.getElementById('hint').classList.add('hide');
@@ -761,26 +885,10 @@ function showPanel(lat,lng){
     var ds=ft>=5280?((ft/5280).toFixed(1)+' mi'):(ft+' ft');
     h+='<div class="p-verdict miss"><div class="p-verdict-t" style="color:#34d399">No recorded flights here</div><div class="p-verdict-b">Nearest path: '+ds+' away</div></div>';
   }
-  if(d){var re=d.race_ethnicity;
-    h+='<div class="sect"><div class="sect-t">District vs. County Baseline</div><div class="dv-hdr"><div class="dv-label"></div><div class="dv-track"><span>← below</span><span>above →</span></div><div class="dv-val"></div></div>';
-    h+=dvB('White',re.pct_white,baseline.pct_white,'pp','#93a8d0');
-    h+=dvB('Black',re.pct_black,baseline.pct_black,'pp','#a78bfa');
-    h+=dvB('Hispanic',re.pct_hispanic,baseline.pct_hispanic,'pp','#f59e0b');
-    h+=dvB('Asian',re.pct_asian,baseline.pct_asian,'pp','#06d6a0');
-    h+='<div class="dv-sep"></div>';
-    h+=dvB('Poverty',d.poverty.pct_total_poverty,baseline.pct_total_poverty,'pp',null,true);
-    h+=dvB('Child pov.',d.poverty.pct_child_poverty,baseline.pct_child_poverty,'pp',null,true);
-    h+=dvB('Unemp.',d.employment.unemployment_rate,baseline.unemployment_rate,'pp',null,true);
-    h+=dvB('Rent burden',d.housing.pct_renter_cost_burdened_35plus,baseline.pct_renter_cost_burdened_35plus,'pp',null,true);
-    h+='<div class="dv-sep"></div>';
-    h+=dvB('Under 18',d.age.pct_under_18,baseline.pct_under_18,'pp','#06d6a0');
-    h+=dvB('Over 65',d.age.pct_65_and_over,baseline.pct_65_and_over,'pp','#7e92b8');
-    h+='</div>';
-    var io=Math.round(d.income.median_household_income-baseline.median_household_income),ho=Math.round(d.housing.median_owner_value-baseline.median_owner_value);
-    h+='<div class="sect"><div class="sect-t">Key metrics</div>';
-    h+='<div class="km-row"><div class="km"><div class="km-v">'+fmtMoney(d.income.median_household_income)+'</div><div class="km-l">Med. household</div><div class="km-off" style="color:'+(io<0?'#ef4444':'#34d399')+'">'+(io>=0?'+':'')+fmtMoney(io)+' vs county</div></div><div class="km"><div class="km-v">'+fmtMoney(d.housing.median_owner_value)+'</div><div class="km-l">Home value</div><div class="km-off" style="color:'+(ho<0?'#ef4444':'#34d399')+'">'+(ho>=0?'+':'')+fmtMoney(ho)+' vs county</div></div></div>';
-    h+='<div class="km-row"><div class="km"><div class="km-v">'+d.population.toLocaleString()+'</div><div class="km-l">Population</div><div class="km-off" style="color:var(--mut)">'+d.age.pct_under_18+'% under 18</div></div><div class="km"><div class="km-v">$'+d.housing.median_monthly_rent+'</div><div class="km-l">Med. rent</div><div class="km-off" style="color:var(--mut)">'+d.housing.pct_renter_cost_burdened_35plus+'% burdened</div></div></div></div>';
-  }
+  // District-wide drone tally — how many DFR flights have crossed the whole district this point sits in
+  var distCt=flightsByDistrict[dn]||0;
+  h+='<div class="p-distflights">District-wide: <b>'+distCt+'</b> DFR flight'+(distCt!==1?'s':'')+' '+(distCt!==1?'have':'has')+' crossed District '+dn+'. <a onclick="showDistrictSummary(\''+dn+'\')">Explore this district →</a></div>';
+  if(d){h+=demoBlock(d);}
   var panelInner=document.getElementById('panelInner');
   panelInner.innerHTML=h;
   panelInner.scrollTop=0;
@@ -1555,6 +1663,9 @@ Promise.all([
     var line=L.polyline(ll,{color:'#ef4444',weight:flightWeightFor(),opacity:1,pane:'flightPane'}).addTo(flightGroup);fb.extend(line.getBounds());
     flightLayers.push({line:line,swath:swath,ll:ll,t0:+new Date(f.properties.takeoff),t1:+new Date(f.properties.landing),head:null});});
   buildLaunchRadius();
+  computeFlightsByDistrict();   // drones per district
+  computeInCircle();            // which districts the 2-mi radius touches
+  refreshDistrictLabels();      // re-render labels with names + counts inside the circle
   setupScrubber();
   if(fb.isValid())map.fitBounds(fb,{padding:isMobile?[40,40]:[80,80]});
 
