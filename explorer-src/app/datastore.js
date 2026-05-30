@@ -667,6 +667,47 @@ export class DataStore {
     return { rolled: redacted };
   }
 
+  /**
+   * Redact ALL of this app's data events in the room and reset the dataset
+   * pointer to empty — a clean slate. Clears the in-memory + OPFS working set
+   * too. (Media blocks linger until the homeserver GCs; this clears the data
+   * the app reads.) Returns { redacted }.
+   */
+  async redactAllData() {
+    const client = getClient();
+    if (!client || !this.roomId) return { redacted: 0 };
+    const evs = getTimeline(this.roomId) || [];
+    let redacted = 0;
+    for (const e of evs) {
+      const t = typeof e.getType === 'function' ? e.getType() : e.type;
+      if (!t || !t.startsWith('org.dfr.explorer.')) continue;   // only our app's ops
+      const u = typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned;
+      if (u && u.redacted_because) continue;
+      const id = typeof e.getId === 'function' ? e.getId() : e.event_id;
+      if (!id) continue;
+      try { await client.redactEvent(this.roomId, id); redacted++; }
+      catch { /* best-effort */ }
+      if (redacted % 25 === 0) this._busy('Redacting data', `${redacted} events…`, null);
+    }
+    // Reset the dataset pointer to empty so no client tries to load old blocks.
+    try {
+      await writeDatasetState(this.roomId, {
+        hydrated: false, mode: 'empty', version: (this.meta?.version || 0) + 1,
+        count: 0, total: 0, blob: null, manifest: null, agencies_index: null,
+        raw_archive: null, updated_at: Date.now(), updated_by: client.getUserId() || null,
+      });
+    } catch (e) { this.log(`Pointer reset failed: ${e.message}`, 'warn'); }
+    // Clear local state.
+    this.flights = []; this.agencies = []; this.deptManifest = null;
+    this._loadedOrgs = new Set(); this.dirty = 0; this.looseEvents = 0;
+    try { await saveLocal(this.roomId, await packFlights([])); } catch {}
+    this._busy(null);
+    act.block(`Redacted all data: ${redacted} events cleared`, { redacted });
+    this.log(`Cleared room data: ${redacted} events redacted, pointer reset.`, 'ok');
+    this._notify();
+    return { redacted };
+  }
+
   /** Collect event_ids of our app's flight INS events currently in the timeline. */
   _looseEventIds() {
     const evs = getTimeline(this.roomId) || [];

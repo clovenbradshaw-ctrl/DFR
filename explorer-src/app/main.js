@@ -19,6 +19,7 @@ import { setNamespace } from '../src/operators.js';
 import { createRoom, discoverRooms, onRoomChanges,
          invite, getMembers, loadRoomMembers, onMembersChange,
          onTimeline, onDecrypted } from '../src/rooms.js';
+import { createSpace, parseSpaceFromUrl, openSpaceFromLink, spaceUrl, setUrlToSpace } from './space.js';
 
 import { NAMESPACE, ROOM_TYPE } from './dfr.js';
 import { DataStore } from './datastore.js';
@@ -36,6 +37,7 @@ let deptsView = null, swarm = null;
 
 let store = null, scraper = null, dfrMap = null;
 let currentRoomId = null, unsubDatasetState = null, unsubMembers = null, unsubTimeline = null;
+let currentSpace = null;   // { roomId, uuid, url } for the active space
 let gateAbort = null, gateMode = 'hydrate';
 
 // ── activity log (sidebar text) + structured Activity feed ──
@@ -204,6 +206,15 @@ async function onAuthed() {
 
   installLeaveGuard();
   onRoomChanges(() => refreshRooms());
+  // Deep link: if the URL points at a space (#/s/<uuid>:<server>), open it
+  // directly (joining if invited) instead of the default room list.
+  const link = parseSpaceFromUrl();
+  if (link) {
+    log(`Opening shared space ${link.uuid.slice(0, 8)}…`, 'mut');
+    const roomId = await openSpaceFromLink(link);
+    if (roomId) { await refreshRooms(); await openRoom(roomId); return; }
+    log('Could not open that space link — you may need an invite from its owner.', 'warn');
+  }
   await refreshRooms();
 }
 
@@ -265,17 +276,22 @@ async function refreshRooms() {
   else selEl.value = currentRoomId;
 }
 
-async function createDataset() {
-  const name = prompt('Name this DFR dataset room:', 'Nashville DFR');
+async function createNewSpace() {
+  const name = prompt('Name this new DFR space:', 'Nashville DFR');
   if (!name) return;
-  $('newRoom').disabled = true;
+  $('newSpace').disabled = true;
   try {
-    const roomId = await createRoom(name, ROOM_TYPE);
-    log(`Created dataset "${name}".`, 'ok');
+    const { roomId, uuid, url } = await createSpace(name);
+    currentSpace = { roomId, uuid, url };
+    log(`Created space "${name}".`, 'ok');
     await refreshRooms();
     await openRoom(roomId);
+    setUrlToSpace(uuid);                         // put the deep link in the address bar
+    try { await navigator.clipboard?.writeText(url); } catch {}
+    log(`Share link (copied): ${url}`, 'ok');
+    prompt('Space created — link copied. Invite people in the Members panel, then send them this URL; once invited they open it and see the data:', url);
   } catch (e) { log(`Create failed: ${e.message}`, 'err'); }
-  finally { $('newRoom').disabled = false; }
+  finally { $('newSpace').disabled = false; }
 }
 
 async function openRoom(roomId) {
@@ -287,6 +303,12 @@ async function openRoom(roomId) {
   $('roomSel').value = roomId;
   dfrMap && (dfrMap._fitDone = false);
   agenciesDrawn = false;
+  // Reflect this space's UUID in the address bar so the URL is shareable.
+  try {
+    const meta = getClient()?.getRoom(roomId)?.currentState.getStateEvents('org.dfr.explorer.meta', '');
+    const sid = meta?.getContent()?.space_uuid;
+    if (sid) { currentSpace = { roomId, uuid: sid, url: spaceUrl(sid) }; setUrlToSpace(sid); }
+  } catch {}
   log('Opening dataset…');
   const { hydrated } = await store.open(roomId);
   render();
@@ -700,7 +722,21 @@ function wire() {
   $('sideToggle').addEventListener('click', () => setSide(!$('mainGrid').classList.contains('side-hidden')));
   // Tapping the dimmed backdrop closes the mobile drawer.
   $('sideScrim').addEventListener('click', () => setSide(true));
-  $('newRoom').addEventListener('click', createDataset);
+  $('newSpace').addEventListener('click', createNewSpace);
+  $('copyLinkBtn').addEventListener('click', async () => {
+    const url = currentSpace?.url;
+    if (!url) { log('Open a space first (or create one).', 'warn'); return; }
+    try { await navigator.clipboard?.writeText(url); log(`Share link copied: ${url}`, 'ok'); }
+    catch { prompt('Copy this space link:', url); }
+  });
+  $('redactBtn').addEventListener('click', async () => {
+    if (!currentRoomId) { log('Open a room first.', 'warn'); return; }
+    if (!confirm('Redact ALL data in this room and reset it to empty? This cannot be undone (the dataset pointer and all flight events are cleared).')) return;
+    $('redactBtn').disabled = true;
+    try { const r = await store.redactAllData(); log(`Redacted ${r.redacted} events; room is now empty.`, 'ok'); render(); }
+    catch (e) { log(`Redact failed: ${e.message}`, 'err'); }
+    finally { $('redactBtn').disabled = false; }
+  });
   $('inviteBtn').addEventListener('click', doInvite);
   $('inviteId').addEventListener('keydown', e => { if (e.key === 'Enter') doInvite(); });
   $('roomSel').addEventListener('change', e => openRoom(e.target.value));

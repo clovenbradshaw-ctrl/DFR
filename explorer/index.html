@@ -271,7 +271,7 @@ tbody tr:hover{background:var(--surf2)}
 }
 @media(min-width:761px){ #sideScrim{display:none} }
 </style>
-  <script type="module" crossorigin src="./assets/index-D6dvvWYq.js"></script>
+  <script type="module" crossorigin src="./assets/index-h41DmpQS.js"></script>
 </head>
 <body>
 
@@ -302,7 +302,7 @@ tbody tr:hover{background:var(--surf2)}
     <div class="brand">DFR Explorer <small>Drone-as-First-Responder dataset</small></div>
     <div class="spacer"></div>
     <select id="roomSel" title="Dataset room"></select>
-    <button id="newRoom" title="Create a new dataset room">+ Dataset</button>
+    <button id="newSpace" title="Create a fresh, shareable space (gives a UUID link)">+ Space</button>
     <span class="who" id="who"></span>
     <button id="logout">Sign out</button>
   </header>
@@ -351,6 +351,8 @@ tbody tr:hover{background:var(--surf2)}
         <input id="agenciesFile" type="file" accept=".jsonl,.ndjson,.json,.geojson,.gz" class="hidden">
         <button id="reshardBtn" style="margin-top:8px;width:100%" title="Re-organize the dataset into per-department blocks so clients load only what they open">Re-shard by department</button>
         <button id="purgeListBtn" style="margin-top:8px;width:100%" title="Download the list of orphaned media URIs a homeserver admin can purge to reclaim space">Download purge list</button>
+        <button id="copyLinkBtn" style="margin-top:8px;width:100%" title="Copy this space's shareable UUID link">Copy share link</button>
+        <button id="redactBtn" style="margin-top:8px;width:100%;border-color:var(--err);color:var(--err)" title="Redact ALL data in this room and reset it to empty">Redact all data</button>
       </details>
 
       <div class="panel">
