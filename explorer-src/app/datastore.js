@@ -24,17 +24,15 @@ import { uploadEncrypted, getMediaBytes } from '../src/media.js';
 import { packFlights, unpackFlights, mergeFlights, blobHash } from './packset.js';
 import { saveLocal, loadLocal } from './opfsbin.js';
 import { readDatasetState, writeDatasetState } from './roomstate.js';
-import { toRecord } from './dfr.js';
+import { toRecord, toAgency, agencyKey, focusQueryUrl, feedFetch } from './dfr.js';
 import { textStreamFrom, readChunks, streamElements, streamNdjson } from './jsonstream.js';
-import { chunkBlob, frameBlock, hash64, reassemble } from './chunks.js';
+import { chunkBlob, frameBlock, hash64, reassemble, reassembleStream } from './chunks.js';
 import { fileChunks, streamChunks, guessFormat } from './chunkstream.js';
+import { extractLeanFlights } from './leanindex.js';
 
 const FORMAT = 'gzip-ndjson';
 const DEFAULT_MEDIA_LIMIT = 50 * 1024 * 1024;
 const MAX_CHUNK = 24 * 1024 * 1024;            // cap per-block payload memory
-// Reassemble + parse a chained-raw dataset locally only up to this size; beyond
-// it, the browser can't hold the dataset, so we keep it archived in media only.
-const RAW_AUTOLOAD_LIMIT = 200 * 1024 * 1024;
 
 const PUBLISH_THRESHOLD = 25;
 const PUBLISH_MIN_INTERVAL = 30 * 60e3;
@@ -48,6 +46,7 @@ export class DataStore {
     this.log = log || (() => {});
     this.roomId = null;
     this.flights = [];
+    this.agencies = [];
     this.meta = null;
     this.localVersion = 0;
     this.dirty = 0;
@@ -89,7 +88,57 @@ export class DataStore {
     }
     this.meta = readDatasetState(roomId);
     if (this.meta && this.meta.version > this.localVersion) await this.sync();
+    await this._loadAgencies();
     return { hydrated: !!this.meta?.hydrated, count: this.flights.length };
+  }
+
+  // ── agencies (a parallel lean layer) ────────────────────────────────────────
+
+  async _loadAgencies() {
+    this.agencies = [];
+    const state = readDatasetState(this.roomId);
+    const ref = state?.agencies_index;
+    if (ref && ref.__media) {
+      try {
+        const bytes = await getMediaBytes(ref);
+        if (bytes) { this.agencies = await unpackFlights(bytes); this._notify(); }
+      } catch (e) { this.log(`Agencies load: ${e.message}`, 'warn'); }
+    }
+  }
+
+  /**
+   * Hydrate the agencies layer from an NDJSON/JSON/GeoJSON source (streamed,
+   * gzip-aware). Stored as its own small gzip-NDJSON media block, referenced by
+   * `agencies_index` in room state — independent of the flights dataset.
+   */
+  async hydrateAgencies(source, { format = 'auto', signal, onProgress } = {}) {
+    const text = await textStreamFrom(source.body || source.stream());
+    const chunks = readChunks(text, signal);
+    const name = source.name || source.url || '';
+    const ndjson = format === 'jsonl' || format === 'ndjson' || /\.(ndjson|jsonl)$/i.test(name);
+    const elements = ndjson ? streamNdjson(chunks) : streamElements(chunks);
+    const seen = new Set();
+    const out = [];
+    let n = 0;
+    for await (const el of elements) {
+      if (signal?.aborted) break;
+      const a = toAgency(el.properties || el);
+      const k = agencyKey(a);
+      if (k && !seen.has(k)) { seen.add(k); out.push(a); }
+      if (onProgress && ++n % 500 === 0) onProgress({ seen: n, kept: out.length });
+    }
+    if (!out.length) throw new Error('No agency records found (check the data shape).');
+    this.agencies = out;
+    const packed = await packFlights(out); // same gzip-NDJSON codec
+    const ref = await uploadEncrypted(packed, { mime: 'application/gzip', name: 'dfr-agencies.ndjson.gz' });
+    const state = readDatasetState(this.roomId) || {};
+    const version = (state.version || this.localVersion || 0) + 1;
+    await writeDatasetState(this.roomId, { ...state, agencies_index: ref, agencies_count: out.length,
+      version, updated_at: Date.now(), updated_by: getClient()?.getUserId() || null });
+    this._adoptVersion(version);
+    this.log(`Loaded ${out.length} agencies.`, 'ok');
+    this._notify();
+    return { agencies: out.length };
   }
 
   isHydrated() { return !!readDatasetState(this.roomId)?.hydrated; }
@@ -113,6 +162,49 @@ export class DataStore {
     return reassemble(blocks);
   }
 
+  /**
+   * Stream a chained archive from media and extract a lean, viewable index
+   * (metadata + start coordinate; geometry dropped) without ever holding the
+   * whole archive in memory. Returns the lean flight records.
+   */
+  async _indexFromManifest(manifest) {
+    const payloadStream = reassembleStream(
+      manifest.chunks,
+      (ref) => getMediaBytes(ref),
+      (n, total) => { if (n % 10 === 0 || n === total) this.log(`Indexing block ${n}/${total}…`, 'mut'); },
+    );
+    return extractLeanFlights(payloadStream, {
+      payloadFormat: manifest.payload_format,
+      onProgress: (p) => { if (p.seen % 5000 === 0) this.log(`…${p.kept} flights so far`, 'mut'); },
+    });
+  }
+
+  /**
+   * Build (or rebuild) the lean index from the chained archive already in this
+   * room's media — no re-upload. Publishes the index as a small media block and
+   * points the room state at it so every client (incl. invitees) loads fast.
+   */
+  async buildIndexFromArchive() {
+    const state = readDatasetState(this.roomId);
+    if (!state?.manifest?.__media) throw new Error('No chained archive in this room to index.');
+    const manifest = await this._downloadManifest(state.manifest);
+    this.log(`Building index from ${manifest.chunk_count} blocks…`, 'mut');
+    const flights = await this._indexFromManifest(manifest);
+    if (!flights.length) throw new Error('No flight records found in the archive (check the data shape).');
+    this.flights = flights;
+    const packed = await packFlights(flights);
+    await saveLocal(this.roomId, packed);
+    const leanRef = await uploadEncrypted(packed, { mime: 'application/gzip', name: 'dfr-lean-index.ndjson.gz' });
+    const version = (state.version || this.localVersion || 0) + 1;
+    const content = { ...state, lean_index: leanRef, count: flights.length, version,
+      updated_at: Date.now(), updated_by: getClient()?.getUserId() || null };
+    await writeDatasetState(this.roomId, content);
+    this.meta = content; this._adoptVersion(version);
+    this.log(`Index ready: ${flights.length} flights (v${version}).`, 'ok');
+    this._notify();
+    return { flights: flights.length, version };
+  }
+
   async sync() {
     const state = readDatasetState(this.roomId);
     this.meta = state;
@@ -123,25 +215,26 @@ export class DataStore {
     if (state.blob && state.blob.__media) {
       this.log('Downloading dataset snapshot…', 'mut');
       bytes = await getMediaBytes(state.blob);
+    } else if (state.lean_index && state.lean_index.__media) {
+      // A small, already-extracted viewable index exists — the fast path. The
+      // full geometry stays in the chained archive (state.manifest).
+      this.log('Downloading lean flight index…', 'mut');
+      bytes = await getMediaBytes(state.lean_index);
     } else if (state.manifest && state.manifest.__media) {
       const manifest = await this._downloadManifest(state.manifest);
-      if (state.mode === 'chunked-raw' && (manifest.total_bytes || 0) > RAW_AUTOLOAD_LIMIT) {
-        this.log(`Dataset is ${(manifest.total_bytes / 1073741824).toFixed(2)} GB across ` +
-                 `${manifest.chunk_count} blocks — archived in media, too large to load in-browser.`, 'warn');
-        this._adoptVersion(state.version);
-        return { synced: false, reason: 'too-large', archived: true };
-      }
-      this.log(`Reassembling ${manifest.chunk_count} chained blocks…`, 'mut');
-      const raw = await this._reassembleFromManifest(manifest);
       if (state.mode === 'chunked-raw') {
-        const flights = await flightsFromBytes(raw, manifest.payload_format);
+        // No prebuilt index: stream the chained archive block-by-block and
+        // extract a lean index in-flight (never holds the whole archive).
+        this.log(`Indexing ${manifest.chunk_count} chained blocks (${(manifest.total_bytes / 1073741824).toFixed(2)} GB)…`, 'mut');
+        const flights = await this._indexFromManifest(manifest);
         this._adopt(flights, state.version);
         await saveLocal(this.roomId, await packFlights(this.flights));
-        this.log(`Loaded ${flights.length} flights from chained dataset.`, 'ok');
+        this.log(`Indexed ${flights.length} flights from chained dataset.`, 'ok');
         this._notify();
         return { synced: true, added: flights.length };
       }
-      bytes = raw; // canonical gzip-NDJSON
+      this.log(`Reassembling ${manifest.chunk_count} chained blocks…`, 'mut');
+      bytes = await this._reassembleFromManifest(manifest); // canonical gzip-NDJSON
     } else if (state.source_url) {
       this.log('Fetching dataset from external host…', 'mut');
       const resp = await fetch(state.source_url);
@@ -218,21 +311,86 @@ export class DataStore {
     }
     if (!i) throw new Error('Empty source — nothing to upload.');
 
+    const manifest = { dfr_manifest: 1, chain: 'dfr-chain/1', payload_format, name,
+      total_bytes: total, chunk_count: i, head: prev, chunks, created_at: Date.now() };
     const manifestRef = await this._uploadManifest({ payload_format, name, total_bytes: total, chunks, head: prev });
     const prevState = readDatasetState(this.roomId);
     const version = (prevState?.version || this.localVersion || 0) + 1;
+
+    // Stream the just-uploaded archive back from media block-by-block and build
+    // a small viewable index, so flights show immediately (and invitees load
+    // the few-MB index, not the multi-GB archive).
+    let leanRef = null, count = prevState?.count ?? 0;
+    try {
+      this.log('Building viewable index from the upload…', 'mut');
+      const flights = await this._indexFromManifest(manifest);
+      if (flights.length) {
+        this.flights = flights;
+        const packed = await packFlights(flights);
+        await saveLocal(this.roomId, packed);
+        leanRef = await uploadEncrypted(packed, { mime: 'application/gzip', name: `${name}.lean.ndjson.gz` });
+        count = flights.length;
+        this._notify();
+      } else {
+        this.log('No flight records recognised in the upload — stored as raw archive. ' +
+                 'Use "Build index" after confirming the data shape.', 'warn');
+      }
+    } catch (e) {
+      this.log(`Index build deferred: ${e.message}. Raw archive is safe; use "Build index".`, 'warn');
+    }
+
     const content = {
       hydrated: true, mode: 'chunked-raw', format: 'dfr-chain/1', payload_format,
-      manifest: manifestRef, chunk_count: i, total_bytes: total, blob: null,
-      count: prevState?.count ?? 0, version, hash: prev[0],
+      manifest: manifestRef, lean_index: leanRef, chunk_count: i, total_bytes: total, blob: null,
+      count, version, hash: prev[0],
       source_url: source.url || prevState?.source_url || null,
       updated_at: Date.now(), updated_by: getClient()?.getUserId() || null,
     };
     await writeDatasetState(this.roomId, content);
     this.meta = content; this._adoptVersion(version); this.dirty = 0; this.lastPublish = Date.now();
-    this.log(`Uploaded ${i} chained blocks (${(total / 1048576).toFixed(1)} MB) + manifest; pointer v${version}.`, 'ok');
+    this.log(`Uploaded ${i} chained blocks (${(total / 1048576).toFixed(1)} MB) + manifest; ${count} flights indexed; pointer v${version}.`, 'ok');
     this._notify();
-    return { chunkCount: i, totalBytes: total, version };
+    return { chunkCount: i, totalBytes: total, version, indexed: count };
+  }
+
+  // ── focus fetch (live, targeted — no full sync) ─────────────────────────────
+
+  /**
+   * Pull recent flights intersecting a map bbox straight from the live Skydio
+   * feed and merge them into the working set immediately — independent of the
+   * (possibly multi-GB) archive. Same bbox-query pattern as the main app, with
+   * a direct-then-proxy fetch and pagination.
+   *
+   * @param {[number,number,number,number]} bbox  [west,south,east,north] WGS84
+   * @param {object} opts
+   * @param {number} [opts.sinceTs]  recency floor on takeoff (ms); default 7 days
+   * @param {string} [opts.proxy]    CORS proxy prefix
+   * @param {AbortSignal} [opts.signal]
+   */
+  async focusFetch(bbox, { sinceTs = Date.now() - 7 * 864e5, proxy = '', signal } = {}) {
+    const PAGE = 2000, CAP = 8000;
+    let offset = 0, fetched = [];
+    while (offset < CAP) {
+      if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
+      const url = focusQueryUrl(bbox, { sinceTs, offset, pageSize: PAGE });
+      const gj = await feedFetch(url, proxy);
+      const fs = (gj && gj.features) || [];
+      fetched = fetched.concat(fs);
+      if (fs.length < PAGE) break;
+      offset += PAGE;
+    }
+    if (!fetched.length) { this.log('No recent flights in this area.', 'mut'); return { added: 0, fetched: 0 }; }
+
+    const recs = fetched.map(toRecord);
+    const { merged, added } = mergeFlights(this.flights, recs);
+    this.flights = merged;
+    if (added) {
+      this.dirty += added;
+      await saveLocal(this.roomId, await packFlights(this.flights));
+    }
+    this._notify();
+    this.log(`Focus fetch: ${fetched.length} flights here, ${added} new.`, added ? 'ok' : 'mut');
+    return { added, fetched: fetched.length };
   }
 
   // ── scraper feed ────────────────────────────────────────────────────────────

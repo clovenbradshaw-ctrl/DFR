@@ -64,6 +64,9 @@ header select{width:auto;min-width:160px}
 .content{min-height:0;display:flex;flex-direction:column}
 .tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line)}
 .tabs button[aria-selected=true]{background:var(--acc);border-color:var(--acc);color:#06101f}
+.focus-toggle{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mut);margin-left:8px}
+.focus-toggle input{width:auto}
+.focus-hint{font-size:11px;color:var(--mut2);font-family:var(--mono);align-self:center;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .view{flex:1;min-height:0;overflow:auto}
 #map{width:100%;height:100%}
 .view#tableView{padding:14px}
@@ -78,6 +81,11 @@ tbody tr:hover{background:var(--surf2)}
 .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--surf2);border:1px solid var(--line)}
 .pill.on{background:rgba(62,207,142,.15);border-color:var(--ok);color:var(--ok)}
 .hint{font-size:11px;color:var(--mut2);margin-top:6px}
+.members{margin-top:10px;display:flex;flex-direction:column;gap:4px}
+.member{display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 8px;background:var(--surf2);border:1px solid var(--line);border-radius:8px}
+.member .mid{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
+.member .role{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.member.invited .role{color:var(--warn)}
 .bar{height:6px;background:var(--surf2);border-radius:999px;overflow:hidden;margin-top:8px}
 .bar > i{display:block;height:100%;background:var(--acc);width:0}
 @media(max-width:760px){.main{grid-template-columns:1fr}.side{max-height:42vh}}
@@ -150,10 +158,27 @@ tbody tr:hover{background:var(--surf2)}
           <button id="publishNow" class="primary" style="flex:1">Publish snapshot</button>
           <button id="syncNow">Sync</button>
         </div>
-        <button id="rehydrateBtn" style="margin-top:8px;width:100%">Import more…</button>
+        <div class="row" style="margin-top:8px">
+          <button id="rehydrateBtn" style="flex:1">Import more…</button>
+          <button id="buildIndexBtn" title="Extract viewable flights from the uploaded archive">Build index</button>
+        </div>
+        <button id="agenciesBtn" style="margin-top:8px;width:100%">Load agencies…</button>
+        <input id="agenciesFile" type="file" accept=".jsonl,.ndjson,.json,.geojson,.gz" class="hidden">
         <div class="hint" style="margin-top:8px">Updates live in OPFS as a binary
           blob; snapshots upload to Matrix media and bump one room-state pointer
           — peers download only when the version advances.</div>
+      </div>
+
+      <div class="panel">
+        <h2>Members &amp; sharing</h2>
+        <div class="hint">Invite people by Matrix ID to share this encrypted
+          dataset. They'll see the same data and can contribute updates.</div>
+        <label>Invite by Matrix ID</label>
+        <div class="row">
+          <input id="inviteId" placeholder="@someone:hyphae.social" style="flex:1">
+          <button id="inviteBtn" class="primary">Invite</button>
+        </div>
+        <div id="memberList" class="members"></div>
       </div>
 
       <div class="panel">
@@ -166,6 +191,10 @@ tbody tr:hover{background:var(--surf2)}
       <div class="tabs">
         <button id="tabMap" aria-selected="true">Map</button>
         <button id="tabTable" aria-selected="false">Table</button>
+        <label class="focus-toggle" title="Pull recent flights from the live feed for the area you zoom into">
+          <input type="checkbox" id="focusToggle" checked> live focus
+        </label>
+        <span class="focus-hint" id="focusHint"></span>
       </div>
       <div class="view" id="mapView"><div id="map"></div></div>
       <div class="view hidden" id="tableView"></div>

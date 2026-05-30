@@ -16,7 +16,8 @@ import {
   hasLocalAccount, getClient, setProgress, setRecoveryKeyProvider,
 } from '../src/client.js';
 import { setNamespace } from '../src/operators.js';
-import { createRoom, discoverRooms, onRoomChanges } from '../src/rooms.js';
+import { createRoom, discoverRooms, onRoomChanges,
+         invite, getMembers, loadRoomMembers, onMembersChange } from '../src/rooms.js';
 
 import { NAMESPACE, ROOM_TYPE } from './dfr.js';
 import { DataStore } from './datastore.js';
@@ -28,7 +29,7 @@ import { DfrMap } from './mapview.js';
 const $ = (id) => document.getElementById(id);
 
 let store = null, scraper = null, dfrMap = null;
-let currentRoomId = null, unsubDatasetState = null;
+let currentRoomId = null, unsubDatasetState = null, unsubMembers = null;
 let gateAbort = null, gateMode = 'hydrate';
 
 // ── activity log ──
@@ -120,6 +121,7 @@ async function createDataset() {
 
 async function openRoom(roomId) {
   if (unsubDatasetState) unsubDatasetState();
+  if (unsubMembers) unsubMembers();
   currentRoomId = roomId;
   $('roomSel').value = roomId;
   dfrMap && (dfrMap._fitDone = false);
@@ -131,8 +133,46 @@ async function openRoom(roomId) {
     log('Dataset pointer changed — syncing…', 'mut');
     await store.sync(); render();
   });
+  // Member list + live updates (joins, invites, power-level changes).
+  unsubMembers = onMembersChange(roomId, () => renderMembers());
+  renderMembers();
   if (!hydrated) openGate('hydrate');
   else log('Dataset ready.', 'ok');
+}
+
+async function renderMembers() {
+  const el = $('memberList');
+  if (!el || !currentRoomId) return;
+  const roomId = currentRoomId;
+  try { await loadRoomMembers(roomId); } catch {}
+  if (roomId !== currentRoomId) return; // room switched while loading
+  const me = getClient()?.getUserId();
+  const members = getMembers(roomId);
+  el.innerHTML = members.map(m => {
+    const role = m.membership === 'invite' ? 'invited'
+      : m.powerLevel >= 100 ? 'admin' : m.powerLevel >= 50 ? 'mod' : 'member';
+    return `<div class="member${m.membership === 'invite' ? ' invited' : ''}">
+      <span class="mid">${esc(m.displayName || m.userId)}${m.userId === me ? ' (you)' : ''}</span>
+      <span class="role">${role}</span>
+    </div>`;
+  }).join('') || '<div class="hint">No members loaded.</div>';
+}
+
+async function doInvite() {
+  const raw = $('inviteId').value.trim();
+  if (!currentRoomId) { log('Open or create a dataset first.', 'warn'); return; }
+  if (!/^@[^:]+:.+/.test(raw)) { log('Enter a full Matrix ID, e.g. @name:hyphae.social', 'warn'); return; }
+  $('inviteBtn').disabled = true;
+  try {
+    await invite(currentRoomId, raw);
+    log(`Invited ${raw}.`, 'ok');
+    $('inviteId').value = '';
+    renderMembers();
+  } catch (e) {
+    log(`Invite failed: ${e.message}`, 'err');
+  } finally {
+    $('inviteBtn').disabled = false;
+  }
 }
 
 // ── render ──
@@ -149,10 +189,15 @@ function render() {
   $('span').textContent = `span ${span}`;
 
   const m = store?.meta;
-  $('syncStatus').textContent = m
-    ? `v${m.version} · ${m.count} flights · ${m.blob ? 'in media' : (m.source_url ? 'external host' : 'OPFS only')}` +
-      `${store.dirty ? ` · ${store.dirty} unpublished` : ''}`
-    : (store?.flights?.length ? `${store.flights.length} local · not published` : 'not hydrated');
+  const ag = store?.agencies?.length ? ` · ${store.agencies.length} agencies` : '';
+  if (m && m.mode === 'chunked-raw' && !m.lean_index && !store.flights.length) {
+    $('syncStatus').textContent = `v${m.version} · raw archive (${((m.total_bytes||0)/1073741824).toFixed(2)} GB) — click "Build index" to view flights${ag}`;
+  } else {
+    $('syncStatus').textContent = (m
+      ? `v${m.version} · ${m.count} flights · ${m.lean_index ? 'indexed' : m.blob ? 'in media' : (m.source_url ? 'external host' : 'OPFS only')}` +
+        `${store.dirty ? ` · ${store.dirty} unpublished` : ''}`
+      : (store?.flights?.length ? `${store.flights.length} local · not published` : 'not hydrated')) + ag;
+  }
 
   if (tab === 'table') renderTable(flights);
   if (tab === 'map') renderMap(flights);
@@ -173,13 +218,52 @@ function renderTable(flights) {
   </table>`;
 }
 
+const FOCUS_MIN_ZOOM = 12;     // only auto-pull when zoomed in this far
+const FOCUS_DEBOUNCE = 700;    // ms after the user stops moving
+let focusEnabled = true;
+let focusTimer = null, focusAbort = null, lastFocusKey = '';
+
 function ensureMap() {
   if (dfrMap) return dfrMap;
   if (typeof L === 'undefined') { log('Leaflet failed to load (offline?).', 'warn'); return null; }
   dfrMap = new DfrMap('map');
+  // Auto-pull recent flights for the viewport once zoomed in.
+  dfrMap.onFocusChange((bbox, zoom) => scheduleFocus(bbox, zoom));
   return dfrMap;
 }
-function renderMap(flights) { const m = ensureMap(); if (m) m.render(flights); }
+function renderMap(flights) {
+  const m = ensureMap();
+  if (!m) return;
+  m.render(flights);
+  m.renderAgencies(store?.agencies || [], (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
+}
+
+function scheduleFocus(bbox, zoom) {
+  if (!focusEnabled || !store?.roomId) return;
+  if (zoom < FOCUS_MIN_ZOOM) { setFocusHint(`Zoom in to level ${FOCUS_MIN_ZOOM}+ to pull recent flights here.`); return; }
+  // Skip if the viewport hasn't meaningfully changed.
+  const key = bbox.map(n => n.toFixed(3)).join(',');
+  if (key === lastFocusKey) return;
+  clearTimeout(focusTimer);
+  focusTimer = setTimeout(() => { lastFocusKey = key; focusFetchNow(bbox); }, FOCUS_DEBOUNCE);
+}
+
+async function focusFetchNow(bbox, { agency } = {}) {
+  if (!store?.roomId) return;
+  if (focusAbort) focusAbort.abort();
+  focusAbort = new AbortController();
+  setFocusHint(agency ? `Pulling recent flights near ${agency}…` : 'Pulling recent flights in view…');
+  try {
+    const proxy = $('proxy').value.trim();
+    const r = await store.focusFetch(bbox, { proxy, signal: focusAbort.signal });
+    setFocusHint(r.fetched ? `${r.fetched} recent flights here (${r.added} new).` : 'No recent flights in this area.');
+    render();
+  } catch (e) {
+    if (e.name !== 'AbortError') setFocusHint(`Live pull failed: ${e.message}`);
+  } finally { focusAbort = null; }
+}
+
+function setFocusHint(msg) { const el = $('focusHint'); if (el) el.textContent = msg || ''; }
 
 function renderScraper(st = scraper?.state) {
   if (!st) return;
@@ -275,9 +359,16 @@ function wire() {
   $('pw').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
   $('logout').addEventListener('click', doLogout);
   $('newRoom').addEventListener('click', createDataset);
+  $('inviteBtn').addEventListener('click', doInvite);
+  $('inviteId').addEventListener('keydown', e => { if (e.key === 'Enter') doInvite(); });
   $('roomSel').addEventListener('change', e => openRoom(e.target.value));
   $('tabMap').addEventListener('click', () => setTab('map'));
   $('tabTable').addEventListener('click', () => setTab('table'));
+  $('focusToggle').addEventListener('change', e => {
+    focusEnabled = e.target.checked;
+    setFocusHint(focusEnabled ? 'Live focus on — zoom in to pull recent flights.' : 'Live focus off.');
+    if (focusEnabled && dfrMap && dfrMap.zoom() >= FOCUS_MIN_ZOOM) { lastFocusKey = ''; scheduleFocus(dfrMap.bbox(), dfrMap.zoom()); }
+  });
 
   $('scrapeToggle').addEventListener('click', () => {
     scraper.configure({ intervalMin: $('interval').value, proxy: $('proxy').value });
@@ -296,6 +387,28 @@ function wire() {
   });
   $('syncNow').addEventListener('click', async () => { await store.sync(); render(); });
   $('rehydrateBtn').addEventListener('click', () => openGate('import'));
+
+  $('buildIndexBtn').addEventListener('click', async () => {
+    $('buildIndexBtn').disabled = true;
+    try { const r = await store.buildIndexFromArchive(); log(`Built index: ${r.flights} flights.`, 'ok'); render(); }
+    catch (e) { log(`Build index failed: ${e.message}`, 'err'); }
+    finally { $('buildIndexBtn').disabled = false; }
+  });
+
+  // Agencies: pick a local NDJSON/JSON file and load it as its own layer.
+  $('agenciesBtn').addEventListener('click', () => $('agenciesFile').click());
+  $('agenciesFile').addEventListener('change', async e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!currentRoomId) { log('Open or create a dataset first.', 'warn'); return; }
+    log(`Loading agencies from ${file.name}…`);
+    try {
+      const r = await store.hydrateAgencies(file, { onProgress: p => log(`…${p.kept} agencies`, 'mut') });
+      log(`Loaded ${r.agencies} agencies.`, 'ok');
+      render();
+    } catch (err) { log(`Agencies load failed: ${err.message}`, 'err'); }
+    e.target.value = '';
+  });
 
   $('gateLoad').addEventListener('click', async () => {
     const url = $('gateUrl').value.trim();

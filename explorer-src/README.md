@@ -31,6 +31,10 @@ advertising itself on the landing page.
 - **Explore the data.** A Leaflet map of flight start points (click to draw the
   full path), a sortable table, and live stats — all reading the in-memory
   working set, so it's fast.
+- **Share it.** Each dataset is a private, invite-only, E2EE Matrix room. The
+  **Members & sharing** panel invites people by Matrix ID (`@name:server`); they
+  can be on any homeserver (federation), see the same encrypted data, and
+  contribute updates. The panel lists current members and pending invites live.
 - **Self-update in the background.** A browser port of `dfr_scraper.py` polls
   Skydio's ArcGIS FeatureServer on your machine, diffs against the working set,
   and appends new flights — **without spamming Matrix** (see below).

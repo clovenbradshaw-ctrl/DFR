@@ -100,6 +100,38 @@ export function parseBlock(bytes) {
 }
 
 /**
+ * Streamingly reassemble a chained archive into a ReadableStream<Uint8Array>
+ * without ever holding the whole blob: blocks are fetched in manifest order,
+ * the chain link is verified per block, and each verified payload is enqueued.
+ * Lets the lean indexer parse a multi-GB archive block-by-block from media.
+ *
+ * @param {Array<{ref:object, i:number}>} chunkRefs  manifest.chunks (ordered)
+ * @param {(ref)=>Promise<Uint8Array|null>} fetchBytes  e.g. getMediaBytes
+ * @param {(msg)=>void} [onBlock]  progress callback (1-based index, count)
+ * @returns {ReadableStream<Uint8Array>} payloads in order
+ */
+export function reassembleStream(chunkRefs, fetchBytes, onBlock) {
+  const ordered = [...chunkRefs].sort((a, b) => a.i - b.i);
+  let prev = [0, 0];
+  let idx = 0;
+  return new ReadableStream({
+    async pull(controller) {
+      if (idx >= ordered.length) { controller.close(); return; }
+      const c = ordered[idx];
+      const raw = await fetchBytes(c.ref);
+      if (!raw) { controller.error(new Error(`block ${c.i} unavailable`)); return; }
+      const b = parseBlock(raw);
+      if (b.index !== idx) { controller.error(new Error(`chain gap at index ${idx}`)); return; }
+      if (!hEq(b.prev, prev)) { controller.error(new Error(`broken chain link at block ${idx}`)); return; }
+      prev = b.self;
+      idx++;
+      if (onBlock) onBlock(idx, ordered.length);
+      controller.enqueue(b.payload.slice()); // detach from the parsed buffer
+    },
+  });
+}
+
+/**
  * Reassemble blocks (any order) into the original blob, verifying the chain:
  * indices are contiguous 0..N-1 and each block's `prev` equals the previous
  * block's payload hash. `total` is checked only when present (streaming uploads
