@@ -756,7 +756,17 @@ export class DataStore {
       const o = f.organization_id || 'unknown';
       (byOrg.get(o) || byOrg.set(o, []).get(o)).push(f);
     }
+    // ADDITIVE: seed from the prior manifest so departments NOT in the current
+    // working set keep their existing shard. This prevents a partial working set
+    // (e.g. only some departments loaded) from shrinking the published dataset.
     const departments = {};
+    let carried = 0;
+    if (this.deptManifest?.departments) {
+      for (const [org, entry] of Object.entries(this.deptManifest.departments)) {
+        if (!byOrg.has(org)) { departments[org] = entry; carried++; }
+      }
+    }
+    if (carried) this.log(`Carrying ${carried} unloaded department shard(s) forward unchanged.`, 'mut');
     let i = 0;
     for (const [org, list] of byOrg) {
       const bytes = await packFlights(list);
@@ -781,14 +791,18 @@ export class DataStore {
       departments[org] = entry;
       if (++i % 25 === 0) this.log(`Sharded ${i}/${byOrg.size} departments…`, 'mut');
     }
+    // Totals span ALL departments in the manifest (rewritten + carried).
+    const allOrgs = Object.keys(departments);
+    const total = allOrgs.reduce((n, o) => n + (departments[o].count || 0), 0);
     const manifest = {
       dfr_manifest: 2, sharded: true, payload_format: FORMAT, version,
-      total: this.flights.length, department_count: byOrg.size,
+      total, department_count: allOrgs.length,
       departments, created_at: Date.now(),
     };
     const ref = await uploadEncrypted(encoder.encode(JSON.stringify(manifest)),
       { mime: 'application/json', name: `dfr-v${version}.deptmanifest.json` });
-    act.block(`Published ${byOrg.size} department shards (v${version})`, { departments: byOrg.size, flights: this.flights.length });
+    this._shardTotal = total;   // so _publish can record the true count in room state
+    act.block(`Published ${allOrgs.length} department shards (v${version}, ${total.toLocaleString()} flights)`, { departments: allOrgs.length, flights: total });
     return ref;
   }
 
@@ -852,8 +866,10 @@ export class DataStore {
       ...(prev || {}),
       hydrated: markHydrated || !!prev?.hydrated,
       mode, format: FORMAT, payload_format: FORMAT, version,
-      count: mode === 'sharded' ? this.flights.length : this.flights.length, hash: blobHash(bytes),
-      total: mode === 'sharded' ? this.flights.length : (prev?.total ?? this.flights.length),
+      // For sharded mode the true total spans all manifest departments
+      // (rewritten + carried-forward), not just the loaded working set.
+      count: mode === 'sharded' ? (this._shardTotal ?? this.flights.length) : this.flights.length, hash: blobHash(bytes),
+      total: mode === 'sharded' ? (this._shardTotal ?? this.flights.length) : (prev?.total ?? this.flights.length),
       blob, manifest, chunk_count: chunkCount,
       source_url: sourceUrl ?? prev?.source_url ?? null,
       raw_archive: keepRaw ? (prev?.raw_archive ?? (prev?.mode === 'chunked-raw' ? prev?.manifest : null)) : null,
