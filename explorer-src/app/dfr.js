@@ -21,6 +21,10 @@
 export const NAMESPACE = 'org.dfr.explorer';
 export const ROOM_TYPE = 'dfr.dataset';
 
+// When set, the app only ever opens this one space (by its UUID); the room
+// list/selector and "+ Space" are suppressed. This is the canonical DFR space.
+export const ONLY_SPACE_UUID = '7819cb01c10b487eb20cb736';
+
 export const ENTITY = {
   FLIGHT: 'flight',            // a single DFR drone flight (legacy single-flight event)
   FLIGHT_BATCH: 'flight_batch',// a department's new flights, batched into one event

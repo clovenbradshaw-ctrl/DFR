@@ -21,7 +21,7 @@ import { createRoom, discoverRooms, onRoomChanges,
          onTimeline, onDecrypted } from '../src/rooms.js';
 import { createSpace, parseSpaceFromUrl, openSpaceFromLink, spaceUrl, setUrlToSpace } from './space.js';
 
-import { NAMESPACE, ROOM_TYPE } from './dfr.js';
+import { NAMESPACE, ROOM_TYPE, ONLY_SPACE_UUID } from './dfr.js';
 import { DataStore } from './datastore.js';
 import { onDatasetState } from './roomstate.js';
 import * as sel from './selectors.js';
@@ -31,6 +31,7 @@ import { DepartmentsView } from './departments.js';
 import { Swarm } from './swarm.js';
 import { Activity, act, Term } from './activity.js';
 import { loadACS, loadTractGeom, acsLabel, overflownTracts, contrast, choroplethColor } from './census.js';
+import { exportFlights } from './export.js';
 
 const $ = (id) => document.getElementById(id);
 let deptsView = null, swarm = null;
@@ -103,6 +104,32 @@ async function loadDemographics() {
   } catch (e) {
     $('demoBody').innerHTML = `<div class="empty">Failed: ${esc(e.message)}</div>`;
   }
+}
+
+// Optional tract layer on the Map tab. Reuses the Demographics data if loaded;
+// otherwise loads tracts for the county under the map center.
+let tractsOn = false;
+async function toggleTracts(on) {
+  tractsOn = on;
+  const m = ensureMap();
+  if (!m) return;
+  if (!on) { m.clearTracts(); return; }
+  setTab('map');
+  if (demoData?.feats) {
+    m.renderTracts(demoData.feats, (g) => choroplethColor(demoData.byGeoid[g]?.[demoData.metric || 'pct_poverty'], demoData.metric || 'pct_poverty'), demoData.overflown);
+    return;
+  }
+  // No demographics loaded yet — fetch tracts for the county under the center.
+  try {
+    const fips = await guessCountyFips();
+    if (!fips || fips.length < 4) { log('Load Demographics (county FIPS) to shade tracts.', 'warn'); $('tractToggle').checked = false; tractsOn = false; return; }
+    const proxy = $('proxy').value.trim();
+    log('Loading census tracts…', 'mut');
+    const feats = await loadTractGeom(fips.slice(0, 2), fips.slice(2), proxy);
+    const over = overflownTracts(feats, store?.flights || []);
+    m.renderTracts(feats, () => 'rgba(43,103,119,0.18)', over);
+    log(`Tracts on: ${feats.length} (${over.size} overflown).`, 'ok');
+  } catch (e) { log(`Tracts failed: ${e.message}`, 'err'); $('tractToggle').checked = false; tractsOn = false; }
 }
 
 const DEMO_ROWS = [
@@ -205,6 +232,20 @@ async function onAuthed() {
   $('proxy').value = scraper.proxy;
 
   installLeaveGuard();
+
+  // Single-space lock: this app only ever opens the canonical DFR space. Hide
+  // the room selector + "+ Space", force the deep link to that UUID, and open it.
+  if (ONLY_SPACE_UUID) {
+    $('roomSel')?.classList.add('hidden');
+    $('newSpace')?.classList.add('hidden');
+    const homeserver = getClient()?.getUserId()?.split(':').slice(1).join(':');
+    log('Opening the DFR space…', 'mut');
+    const roomId = await openSpaceFromLink({ uuid: ONLY_SPACE_UUID, server: homeserver });
+    if (roomId) { setUrlToSpace(ONLY_SPACE_UUID); await openRoom(roomId); }
+    else log('Could not open the DFR space — you may need an invite to it.', 'warn');
+    return;
+  }
+
   onRoomChanges(() => refreshRooms());
   // Deep link: if the URL points at a space (#/s/<uuid>:<server>), open it
   // directly (joining if invited) instead of the default room list.
@@ -472,11 +513,32 @@ function showFlight(f) {
     ['End', f.end_coords ? f.end_coords.map(n => n.toFixed(5)).join(', ') : '—'],
     ['Org UUID', esc(f.organization_id || '—')],
   ];
+  // Other flights from the SAME department — a quick picker to jump between them.
+  const sibs = (store?.flights || [])
+    .filter(x => x.organization_id === f.organization_id && x !== f)
+    .sort((a, b) => (b.takeoff || 0) - (a.takeoff || 0))
+    .slice(0, 200);
+  const sibList = sibs.length ? `
+    <div class="fp-sibs">
+      <div class="fp-sibs-h">${sibs.length}＋ flights from ${esc(dept)} — pick one</div>
+      ${sibs.map((s, i) => `<button class="fp-sib" data-i="${i}">
+        <span class="fp-sib-p">${esc(s.flight_purpose || 'flight')}</span>
+        <span class="fp-sib-t">${s.takeoff ? new Date(s.takeoff).toISOString().slice(0, 10) : ''}</span>
+      </button>`).join('')}
+    </div>` : '';
+
   $('fpBody').innerHTML = rows.map(([k, v, raw]) =>
     `<dl class="fp-row"><dt>${k}</dt><dd>${raw ? v : esc(v)}</dd></dl>`).join('') +
-    (f.geometry ? '' : '<div class="hint">No path geometry in the index for this flight.</div>');
+    (f.geometry ? '' : '<div class="hint">No path geometry in the index for this flight.</div>') +
+    sibList;
   panel.classList.remove('hidden');
-  // Clicking the department jumps to its detail in the Departments tab.
+
+  // Clicking a sibling flight selects it (draws its path + re-opens the panel).
+  $('fpBody').querySelectorAll('.fp-sib').forEach(btn => btn.onclick = () => {
+    const s = sibs[+btn.getAttribute('data-i')];
+    if (s) { dfrMap?.drawPath(s); showFlight(s); }
+  });
+  // Clicking the department name jumps to its detail in the Departments tab.
   const dEl = $('fpDept');
   if (dEl && f.organization_id) dEl.onclick = () => {
     setTab('depts');
@@ -493,19 +555,31 @@ let agenciesDrawn = false;
 // date. Showing flights whose takeoff falls inside the window.
 let timeSpan = null;       // { min, max } in ms over ALL flights (fixed)
 let fromFrac = 0, toFrac = 1;
+let timeInited = false;    // have we set the initial "now" window yet?
 
 /** Compute the fixed full-dataset span once (when flights change). */
 function computeFullSpan(flights) {
   let min = Infinity, max = 0;
   for (const f of flights) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
-  timeSpan = (min === Infinity || min === max) ? (min === max && min !== Infinity ? { min, max: min + 1 } : null) : { min, max };
+  timeSpan = (min === Infinity) ? null : (min === max ? { min, max: min + 1 } : { min, max });
+  // Start at "now": a trailing window ending at the latest flight (default 30d
+  // back, or the whole span if shorter). Only on the first time we have a span.
+  if (timeSpan && !timeInited) {
+    timeInited = true;
+    const THIRTY_D = 30 * 864e5;
+    const span = timeSpan.max - timeSpan.min;
+    fromFrac = span > THIRTY_D ? 1 - THIRTY_D / span : 0;
+    toFrac = 1;
+    syncTimeInputs();
+  }
 }
 
 const fracToTs = (fr) => timeSpan ? timeSpan.min + (timeSpan.max - timeSpan.min) * fr : 0;
 
-/** The map's per-flight filter: inside the [from,to] window (or all if full). */
+/** The map's per-flight filter: inside the [from,to] window. */
 function inWindow(f) {
-  if (!timeSpan || (fromFrac <= 0 && toFrac >= 1)) return true;
+  if (!timeSpan) return true;
+  if (fromFrac <= 0 && toFrac >= 1) return true;   // full range → show all
   if (!f.takeoff) return false;
   return f.takeoff >= fracToTs(fromFrac) && f.takeoff <= fracToTs(toFrac);
 }
@@ -514,10 +588,10 @@ function updateTimeLabel() {
   const lbl = $('timeLabel'); if (!lbl) return;
   if (!timeSpan) { lbl.textContent = 'no dated flights'; return; }
   const d = (ms) => new Date(ms).toISOString().slice(0, 10);
+  const atNow = toFrac >= 0.999;
   lbl.textContent = (fromFrac <= 0 && toFrac >= 1)
-    ? `${d(timeSpan.min)} → ${d(timeSpan.max)} (all)`
-    : `${d(fracToTs(fromFrac))} → ${d(fracToTs(toFrac))}`;
-  // Fill bar between the two handles.
+    ? `all · ${d(timeSpan.min)} → ${d(timeSpan.max)}`
+    : `${d(fracToTs(fromFrac))} → ${atNow ? 'now' : d(fracToTs(toFrac))}`;
   const fill = $('timeFill');
   if (fill) { fill.style.left = (fromFrac * 100) + '%'; fill.style.width = ((toFrac - fromFrac) * 100) + '%'; }
 }
@@ -792,6 +866,14 @@ function wire() {
     fromFrac = 0; toFrac = 1; syncTimeInputs(); updateTimeLabel(); if (dfrMap) dfrMap.refresh();
   });
   $('playBtn').addEventListener('click', togglePlay);
+  $('exportBtn').addEventListener('click', () => {
+    try {
+      const flights = store?.flights || [];
+      exportFlights(flights, $('exportFmt').value, currentSpace?.uuid ? `dfr-${currentSpace.uuid.slice(0,8)}` : 'dfr-flights');
+      log(`Exported ${flights.length.toLocaleString()} flights as ${$('exportFmt').value.toUpperCase()}.`, 'ok');
+    } catch (e) { log(`Export failed: ${e.message}`, 'err'); }
+  });
+  $('tractToggle').addEventListener('change', e => toggleTracts(e.target.checked));
   $('focusToggle').addEventListener('change', e => {
     focusEnabled = e.target.checked;
     setFocusHint(focusEnabled ? 'Live focus on — zoom in to pull recent flights.' : 'Live focus off.');
