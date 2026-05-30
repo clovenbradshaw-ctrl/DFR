@@ -175,7 +175,10 @@ export class DataStore {
     );
     return extractLeanFlights(payloadStream, {
       payloadFormat: manifest.payload_format,
-      onProgress: (p) => { if (p.seen % 5000 === 0) this.log(`…${p.kept} flights so far`, 'mut'); },
+      onProgress: (p) => { if (p.seen % 5000 === 0) this.log(`…${p.kept} of ${p.seen} parsed kept`, 'mut'); },
+      // Surface the real field names of the first record — turns a "0 flights"
+      // run into a self-diagnosing one when a dataset uses unexpected keys.
+      onSample: (info) => this.log(`First record keys: ${(info.keys || []).join(', ') || '(none)'}`, 'mut'),
     });
   }
 

@@ -155,14 +155,55 @@ export function splitFeature(feature) {
 }
 
 /**
- * Normalise a GeoJSON Feature *or* an already-flat row/record into the canonical
- * flight record (metadata + inline geometry). Idempotent: re-importing a record
- * this function produced yields the same record.
+ * Detect & convert the compact DFR export shape (single-letter keys), e.g.
+ *   {"u":org,"id":flight,"x":null,"p":purpose,"t":takeoffSec,"d":durationSec,
+ *    "o":operator,"g":[[[lng,lat],…],…]}
+ * `g` is an array of line segments (MultiLineString-like); `t` is Unix seconds.
+ * Returns a GeoJSON-ish feature this module's splitFeature understands, or null
+ * when `el` isn't that shape.
+ */
+function fromCompact(el) {
+  if (!el || typeof el !== 'object') return null;
+  // Must have the compact geometry `g` (array of segments) and an `id`.
+  if (!Array.isArray(el.g) || el.id == null) return null;
+  const segs = el.g;
+  const looksSegments = segs.length === 0 ||
+    (Array.isArray(segs[0]) && Array.isArray(segs[0][0]) && typeof segs[0][0][0] === 'number');
+  if (!looksSegments) return null;
+
+  const takeoffMs = typeof el.t === 'number' ? el.t * 1000 : null;     // seconds → ms
+  const durSec = typeof el.d === 'number' ? el.d : null;
+  const landingMs = (takeoffMs != null && durSec != null) ? takeoffMs + durSec * 1000 : null;
+  const geometry = segs.length === 1
+    ? { type: 'LineString', coordinates: segs[0] }
+    : { type: 'MultiLineString', coordinates: segs };
+
+  return {
+    properties: {
+      flight_id: String(el.id),
+      external_id: el.e || el.case_id || '',
+      flight_purpose: el.p || '',
+      takeoff: takeoffMs,
+      landing: landingMs,
+      duration_min: durSec != null ? +(durSec / 60).toFixed(1) : null,
+      organization_id: el.u || el.o || '',
+    },
+    geometry,
+  };
+}
+
+/**
+ * Normalise a GeoJSON Feature, a compact DFR export record, *or* an already-flat
+ * row/record into the canonical flight record (metadata + inline geometry).
+ * Idempotent: re-importing a record this function produced yields the same one.
  */
 export function toRecord(el) {
-  const feature = el && el.type === 'Feature'
-    ? el
-    : { properties: (el && el.properties) || el, geometry: (el && el.geometry) || null };
+  const compact = fromCompact(el);
+  const feature = compact
+    ? compact
+    : el && el.type === 'Feature'
+      ? el
+      : { properties: (el && el.properties) || el, geometry: (el && el.geometry) || null };
   const { meta, geometry } = splitFeature(feature);
   return { ...meta, geometry: geometry || null };
 }
