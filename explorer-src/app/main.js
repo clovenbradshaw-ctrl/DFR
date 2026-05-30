@@ -202,22 +202,41 @@ function openGate(mode) {
 function closeGate() { $('hydrateGate').classList.add('hidden'); }
 function gateStatus(msg, level = '') { const e = $('gateStatus'); e.textContent = msg || ''; e.className = 'status ' + level; }
 
+const LARGE_FILE = 48 * 1024 * 1024; // auto-route files this big to chained upload
+
 async function gateLoad(source) {
   const format = $('gateFormat').value;
-  gateAbort = new AbortController();
+  const isFile = typeof source.slice === 'function';
+  const raw = format === 'chunked-raw' || (format === 'auto' && isFile && source.size > LARGE_FILE);
+  gateAbort = gateAbort || new AbortController();
   $('gateLoad').disabled = true; $('gateStop').disabled = false;
-  gateStatus('Loading…');
+  gateStatus(raw ? 'Uploading as chained blocks…' : 'Loading…');
   try {
-    const res = await store.hydrateFrom(source, {
-      format, signal: gateAbort.signal,
-      sourceUrl: source.url || null,
-      onProgress: p => { gateStatus(`Read ${p.seen}, recorded ${p.recorded}…`); $('gateBar').style.width = '60%'; },
-    });
-    $('gateBar').style.width = '100%';
-    gateStatus(`Hydrated: ${res.total} flights (${res.added} new).`, 'ok');
-    log(`Hydration complete: ${res.total} flights.`, 'ok');
-    render();
-    setTimeout(closeGate, 700);
+    if (raw) {
+      const res = await store.hydrateRawChunked(source, {
+        format: 'auto', signal: gateAbort.signal,
+        onProgress: p => {
+          gateStatus(`Uploaded ${p.block} block(s) · ${(p.bytes / 1048576).toFixed(1)} MB…`);
+          $('gateBar').style.width = '50%'; // indeterminate; total size may be unknown
+        },
+      });
+      $('gateBar').style.width = '100%';
+      gateStatus(`Uploaded ${res.chunkCount} blocks (${(res.totalBytes / 1048576).toFixed(1)} MB). Syncing…`, 'ok');
+      log(`Chained upload done: ${res.chunkCount} blocks, v${res.version}.`, 'ok');
+      await store.sync(); // pull back + parse if within the in-browser size limit
+      render();
+      setTimeout(closeGate, 900);
+    } else {
+      const res = await store.hydrateFrom(source, {
+        format, signal: gateAbort.signal, sourceUrl: source.url || null,
+        onProgress: p => { gateStatus(`Read ${p.seen}, recorded ${p.recorded}…`); $('gateBar').style.width = '60%'; },
+      });
+      $('gateBar').style.width = '100%';
+      gateStatus(`Hydrated: ${res.total} flights (${res.added} new).`, 'ok');
+      log(`Hydration complete: ${res.total} flights.`, 'ok');
+      render();
+      setTimeout(closeGate, 700);
+    }
   } catch (e) {
     // "Ask until done": stay on the gate so the user can retry.
     if (e.name === 'AbortError') gateStatus('Stopped.', '');

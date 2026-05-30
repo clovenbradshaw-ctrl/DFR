@@ -82,7 +82,7 @@ tbody tr:hover{background:var(--surf2)}
 .bar > i{display:block;height:100%;background:var(--acc);width:0}
 @media(max-width:760px){.main{grid-template-columns:1fr}.side{max-height:42vh}}
 </style>
-  <script type="module" crossorigin src="/explorer/assets/index-DkN3Bqhf.js"></script>
+  <script type="module" crossorigin src="/explorer/assets/index-BnQhaLQM.js"></script>
 </head>
 <body>
 
@@ -186,9 +186,10 @@ tbody tr:hover{background:var(--surf2)}
     <input id="gateUrl" placeholder="https://…/dfr.jsonl  (or .geojson / .gz)">
     <label>Format</label>
     <select id="gateFormat">
-      <option value="auto">Auto-detect</option>
-      <option value="jsonl">JSONL / NDJSON</option>
-      <option value="binary">Binary (.gz NDJSON)</option>
+      <option value="auto">Auto-detect (chains big files automatically)</option>
+      <option value="jsonl">JSONL / NDJSON (parse)</option>
+      <option value="binary">Binary .gz NDJSON (parse)</option>
+      <option value="chunked-raw">Chained blocks — large / multi-GB (raw upload)</option>
     </select>
     <label style="margin-top:10px">…or a local file</label>
     <input id="gateFile" type="file" accept=".json,.geojson,.ndjson,.jsonl,.gz,.bin">
