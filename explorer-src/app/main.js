@@ -26,9 +26,10 @@ import * as sel from './selectors.js';
 import { Scraper } from './scraper.js';
 import { DfrMap } from './mapview.js';
 import { DepartmentsView } from './departments.js';
+import { Swarm } from './swarm.js';
 
 const $ = (id) => document.getElementById(id);
-let deptsView = null;
+let deptsView = null, swarm = null;
 
 let store = null, scraper = null, dfrMap = null;
 let currentRoomId = null, unsubDatasetState = null, unsubMembers = null;
@@ -77,6 +78,7 @@ async function onAuthed() {
   store.onBusy = showLoading;
   scraper = new Scraper({ store, log });
   scraper.onChange = renderScraper;
+  swarm = new Swarm({ getRoomId: () => currentRoomId, log, onPeersChange: () => {} });
   $('interval').value = scraper.intervalMin;
   $('proxy').value = scraper.proxy;
 
@@ -125,6 +127,7 @@ async function createDataset() {
 async function openRoom(roomId) {
   if (unsubDatasetState) unsubDatasetState();
   if (unsubMembers) unsubMembers();
+  if (swarm) { swarm.lowerHand(); swarm.stop(); }
   currentRoomId = roomId;
   $('roomSel').value = roomId;
   dfrMap && (dfrMap._fitDone = false);
@@ -140,6 +143,7 @@ async function openRoom(roomId) {
   // Member list + live updates (joins, invites, power-level changes).
   unsubMembers = onMembersChange(roomId, () => renderMembers());
   renderMembers();
+  if (swarm) swarm.start();
   if (!hydrated) openGate('hydrate');
   else log('Dataset ready.', 'ok');
 }
@@ -261,7 +265,6 @@ function showLoading(info) {
 function scheduleFocus(bbox, zoom) {
   if (!focusEnabled || !store?.roomId) return;
   if (zoom < FOCUS_MIN_ZOOM) { setFocusHint(`Zoom in to level ${FOCUS_MIN_ZOOM}+ to pull recent flights here.`); return; }
-  // Skip if the viewport hasn't meaningfully changed.
   const key = bbox.map(n => n.toFixed(3)).join(',');
   if (key === lastFocusKey) return;
   clearTimeout(focusTimer);
@@ -270,12 +273,22 @@ function scheduleFocus(bbox, zoom) {
 
 async function focusFetchNow(bbox, { agency } = {}) {
   if (!store?.roomId) return;
+  // Swarm: raise our hand for this area, and yield if a peer already covers it.
+  if (swarm) {
+    swarm.raiseHand(bbox, { label: agency || '' });
+    const decision = swarm.shouldFetch(bbox);
+    if (!decision.fetch) {
+      setFocusHint(`Covered by a peer device — their results sync here.`);
+      return;
+    }
+  }
   if (focusAbort) focusAbort.abort();
   focusAbort = new AbortController();
   setFocusHint(agency ? `Pulling recent flights near ${agency}…` : 'Pulling recent flights in view…');
   try {
     const proxy = $('proxy').value.trim();
     const r = await store.focusFetch(bbox, { proxy, signal: focusAbort.signal });
+    if (swarm) swarm.raiseHand(bbox, { label: agency || '', fetchedTs: Date.now() });
     setFocusHint(r.fetched ? `${r.fetched} recent flights here (${r.added} new).` : 'No recent flights in this area.');
     render();
   } catch (e) {

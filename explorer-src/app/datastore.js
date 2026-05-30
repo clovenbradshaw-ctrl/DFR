@@ -416,9 +416,37 @@ export class DataStore {
     if (!added) return { added: 0 };
     this.flights = merged;
     this.dirty += added;
+    const newAgencies = this._discoverAgencies(recs);
     await saveLocal(this.roomId, await packFlights(this.flights));
     this._notify();
-    return { added };
+    return { added, newAgencies };
+  }
+
+  /**
+   * Mint stub agencies for any organization_id we see on flights but don't yet
+   * have an agency record for. Keeps the department list complete as new
+   * departments start flying, before their metadata is loaded. Centroid is the
+   * mean of the new flights' start points so the stub is mappable.
+   */
+  _discoverAgencies(recs) {
+    const known = new Set(this.agencies.map(a => a.id));
+    const acc = new Map();
+    for (const f of recs) {
+      const u = f.organization_id;
+      if (!u || known.has(u)) continue;
+      const c = f.start_coords;
+      const e = acc.get(u) || { id: u, name: '', city: '', county: '', state: '', address: '', sx: 0, sy: 0, n: 0, discovered: true };
+      if (c && c.length >= 2) { e.sx += c[0]; e.sy += c[1]; e.n++; }
+      acc.set(u, e);
+    }
+    let added = 0;
+    for (const e of acc.values()) {
+      if (e.n) { e.lng = e.sx / e.n; e.lat = e.sy / e.n; }
+      delete e.sx; delete e.sy; delete e.n;
+      this.agencies.push(e);
+      added++;
+    }
+    return added;
   }
 
   async maybePublish() {

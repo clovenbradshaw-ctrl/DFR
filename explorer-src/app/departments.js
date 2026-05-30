@@ -40,9 +40,13 @@ export class DepartmentsView {
     this._tableRows = [];
   }
 
-  /** Recompute aggregates from current store data and repaint. */
-  refresh() {
+  /** Recompute aggregates from current store data and repaint. Skips the work
+   *  when neither the flight count nor agency count changed since last time. */
+  refresh(force = false) {
     const { flights, agencies } = this.getData();
+    const sig = (flights ? flights.length : 0) + ':' + (agencies ? agencies.length : 0);
+    if (!force && sig === this._sig) return;
+    this._sig = sig;
     this._agencies = new Map((agencies || []).map(a => [a.id, a]));
     const depts = new Map();
     for (const f of flights || []) {

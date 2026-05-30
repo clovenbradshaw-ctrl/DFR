@@ -29,7 +29,9 @@ export class Scraper {
     this.log = log || (() => {});
     const s = loadSettings();
     this.intervalMin = s.intervalMin || 15;
-    this.proxy = s.proxy || '';
+    // Default to the shared n8n CORS proxy (same one the main DFR site uses)
+    // so live fetches work without setup; feedFetch still tries direct first.
+    this.proxy = s.proxy != null ? s.proxy : 'https://n8n.intelechia.com/webhook/feed?url=';
     this.lastRun = s.lastRun || null;
     this.timer = null;
     this.running = false;
