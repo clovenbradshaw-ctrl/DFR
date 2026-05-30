@@ -700,7 +700,7 @@ export class DataStore {
     // Clear local state.
     this.flights = []; this.agencies = []; this.deptManifest = null;
     this._loadedOrgs = new Set(); this.dirty = 0; this.looseEvents = 0;
-    try { await saveLocal(this.roomId, await packFlights([])); } catch {}
+    try { await saveLocal(this.roomId, await packFlights([]), { allowShrink: true }); } catch {}
     this._busy(null);
     act.block(`Redacted all data: ${redacted} events cleared`, { redacted });
     this.log(`Cleared room data: ${redacted} events redacted, pointer reset.`, 'ok');

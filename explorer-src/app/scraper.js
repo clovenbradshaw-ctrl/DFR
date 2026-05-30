@@ -24,6 +24,7 @@ const COUNTS_KEY = 'dfr.scraper.counts';
 const STATS_KEY = 'dfr.scraper.stats';
 const loadJSON = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
 const saveJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+const sleep = (ms) => ms > 0 ? new Promise(r => setTimeout(r, ms)) : Promise.resolve();
 
 export class Scraper {
   constructor({ store, log, term }) {
@@ -39,8 +40,14 @@ export class Scraper {
     this.counts = loadJSON(COUNTS_KEY, {});   // uuid -> last flight_count
     this.stats = loadJSON(STATS_KEY, {});     // uuid -> { count, lastChange, lastChecked }
     this.timer = null; this.running = false; this.busy = false;
+    this.paused = false;          // set true during a big import so the cycle yields
+    this.busyDelayMs = 8;         // per-iteration yield → never freezes the UI
     this.cycleN = 0; this.onChange = null;
   }
+
+  /** Pause the cycle (e.g. while a large import runs) and resume it after. */
+  pause() { this.paused = true; this._emit(); }
+  resume() { this.paused = false; this._emit(); }
 
   /**
    * Order departments for this cycle by *priority*, not directory order, so we
@@ -141,6 +148,12 @@ export class Scraper {
       const known = this.store.knownIds();   // dedup set (flight_id / oid)
       for (const uuid of uuids) {
         if (!this.running && this.timer === null && i > 0) break;  // stopped mid-cycle
+        // Stand aside while a big import/hydration is running so the scraper
+        // doesn't compete for the network or block the UI. Resumes after.
+        while (this.paused) { this._t('  (paused — import in progress)'); await sleep(2000); if (!this.running) break; }
+        // Yield to the event loop each iteration so the tab stays responsive
+        // even across 787 departments.
+        await sleep(this.busyDelayMs || 0);
         i++;
         const { env, fs } = found[uuid];
         const isNew = !knownDepts.has(uuid);

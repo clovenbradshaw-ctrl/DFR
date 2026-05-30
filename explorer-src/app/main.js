@@ -437,15 +437,8 @@ function ensureMap() {
   dfrMap.onCount = (shown, total, capped) => setFocusHint(
     total ? `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} flights in view${capped ? ' (capped — zoom in for more)' : ''}` : '');
   dfrMap.onFlight = (f) => showFlight(f);
-  // Cursor cutoff is applied per-marker inside the map's viewport render.
-  dfrMap.timeFilter = (f) => {
-    if (cursorFrac >= 1 || !timeSpan) return true;
-    const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
-    return !f.takeoff || f.takeoff <= cut;
-  };
-  // On pan/zoom, recompute the span from the now-visible flights so the cursor
-  // is always relative to what's in focus.
-  dfrMap.onMove = () => { recomputeTimeSpan(store?.flights || []); };
+  // The time window filter (applied per-marker in the map's viewport render).
+  dfrMap.timeFilter = (f) => inWindow(f);
   return dfrMap;
 }
 
@@ -487,61 +480,71 @@ function showFlight(f) {
 }
 function hideFlight() { $('flightPanel').classList.add('hidden'); }
 let agenciesDrawn = false;
-// Time scrubber state. The span is RELATIVE TO WHAT'S IN FOCUS: it's computed
-// from the flights currently in the map viewport, so zooming into a city makes
-// the cursor scrub that city's time range, not the whole dataset's.
-let timeSpan = null;       // { min, max } in ms — over the in-view flights
-let cursorFrac = 1;
+// Time scrubber: a draggable WINDOW [fromFrac, toFrac] over the dataset's FIXED
+// full time span. The span is computed once from the whole dataset (not on every
+// pan — that's what felt broken), so a handle position always means the same
+// date. Showing flights whose takeoff falls inside the window.
+let timeSpan = null;       // { min, max } in ms over ALL flights (fixed)
+let fromFrac = 0, toFrac = 1;
 
-/** Flights whose start point is in the current map viewport (the focus). */
-function viewportFlights(flights) {
-  if (!dfrMap) return flights;
-  const bb = dfrMap.bbox();   // [w,s,e,n]
-  return flights.filter(f => {
-    const c = f.start_coords;
-    return c && c.length >= 2 && c[0] >= bb[0] && c[0] <= bb[2] && c[1] >= bb[1] && c[1] <= bb[3];
-  });
+/** Compute the fixed full-dataset span once (when flights change). */
+function computeFullSpan(flights) {
+  let min = Infinity, max = 0;
+  for (const f of flights) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
+  timeSpan = (min === Infinity || min === max) ? (min === max && min !== Infinity ? { min, max: min + 1 } : null) : { min, max };
 }
 
-/** Recompute the span from the focused (in-view) flights. */
-function recomputeTimeSpan(flights) {
-  const focus = viewportFlights(flights);
-  let min = Infinity, max = 0;
-  for (const f of focus) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
-  timeSpan = (min === Infinity) ? null : { min, max };
-  updateTimeLabel();
+const fracToTs = (fr) => timeSpan ? timeSpan.min + (timeSpan.max - timeSpan.min) * fr : 0;
+
+/** The map's per-flight filter: inside the [from,to] window (or all if full). */
+function inWindow(f) {
+  if (!timeSpan || (fromFrac <= 0 && toFrac >= 1)) return true;
+  if (!f.takeoff) return false;
+  return f.takeoff >= fracToTs(fromFrac) && f.takeoff <= fracToTs(toFrac);
 }
 
 function updateTimeLabel() {
   const lbl = $('timeLabel'); if (!lbl) return;
-  if (!timeSpan) { lbl.textContent = 'no flights in view'; return; }
-  const day = (ms) => new Date(ms).toISOString().slice(0, 10);
-  if (cursorFrac >= 1) { lbl.textContent = `${day(timeSpan.min)} → ${day(timeSpan.max)}`; return; }
-  const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
-  lbl.textContent = '≤ ' + new Date(cut).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+  if (!timeSpan) { lbl.textContent = 'no dated flights'; return; }
+  const d = (ms) => new Date(ms).toISOString().slice(0, 10);
+  lbl.textContent = (fromFrac <= 0 && toFrac >= 1)
+    ? `${d(timeSpan.min)} → ${d(timeSpan.max)} (all)`
+    : `${d(fracToTs(fromFrac))} → ${d(fracToTs(toFrac))}`;
+  // Fill bar between the two handles.
+  const fill = $('timeFill');
+  if (fill) { fill.style.left = (fromFrac * 100) + '%'; fill.style.width = ((toFrac - fromFrac) * 100) + '%'; }
+}
+
+/** Sync the two range inputs from state. */
+function syncTimeInputs() {
+  $('timeFrom').value = String(Math.round(fromFrac * 1000));
+  $('timeTo').value = String(Math.round(toFrac * 1000));
 }
 
 let playTimer = null;
 function togglePlay() {
   const btn = $('playBtn');
   if (playTimer) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; return; }
+  if (!timeSpan) return;
   btn.textContent = '⏸';
-  // Sweep from the current cursor to the end over ~12s, then stop.
-  if (cursorFrac >= 1) cursorFrac = 0;
+  // Sweep a fixed-width window across the timeline, so you watch flights appear
+  // over time. Window width = current selection, or 10% if at full range.
+  let w = (toFrac - fromFrac); if (w >= 1) w = 0.1;
+  fromFrac = 0; toFrac = w;
   playTimer = setInterval(() => {
-    cursorFrac = Math.min(1, cursorFrac + 0.02);
-    $('timeSlider').value = String(Math.round(cursorFrac * 1000));
-    updateTimeLabel();
+    fromFrac = Math.min(1 - w, fromFrac + 0.02); toFrac = fromFrac + w;
+    syncTimeInputs(); updateTimeLabel();
     if (dfrMap) dfrMap.refresh();
-    if (cursorFrac >= 1) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; }
-  }, 240);
+    if (toFrac >= 1) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; }
+  }, 180);
 }
 
 function renderMap(flights) {
   const m = ensureMap();
   if (!m) return;
+  computeFullSpan(flights);          // fixed span over the whole dataset
   m.render(flights);                 // map filters by viewport + timeFilter
-  recomputeTimeSpan(flights);        // span from what's now in view
+  updateTimeLabel();
   // Agencies rarely change; only (re)draw when the set changes.
   if (!agenciesDrawn && store?.agencies?.length) {
     m.renderAgencies(store.agencies, (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
@@ -621,6 +624,13 @@ function gateStatus(msg, level = '') { const e = $('gateStatus'); e.textContent 
 
 const LARGE_FILE = 48 * 1024 * 1024; // auto-route files this big to chained upload
 
+// Pause the background scraper for the duration of `fn` so a big import isn't
+// held up competing for the network / event loop. Always resumes.
+async function withImport(fn) {
+  try { scraper?.pause(); return await fn(); }
+  finally { scraper?.resume(); }
+}
+
 async function gateLoad(source) {
   const format = $('gateFormat').value;
   const isFile = typeof source.slice === 'function';
@@ -628,6 +638,7 @@ async function gateLoad(source) {
   gateAbort = gateAbort || new AbortController();
   $('gateLoad').disabled = true; $('gateStop').disabled = false;
   gateStatus(raw ? 'Uploading as chained blocks…' : 'Loading…');
+  scraper?.pause();
   try {
     if (raw) {
       const res = await store.hydrateRawChunked(source, {
@@ -661,6 +672,7 @@ async function gateLoad(source) {
     log(`Hydration failed: ${e.message}`, 'err');
   } finally {
     gateAbort = null; $('gateLoad').disabled = false; $('gateStop').disabled = true;
+    scraper?.resume();
   }
 }
 
@@ -760,10 +772,17 @@ function wire() {
   Term.subscribe(() => { if (tab === 'term') renderTerminal(); });
 
   // Time scrubber.
-  $('timeSlider').addEventListener('input', e => {
-    cursorFrac = (+e.target.value) / 1000;
+  const onWindow = () => {
+    let a = (+$('timeFrom').value) / 1000, b = (+$('timeTo').value) / 1000;
+    if (a > b) { const t = a; a = b; b = t; }   // keep from ≤ to
+    fromFrac = a; toFrac = b;
     updateTimeLabel();
     if (dfrMap) dfrMap.refresh();
+  };
+  $('timeFrom').addEventListener('input', onWindow);
+  $('timeTo').addEventListener('input', onWindow);
+  $('timeReset').addEventListener('click', () => {
+    fromFrac = 0; toFrac = 1; syncTimeInputs(); updateTimeLabel(); if (dfrMap) dfrMap.refresh();
   });
   $('playBtn').addEventListener('click', togglePlay);
   $('focusToggle').addEventListener('change', e => {
@@ -792,14 +811,14 @@ function wire() {
 
   $('buildIndexBtn').addEventListener('click', async () => {
     $('buildIndexBtn').disabled = true;
-    try { const r = await store.buildIndexFromArchive(); log(`Built index: ${r.flights} flights.`, 'ok'); render(); }
+    try { const r = await withImport(() => store.buildIndexFromArchive()); log(`Built index: ${r.flights} flights.`, 'ok'); render(); }
     catch (e) { log(`Build index failed: ${e.message}`, 'err'); }
     finally { $('buildIndexBtn').disabled = false; }
   });
   $('reshardBtn').addEventListener('click', async () => {
     if (!confirm('Re-shard the dataset into per-department blocks? Clients will then load only the departments they open. The original raw archive is dropped.')) return;
     $('reshardBtn').disabled = true;
-    try { const r = await store.reshardByDepartment(); log(`Re-sharded (v${r.version}, ${r.mode}).`, 'ok'); render(); }
+    try { const r = await withImport(() => store.reshardByDepartment()); log(`Re-sharded (v${r.version}, ${r.mode}).`, 'ok'); render(); }
     catch (e) { log(`Re-shard failed: ${e.message}`, 'err'); }
     finally { $('reshardBtn').disabled = false; }
   });
@@ -833,7 +852,7 @@ function wire() {
     if (!currentRoomId) { log('Open or create a dataset first.', 'warn'); return; }
     log(`Loading agencies from ${file.name}…`);
     try {
-      const r = await store.hydrateAgencies(file, { onProgress: p => log(`…${p.kept} agencies`, 'mut') });
+      const r = await withImport(() => store.hydrateAgencies(file, { onProgress: p => log(`…${p.kept} agencies`, 'mut') }));
       log(`Loaded ${r.agencies} agencies.`, 'ok');
       render();
     } catch (err) { log(`Agencies load failed: ${err.message}`, 'err'); }

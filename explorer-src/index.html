@@ -161,12 +161,24 @@ details.setup > label:first-of-type{margin-top:0}
 
 /* ── time scrubber over the map ── */
 #mapView{position:relative}
-#timebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:600;
-  display:flex;align-items:center;gap:10px;background:rgba(12,16,24,.92);border:1px solid var(--line);
-  border-radius:10px;padding:7px 12px;box-shadow:0 6px 24px rgba(0,0,0,.5);width:min(560px,86%)}
-#timebar button{padding:3px 9px}
-#timeSlider{flex:1}
-#timeLabel{font-size:11px;color:var(--mut);white-space:nowrap;min-width:130px;text-align:right}
+#timebar{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:600;
+  display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.94);color:#1a1a17;
+  border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:8px 12px;
+  box-shadow:0 6px 24px rgba(0,0,0,.25);width:min(620px,92%);backdrop-filter:blur(8px)}
+#timebar button{padding:3px 9px;background:#eef1f4;color:#1a1a17;border:1px solid rgba(0,0,0,.12)}
+#timebar button:hover{border-color:var(--acc)}
+/* Dual-handle range: two stacked range inputs over a shared track. */
+#timeTrack{position:relative;flex:1;height:22px}
+#timeTrack input[type=range]{position:absolute;left:0;top:0;width:100%;margin:0;height:22px;
+  -webkit-appearance:none;appearance:none;background:transparent;pointer-events:none}
+#timeTrack input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;
+  width:16px;height:16px;border-radius:50%;background:var(--acc);border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer}
+#timeTrack input[type=range]::-moz-range-thumb{pointer-events:auto;width:16px;height:16px;
+  border-radius:50%;background:var(--acc);border:2px solid #fff;cursor:pointer}
+#timeTrack::before{content:'';position:absolute;left:0;right:0;top:9px;height:4px;border-radius:2px;background:#d3d8de}
+#timeFill{position:absolute;top:9px;height:4px;border-radius:2px;background:var(--acc);opacity:.55}
+#timeLabel{font-size:11px;color:#3a3f47;white-space:nowrap;min-width:188px;text-align:right;font-variant-numeric:tabular-nums}
 
 /* ── terminal view ── */
 #termView{display:flex;flex-direction:column;min-height:0}
@@ -394,11 +406,16 @@ tbody tr:hover{background:var(--surf2)}
         </div>
       </div>
       <div class="view hidden" id="mapView">
-        <!-- time scrubber: drag to show only flights up to a moment in time -->
+        <!-- time scrubber: a draggable window over the dataset's full span -->
         <div id="timebar">
-          <button id="playBtn" title="Play / pause through time">▶</button>
-          <input type="range" id="timeSlider" min="0" max="1000" value="1000">
+          <button id="playBtn" title="Play the window forward through time">▶</button>
+          <div id="timeTrack">
+            <div id="timeFill"></div>
+            <input type="range" id="timeFrom" min="0" max="1000" value="0">
+            <input type="range" id="timeTo" min="0" max="1000" value="1000">
+          </div>
           <span id="timeLabel" class="mono">all time</span>
+          <button id="timeReset" title="Reset to full range">⤢</button>
         </div>
         <div id="map"></div>
         <!-- flight details panel (slides in when a flight is clicked) -->
