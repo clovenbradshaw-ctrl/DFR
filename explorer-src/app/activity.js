@@ -9,6 +9,7 @@
  * Event kinds:
  *   sync     — reassembling/indexing/syncing the dataset from blocks
  *   api      — checking the live feed for new flights / departments
+ *   check    — reconciliation: comparing local per-department counts vs the feed
  *   add      — records added to the dataset (flights, agencies)
  *   block    — a media block (or manifest/snapshot) created or fetched
  *   swarm    — peer-coordination notes
@@ -37,7 +38,7 @@ export const Activity = {
 
   /** Rolling counts by kind, for a compact header. */
   counts() {
-    const c = { sync: 0, api: 0, add: 0, block: 0, swarm: 0, err: 0 };
+    const c = { sync: 0, api: 0, check: 0, add: 0, block: 0, swarm: 0, err: 0 };
     for (const e of this.events) if (c[e.kind] != null) c[e.kind]++;
     return c;
   },
@@ -65,6 +66,7 @@ export const Term = {
 export const act = {
   sync:  (m, d) => Activity.push('sync', m, d),
   api:   (m, d) => Activity.push('api', m, d),
+  check: (m, d) => Activity.push('check', m, d),
   add:   (m, d) => Activity.push('add', m, d),
   block: (m, d) => Activity.push('block', m, d),
   swarm: (m, d) => Activity.push('swarm', m, d),
