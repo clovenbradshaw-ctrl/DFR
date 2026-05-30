@@ -2400,6 +2400,14 @@ Promise.all([
 
   var fb=L.latLngBounds();
   allFlights=res[1].features.filter(function(f){return f.properties&&f.properties.takeoff&&f.properties.landing});
+  // Deduplicate by flight_id (AUDIT F-01): the upstream feed double-logs some
+  // flights (e.g. 9a7b3519…), which would otherwise inflate every count. Keep
+  // the first occurrence of each id; flights without an id fall back to a
+  // takeoff+landing+points key so identical rows still collapse.
+  (function(){var seen={},out=[],dropped=0;allFlights.forEach(function(f){var p=f.properties||{};
+    var key=p.flight_id||(p.takeoff+'_'+p.landing+'_'+((f.geometry&&f.geometry.coordinates&&f.geometry.coordinates.length)||0));
+    if(seen[key]){dropped++;return;}seen[key]=1;out.push(f);});
+    if(dropped)console.log('[dfr] deduplicated '+dropped+' duplicate flight(s)');allFlights=out;})();
   allFlights.forEach(function(f){var coords=exCoords(f.geometry);if(coords.length<2)return;var ll=coords.map(function(c){return[c[1],c[0]]});
     var simp=coords.filter(function(_,i){return i%3===0||i===coords.length-1});
     var swath=null;
