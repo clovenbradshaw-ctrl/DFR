@@ -186,7 +186,12 @@ async function onAuthed() {
   $('who').textContent = client.getUserId();
   $('login').classList.add('hidden');
   $('app').classList.remove('hidden');
-  try { if (localStorage.getItem('dfr.sideHidden') === '1') $('mainGrid').classList.add('side-hidden'); } catch {}
+  // On phones the side panel is an off-canvas drawer — start it closed. On
+  // desktop, honor the saved collapse preference.
+  const isMobile = window.matchMedia('(max-width:760px)').matches;
+  let collapsed = false;
+  try { collapsed = isMobile || localStorage.getItem('dfr.sideHidden') === '1'; } catch { collapsed = isMobile; }
+  $('mainGrid').classList.toggle('side-hidden', collapsed);
 
   store = new DataStore({ log });
   store.onChange = scheduleRender;
@@ -665,6 +670,12 @@ function ensureDepts() {
   deptsView = new DepartmentsView({
     sidebar: $('deptList'), main: $('deptMain'),
     getData: () => ({ flights: store?.flights || [], agencies: store?.agencies || [] }),
+    // In lazy (sharded) mode, the manifest supplies per-department counts before
+    // any block is fetched; opening a department pulls just its block.
+    deptIndex: () => (store?.isLazy() ? store.deptIndex() : null),
+    onSelectDept: async (org) => {
+      if (store?.isLazy()) { await store.loadDepartment(org); deptsView.refresh(true); }
+    },
     onPickAgency: (a) => { if (dfrMap && a.lat != null) { setTab('map'); dfrMap.focusOn(a); focusFetchNow(dfrMap.bbox(), { agency: a.name }); } },
   });
   $('deptSearch').addEventListener('input', e => deptsView.setFilter(e.target.value));
@@ -676,11 +687,14 @@ function wire() {
   $('signin').addEventListener('click', doSignIn);
   $('pw').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
   $('logout').addEventListener('click', doLogout);
-  $('sideToggle').addEventListener('click', () => {
-    const hidden = $('mainGrid').classList.toggle('side-hidden');
+  const setSide = (hidden) => {
+    $('mainGrid').classList.toggle('side-hidden', hidden);
     try { localStorage.setItem('dfr.sideHidden', hidden ? '1' : '0'); } catch {}
     if (tab === 'map') dfrMap?.invalidate();   // map reclaims the space
-  });
+  };
+  $('sideToggle').addEventListener('click', () => setSide(!$('mainGrid').classList.contains('side-hidden')));
+  // Tapping the dimmed backdrop closes the mobile drawer.
+  $('sideScrim').addEventListener('click', () => setSide(true));
   $('newRoom').addEventListener('click', createDataset);
   $('inviteBtn').addEventListener('click', doInvite);
   $('inviteId').addEventListener('keydown', e => { if (e.key === 'Enter') doInvite(); });
@@ -740,6 +754,34 @@ function wire() {
     try { const r = await store.buildIndexFromArchive(); log(`Built index: ${r.flights} flights.`, 'ok'); render(); }
     catch (e) { log(`Build index failed: ${e.message}`, 'err'); }
     finally { $('buildIndexBtn').disabled = false; }
+  });
+  $('reshardBtn').addEventListener('click', async () => {
+    if (!confirm('Re-shard the dataset into per-department blocks? Clients will then load only the departments they open. The original raw archive is dropped.')) return;
+    $('reshardBtn').disabled = true;
+    try { const r = await store.reshardByDepartment(); log(`Re-sharded (v${r.version}, ${r.mode}).`, 'ok'); render(); }
+    catch (e) { log(`Re-shard failed: ${e.message}`, 'err'); }
+    finally { $('reshardBtn').disabled = false; }
+  });
+  $('purgeListBtn').addEventListener('click', () => {
+    const uris = store?.purgeableMedia() || [];
+    if (!uris.length) { log('No orphaned media to purge (re-shard first).', 'warn'); return; }
+    // A ready-to-run Synapse admin purge: one DELETE per mxc. Hand to the
+    // homeserver admin to reclaim the space the old raw archive occupies.
+    const base = '<HOMESERVER_BASE_URL>';
+    const lines = [
+      '# Orphaned DFR media after re-shard — purge to reclaim space.',
+      '# Synapse admin API (needs an admin token):',
+      ...uris.map(mxc => {
+        const m = /^mxc:\/\/([^/]+)\/(.+)$/.exec(mxc) || [];
+        return `curl -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" "${base}/_synapse/admin/v1/media/${m[1]||'SERVER'}/${m[2]||''}"`;
+      }),
+      '', '# Raw mxc list:', ...uris,
+    ].join('\n');
+    const blob = new Blob([lines], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'dfr-media-purge.txt'; a.click();
+    URL.revokeObjectURL(a.href);
+    log(`Purge list downloaded: ${uris.length} media URIs.`, 'ok');
   });
 
   // Agencies: pick a local NDJSON/JSON file and load it as its own layer.

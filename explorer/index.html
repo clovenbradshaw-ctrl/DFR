@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
 <title>DFR Explorer</title>
 <meta name="theme-color" content="#0a0c10">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -221,9 +222,56 @@ tbody tr:hover{background:var(--surf2)}
 .member.invited .role{color:var(--warn)}
 .bar{height:6px;background:var(--surf2);border-radius:999px;overflow:hidden;margin-top:8px}
 .bar > i{display:block;height:100%;background:var(--acc);width:0}
-@media(max-width:760px){.main{grid-template-columns:1fr}.side{max-height:42vh}}
+
+/* ── mobile ───────────────────────────────────────────────────────────── */
+@media(max-width:760px){
+  /* The left panel becomes an off-canvas drawer toggled by ☰; map/views fill. */
+  .main{grid-template-columns:1fr}
+  .main .side{position:fixed;top:0;left:0;bottom:0;z-index:1300;width:86%;max-width:340px;
+    background:var(--surf);border-right:1px solid var(--line);
+    transform:translateX(-102%);transition:transform .22s ease;box-shadow:8px 0 32px rgba(0,0,0,.5)}
+  .main:not(.side-hidden) .side{transform:translateX(0);display:block}
+  .main.side-hidden .side{display:block;transform:translateX(-102%)}   /* keep mounted, just off-screen */
+  #sideScrim{position:fixed;inset:0;z-index:1250;background:rgba(0,0,0,.45);display:none}
+  .main:not(.side-hidden) #sideScrim{display:block}
+
+  header{gap:8px;padding:8px 10px}
+  header .brand{font-size:14px}
+  header .brand small{display:none}            /* drop the subtitle on small screens */
+  header .who{display:none}                    /* MXID hidden; still in the drawer */
+  header select{min-width:0;max-width:42vw}
+  header button{padding:6px 9px;font-size:13px}
+
+  /* Tabs scroll horizontally instead of wrapping/overflowing. */
+  .tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;gap:4px;padding:8px 10px}
+  .tabs button{flex:none;white-space:nowrap}
+  .focus-toggle{margin-left:4px;flex:none}
+  .focus-hint{display:none}                     /* count shown elsewhere; saves a row */
+
+  /* Department view stacks: list on top (short), detail below. */
+  #deptLayout{flex-direction:column}
+  #deptSidebar{width:auto;max-height:38vh;border-right:none;border-bottom:1px solid var(--line)}
+  #deptMain{padding:14px 14px 28px}
+  .barrow{grid-template-columns:110px 1fr 64px}  /* narrower labels */
+  #deptMain .stats{gap:16px}
+
+  /* Flight details + demographics span the screen. */
+  #flightPanel{width:100%;max-width:100%}
+  .demo-head{font-size:11px}
+  .demo-head label,.demo-head input,.demo-head select,.demo-head button{width:100%}
+  .demo-head input{width:100%!important}
+  .demo-cmp th,.demo-cmp td{padding:7px 8px}
+
+  /* Bigger touch targets + readable controls. */
+  button,select,input{min-height:38px}
+  #timebar{width:94%;top:8px}
+
+  /* Hydration / login cards fit narrow screens. */
+  #login .card,#hydrateGate .card{width:94vw;padding:22px 18px}
+}
+@media(min-width:761px){ #sideScrim{display:none} }
 </style>
-  <script type="module" crossorigin src="./assets/index-uKc55QX6.js"></script>
+  <script type="module" crossorigin src="./assets/index-CbSqWC0A.js"></script>
 </head>
 <body>
 
@@ -260,6 +308,7 @@ tbody tr:hover{background:var(--surf2)}
   </header>
 
   <div class="main" id="mainGrid">
+    <div id="sideScrim"></div>
     <aside class="side">
       <div class="panel">
         <h2>Dataset</h2>
@@ -300,6 +349,8 @@ tbody tr:hover{background:var(--surf2)}
         </div>
         <button id="agenciesBtn" style="margin-top:8px;width:100%">Load agencies…</button>
         <input id="agenciesFile" type="file" accept=".jsonl,.ndjson,.json,.geojson,.gz" class="hidden">
+        <button id="reshardBtn" style="margin-top:8px;width:100%" title="Re-organize the dataset into per-department blocks so clients load only what they open">Re-shard by department</button>
+        <button id="purgeListBtn" style="margin-top:8px;width:100%" title="Download the list of orphaned media URIs a homeserver admin can purge to reclaim space">Download purge list</button>
       </details>
 
       <div class="panel">

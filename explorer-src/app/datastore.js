@@ -77,6 +77,19 @@ const lvKey = (roomId) => `dfr.localver.${roomId}`;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+/** bbox [w,s,e,n] over a set of flights' start coords (for the manifest index). */
+function bboxOf(flights) {
+  let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity, any = false;
+  for (const f of flights) {
+    const c = f.start_coords;
+    if (!c || c.length < 2) continue;
+    any = true;
+    if (c[0] < w) w = c[0]; if (c[0] > e) e = c[0];
+    if (c[1] < s) s = c[1]; if (c[1] > n) n = c[1];
+  }
+  return any ? [w, s, e, n] : null;
+}
+
 export class DataStore {
   constructor({ log } = {}) {
     this.log = log || (() => {});
@@ -175,6 +188,67 @@ export class DataStore {
         const bytes = await getMediaBytes(ref);
         if (bytes) { this.agencies = await unpackFlights(bytes); this._notify(); }
       } catch (e) { this.log(`Agencies load: ${e.message}`, 'warn'); }
+    }
+  }
+
+  // ── lazy per-department loading (sharded manifest) ──────────────────────────
+
+  /** Department index from the manifest: [{ org, count, bbox, tmin, tmax, loaded }]. */
+  deptIndex() {
+    const m = this.deptManifest;
+    if (!m || !m.departments) return [];
+    return Object.entries(m.departments).map(([org, d]) => ({
+      org, count: d.count || 0, bbox: d.bbox || null, tmin: d.tmin, tmax: d.tmax,
+      loaded: this._loadedOrgs?.has(org) || false,
+    }));
+  }
+
+  isLazy() { return readDatasetState(this.roomId)?.mode === 'sharded'; }
+
+  /** Give the Departments tab counts/locations before any block is fetched. */
+  _seedAgenciesFromManifest(manifest) {
+    const known = new Set((this.agencies || []).map(a => a.id));
+    for (const [org, d] of Object.entries(manifest.departments || {})) {
+      if (known.has(org)) continue;
+      const bb = d.bbox;
+      this.agencies.push({ id: org, name: '', city: '', county: '', state: '', address: '',
+        lat: bb ? (bb[1] + bb[3]) / 2 : null, lng: bb ? (bb[0] + bb[2]) / 2 : null, stub: true });
+    }
+  }
+
+  /**
+   * Fetch ONE department's flight block on demand and merge it into the working
+   * set. Idempotent — repeat calls are cheap no-ops once loaded.
+   */
+  async loadDepartment(org) {
+    const m = this.deptManifest;
+    const d = m && m.departments && m.departments[org];
+    if (!d) return { added: 0 };
+    if (this._loadedOrgs?.has(org)) return { added: 0, already: true };
+    this._busy('Loading department', org.slice(0, 8), null);
+    try {
+      let bytes;
+      if (d.ref && d.ref.__media) bytes = await getMediaBytes(d.ref);
+      else if (d.chunks) bytes = reassemble(await Promise.all(d.chunks.map(c => getMediaBytes(c.ref))));
+      if (!bytes) { this.log(`Department ${org.slice(0, 8)} block unavailable.`, 'warn'); return { added: 0 }; }
+      const recs = await unpackFlights(bytes);
+      const { merged, added } = mergeFlights(this.flights, recs);
+      this.flights = merged;
+      (this._loadedOrgs || (this._loadedOrgs = new Set())).add(org);
+      await saveLocal(this.roomId, await packFlights(this.flights));
+      act.add(`Loaded department ${org.slice(0, 8)}: ${recs.length} flights`, { org: org.slice(0, 8), flights: recs.length });
+      this._notify();
+      return { added, total: recs.length };
+    } finally { this._busy(null); }
+  }
+
+  /** Load every department block (used by Demographics / full-map). */
+  async loadAllDepartments(onProgress) {
+    const idx = this.deptIndex();
+    let i = 0;
+    for (const d of idx) {
+      if (!d.loaded) await this.loadDepartment(d.org);
+      if (onProgress) onProgress(++i, idx.length);
     }
   }
 
@@ -298,6 +372,23 @@ export class DataStore {
     if (state.version <= this.localVersion && this.flights.length) return { synced: false, reason: 'up-to-date' };
 
     let bytes = null;
+    if (state.mode === 'sharded' && state.manifest && state.manifest.__media) {
+      // Lazy department loading: pull ONLY the small manifest now. The
+      // department list/counts come from it; each department's flights load on
+      // demand (loadDepartment) when opened. Never the whole dataset on load.
+      this.log('Loading department manifest…', 'mut');
+      const manifest = await this._downloadManifest(state.manifest);
+      this.deptManifest = manifest;
+      this._loadedOrgs = new Set();
+      // Seed agency stubs from the manifest so the Departments tab shows counts
+      // and locations immediately, before any flight block is fetched.
+      this._seedAgenciesFromManifest(manifest);
+      this._adoptVersion(state.version);
+      act.sync(`Loaded manifest: ${manifest.department_count} departments (lazy)`, { departments: manifest.department_count, total: manifest.total });
+      this.log(`${manifest.department_count} departments available — open one to load its flights.`, 'ok');
+      this._notify();
+      return { synced: true, lazy: true, departments: manifest.department_count };
+    }
     if (state.blob && state.blob.__media) {
       this.log('Downloading dataset snapshot…', 'mut');
       bytes = await getMediaBytes(state.blob);
@@ -623,6 +714,56 @@ export class DataStore {
     return uploadEncrypted(bytes, { mime: 'application/json', name: `${name}.manifest.json` });
   }
 
+  /**
+   * Department-sharded publish: one (gzip-NDJSON) block per department, plus a
+   * small manifest indexing each department by org → { ref, count, bbox, ts
+   * range }. A fresh client downloads only the manifest up front and pulls a
+   * department's block lazily when it's opened — never the whole dataset on load.
+   * A department larger than the media limit is split into chained blocks.
+   */
+  async _publishSharded(version) {
+    const limit = await this._mediaSizeLimit();
+    const byOrg = new Map();
+    for (const f of this.flights) {
+      const o = f.organization_id || 'unknown';
+      (byOrg.get(o) || byOrg.set(o, []).get(o)).push(f);
+    }
+    const departments = {};
+    let i = 0;
+    for (const [org, list] of byOrg) {
+      const bytes = await packFlights(list);
+      let entry;
+      if (bytes.length <= limit) {
+        const ref = await uploadEncrypted(bytes, { mime: 'application/gzip', name: `dfr-v${version}-${org.slice(0, 8)}.ndjson.gz` });
+        entry = { ref };
+      } else {
+        // Rare: a single department exceeds the limit → chain it.
+        const { blocks, metas, head } = chunkBlob(bytes, await this._chunkSize());
+        const refs = [];
+        for (let j = 0; j < blocks.length; j++) {
+          const r = await uploadEncrypted(blocks[j], { mime: 'application/octet-stream', name: `dfr-v${version}-${org.slice(0, 8)}.blk${j}.bin` });
+          refs.push({ i: j, size: metas[j].size, self: metas[j].self, prev: metas[j].prev, ref: r });
+        }
+        entry = { chunks: refs, head };
+      }
+      entry.count = list.length;
+      entry.bbox = bboxOf(list);
+      entry.tmin = Math.min(...list.map(f => f.takeoff || Infinity));
+      entry.tmax = Math.max(...list.map(f => f.takeoff || 0));
+      departments[org] = entry;
+      if (++i % 25 === 0) this.log(`Sharded ${i}/${byOrg.size} departments…`, 'mut');
+    }
+    const manifest = {
+      dfr_manifest: 2, sharded: true, payload_format: FORMAT, version,
+      total: this.flights.length, department_count: byOrg.size,
+      departments, created_at: Date.now(),
+    };
+    const ref = await uploadEncrypted(encoder.encode(JSON.stringify(manifest)),
+      { mime: 'application/json', name: `dfr-v${version}.deptmanifest.json` });
+    act.block(`Published ${byOrg.size} department shards (v${version})`, { departments: byOrg.size, flights: this.flights.length });
+    return ref;
+  }
+
   async _uploadCanonicalChunked(bytes, version) {
     const size = await this._chunkSize();
     const { blocks, metas, head } = chunkBlob(bytes, size);
@@ -649,9 +790,18 @@ export class DataStore {
     const prev = readDatasetState(this.roomId);
     const version = (prev?.version || this.localVersion || 0) + 1;
 
+    // Count distinct departments — sharding only helps when there are several.
+    const orgs = new Set(this.flights.map(f => f.organization_id || 'unknown'));
+
     let blob = null, manifest = null, mode = 'empty', chunkCount = 0;
     if (this.flights.length === 0) {
       mode = 'empty';
+    } else if (orgs.size > 1 && (bytes.length > limit || orgs.size >= 8)) {
+      // Department-sharded: lazy per-department loading. The default for any
+      // real multi-department dataset so a fresh client never downloads it all.
+      this.log(`Publishing ${orgs.size} department shards (v${version})…`, 'mut');
+      manifest = await this._publishSharded(version);
+      mode = 'sharded';
     } else if (bytes.length <= limit) {
       this.log(`Uploading snapshot (${(bytes.length / 1048576).toFixed(2)} MB) as one block…`, 'mut');
       blob = await uploadEncrypted(bytes, { mime: 'application/gzip', name: `dfr-v${version}.ndjson.gz` });
@@ -664,25 +814,84 @@ export class DataStore {
       chunkCount = (await this._downloadManifest(manifest)).chunk_count;
     }
 
+    // Sharded shards carry FULL geometry regrouped by department, so they fully
+    // supersede the original byte-sliced raw archive — drop it (and redact its
+    // blocks below). Other modes keep the raw archive as the full-res source.
+    const keepRaw = mode !== 'sharded';
     const content = {
       hydrated: markHydrated || !!prev?.hydrated,
       mode, format: FORMAT, payload_format: FORMAT, version,
       count: this.flights.length, hash: blobHash(bytes),
       blob, manifest, chunk_count: chunkCount,
       source_url: sourceUrl ?? prev?.source_url ?? null,
-      // Preserve the original full-resolution raw archive (the chunked-raw
-      // hydration upload) across snapshot publishes so it's never orphaned —
-      // the snapshot block carries lean geometry, this keeps the source of truth.
-      raw_archive: prev?.raw_archive ?? (prev?.mode === 'chunked-raw' ? prev?.manifest : null),
-      raw_payload_format: prev?.raw_payload_format ?? (prev?.mode === 'chunked-raw' ? prev?.payload_format : null),
-      raw_bytes: prev?.raw_bytes ?? (prev?.mode === 'chunked-raw' ? prev?.total_bytes : null),
+      raw_archive: keepRaw ? (prev?.raw_archive ?? (prev?.mode === 'chunked-raw' ? prev?.manifest : null)) : null,
+      raw_payload_format: keepRaw ? (prev?.raw_payload_format ?? (prev?.mode === 'chunked-raw' ? prev?.payload_format : null)) : null,
+      raw_bytes: keepRaw ? (prev?.raw_bytes ?? (prev?.mode === 'chunked-raw' ? prev?.total_bytes : null)) : null,
       updated_at: Date.now(), updated_by: getClient()?.getUserId() || null,
     };
     await writeDatasetState(this.roomId, content);
     this.meta = content; this._adoptVersion(version); this.dirty = 0; this.lastPublish = Date.now();
+    if (!keepRaw && (prev?.raw_archive || prev?.mode === 'chunked-raw')) {
+      this._dropRawArchive(prev).catch(() => {});   // best-effort cleanup
+    }
     this.log(`Published v${version} (${content.count} flights, ${mode}).`, 'ok');
     this._notify();
     return { published: true, version, mode };
+  }
+
+  /**
+   * After re-sharding, the original raw archive is dead weight. Matrix has no
+   * client API to delete media, so to reclaim the space we:
+   *   1. collect every orphaned mxc URI (manifest + all its blocks),
+   *   2. best-effort redact any event-attached refs (lets a homeserver with
+   *      redaction-driven media cleanup reclaim them),
+   *   3. record the mxc list in room state + expose it for download, so a
+   *      Synapse admin can purge them immediately (a one-line admin call).
+   * The bytes themselves are freed by the homeserver, not the client.
+   */
+  async _dropRawArchive(prev) {
+    const client = getClient();
+    if (!client) return;
+    const ref = prev.raw_archive || (prev.mode === 'chunked-raw' ? prev.manifest : null);
+    if (!ref?.__media) return;
+    const orphans = [];
+    if (ref.mxc) orphans.push(ref.mxc);
+    try {
+      const man = await this._downloadManifest(ref);
+      for (const c of (man.chunks || [])) if (c.ref?.mxc) orphans.push(c.ref.mxc);
+      // Best-effort: redact any event-attached refs (most are pure media uploads
+      // with no event, so this is usually a no-op — the purge list is the lever).
+      let redacted = 0;
+      for (const c of (man.chunks || [])) {
+        const eid = c.ref?.event_id;
+        if (eid) { try { await client.redactEvent(this.roomId, eid); redacted++; } catch {} }
+      }
+      // Stash the orphan list so an admin can reclaim the space.
+      try {
+        await writeDatasetState(this.roomId, { ...readDatasetState(this.roomId), purgeable_media: orphans });
+      } catch {}
+      this._purgeableMedia = orphans;
+      act.block(`Re-shard freed ${man.chunk_count} raw blocks (~${((man.total_bytes||0)/1073741824).toFixed(2)} GB) — ${orphans.length} mxc URIs queued for purge`,
+        { blocks: man.chunk_count, orphans: orphans.length, redacted });
+      this.log(`Original archive superseded: ${orphans.length} media URIs can be purged. Use "Download purge list".`, 'ok');
+    } catch { /* manifest already gone */ }
+  }
+
+  /** The orphaned mxc URIs from the last re-shard (for the purge list download). */
+  purgeableMedia() {
+    return this._purgeableMedia || readDatasetState(this.roomId)?.purgeable_media || [];
+  }
+
+  /**
+   * Re-shard the current dataset into per-department blocks for lazy loading.
+   * One-time migration from a whole-dataset (chunked-raw / single / chunked)
+   * layout. Requires the working set to be loaded first.
+   */
+  async reshardByDepartment() {
+    if (!this.flights.length) throw new Error('Load the dataset first (Build index), then re-shard.');
+    this.log(`Re-sharding ${this.flights.length} flights by department…`, 'mut');
+    const r = await this.publish({});   // multi-dept → sharded path, drops raw
+    return r;
   }
 
   knownIds() {

@@ -31,9 +31,11 @@ export class DepartmentsView {
    * @param {()=>{flights:Array,agencies:Array}} deps.getData
    * @param {(a)=>void} [deps.onPickAgency]  focus the map on a department's agency
    */
-  constructor({ sidebar, main, getData, onPickAgency }) {
+  constructor({ sidebar, main, getData, onPickAgency, deptIndex, onSelectDept }) {
     this.sidebar = sidebar; this.main = main; this.getData = getData;
     this.onPickAgency = onPickAgency || (() => {});
+    this.deptIndex = deptIndex || (() => null);   // lazy manifest counts, or null
+    this.onSelectDept = onSelectDept || (() => {});
     this.selected = null; this.filter = '';
     this.sort = { key: 't', dir: -1 }; this.page = 0;
     this._depts = new Map(); this._order = []; this._labels = new Map(); this._agencies = new Map();
@@ -59,6 +61,18 @@ export class DepartmentsView {
       if (f.takeoff) { if (d.tmin == null || f.takeoff < d.tmin) d.tmin = f.takeoff; if (d.tmax == null || f.takeoff > d.tmax) d.tmax = f.takeoff; }
       d.totMin += (f.duration_min || 0);
       d.flights.push(f);
+    }
+    // Lazy mode: fold in manifest department counts so departments show their
+    // true totals (and appear in the list) even before their block is loaded.
+    const idx = this.deptIndex();
+    this._lazy = !!idx;
+    this._manifestCount = {};
+    if (idx) {
+      for (const d of idx) {
+        this._manifestCount[d.org] = d.count;
+        if (!depts.has(d.org)) depts.set(d.org, { u: d.org, count: d.count, purposes: new Map(), tmin: d.tmin, tmax: d.tmax, totMin: 0, flights: [], _unloaded: true });
+        else depts.get(d.org).count = Math.max(depts.get(d.org).count, d.count);
+      }
     }
     this._depts = depts;
     this._order = [...depts.keys()].sort((a, b) => depts.get(b).count - depts.get(a).count);
@@ -120,12 +134,17 @@ export class DepartmentsView {
     }
     this.sidebar.innerHTML = html;
     this.sidebar.querySelectorAll('.dept').forEach(el => {
-      el.onclick = () => {
+      el.onclick = async () => {
         const u = el.getAttribute('data-u');
         this.selected = (u === '__all__') ? null : u;
         this.page = 0; this.sort = { key: 't', dir: -1 };
         this.renderSidebar(); this.renderMain();
-        if (this.selected) { const a = this._agencies.get(this.selected); if (a) this.onPickAgency(a); }
+        if (this.selected) {
+          const d = this._depts.get(this.selected);
+          // Lazy mode: fetch this department's block on demand if not yet loaded.
+          if (d && d._unloaded) { await this.onSelectDept(this.selected); }
+          const a = this._agencies.get(this.selected); if (a) this.onPickAgency(a);
+        }
       };
     });
   }
@@ -169,6 +188,13 @@ export class DepartmentsView {
 
   _deptHTML(u) {
     const d = this._depts.get(u), a = this._agencies.get(u) || {};
+    // Lazy mode: block not pulled yet — show count + a loading note.
+    if (d._unloaded && !d.flights.length) {
+      return `<div class="title">${esc(this.deptName(u))}</div>
+        <p class="title-sub">${esc(u)}</p>
+        <div class="card"><div class="stats">${this._stat(d.count, 'flights (loading…)')}</div></div>
+        <div class="empty">Fetching this department's flight block…</div>`;
+    }
     const purposes = [...d.purposes.entries()].sort((x, y) => y[1] - x[1]);
     const avgMin = d.count ? d.totMin / d.count : 0;
     const meta = '<dl class="meta">' +
