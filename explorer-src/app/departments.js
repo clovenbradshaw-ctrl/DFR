@@ -31,10 +31,11 @@ export class DepartmentsView {
    * @param {()=>{flights:Array,agencies:Array}} deps.getData
    * @param {(a)=>void} [deps.onPickAgency]  focus the map on a department's agency
    */
-  constructor({ sidebar, main, getData, onPickAgency, deptIndex, onSelectDept, onSyncDept }) {
+  constructor({ sidebar, main, getData, onPickAgency, deptIndex, onSelectDept, onSyncDept, reconcile }) {
     this.sidebar = sidebar; this.main = main; this.getData = getData;
     this.onPickAgency = onPickAgency || (() => {});
     this.deptIndex = deptIndex || (() => null);   // lazy manifest counts, or null
+    this.reconcile = reconcile || (() => ({}));   // uuid -> { feed, stored, synced }
     this.onSelectDept = onSelectDept || (() => {});
     this.onSyncDept = onSyncDept || (() => {});
     this.selected = null; this.filter = '';
@@ -119,8 +120,19 @@ export class DepartmentsView {
   }
 
   // ── sidebar ──
+  // A small reconciliation badge: ✓ when we hold what the feed reports, or
+  // "▲N" when we're N rows behind the live feed for this department.
+  _syncBadge(u) {
+    const r = (this._recon || {})[u];
+    if (!r || r.feed == null || r.stored == null) return '';
+    const behind = r.feed - r.stored;
+    if (behind > 0) return `<span class="sync behind" title="Live feed has ${r.feed}; we hold ${r.stored} — ${behind} behind">▲${behind}</span>`;
+    return `<span class="sync ok" title="In sync with live feed (${r.stored}/${r.feed})">✓</span>`;
+  }
+
   renderSidebar() {
     const q = this.filter.toLowerCase();
+    this._recon = this.reconcile() || {};
     const total = [...this._depts.values()].reduce((n, d) => n + d.count, 0);
     let html = `<div class="dept ${this.selected === null ? 'sel' : ''}" data-u="__all__">
       <span class="name">All departments<div class="sub">overview</div></span>
@@ -135,7 +147,7 @@ export class DepartmentsView {
       const sub = (place ? place + ' · ' : '') + (u || '').slice(0, 8);
       html += `<div class="dept ${this.selected === u ? 'sel' : ''}" data-u="${esc(u)}">
         <span class="name">${esc(name)}<div class="sub">${esc(sub)}</div></span>
-        <span class="count">${this._depts.get(u).count.toLocaleString()}</span></div>`;
+        <span class="count">${this._syncBadge(u)}${this._depts.get(u).count.toLocaleString()}</span></div>`;
     }
     this.sidebar.innerHTML = html;
     this.sidebar.querySelectorAll('.dept').forEach(el => {

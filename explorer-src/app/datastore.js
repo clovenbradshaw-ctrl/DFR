@@ -281,6 +281,20 @@ export class DataStore {
   // treats them as fully present — not lazy. (Lazy-on-open was reverted.)
   isLazy() { return false; }
 
+  /**
+   * How many flights we ACTUALLY hold for one department. Counts the loaded
+   * working set; if that org's shard isn't loaded yet, falls back to the
+   * manifest's recorded count. This is the "truth" side of a reconciliation —
+   * what's in the system, independent of what any feed claims.
+   */
+  deptStoredCount(org) {
+    let n = 0;
+    for (const f of this.flights) if (f.organization_id === org) n++;
+    if (n) return n;
+    const d = this.deptManifest?.departments?.[org];
+    return d ? (d.count || 0) : 0;
+  }
+
   /** Give the Departments tab counts/locations before any block is fetched. */
   _seedAgenciesFromManifest(manifest) {
     const known = new Set((this.agencies || []).map(a => a.id));
@@ -864,18 +878,19 @@ export class DataStore {
     const fs = fsForOrg(org);
     let cnt = null;
     try { cnt = (await feedFetch(countUrl(fs), proxy, { preferProxy: true }))?.count ?? null; } catch { return { added: 0 }; }
-    const have = this.flights.filter(f => f.organization_id === org).length;
-    if (cnt == null || cnt <= have) return { added: 0, cnt, have };
+    const have = this.deptStoredCount(org);
+    if (cnt == null || cnt <= have) return { added: 0, cnt, have, stored: have, synced: cnt == null ? null : have >= cnt };
     const delta = cnt - have;
     let feats;
     try {
       feats = delta <= 5000
         ? (await feedFetch(agencyTailUrl(fs, delta), proxy, { preferProxy: true }))?.features || []
         : (await feedFetch(agencyQueryUrl(fs), proxy, { preferProxy: true }))?.features || [];
-    } catch { return { added: 0, cnt, have }; }
+    } catch { return { added: 0, cnt, have, stored: have, synced: have >= cnt }; }
     const r = await this.addFlights(feats);   // dedups, posts events, persists
     if (r.added) act.add(`Department ${org.slice(0, 8)}: +${r.added} from live feed`, { added: r.added });
-    return { added: r.added || 0, cnt, have };
+    const stored = this.deptStoredCount(org);   // re-verify what we now hold
+    return { added: r.added || 0, cnt, have, stored, synced: stored >= cnt };
   }
 
   /** How many flights are in loose events but not yet rolled into a block. */

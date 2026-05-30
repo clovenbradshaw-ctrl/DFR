@@ -169,6 +169,12 @@ export class Scraper {
       saveJSON(STATS_KEY, this.stats);     // persist priority stats
       const r = await this.store.maybePublish();
       if (r.published) { this._t(`  snapshot published as block(s) (v${r.version})`); act.block(`Snapshot v${r.version} published`, { version: r.version }); }
+      // Reconciliation summary: of the departments we checked this cycle, how
+      // many do we hold in full vs. still trail the live feed?
+      const rec = this.reconcileSummary();
+      this._t(`  reconcile: ${rec.synced}/${rec.checked} departments in sync` +
+              (rec.behind ? `, ${rec.behind} behind (${rec.behindRows} rows): ${rec.behindList.slice(0, 6).map(b => b.uuid.slice(0, 8) + ' ' + b.stored + '/' + b.feed).join(', ')}` : ''));
+      if (rec.behind) act.api(`${rec.behind} department(s) behind the feed (${rec.behindRows} rows)`, { behind: rec.behind, rows: rec.behindRows });
       this._t(`  --- cycle ${n} done: fetched ${fetched}, skipped ${skipped} | +${totAdded} flights, ${newDepts} new dept(s)`);
       act.add(`Cycle ${n}: +${totAdded} flights, ${newDepts} new department(s)`, { added: totAdded, newDepts, fetched, skipped });
       this.lastRun = Date.now(); this._persist();
@@ -198,18 +204,42 @@ export class Scraper {
     const st = this.stats[uuid] || (this.stats[uuid] = {});
     st.lastChecked = Date.now();
     if (cnt != null) { st.count = cnt; if (cnt !== prev) st.lastChange = Date.now(); }
-    if (cnt === 0) { ctx.skipped++; this.counts[uuid] = 0; this._t(`${head} cnt=0 = empty, skip`); return; }
-    const why = isNew ? 'new' : (cnt !== prev ? 'count changed' : null);
-    if (why === null) { ctx.skipped++; this._t(`${head} cnt=${cnt} = unchanged, skip`); return; }
+    if (cnt == null) { ctx.skipped++; this._t(`${head} count check failed, skip`); return; }
 
-    const grew = typeof prev === 'number' && cnt > prev;
+    // RECONCILE: compare the live feed count against what we actually hold for
+    // this department. `have` is the truth in our system; `behind` is how many
+    // rows we're missing (negative = we hold more than the feed reports).
+    const have = this.store.deptStoredCount(uuid);
+    const behind = cnt - have;
+    st.feed = cnt; st.stored = have; st.synced = behind <= 0; st.reconciled = Date.now();
+
+    if (cnt === 0) {
+      ctx.skipped++; this.counts[uuid] = 0;
+      this._t(`${head} cnt=0 = empty, skip${have ? ` (hold ${have}, feed pruned)` : ''}`);
+      return;
+    }
+
+    // Fetch when: brand-new department, the feed count changed, OR we're behind
+    // (missing rows) even though the count didn't change — a silent gap an
+    // earlier failed/partial fetch could have left. Otherwise we're in sync; skip.
+    const why = isNew ? 'new'
+              : behind > 0 ? `behind ${behind}`
+              : (cnt !== prev ? 'count changed' : null);
+    if (why === null) {
+      ctx.skipped++; this.counts[uuid] = cnt;
+      this._t(`${head} cnt=${cnt} = in sync (${have}), skip`);
+      return;
+    }
+
+    // Tail-fetch exactly the gap when we know it and it's small; else full pull.
+    const gap = behind > 0 ? behind : (typeof prev === 'number' && cnt > prev ? cnt - prev : cnt);
     let feats, mode;
     try {
-      if (grew && (cnt - prev) <= 5000) { feats = await this._fetchTail(fs, cnt - prev); mode = `tail +${cnt - prev}`; }
+      if (!isNew && gap > 0 && gap <= 5000) { feats = await this._fetchTail(fs, gap); mode = `tail +${gap}`; }
       else { feats = await this._fetchAll(fs); mode = 'full'; }
     } catch (e) { this._t(`${head} cnt=${cnt} -> ! fetch failed: ${e.message}`); return; }
     ctx.fetched++;
-    this._t(`${head} cnt=${cnt} (was ${prev ?? '—'}) -> FETCH [${why}, ${mode}] …`);
+    this._t(`${head} cnt=${cnt} (was ${prev ?? '—'}, hold ${have}) -> FETCH [${why}, ${mode}] …`);
 
     // Serialize the merge so parallel workers don't race shared state.
     await (this._mergeLock = (this._mergeLock || Promise.resolve()).then(async () => {
@@ -226,8 +256,14 @@ export class Scraper {
         if (r.newAgencies) ctx.newDepts += r.newAgencies;
       }
       this.counts[uuid] = cnt;
-      this._t(`            + fetched ${feats.length}  added ${added}  archived ${cnt}`);
-      if (isNew) act.api(`New department ${uuid.slice(0, 8)} (+${added})`, { uuid: uuid.slice(0, 8), added });
+      // VERIFY: re-read what we now hold and confirm we reached the feed's count.
+      // A persistent shortfall is surfaced (warn) rather than silently assumed away.
+      const now = this.store.deptStoredCount(uuid);
+      st.stored = now; st.synced = now >= cnt; st.reconciled = Date.now();
+      const tag = now >= cnt ? `✓ in sync ${now}/${cnt}` : `⚠ still behind ${now}/${cnt}`;
+      this._t(`            + fetched ${feats.length}  added ${added}  ${tag}`);
+      if (now < cnt) act.api(`Dept ${uuid.slice(0, 8)} short: hold ${now}/${cnt}`, { stored: now, feed: cnt, uuid: uuid.slice(0, 8) });
+      else if (isNew) act.api(`New department ${uuid.slice(0, 8)} (+${added})`, { uuid: uuid.slice(0, 8), added });
     }));
   }
 
@@ -264,6 +300,32 @@ export class Scraper {
       offset += fsx.length;
     }
     return all;
+  }
+
+  /**
+   * Per-department reconciliation snapshot from the persisted stats: for each
+   * department we've count-checked, what the live feed reports (`feed`), what we
+   * actually hold (`stored`), and whether they agree (`synced`). The UI uses
+   * this to badge each department in/out of sync.
+   */
+  reconciliation() {
+    const out = {};
+    for (const [uuid, s] of Object.entries(this.stats)) {
+      if (s.feed == null && s.stored == null) continue;
+      out[uuid] = { uuid, feed: s.feed ?? null, stored: s.stored ?? null,
+                    synced: s.synced !== false, checkedAt: s.reconciled || s.lastChecked || null };
+    }
+    return out;
+  }
+
+  /** Roll the reconciliation up to a single tally for cycle logging / the UI. */
+  reconcileSummary() {
+    const rec = Object.values(this.reconciliation());
+    const checked = rec.length;
+    const behindList = rec.filter(r => r.feed != null && r.stored != null && r.stored < r.feed)
+                          .sort((a, b) => (b.feed - b.stored) - (a.feed - a.stored));
+    const behindRows = behindList.reduce((n, r) => n + (r.feed - r.stored), 0);
+    return { checked, behind: behindList.length, synced: checked - behindList.length, behindRows, behindList };
   }
 
   // Manual "check now".
