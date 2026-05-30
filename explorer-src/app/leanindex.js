@@ -15,6 +15,38 @@
 import { textStreamFrom, readChunks, streamElements, streamNdjson } from './jsonstream.js';
 import { toRecord } from './dfr.js';
 
+// Keep a *simplified* path in the index so movement lines can draw without
+// holding full geometry. Flight paths have huge point redundancy, so uniformly
+// downsampling each segment to ~this many points shows the shape while staying
+// lean (a few KB/flight instead of hundreds).
+const MAX_PTS_PER_SEG = 40;
+
+function downsampleSeg(seg) {
+  if (!Array.isArray(seg) || seg.length <= MAX_PTS_PER_SEG) return seg;
+  const step = (seg.length - 1) / (MAX_PTS_PER_SEG - 1);
+  const out = [];
+  for (let i = 0; i < MAX_PTS_PER_SEG; i++) out.push(seg[Math.round(i * step)]);
+  return out;
+}
+
+/** Reduce a flight's geometry to a light version for the index (or null). */
+function simplifyGeometry(geom) {
+  if (!geom || !geom.coordinates) return null;
+  if (geom.type === 'MultiLineString') {
+    // Keep at most the longest few segments, each downsampled.
+    const segs = geom.coordinates
+      .filter(s => Array.isArray(s) && s.length > 1)
+      .sort((a, b) => b.length - a.length)
+      .slice(0, 6)
+      .map(downsampleSeg);
+    return segs.length ? { type: 'MultiLineString', coordinates: segs } : null;
+  }
+  if (geom.type === 'LineString') {
+    return { type: 'LineString', coordinates: downsampleSeg(geom.coordinates) };
+  }
+  return null;
+}
+
 /** Decide NDJSON vs array/FeatureCollection from a text head. */
 function looksNdjson(head) {
   const t = head.replace(/^﻿/, '').trimStart();
@@ -86,7 +118,7 @@ export async function extractLeanFlights(byteStream, { payloadFormat = 'auto', s
     }
     let rec;
     try { rec = toRecord(el); } catch { continue; }
-    if (rec.geometry) rec.geometry = null;          // drop the bulky path
+    rec.geometry = simplifyGeometry(rec.geometry);  // keep a light path for lines
     if (rec.flight_id || rec.start_coords || rec.external_id) {
       if (onRecord) onRecord(rec); else out.push(rec);
     }

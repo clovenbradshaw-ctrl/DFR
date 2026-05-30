@@ -80,7 +80,9 @@ export class Swarm {
       if (key === me) continue;
       const c = ev.getContent() || {};
       if (!c.bbox || !c.ts || now - c.ts > HAND_TTL_MS) continue;
-      out.push({ device: key, user: ev.getSender(), bbox: c.bbox, ts: c.ts, label: c.label || '' });
+      const bbox = c.bbox.map(Number);   // sent as fixed-precision strings
+      if (bbox.length < 4 || bbox.some(n => !Number.isFinite(n))) continue;
+      out.push({ device: key, user: ev.getSender(), bbox, ts: c.ts, label: c.label || '' });
     }
     return out;
   }
@@ -98,7 +100,10 @@ export class Swarm {
     this._lastHand = now;
     try {
       await client.sendStateEvent(roomId, TYPE(), {
-        bbox, label, ts: now, fetched_ts: fetchedTs || now,
+        // Synapse rejects float values in state events ("Bad JSON value:
+        // float"), so send the bbox as fixed-precision strings and parse back.
+        bbox: bbox.map(n => n.toFixed(5)),
+        label, ts: now, fetched_ts: fetchedTs || now,
         device: this._deviceId(),
       }, this._deviceId());
     } catch (e) { this.log(`Swarm hand failed: ${e.message}`, 'mut'); }
