@@ -13,6 +13,7 @@
  */
 
 import { feedQueryUrl, proxied } from './dfr.js';
+import { act } from './activity.js';
 
 const SETTINGS_KEY = 'dfr.scraper.settings';
 const loadSettings = () => { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch { return {}; } };
@@ -29,7 +30,9 @@ export class Scraper {
     this.log = log || (() => {});
     const s = loadSettings();
     this.intervalMin = s.intervalMin || 15;
-    this.proxy = s.proxy || '';
+    // Default to the shared n8n CORS proxy (same one the main DFR site uses)
+    // so live fetches work without setup; feedFetch still tries direct first.
+    this.proxy = s.proxy != null ? s.proxy : 'https://n8n.intelechia.com/webhook/feed?url=';
     this.lastRun = s.lastRun || null;
     this.timer = null;
     this.running = false;
@@ -71,27 +74,43 @@ export class Scraper {
     if (!this.store?.roomId) { this.log('No active dataset — open or create one first.', 'warn'); return; }
     this.busy = true; this._emit();
     try {
-      this.log('Fetching live feed…', 'mut');
-      const resp = await fetch(proxied(feedQueryUrl(), this.proxy), { headers: { Accept: 'application/json' } });
-      if (!resp.ok) throw new Error(`feed HTTP ${resp.status}`);
-      const geojson = await resp.json();
-      const features = (geojson && geojson.features) || [];
+      this.log('Checking all departments for new flights…', 'mut');
+      act.api('Checking all departments for new flights…');
+      // The feature service returns every department's flights; one paginated
+      // sweep covers them all. We page so we don't miss anything past the
+      // server's max record count.
+      const features = await this._fetchAll();
 
       const known = this.store.knownIds();
+      const knownDepts = new Set((this.store.agencies || []).map(a => a.id));
       const fresh = features.filter(f => {
-        const p = f.properties || {};
-        const id = p.flight_id || (p.ObjectId != null ? 'oid_' + p.ObjectId : null);
+        const p = f.properties || f;
+        const id = p.flight_id || p.id || (p.ObjectId != null ? 'oid_' + p.ObjectId : null);
         return id && !known.has(id);
       });
+      act.api(`Feed returned ${features.length.toLocaleString()} flights; ${fresh.length} new`, { total: features.length, fresh: fresh.length });
 
       if (fresh.length) {
+        // Group the new flights by department (org/operator id) for reporting.
+        const byOrg = {};
+        for (const f of fresh) {
+          const p = f.properties || f;
+          const org = p.organization_id || p.u || p.o || 'unknown';
+          byOrg[org] = (byOrg[org] || 0) + 1;
+        }
+        const newDepts = Object.keys(byOrg).filter(o => !knownDepts.has(o));
         const { added } = await this.store.addFlights(fresh);
-        this.log(`Appended ${added} new flight(s) locally.`, 'ok');
+        const depts = Object.keys(byOrg).length;
+        this.log(`Found ${added} new flight(s) across ${depts} department(s).`, 'ok');
+        if (newDepts.length) act.api(`${newDepts.length} new department(s) seen on the feed`, { newDepts: newDepts.length });
+        for (const [org, n] of Object.entries(byOrg).sort((a, b) => b[1] - a[1]).slice(0, 8)) {
+          this.log(`  ${this._deptLabel(org)}: +${n}`, 'mut');
+        }
         const r = await this.store.maybePublish();
-        if (r.published) this.log(`Snapshot published (v${r.version}).`, 'ok');
+        if (r.published) this.log(`Snapshot published as block(s) (v${r.version}).`, 'ok');
         else this.log(`Holding ${this.store.dirty} unpublished — will snapshot when it's worth it.`, 'mut');
       } else {
-        this.log(`No new flights (${features.length} in feed).`, 'mut');
+        this.log(`No new flights (${features.length} in feed across all departments).`, 'mut');
       }
 
       this.lastRun = Date.now();
@@ -101,5 +120,29 @@ export class Scraper {
     } finally {
       this.busy = false; this._emit();
     }
+  }
+
+  /** Map an org/operator UUID to a readable department name via the agencies layer. */
+  _deptLabel(org) {
+    const a = (this.store.agencies || []).find(x => x.id === org);
+    if (a) return a.name || [a.city, a.county, a.state].filter(Boolean).join(', ') || org;
+    return org.length > 12 ? org.slice(0, 8) + '…' : org;
+  }
+
+  /** Paginate the whole feed (all departments). */
+  async _fetchAll() {
+    const PAGE = 2000, CAP = 100000;
+    let offset = 0, all = [];
+    while (offset < CAP) {
+      const url = `${feedQueryUrl()}&resultRecordCount=${PAGE}&resultOffset=${offset}`;
+      const resp = await fetch(proxied(url, this.proxy), { headers: { Accept: 'application/json' } });
+      if (!resp.ok) throw new Error(`feed HTTP ${resp.status}`);
+      const gj = await resp.json();
+      const fs = (gj && gj.features) || [];
+      all = all.concat(fs);
+      if (fs.length < PAGE) break;
+      offset += PAGE;
+    }
+    return all;
   }
 }

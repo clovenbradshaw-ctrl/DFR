@@ -25,21 +25,54 @@ import { onDatasetState } from './roomstate.js';
 import * as sel from './selectors.js';
 import { Scraper } from './scraper.js';
 import { DfrMap } from './mapview.js';
+import { DepartmentsView } from './departments.js';
+import { Swarm } from './swarm.js';
+import { Activity, act } from './activity.js';
 
 const $ = (id) => document.getElementById(id);
+let deptsView = null, swarm = null;
 
 let store = null, scraper = null, dfrMap = null;
 let currentRoomId = null, unsubDatasetState = null, unsubMembers = null;
 let gateAbort = null, gateMode = 'hydrate';
 
-// ── activity log ──
+// ── activity log (sidebar text) + structured Activity feed ──
 function log(msg, level = 'mut') {
-  const el = $('log'); if (!el) return;
-  const line = document.createElement('div');
-  line.className = level;
-  line.textContent = `${new Date().toLocaleTimeString()}  ${msg}`;
-  el.appendChild(line); el.scrollTop = el.scrollHeight;
-  while (el.children.length > 200) el.removeChild(el.firstChild);
+  const el = $('log');
+  if (el) {
+    const line = document.createElement('div');
+    line.className = level;
+    line.textContent = `${new Date().toLocaleTimeString()}  ${msg}`;
+    el.appendChild(line); el.scrollTop = el.scrollHeight;
+    while (el.children.length > 200) el.removeChild(el.firstChild);
+  }
+  // Mirror errors/warnings into the structured feed so they appear in Activity.
+  if (level === 'err') act.err(msg);
+}
+
+// ── Activity view ──
+const ACT_KINDS = ['sync', 'api', 'add', 'block', 'swarm', 'err'];
+let actFilter = new Set(ACT_KINDS);   // all on
+function renderActivity() {
+  const list = $('actList');
+  if (!list) return;
+  const counts = Activity.counts();
+  // filter chips
+  $('actFilters').innerHTML = ACT_KINDS.map(k =>
+    `<span class="act-chip ${actFilter.has(k) ? 'on' : ''}" data-k="${k}">${k}<span class="c">${counts[k] || 0}</span></span>`).join('');
+  $('actFilters').querySelectorAll('.act-chip').forEach(ch => ch.onclick = () => {
+    const k = ch.getAttribute('data-k');
+    if (actFilter.has(k)) actFilter.delete(k); else actFilter.add(k);
+    renderActivity();
+  });
+  const rows = Activity.events.filter(e => actFilter.has(e.kind))
+    .slice(-400).reverse().map(e => {
+      const t = new Date(e.ts).toLocaleTimeString();
+      const d = e.data && Object.keys(e.data).length
+        ? `<span class="d">${esc(Object.entries(e.data).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(',') : v}`).join(' · '))}</span>` : '';
+      return `<div class="act-row"><span class="t">${t}</span><span class="k ${e.kind}">${e.kind}</span><span class="m">${esc(e.message)}${d}</span></div>`;
+    }).join('');
+  list.innerHTML = rows || '<div class="act-empty">No activity yet. Sync, scraping, and block creation will appear here.</div>';
 }
 
 // ── auth ──
@@ -71,9 +104,11 @@ async function onAuthed() {
   $('app').classList.remove('hidden');
 
   store = new DataStore({ log });
-  store.onChange = render;
+  store.onChange = scheduleRender;
+  store.onBusy = showLoading;
   scraper = new Scraper({ store, log });
   scraper.onChange = renderScraper;
+  swarm = new Swarm({ getRoomId: () => currentRoomId, log, onPeersChange: () => {} });
   $('interval').value = scraper.intervalMin;
   $('proxy').value = scraper.proxy;
 
@@ -122,9 +157,11 @@ async function createDataset() {
 async function openRoom(roomId) {
   if (unsubDatasetState) unsubDatasetState();
   if (unsubMembers) unsubMembers();
+  if (swarm) { swarm.lowerHand(); swarm.stop(); }
   currentRoomId = roomId;
   $('roomSel').value = roomId;
   dfrMap && (dfrMap._fitDone = false);
+  agenciesDrawn = false;
   log('Opening dataset…');
   const { hydrated } = await store.open(roomId);
   render();
@@ -136,6 +173,7 @@ async function openRoom(roomId) {
   // Member list + live updates (joins, invites, power-level changes).
   unsubMembers = onMembersChange(roomId, () => renderMembers());
   renderMembers();
+  if (swarm) swarm.start();
   if (!hydrated) openGate('hydrate');
   else log('Dataset ready.', 'ok');
 }
@@ -176,7 +214,20 @@ async function doInvite() {
 }
 
 // ── render ──
-let tab = 'map';
+let tab = 'depts';
+// Coalesce bursts of onChange (e.g. during indexing) into one paint per frame.
+let renderScheduled = false;
+function scheduleRender() {
+  if (renderScheduled) return;
+  renderScheduled = true;
+  requestAnimationFrame(() => { renderScheduled = false; render(); });
+}
+let actRenderScheduled = false;
+function scheduleActRender() {
+  if (actRenderScheduled) return;
+  actRenderScheduled = true;
+  requestAnimationFrame(() => { actRenderScheduled = false; renderActivity(); });
+}
 function render() {
   const flights = store?.flights || [];
   const s = sel.stats(flights);
@@ -199,23 +250,13 @@ function render() {
       : (store?.flights?.length ? `${store.flights.length} local · not published` : 'not hydrated')) + ag;
   }
 
-  if (tab === 'table') renderTable(flights);
+  if (tab === 'depts') ensureDepts().refresh();
   if (tab === 'map') renderMap(flights);
-}
 
-function renderTable(flights) {
-  const rows = sel.sortedByTakeoff(flights).slice(0, 2000).map(f => `<tr>
-    <td><span class="dot" style="background:var(--red)"></span>${esc(f.flight_purpose || '')}</td>
-    <td>${esc(f.external_id || f.flight_id || '')}</td>
-    <td>${f.takeoff ? new Date(f.takeoff).toLocaleString() : ''}</td>
-    <td>${f.duration_min ?? ''}</td>
-    <td>${f.num_points ?? ''}</td>
-    <td>${f.geometry ? 'yes' : '—'}</td>
-  </tr>`).join('');
-  $('tableView').innerHTML = `<table>
-    <thead><tr><th>Purpose</th><th>Case / Flight ID</th><th>Takeoff</th><th>Min</th><th>Pts</th><th>Path</th></tr></thead>
-    <tbody>${rows || '<tr><td colspan="6" style="color:var(--mut)">No flights. Hydrate the dataset or start the scraper.</td></tr>'}</tbody>
-  </table>`;
+  // Once the room holds data, fold the hydration-setup panel away.
+  const hasData = (store?.flights?.length || 0) > 0;
+  const setup = $('setupPanel');
+  if (setup && hasData && !setup.dataset.autoclosed) { setup.open = false; setup.dataset.autoclosed = '1'; }
 }
 
 const FOCUS_MIN_ZOOM = 12;     // only auto-pull when zoomed in this far
@@ -229,19 +270,37 @@ function ensureMap() {
   dfrMap = new DfrMap('map');
   // Auto-pull recent flights for the viewport once zoomed in.
   dfrMap.onFocusChange((bbox, zoom) => scheduleFocus(bbox, zoom));
+  dfrMap.onCount = (shown, total, capped) => setFocusHint(
+    total ? `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} flights in view${capped ? ' (capped — zoom in for more)' : ''}` : '');
   return dfrMap;
 }
+let agenciesDrawn = false;
 function renderMap(flights) {
   const m = ensureMap();
   if (!m) return;
   m.render(flights);
-  m.renderAgencies(store?.agencies || [], (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
+  // Agencies rarely change; only (re)draw when the set changes.
+  if (!agenciesDrawn && store?.agencies?.length) {
+    m.renderAgencies(store.agencies, (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
+    agenciesDrawn = true;
+  }
+}
+
+// ── loading overlay (recurring: reassembling/indexing blocks) ──
+function showLoading(info) {
+  const el = $('loading');
+  if (!info) { el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  $('loadingTitle').textContent = info.title || 'Loading…';
+  $('loadingSub').textContent = info.sub || '';
+  const bar = $('loadingBar');
+  if (info.frac == null) { bar.style.width = '100%'; bar.style.opacity = '.35'; }
+  else { bar.style.opacity = '1'; bar.style.width = Math.round(Math.max(0, Math.min(1, info.frac)) * 100) + '%'; }
 }
 
 function scheduleFocus(bbox, zoom) {
   if (!focusEnabled || !store?.roomId) return;
   if (zoom < FOCUS_MIN_ZOOM) { setFocusHint(`Zoom in to level ${FOCUS_MIN_ZOOM}+ to pull recent flights here.`); return; }
-  // Skip if the viewport hasn't meaningfully changed.
   const key = bbox.map(n => n.toFixed(3)).join(',');
   if (key === lastFocusKey) return;
   clearTimeout(focusTimer);
@@ -250,12 +309,23 @@ function scheduleFocus(bbox, zoom) {
 
 async function focusFetchNow(bbox, { agency } = {}) {
   if (!store?.roomId) return;
+  // Swarm: raise our hand for this area, and yield if a peer already covers it.
+  if (swarm) {
+    swarm.raiseHand(bbox, { label: agency || '' });
+    const decision = swarm.shouldFetch(bbox);
+    if (!decision.fetch) {
+      setFocusHint(`Covered by a peer device — their results sync here.`);
+      act.swarm('Yielded this area to a peer device', { by: decision.by?.device?.slice(0, 8) });
+      return;
+    }
+  }
   if (focusAbort) focusAbort.abort();
   focusAbort = new AbortController();
   setFocusHint(agency ? `Pulling recent flights near ${agency}…` : 'Pulling recent flights in view…');
   try {
     const proxy = $('proxy').value.trim();
     const r = await store.focusFetch(bbox, { proxy, signal: focusAbort.signal });
+    if (swarm) swarm.raiseHand(bbox, { label: agency || '', fetchedTs: Date.now() });
     setFocusHint(r.fetched ? `${r.fetched} recent flights here (${r.added} new).` : 'No recent flights in this area.');
     render();
   } catch (e) {
@@ -345,12 +415,26 @@ function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;'
 // ── tabs ──
 function setTab(t) {
   tab = t;
+  $('tabDepts').setAttribute('aria-selected', t === 'depts');
   $('tabMap').setAttribute('aria-selected', t === 'map');
-  $('tabTable').setAttribute('aria-selected', t === 'table');
+  $('tabActivity').setAttribute('aria-selected', t === 'activity');
+  $('deptsView').classList.toggle('hidden', t !== 'depts');
   $('mapView').classList.toggle('hidden', t !== 'map');
-  $('tableView').classList.toggle('hidden', t !== 'table');
+  $('activityView').classList.toggle('hidden', t !== 'activity');
   if (t === 'map') { renderMap(store?.flights || []); dfrMap?.invalidate(); }
-  else renderTable(store?.flights || []);
+  else if (t === 'depts') ensureDepts().refresh();
+  else if (t === 'activity') renderActivity();
+}
+
+function ensureDepts() {
+  if (deptsView) return deptsView;
+  deptsView = new DepartmentsView({
+    sidebar: $('deptList'), main: $('deptMain'),
+    getData: () => ({ flights: store?.flights || [], agencies: store?.agencies || [] }),
+    onPickAgency: (a) => { if (dfrMap && a.lat != null) { setTab('map'); dfrMap.focusOn(a); focusFetchNow(dfrMap.bbox(), { agency: a.name }); } },
+  });
+  $('deptSearch').addEventListener('input', e => deptsView.setFilter(e.target.value));
+  return deptsView;
 }
 
 // ── wire ──
@@ -362,8 +446,12 @@ function wire() {
   $('inviteBtn').addEventListener('click', doInvite);
   $('inviteId').addEventListener('keydown', e => { if (e.key === 'Enter') doInvite(); });
   $('roomSel').addEventListener('change', e => openRoom(e.target.value));
+  $('tabDepts').addEventListener('click', () => setTab('depts'));
   $('tabMap').addEventListener('click', () => setTab('map'));
-  $('tabTable').addEventListener('click', () => setTab('table'));
+  $('tabActivity').addEventListener('click', () => setTab('activity'));
+  $('actClear').addEventListener('click', () => { Activity.clear(); renderActivity(); });
+  // Live-update the Activity view (and the tab is cheap to repaint when visible).
+  Activity.subscribe(() => { if (tab === 'activity') scheduleActRender(); });
   $('focusToggle').addEventListener('change', e => {
     focusEnabled = e.target.checked;
     setFocusHint(focusEnabled ? 'Live focus on — zoom in to pull recent flights.' : 'Live focus off.');

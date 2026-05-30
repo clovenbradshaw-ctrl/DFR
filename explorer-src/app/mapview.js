@@ -8,18 +8,29 @@
 
 import { NASHVILLE } from './dfr.js';
 
+// At tens of thousands of flights, one SVG marker each freezes the tab. Draw on
+// a shared canvas renderer, render only what's in view, and cap how many.
+const MAX_MARKERS = 4000;
+const PATH_ZOOM = 12;       // at/above this zoom (≈ city), draw movement lines
+const MAX_PATHS = 600;      // cap auto-drawn paths so a dense city stays smooth
+
 export class DfrMap {
   constructor(el) {
-    this.map = L.map(el, { zoomControl: true, attributionControl: false })
+    this.map = L.map(el, { zoomControl: true, attributionControl: false, preferCanvas: true })
       .setView([NASHVILLE.lat, NASHVILLE.lng], NASHVILLE.zoom);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 19, maxNativeZoom: 19 }).addTo(this.map);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',
+    // Simple, light basemap (Carto dark matter) — one flat label+street layer,
+    // no heavy satellite imagery. Faster to draw and far less to download.
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
       { maxZoom: 19, subdomains: 'abcd' }).addTo(this.map);
+    this._canvas = L.canvas({ padding: 0.5 });   // one canvas for all flight dots
     this.flightLayer = L.layerGroup().addTo(this.map);
     this.pathLayer = L.layerGroup().addTo(this.map);
     this.agencyLayer = L.layerGroup().addTo(this.map);
+    this._flights = [];
     this._fitDone = false;
+    // Re-render the viewport subset as the user pans/zooms (cheap: only what's visible).
+    this.map.on('moveend', () => this._renderViewport());
+    this.onCount = null; // (shown, total) → UI
   }
 
   renderAgencies(agencies, onPick) {
@@ -27,7 +38,7 @@ export class DfrMap {
     for (const a of agencies) {
       if (a.lat == null || a.lng == null) continue;
       const mk = L.circleMarker([a.lat, a.lng], {
-        radius: 4, color: '#b06ef5', weight: 1, fillColor: '#c79bff', fillOpacity: 0.7,
+        renderer: this._canvas, radius: 4, color: '#b06ef5', weight: 1, fillColor: '#c79bff', fillOpacity: 0.7,
       }).bindPopup(`<b>${esc(a.name || 'Agency')}</b><br>` +
           `<span style="opacity:.75">${esc([a.city, a.county, a.state].filter(Boolean).join(', '))}</span>` +
           `${a.address ? '<br>' + esc(a.address) : ''}` +
@@ -64,37 +75,61 @@ export class DfrMap {
   }
 
   render(flights) {
+    this._flights = flights || [];
+    // Fit to the data once, then render only the viewport subset.
+    if (!this._fitDone) {
+      const pts = [];
+      for (const f of this._flights) {
+        const c = f.start_coords;
+        if (c && c.length >= 2) pts.push([c[1], c[0]]);
+        if (pts.length >= 5000) break;
+      }
+      if (pts.length) { try { this.map.fitBounds(L.latLngBounds(pts).pad(0.15), { maxZoom: 12 }); this._fitDone = true; } catch {} }
+    }
+    this._renderViewport();
+  }
+
+  /** Draw the flights in the current viewport; at city zoom, draw movement lines too. */
+  _renderViewport() {
     this.flightLayer.clearLayers();
-    const pts = [];
-    for (const f of flights) {
-      const c = f.start_coords; // [lng, lat]
+    this.pathLayer.clearLayers();
+    if (!this._flights.length) { if (this.onCount) this.onCount(0, 0); return; }
+    const b = this.map.getBounds();
+    const drawPaths = this.map.getZoom() >= PATH_ZOOM;   // city-level → show movements
+    let shown = 0, inView = 0, paths = 0;
+    for (const f of this._flights) {
+      const c = f.start_coords;
       if (!c || c.length < 2) continue;
-      const latlng = [c[1], c[0]];
-      pts.push(latlng);
-      const m = L.circleMarker(latlng, {
-        radius: 4, color: '#ff4d4d', weight: 1, fillColor: '#ff6b6b', fillOpacity: 0.85,
+      if (!b.contains([c[1], c[0]])) continue;
+      inView++;
+      if (shown >= MAX_MARKERS) continue;
+      const m = L.circleMarker([c[1], c[0]], {
+        renderer: this._canvas, radius: 3.5, color: '#ff4d4d', weight: 1,
+        fillColor: '#ff6b6b', fillOpacity: 0.85,
       });
       m.bindPopup(popup(f));
       m.on('click', () => this.drawPath(f));
       m.addTo(this.flightLayer);
+      shown++;
+      // Movement lines for in-view flights when zoomed into a city, capped.
+      if (drawPaths && paths < MAX_PATHS && f.geometry) { this._addPath(f.geometry, false); paths++; }
     }
-    if (!this._fitDone && pts.length) {
-      try { this.map.fitBounds(L.latLngBounds(pts).pad(0.15), { maxZoom: 14 }); this._fitDone = true; } catch {}
+    if (this.onCount) this.onCount(Math.min(inView, MAX_MARKERS), this._flights.length, inView > MAX_MARKERS);
+  }
+
+  _addPath(geom, fit) {
+    if (!geom || !geom.coordinates) return;
+    const toLatLng = (seg) => seg.map(([lng, lat]) => [lat, lng]);
+    const lines = geom.type === 'MultiLineString' ? geom.coordinates.map(toLatLng) : [toLatLng(geom.coordinates)];
+    for (const line of lines) {
+      L.polyline(line, { renderer: this._canvas, color: fit ? '#ffd24d' : '#ff8c4d',
+        weight: fit ? 2 : 1, opacity: fit ? 0.95 : 0.5 }).addTo(this.pathLayer);
     }
+    if (fit) { try { this.map.fitBounds(L.polyline(lines.flat()).getBounds().pad(0.2), { maxZoom: 16 }); } catch {} }
   }
 
   drawPath(f) {
-    this.pathLayer.clearLayers();
-    const geom = f.geometry;
-    if (!geom || !geom.coordinates) return;
-    const toLatLng = (seg) => seg.map(([lng, lat]) => [lat, lng]);
-    const lines = geom.type === 'MultiLineString'
-      ? geom.coordinates.map(toLatLng)
-      : [toLatLng(geom.coordinates)];
-    for (const line of lines) {
-      L.polyline(line, { color: '#ffd24d', weight: 2, opacity: 0.9 }).addTo(this.pathLayer);
-    }
-    try { this.map.fitBounds(L.polyline(lines.flat()).getBounds().pad(0.2), { maxZoom: 16 }); } catch {}
+    this._addPath(f.geometry, true);   // highlighted + fit to this flight
   }
 
   invalidate() { setTimeout(() => this.map.invalidateSize(), 50); }

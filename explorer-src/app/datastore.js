@@ -29,6 +29,7 @@ import { textStreamFrom, readChunks, streamElements, streamNdjson } from './json
 import { chunkBlob, frameBlock, hash64, reassemble, reassembleStream } from './chunks.js';
 import { fileChunks, streamChunks, guessFormat } from './chunkstream.js';
 import { extractLeanFlights } from './leanindex.js';
+import { act } from './activity.js';
 
 const FORMAT = 'gzip-ndjson';
 const DEFAULT_MEDIA_LIMIT = 50 * 1024 * 1024;
@@ -53,9 +54,11 @@ export class DataStore {
     this.lastPublish = 0;
     this._mediaLimit = DEFAULT_MEDIA_LIMIT;
     this.onChange = null;
+    this.onBusy = null;   // (info|null) → UI loading overlay; null clears it
   }
 
   _notify() { if (this.onChange) this.onChange(); }
+  _busy(title, sub, frac) { if (this.onBusy) this.onBusy(title == null ? null : { title, sub, frac }); }
 
   async _mediaSizeLimit() {
     try {
@@ -168,18 +171,29 @@ export class DataStore {
    * whole archive in memory. Returns the lean flight records.
    */
   async _indexFromManifest(manifest) {
+    const total = manifest.chunk_count || (manifest.chunks ? manifest.chunks.length : 0);
+    this._busy('Loading dataset from blocks', `0 / ${total} blocks`, 0);
+    act.sync(`Reassembling dataset from ${total} block(s)`, { blocks: total });
     const payloadStream = reassembleStream(
       manifest.chunks,
       (ref) => getMediaBytes(ref),
-      (n, total) => { if (n % 10 === 0 || n === total) this.log(`Indexing block ${n}/${total}…`, 'mut'); },
+      (n, t) => {
+        if (n % 5 === 0 || n === t) this.log(`Reassembling block ${n}/${t}…`, 'mut');
+        this._busy('Loading dataset from blocks', `block ${n} / ${t}`, total ? n / total : 0);
+      },
     );
-    return extractLeanFlights(payloadStream, {
+    const flights = await extractLeanFlights(payloadStream, {
       payloadFormat: manifest.payload_format,
-      onProgress: (p) => { if (p.seen % 5000 === 0) this.log(`…${p.kept} of ${p.seen} parsed kept`, 'mut'); },
-      // Surface the real field names of the first record — turns a "0 flights"
-      // run into a self-diagnosing one when a dataset uses unexpected keys.
+      onProgress: (p) => {
+        if (p.seen % 5000 === 0) {
+          this.log(`…${p.kept} of ${p.seen} parsed kept`, 'mut');
+          this._busy('Indexing flights', `${p.kept.toLocaleString()} flights`, null);
+        }
+      },
       onSample: (info) => this.log(`First record keys: ${(info.keys || []).join(', ') || '(none)'}`, 'mut'),
     });
+    this._busy(null);
+    return flights;
   }
 
   /**
@@ -233,6 +247,7 @@ export class DataStore {
         this._adopt(flights, state.version);
         await saveLocal(this.roomId, await packFlights(this.flights));
         this.log(`Indexed ${flights.length} flights from chained dataset.`, 'ok');
+        act.sync(`Loaded ${flights.length.toLocaleString()} flights from ${manifest.chunk_count} blocks`, { flights: flights.length, blocks: manifest.chunk_count });
         this._notify();
         return { synced: true, added: flights.length };
       }
@@ -251,6 +266,7 @@ export class DataStore {
     this._adoptVersion(state.version);
     await saveLocal(this.roomId, await packFlights(this.flights));
     this.log(`Synced snapshot v${state.version}: ${incoming.length} records (${added} new).`, 'ok');
+    act.sync(`Synced snapshot v${state.version} — ${added.toLocaleString()} new of ${incoming.length.toLocaleString()}`, { version: state.version, added });
     this._notify();
     return { synced: true, added };
   }
@@ -311,6 +327,7 @@ export class DataStore {
       total += payload.length; prev = self; i++;
       if (onProgress) onProgress({ block: i, bytes: total });
       this.log(`Uploaded block ${i} (${(total / 1048576).toFixed(1)} MB total)…`, 'mut');
+      act.block(`Block #${i} created`, { index: i, sizeMB: +(payload.length / 1048576).toFixed(2), totalMB: +(total / 1048576).toFixed(1) });
     }
     if (!i) throw new Error('Empty source — nothing to upload.');
 
@@ -371,6 +388,7 @@ export class DataStore {
    * @param {AbortSignal} [opts.signal]
    */
   async focusFetch(bbox, { sinceTs = Date.now() - 7 * 864e5, proxy = '', signal } = {}) {
+    act.api('Checking live feed for recent flights in view', { bbox: bbox.map(n => +n.toFixed(3)) });
     const PAGE = 2000, CAP = 8000;
     let offset = 0, fetched = [];
     while (offset < CAP) {
@@ -393,6 +411,7 @@ export class DataStore {
     }
     this._notify();
     this.log(`Focus fetch: ${fetched.length} flights here, ${added} new.`, added ? 'ok' : 'mut');
+    if (added) act.add(`Added ${added} flight(s) from live focus`, { added, source: 'focus' });
     return { added, fetched: fetched.length };
   }
 
@@ -404,9 +423,39 @@ export class DataStore {
     if (!added) return { added: 0 };
     this.flights = merged;
     this.dirty += added;
+    const newAgencies = this._discoverAgencies(recs);
     await saveLocal(this.roomId, await packFlights(this.flights));
     this._notify();
-    return { added };
+    act.add(`Added ${added} flight(s) to the dataset`, { added, source: 'scraper' });
+    if (newAgencies) act.add(`Discovered ${newAgencies} new department(s)`, { newAgencies });
+    return { added, newAgencies };
+  }
+
+  /**
+   * Mint stub agencies for any organization_id we see on flights but don't yet
+   * have an agency record for. Keeps the department list complete as new
+   * departments start flying, before their metadata is loaded. Centroid is the
+   * mean of the new flights' start points so the stub is mappable.
+   */
+  _discoverAgencies(recs) {
+    const known = new Set(this.agencies.map(a => a.id));
+    const acc = new Map();
+    for (const f of recs) {
+      const u = f.organization_id;
+      if (!u || known.has(u)) continue;
+      const c = f.start_coords;
+      const e = acc.get(u) || { id: u, name: '', city: '', county: '', state: '', address: '', sx: 0, sy: 0, n: 0, discovered: true };
+      if (c && c.length >= 2) { e.sx += c[0]; e.sy += c[1]; e.n++; }
+      acc.set(u, e);
+    }
+    let added = 0;
+    for (const e of acc.values()) {
+      if (e.n) { e.lng = e.sx / e.n; e.lat = e.sy / e.n; }
+      delete e.sx; delete e.sy; delete e.n;
+      this.agencies.push(e);
+      added++;
+    }
+    return added;
   }
 
   async maybePublish() {
@@ -433,6 +482,7 @@ export class DataStore {
     const chunks = [];
     for (let j = 0; j < blocks.length; j++) {
       const ref = await uploadEncrypted(blocks[j], { mime: 'application/octet-stream', name: `dfr-v${version}.blk${j}.bin` });
+      act.block(`Snapshot block ${j + 1}/${blocks.length} created (v${version})`, { index: j, version });
       chunks.push({ i: j, size: metas[j].size, self: metas[j].self, prev: metas[j].prev, ref });
       this.log(`Uploaded block ${j + 1}/${blocks.length}…`, 'mut');
     }
@@ -452,6 +502,7 @@ export class DataStore {
     } else if (bytes.length <= limit) {
       this.log(`Uploading snapshot (${(bytes.length / 1048576).toFixed(2)} MB) as one block…`, 'mut');
       blob = await uploadEncrypted(bytes, { mime: 'application/gzip', name: `dfr-v${version}.ndjson.gz` });
+      act.block(`Snapshot block created (v${version}, ${(bytes.length / 1048576).toFixed(2)} MB)`, { version, sizeMB: +(bytes.length / 1048576).toFixed(2) });
       mode = 'single';
     } else {
       this.log(`Snapshot ${(bytes.length / 1048576).toFixed(1)} MB exceeds limit — chaining into blocks…`, 'mut');
