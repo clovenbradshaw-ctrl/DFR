@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DFR Explorer</title>
+<meta name="theme-color" content="#0a0c10">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{
+  --bg:#0a0c10; --surf:#12151c; --surf2:#1a1f29; --line:#262c38;
+  --txt:#e7eaf0; --mut:#9aa3b2; --mut2:#6b7280;
+  --acc:#4d8df5; --ok:#3ecf8e; --warn:#f5a623; --err:#ff6b6b; --red:#ff4d4d;
+  --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);
+  font-family:'DM Sans',system-ui,sans-serif;font-size:14px}
+a{color:var(--acc)}
+button{font:inherit;cursor:pointer;background:var(--surf2);color:var(--txt);
+  border:1px solid var(--line);border-radius:8px;padding:7px 12px}
+button:hover{border-color:var(--acc)}
+button.primary{background:var(--acc);border-color:var(--acc);color:#06101f;font-weight:600}
+button:disabled{opacity:.5;cursor:not-allowed}
+input,select{font:inherit;background:var(--surf);color:var(--txt);
+  border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+label{display:block;font-size:11px;color:var(--mut);margin:8px 0 3px;text-transform:uppercase;letter-spacing:.04em}
+.hidden{display:none!important}
+
+/* ── login + hydration gate (shared overlay) ── */
+#login,#hydrateGate{position:fixed;inset:0;display:grid;place-items:center;
+  background:radial-gradient(1200px 800px at 50% -10%,#16202e,#0a0c10);z-index:1000}
+#hydrateGate{z-index:1100}
+#login .card,#hydrateGate .card{width:360px;max-width:92vw;background:var(--surf);border:1px solid var(--line);
+  border-radius:16px;padding:26px 24px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+#login h1,#hydrateGate h1{margin:0 0 2px;font-size:20px}
+#login .sub,#hydrateGate .sub{color:var(--mut);font-size:12px;margin-bottom:14px}
+#login .sub code,#hydrateGate .sub code{background:var(--surf2);padding:1px 4px;border-radius:4px}
+#login .status,#hydrateGate .status{margin-top:12px;font-size:12px;color:var(--mut);min-height:16px;font-family:var(--mono)}
+#login .status.err,#hydrateGate .status.err{color:var(--err)}
+#login .status.ok,#hydrateGate .status.ok{color:var(--ok)}
+.row{display:flex;gap:8px;align-items:center}
+.chk{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:12px;color:var(--mut)}
+.chk input{width:auto}
+
+/* ── app shell ── */
+#app{display:grid;grid-template-rows:auto 1fr;height:100%}
+header{display:flex;align-items:center;gap:14px;padding:10px 16px;
+  border-bottom:1px solid var(--line);background:var(--surf)}
+header .brand{font-weight:700;letter-spacing:.02em}
+header .brand small{color:var(--mut);font-weight:400;margin-left:6px}
+header .spacer{flex:1}
+header .who{font-family:var(--mono);font-size:12px;color:var(--mut)}
+header select{width:auto;min-width:160px}
+.main{display:grid;grid-template-columns:340px 1fr;min-height:0}
+.side{border-right:1px solid var(--line);overflow:auto;padding:14px}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.panel h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:10px}
+.stat .n{font-size:22px;font-weight:700}
+.stat .l{font-size:11px;color:var(--mut)}
+.content{min-height:0;display:flex;flex-direction:column}
+.tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.tabs button[aria-selected=true]{background:var(--acc);border-color:var(--acc);color:#06101f}
+.view{flex:1;min-height:0;overflow:auto}
+#map{width:100%;height:100%}
+.view#tableView{padding:14px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--surf);color:var(--mut);font-weight:600}
+tbody tr:hover{background:var(--surf2)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.log{font-family:var(--mono);font-size:11px;line-height:1.5;max-height:180px;overflow:auto;
+  background:#0b0e13;border:1px solid var(--line);border-radius:8px;padding:8px}
+.log .ok{color:var(--ok)} .log .warn{color:var(--warn)} .log .err{color:var(--err)} .log .mut{color:var(--mut2)}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--surf2);border:1px solid var(--line)}
+.pill.on{background:rgba(62,207,142,.15);border-color:var(--ok);color:var(--ok)}
+.hint{font-size:11px;color:var(--mut2);margin-top:6px}
+.bar{height:6px;background:var(--surf2);border-radius:999px;overflow:hidden;margin-top:8px}
+.bar > i{display:block;height:100%;background:var(--acc);width:0}
+@media(max-width:760px){.main{grid-template-columns:1fr}.side{max-height:42vh}}
+</style>
+  <script type="module" crossorigin src="/explorer/assets/index-DkN3Bqhf.js"></script>
+</head>
+<body>
+
+<!-- ── login gate ── -->
+<div id="login">
+  <div class="card">
+    <h1>DFR Explorer</h1>
+    <div class="sub">Sign in with your Matrix account. The dataset lives in an
+      end-to-end-encrypted room — bring your own homeserver.</div>
+    <label>Homeserver</label>
+    <input id="hs" value="https://matrix.org" autocomplete="off">
+    <label>User ID</label>
+    <input id="user" placeholder="@you:matrix.org" autocomplete="username">
+    <label>Password</label>
+    <input id="pw" type="password" autocomplete="current-password">
+    <div class="chk"><input id="persist" type="checkbox"><label for="persist" style="margin:0;text-transform:none;letter-spacing:0;font-size:12px;color:var(--mut)">Keep me signed in on this device</label></div>
+    <div class="row" style="margin-top:14px">
+      <button id="signin" class="primary" style="flex:1">Sign in</button>
+    </div>
+    <div id="loginStatus" class="status"></div>
+  </div>
+</div>
+
+<!-- ── app ── -->
+<div id="app" class="hidden">
+  <header>
+    <div class="brand">DFR Explorer <small>Drone-as-First-Responder dataset</small></div>
+    <div class="spacer"></div>
+    <select id="roomSel" title="Dataset room"></select>
+    <button id="newRoom" title="Create a new dataset room">+ Dataset</button>
+    <span class="who" id="who"></span>
+    <button id="logout">Sign out</button>
+  </header>
+
+  <div class="main">
+    <aside class="side">
+      <div class="panel">
+        <h2>Dataset</h2>
+        <div class="stat-grid">
+          <div class="stat"><div class="n" id="sFlights">0</div><div class="l">flights</div></div>
+          <div class="stat"><div class="n" id="sGeom">0</div><div class="l">with path</div></div>
+          <div class="stat"><div class="n" id="sSnap">0</div><div class="l">snapshot v</div></div>
+          <div class="stat"><div class="n" id="sSites">0</div><div class="l">unpublished</div></div>
+        </div>
+        <div class="hint" id="span"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Background scraper <span class="pill" id="scrapeState">off</span></h2>
+        <div class="hint">Polls the live ArcGIS feed on your machine and records
+          new flights into the room (geometry → encrypted media block, metadata → events).</div>
+        <label>Poll interval (minutes)</label>
+        <input id="interval" type="number" min="1" value="15">
+        <label>CORS proxy (optional, prefix)</label>
+        <input id="proxy" placeholder="https://proxy.example/?url=">
+        <div class="row" style="margin-top:12px">
+          <button id="scrapeToggle" class="primary" style="flex:1">Start</button>
+          <button id="pollNow">Poll now</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Dataset sync</h2>
+        <div class="hint" id="syncStatus">—</div>
+        <div class="row" style="margin-top:10px">
+          <button id="publishNow" class="primary" style="flex:1">Publish snapshot</button>
+          <button id="syncNow">Sync</button>
+        </div>
+        <button id="rehydrateBtn" style="margin-top:8px;width:100%">Import more…</button>
+        <div class="hint" style="margin-top:8px">Updates live in OPFS as a binary
+          blob; snapshots upload to Matrix media and bump one room-state pointer
+          — peers download only when the version advances.</div>
+      </div>
+
+      <div class="panel">
+        <h2>Activity</h2>
+        <div class="log" id="log"></div>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="tabs">
+        <button id="tabMap" aria-selected="true">Map</button>
+        <button id="tabTable" aria-selected="false">Table</button>
+      </div>
+      <div class="view" id="mapView"><div id="map"></div></div>
+      <div class="view hidden" id="tableView"></div>
+    </section>
+  </div>
+</div>
+
+<!-- ── hydration gate (first run per dataset; also reused for "import more") ── -->
+<div id="hydrateGate" class="hidden">
+  <div class="card">
+    <h1 id="gateTitle">Hydrate this dataset</h1>
+    <div class="sub">This dataset hasn't been loaded yet. Point it at the
+      hydration file (hosted elsewhere for now) or pick a local copy. Accepts
+      JSONL/GeoJSON or a binary (<code>.gz</code>) snapshot. It's converted to a
+      compact binary, cached in OPFS, and uploaded to Matrix media if it fits.</div>
+    <label>Hydration file URL</label>
+    <input id="gateUrl" placeholder="https://…/dfr.jsonl  (or .geojson / .gz)">
+    <label>Format</label>
+    <select id="gateFormat">
+      <option value="auto">Auto-detect</option>
+      <option value="jsonl">JSONL / NDJSON</option>
+      <option value="binary">Binary (.gz NDJSON)</option>
+    </select>
+    <label style="margin-top:10px">…or a local file</label>
+    <input id="gateFile" type="file" accept=".json,.geojson,.ndjson,.jsonl,.gz,.bin">
+    <div class="row" style="margin-top:14px">
+      <button id="gateLoad" class="primary" style="flex:1">Load</button>
+      <button id="gateStop" disabled>Stop</button>
+      <button id="gateSkip" title="Start empty and let the scraper fill it">Skip</button>
+    </div>
+    <div class="bar"><i id="gateBar"></i></div>
+    <div id="gateStatus" class="status"></div>
+  </div>
+</div>
+
+</body>
+</html>
