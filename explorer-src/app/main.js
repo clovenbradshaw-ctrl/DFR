@@ -183,16 +183,13 @@ async function openRoom(roomId) {
   unsubMembers = onMembersChange(roomId, () => renderMembers());
   renderMembers();
   if (swarm) swarm.start();
-  if (!hydrated) {
-    openGate('hydrate');
-  } else {
-    log('Dataset ready.', 'ok');
-    // Auto-start background checking once the dataset is hydrated — no manual
-    // "Start" needed. Honors a saved opt-out (autoStart=false).
-    if (scraper && !scraper.running && scraper.autoStart !== false) {
-      scraper.configure({ intervalMin: $('interval').value, proxy: $('proxy').value });
-      scraper.start();
-    }
+  if (!hydrated) openGate('hydrate');
+  else log('Dataset ready.', 'ok');
+  // Auto-start background checking whenever a dataset is open — no manual "Start"
+  // needed, hydrated or not. Honors a saved opt-out (a prior manual Stop).
+  if (scraper && !scraper.running && scraper.autoStart !== false) {
+    scraper.configure({ intervalMin: $('interval').value, proxy: $('proxy').value });
+    scraper.start();
   }
 }
 
