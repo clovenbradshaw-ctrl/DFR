@@ -368,7 +368,12 @@ function scheduleActRender() {
 function render() {
   const flights = store?.flights || [];
   const s = sel.stats(flights);
-  $('sFlights').textContent = s.flights;
+  // In lazy (sharded) mode the working set only holds loaded departments; show
+  // the dataset's TRUE total from the manifest, with loaded shown alongside.
+  const lazyTotal = store?.isLazy() ? (store.deptManifest?.total ?? null) : null;
+  $('sFlights').textContent = lazyTotal != null
+    ? (lazyTotal.toLocaleString() + (flights.length ? ` (${flights.length.toLocaleString()} loaded)` : ''))
+    : s.flights.toLocaleString();
   $('sSites').textContent = store?.dirty ?? 0;        // unpublished local additions
   $('sGeom').textContent = s.withGeometry;            // flights with a path
   $('sSnap').textContent = store?.meta?.version ?? 0; // current snapshot version

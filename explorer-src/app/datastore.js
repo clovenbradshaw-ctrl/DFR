@@ -180,15 +180,24 @@ export class DataStore {
   // ── agencies (a parallel lean layer) ────────────────────────────────────────
 
   async _loadAgencies() {
-    this.agencies = [];
     const state = readDatasetState(this.roomId);
     const ref = state?.agencies_index;
+    let loaded = [];
     if (ref && ref.__media) {
       try {
         const bytes = await getMediaBytes(ref);
-        if (bytes) { this.agencies = await unpackFlights(bytes); this._notify(); }
+        if (bytes) loaded = await unpackFlights(bytes);
       } catch (e) { this.log(`Agencies load: ${e.message}`, 'warn'); }
     }
+    // Merge real agency records over any manifest-seeded stubs (don't wipe the
+    // stubs — they give every sharded department a name/location fallback).
+    const byId = new Map();
+    for (const a of (this.agencies || [])) if (a.id) byId.set(a.id, a);
+    for (const a of loaded) if (a.id) byId.set(a.id, { ...byId.get(a.id), ...a, stub: false });
+    this.agencies = [...byId.values()];
+    // Re-seed stubs for any sharded department still missing an agency record.
+    if (this.deptManifest) this._seedAgenciesFromManifest(this.deptManifest);
+    this._notify();
   }
 
   // ── lazy per-department loading (sharded manifest) ──────────────────────────
@@ -203,7 +212,9 @@ export class DataStore {
     }));
   }
 
-  isLazy() { return readDatasetState(this.roomId)?.mode === 'sharded'; }
+  // Sharded datasets are now loaded eagerly on open (all shards), so the UI
+  // treats them as fully present — not lazy. (Lazy-on-open was reverted.)
+  isLazy() { return false; }
 
   /** Give the Departments tab counts/locations before any block is fetched. */
   _seedAgenciesFromManifest(manifest) {
@@ -373,21 +384,38 @@ export class DataStore {
 
     let bytes = null;
     if (state.mode === 'sharded' && state.manifest && state.manifest.__media) {
-      // Lazy department loading: pull ONLY the small manifest now. The
-      // department list/counts come from it; each department's flights load on
-      // demand (loadDepartment) when opened. Never the whole dataset on load.
+      // Read the per-department manifest, then load EVERY department shard up
+      // front so the whole dataset (map, stats, departments) is present on open
+      // — the behavior before lazy loading. (Reverted from lazy-on-open: lazy
+      // left the map/stats empty until each department was manually opened.)
       this.log('Loading department manifest…', 'mut');
       const manifest = await this._downloadManifest(state.manifest);
       this.deptManifest = manifest;
       this._loadedOrgs = new Set();
-      // Seed agency stubs from the manifest so the Departments tab shows counts
-      // and locations immediately, before any flight block is fetched.
       this._seedAgenciesFromManifest(manifest);
+      const orgs = Object.keys(manifest.departments || {});
+      this._busy('Loading dataset', `0 / ${orgs.length} departments`, 0);
+      const all = [];
+      let i = 0;
+      for (const org of orgs) {
+        const d = manifest.departments[org];
+        try {
+          let b;
+          if (d.ref && d.ref.__media) b = await getMediaBytes(d.ref);
+          else if (d.chunks) b = reassemble(await Promise.all(d.chunks.map(c => getMediaBytes(c.ref))));
+          if (b) { for (const r of await unpackFlights(b)) all.push(r); this._loadedOrgs.add(org); }
+        } catch (e) { this.log(`Department ${org.slice(0, 8)} load failed: ${e.message}`, 'warn'); }
+        if (++i % 10 === 0 || i === orgs.length) this._busy('Loading dataset', `${i} / ${orgs.length} departments`, i / orgs.length);
+      }
+      this._busy(null);
+      const { merged } = mergeFlights(this.flights, all);
+      this.flights = merged;
       this._adoptVersion(state.version);
-      act.sync(`Loaded manifest: ${manifest.department_count} departments (lazy)`, { departments: manifest.department_count, total: manifest.total });
-      this.log(`${manifest.department_count} departments available — open one to load its flights.`, 'ok');
+      await saveLocal(this.roomId, await packFlights(this.flights));
+      act.sync(`Loaded ${this.flights.length.toLocaleString()} flights from ${orgs.length} department shards`, { flights: this.flights.length, departments: orgs.length });
+      this.log(`Loaded ${this.flights.length.toLocaleString()} flights from ${orgs.length} departments.`, 'ok');
       this._notify();
-      return { synced: true, lazy: true, departments: manifest.department_count };
+      return { synced: true, added: this.flights.length };
     }
     if (state.blob && state.blob.__media) {
       this.log('Downloading dataset snapshot…', 'mut');
@@ -818,10 +846,14 @@ export class DataStore {
     // supersede the original byte-sliced raw archive — drop it (and redact its
     // blocks below). Other modes keep the raw archive as the full-res source.
     const keepRaw = mode !== 'sharded';
+    // Carry forward unrelated room-state keys (agencies_index, etc.) so a
+    // publish/re-shard never orphans them — only override what this publish sets.
     const content = {
+      ...(prev || {}),
       hydrated: markHydrated || !!prev?.hydrated,
       mode, format: FORMAT, payload_format: FORMAT, version,
-      count: this.flights.length, hash: blobHash(bytes),
+      count: mode === 'sharded' ? this.flights.length : this.flights.length, hash: blobHash(bytes),
+      total: mode === 'sharded' ? this.flights.length : (prev?.total ?? this.flights.length),
       blob, manifest, chunk_count: chunkCount,
       source_url: sourceUrl ?? prev?.source_url ?? null,
       raw_archive: keepRaw ? (prev?.raw_archive ?? (prev?.mode === 'chunked-raw' ? prev?.manifest : null)) : null,
