@@ -79,17 +79,27 @@ export class DfrMap {
     return () => this.map.off('moveend', handler);
   }
 
+  /** Fit to where flights concentrate (5th–95th pct), ignoring far outliers. */
+  fitFlights(robust = true) {
+    const pts = [];
+    for (const f of this._flights) { const c = f.start_coords; if (c && c.length >= 2) pts.push([c[1], c[0]]); }
+    if (!pts.length) return;
+    let bounds;
+    if (robust && pts.length >= 8) {
+      const lats = pts.map(p => p[0]).sort((a, b) => a - b);
+      const lngs = pts.map(p => p[1]).sort((a, b) => a - b);
+      const q = (arr, p) => arr[Math.min(arr.length - 1, Math.max(0, Math.round(p * (arr.length - 1))))];
+      bounds = L.latLngBounds([q(lats, 0.05), q(lngs, 0.05)], [q(lats, 0.95), q(lngs, 0.95)]);
+    } else bounds = L.latLngBounds(pts);
+    try { this.map.fitBounds(bounds.pad(0.1), { maxZoom: robust ? 13 : 12 }); } catch {}
+  }
+
   render(flights) {
     this._flights = flights || [];
-    // Fit to the data once, then render only the viewport subset.
-    if (!this._fitDone) {
-      const pts = [];
-      for (const f of this._flights) {
-        const c = f.start_coords;
-        if (c && c.length >= 2) pts.push([c[1], c[0]]);
-        if (pts.length >= 5000) break;
-      }
-      if (pts.length) { try { this.map.fitBounds(L.latLngBounds(pts).pad(0.15), { maxZoom: 12 }); this._fitDone = true; } catch {} }
+    // Fit once to where flights concentrate (robust bounds), then viewport-only.
+    if (!this._fitDone && this._flights.length) {
+      this.fitFlights(true);
+      this._fitDone = true;
     }
     this._renderViewport();
   }
@@ -104,11 +114,12 @@ export class DfrMap {
     if (!this._flights.length) { if (this.onCount) this.onCount(0, 0); return; }
     const b = this.map.getBounds();
     const drawPaths = this.map.getZoom() >= PATH_ZOOM;   // city-level → show movements
-    let shown = 0, inView = 0, paths = 0;
+    let shown = 0, inView = 0, inViewAllTime = 0, paths = 0;
     for (const f of this._flights) {
       const c = f.start_coords;
       if (!c || c.length < 2) continue;
       if (!b.contains([c[1], c[0]])) continue;
+      inViewAllTime++;                                         // in viewport, any time
       if (this.timeFilter && !this.timeFilter(f)) continue;   // time scrubber cutoff
       inView++;
       if (shown >= MAX_MARKERS) continue;
@@ -122,7 +133,7 @@ export class DfrMap {
       // Movement lines for in-view flights when zoomed into a city, capped.
       if (drawPaths && paths < MAX_PATHS && f.geometry) { this._addPath(f.geometry, false); paths++; }
     }
-    if (this.onCount) this.onCount(Math.min(inView, MAX_MARKERS), this._flights.length, inView > MAX_MARKERS);
+    if (this.onCount) this.onCount(inView, this._flights.length, inView > MAX_MARKERS, inViewAllTime);
   }
 
   _addPath(geom, fit) {

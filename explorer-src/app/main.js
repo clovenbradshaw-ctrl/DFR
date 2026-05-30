@@ -21,7 +21,7 @@ import { createRoom, discoverRooms, onRoomChanges,
          onTimeline, onDecrypted } from '../src/rooms.js';
 import { createSpace, parseSpaceFromUrl, openSpaceFromLink, spaceUrl, setUrlToSpace } from './space.js';
 
-import { NAMESPACE, ROOM_TYPE } from './dfr.js';
+import { NAMESPACE, ROOM_TYPE, ONLY_SPACE_UUID } from './dfr.js';
 import { DataStore } from './datastore.js';
 import { onDatasetState } from './roomstate.js';
 import * as sel from './selectors.js';
@@ -31,6 +31,7 @@ import { DepartmentsView } from './departments.js';
 import { Swarm } from './swarm.js';
 import { Activity, act, Term } from './activity.js';
 import { loadACS, loadTractGeom, acsLabel, overflownTracts, contrast, choroplethColor } from './census.js';
+import { exportFlights } from './export.js';
 
 const $ = (id) => document.getElementById(id);
 let deptsView = null, swarm = null;
@@ -103,6 +104,32 @@ async function loadDemographics() {
   } catch (e) {
     $('demoBody').innerHTML = `<div class="empty">Failed: ${esc(e.message)}</div>`;
   }
+}
+
+// Optional tract layer on the Map tab. Reuses the Demographics data if loaded;
+// otherwise loads tracts for the county under the map center.
+let tractsOn = false;
+async function toggleTracts(on) {
+  tractsOn = on;
+  const m = ensureMap();
+  if (!m) return;
+  if (!on) { m.clearTracts(); return; }
+  setTab('map');
+  if (demoData?.feats) {
+    m.renderTracts(demoData.feats, (g) => choroplethColor(demoData.byGeoid[g]?.[demoData.metric || 'pct_poverty'], demoData.metric || 'pct_poverty'), demoData.overflown);
+    return;
+  }
+  // No demographics loaded yet — fetch tracts for the county under the center.
+  try {
+    const fips = await guessCountyFips();
+    if (!fips || fips.length < 4) { log('Load Demographics (county FIPS) to shade tracts.', 'warn'); $('tractToggle').checked = false; tractsOn = false; return; }
+    const proxy = $('proxy').value.trim();
+    log('Loading census tracts…', 'mut');
+    const feats = await loadTractGeom(fips.slice(0, 2), fips.slice(2), proxy);
+    const over = overflownTracts(feats, store?.flights || []);
+    m.renderTracts(feats, () => 'rgba(43,103,119,0.18)', over);
+    log(`Tracts on: ${feats.length} (${over.size} overflown).`, 'ok');
+  } catch (e) { log(`Tracts failed: ${e.message}`, 'err'); $('tractToggle').checked = false; tractsOn = false; }
 }
 
 const DEMO_ROWS = [
@@ -205,6 +232,20 @@ async function onAuthed() {
   $('proxy').value = scraper.proxy;
 
   installLeaveGuard();
+
+  // Single-space lock: this app only ever opens the canonical DFR space. Hide
+  // the room selector + "+ Space", force the deep link to that UUID, and open it.
+  if (ONLY_SPACE_UUID) {
+    $('roomSel')?.classList.add('hidden');
+    $('newSpace')?.classList.add('hidden');
+    const homeserver = getClient()?.getUserId()?.split(':').slice(1).join(':');
+    log('Opening the DFR space…', 'mut');
+    const roomId = await openSpaceFromLink({ uuid: ONLY_SPACE_UUID, server: homeserver });
+    if (roomId) { setUrlToSpace(ONLY_SPACE_UUID); await openRoom(roomId); }
+    else log('Could not open the DFR space — you may need an invite to it.', 'warn');
+    return;
+  }
+
   onRoomChanges(() => refreshRooms());
   // Deep link: if the URL points at a space (#/s/<uuid>:<server>), open it
   // directly (joining if invited) instead of the default room list.
@@ -294,7 +335,13 @@ async function createNewSpace() {
   finally { $('newSpace').disabled = false; }
 }
 
+let _openingRoom = null;
 async function openRoom(roomId) {
+  // Idempotent / re-entrancy guard: never open the same room twice (the deep
+  // link + refreshRooms + onRoomChanges all raced openRoom, and the second
+  // open clobbered the freshly-loaded working set in OPFS).
+  if (roomId === currentRoomId || roomId === _openingRoom) { $('roomSel').value = roomId; return; }
+  _openingRoom = roomId;
   if (unsubDatasetState) unsubDatasetState();
   if (unsubMembers) unsubMembers();
   if (unsubTimeline) unsubTimeline();
@@ -311,6 +358,7 @@ async function openRoom(roomId) {
   } catch {}
   log('Opening dataset…');
   const { hydrated } = await store.open(roomId);
+  _openingRoom = null;   // open completed; allow future (different) opens
   render();
   // React to snapshots published by peers (intelligent, version-gated sync).
   unsubDatasetState = onDatasetState(roomId, async () => {
@@ -414,7 +462,10 @@ function render() {
       : (store?.flights?.length ? `${store.flights.length} local · not published` : 'not hydrated')) + ag;
   }
 
-  if (tab === 'depts') ensureDepts().refresh();
+  // Keep the departments aggregate in sync with the working set even when the
+  // Departments tab isn't visible (so its counts never lag the map). The view's
+  // own _sig guard makes this cheap when nothing changed.
+  if (deptsView) deptsView.refresh();
   if (tab === 'map') renderMap(flights);
 
   // Once the room holds data, fold the hydration-setup panel away.
@@ -434,18 +485,19 @@ function ensureMap() {
   dfrMap = new DfrMap('map');
   // Auto-pull recent flights for the viewport once zoomed in.
   dfrMap.onFocusChange((bbox, zoom) => scheduleFocus(bbox, zoom));
-  dfrMap.onCount = (shown, total, capped) => setFocusHint(
-    total ? `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} flights in view${capped ? ' (capped — zoom in for more)' : ''}` : '');
-  dfrMap.onFlight = (f) => showFlight(f);
-  // Cursor cutoff is applied per-marker inside the map's viewport render.
-  dfrMap.timeFilter = (f) => {
-    if (cursorFrac >= 1 || !timeSpan) return true;
-    const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
-    return !f.takeoff || f.takeoff <= cut;
+  dfrMap.onCount = (shown, total, capped, inViewAllTime) => {
+    if (!total) return setFocusHint('');
+    // shown = in viewport AND inside the time window; inViewAllTime = in
+    // viewport regardless of time. Surface the time-filtered hidden count so a
+    // viewport vs. department mismatch is explained by the cursor, not a bug.
+    const hidden = (inViewAllTime ?? shown) - shown;
+    setFocusHint(`${shown.toLocaleString()} flights here` +
+      (hidden > 0 ? ` (${hidden} outside the time window)` : '') +
+      (capped ? ' · capped, zoom in' : ''));
   };
-  // On pan/zoom, recompute the span from the now-visible flights so the cursor
-  // is always relative to what's in focus.
-  dfrMap.onMove = () => { recomputeTimeSpan(store?.flights || []); };
+  dfrMap.onFlight = (f) => showFlight(f);
+  // The time window filter (applied per-marker in the map's viewport render).
+  dfrMap.timeFilter = (f) => inWindow(f);
   return dfrMap;
 }
 
@@ -472,11 +524,32 @@ function showFlight(f) {
     ['End', f.end_coords ? f.end_coords.map(n => n.toFixed(5)).join(', ') : '—'],
     ['Org UUID', esc(f.organization_id || '—')],
   ];
+  // Other flights from the SAME department — a quick picker to jump between them.
+  const sibs = (store?.flights || [])
+    .filter(x => x.organization_id === f.organization_id && x !== f)
+    .sort((a, b) => (b.takeoff || 0) - (a.takeoff || 0))
+    .slice(0, 200);
+  const sibList = sibs.length ? `
+    <div class="fp-sibs">
+      <div class="fp-sibs-h">${sibs.length}＋ flights from ${esc(dept)} — pick one</div>
+      ${sibs.map((s, i) => `<button class="fp-sib" data-i="${i}">
+        <span class="fp-sib-p">${esc(s.flight_purpose || 'flight')}</span>
+        <span class="fp-sib-t">${s.takeoff ? new Date(s.takeoff).toISOString().slice(0, 10) : ''}</span>
+      </button>`).join('')}
+    </div>` : '';
+
   $('fpBody').innerHTML = rows.map(([k, v, raw]) =>
     `<dl class="fp-row"><dt>${k}</dt><dd>${raw ? v : esc(v)}</dd></dl>`).join('') +
-    (f.geometry ? '' : '<div class="hint">No path geometry in the index for this flight.</div>');
+    (f.geometry ? '' : '<div class="hint">No path geometry in the index for this flight.</div>') +
+    sibList;
   panel.classList.remove('hidden');
-  // Clicking the department jumps to its detail in the Departments tab.
+
+  // Clicking a sibling flight selects it (draws its path + re-opens the panel).
+  $('fpBody').querySelectorAll('.fp-sib').forEach(btn => btn.onclick = () => {
+    const s = sibs[+btn.getAttribute('data-i')];
+    if (s) { dfrMap?.drawPath(s); showFlight(s); }
+  });
+  // Clicking the department name jumps to its detail in the Departments tab.
   const dEl = $('fpDept');
   if (dEl && f.organization_id) dEl.onclick = () => {
     setTab('depts');
@@ -487,61 +560,92 @@ function showFlight(f) {
 }
 function hideFlight() { $('flightPanel').classList.add('hidden'); }
 let agenciesDrawn = false;
-// Time scrubber state. The span is RELATIVE TO WHAT'S IN FOCUS: it's computed
-// from the flights currently in the map viewport, so zooming into a city makes
-// the cursor scrub that city's time range, not the whole dataset's.
-let timeSpan = null;       // { min, max } in ms — over the in-view flights
-let cursorFrac = 1;
+// Time scrubber: a draggable WINDOW [fromFrac, toFrac] over the dataset's FIXED
+// full time span. The span is computed once from the whole dataset (not on every
+// pan — that's what felt broken), so a handle position always means the same
+// date. Showing flights whose takeoff falls inside the window.
+let timeSpan = null;       // { min, max } in ms over ALL flights (fixed)
+let fromFrac = 0, toFrac = 1;
+let timeInited = false;    // have we set the initial "now" window yet?
 
-/** Flights whose start point is in the current map viewport (the focus). */
-function viewportFlights(flights) {
-  if (!dfrMap) return flights;
-  const bb = dfrMap.bbox();   // [w,s,e,n]
-  return flights.filter(f => {
-    const c = f.start_coords;
-    return c && c.length >= 2 && c[0] >= bb[0] && c[0] <= bb[2] && c[1] >= bb[1] && c[1] <= bb[3];
-  });
+/** Compute the fixed full-dataset span (slider scale) when flights change. */
+function computeFullSpan(flights) {
+  let min = Infinity, max = 0;
+  for (const f of flights) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
+  timeSpan = (min === Infinity) ? null : (min === max ? { min, max: min + 1 } : { min, max });
+  if (timeSpan && !timeInited) { timeInited = true; initWindowToViewport(flights); }
 }
 
-/** Recompute the span from the focused (in-view) flights. */
-function recomputeTimeSpan(flights) {
-  const focus = viewportFlights(flights);
-  let min = Infinity, max = 0;
-  for (const f of focus) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
-  timeSpan = (min === Infinity) ? null : { min, max };
-  updateTimeLabel();
+/** Set the initial window: from the EARLIEST in-view flight → now (latest). */
+function initWindowToViewport(flights) {
+  if (!timeSpan) return;
+  let inViewMin = Infinity;
+  const bb = dfrMap ? dfrMap.bbox() : null;
+  for (const f of flights) {
+    if (!f.takeoff) continue;
+    const c = f.start_coords;
+    const inView = !bb || (c && c.length >= 2 && c[0] >= bb[0] && c[0] <= bb[2] && c[1] >= bb[1] && c[1] <= bb[3]);
+    if (inView && f.takeoff < inViewMin) inViewMin = f.takeoff;
+  }
+  const start = inViewMin === Infinity ? timeSpan.min : inViewMin;
+  const span = timeSpan.max - timeSpan.min;
+  fromFrac = span > 0 ? Math.max(0, (start - timeSpan.min) / span) : 0;
+  toFrac = 1;
+  syncTimeInputs();
+}
+
+const fracToTs = (fr) => timeSpan ? timeSpan.min + (timeSpan.max - timeSpan.min) * fr : 0;
+
+/** The map's per-flight filter: inside the [from,to] window. */
+function inWindow(f) {
+  if (!timeSpan) return true;
+  if (fromFrac <= 0 && toFrac >= 1) return true;   // full range → show all
+  if (!f.takeoff) return false;
+  return f.takeoff >= fracToTs(fromFrac) && f.takeoff <= fracToTs(toFrac);
 }
 
 function updateTimeLabel() {
   const lbl = $('timeLabel'); if (!lbl) return;
-  if (!timeSpan) { lbl.textContent = 'no flights in view'; return; }
-  const day = (ms) => new Date(ms).toISOString().slice(0, 10);
-  if (cursorFrac >= 1) { lbl.textContent = `${day(timeSpan.min)} → ${day(timeSpan.max)}`; return; }
-  const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
-  lbl.textContent = '≤ ' + new Date(cut).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+  if (!timeSpan) { lbl.textContent = 'no dated flights'; return; }
+  const d = (ms) => new Date(ms).toISOString().slice(0, 10);
+  const atNow = toFrac >= 0.999;
+  lbl.textContent = (fromFrac <= 0 && toFrac >= 1)
+    ? `all · ${d(timeSpan.min)} → ${d(timeSpan.max)}`
+    : `${d(fracToTs(fromFrac))} → ${atNow ? 'now' : d(fracToTs(toFrac))}`;
+  const fill = $('timeFill');
+  if (fill) { fill.style.left = (fromFrac * 100) + '%'; fill.style.width = ((toFrac - fromFrac) * 100) + '%'; }
+}
+
+/** Sync the two range inputs from state. */
+function syncTimeInputs() {
+  $('timeFrom').value = String(Math.round(fromFrac * 1000));
+  $('timeTo').value = String(Math.round(toFrac * 1000));
 }
 
 let playTimer = null;
 function togglePlay() {
   const btn = $('playBtn');
   if (playTimer) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; return; }
+  if (!timeSpan) return;
   btn.textContent = '⏸';
-  // Sweep from the current cursor to the end over ~12s, then stop.
-  if (cursorFrac >= 1) cursorFrac = 0;
+  // Sweep a fixed-width window across the timeline, so you watch flights appear
+  // over time. Window width = current selection, or 10% if at full range.
+  let w = (toFrac - fromFrac); if (w >= 1) w = 0.1;
+  fromFrac = 0; toFrac = w;
   playTimer = setInterval(() => {
-    cursorFrac = Math.min(1, cursorFrac + 0.02);
-    $('timeSlider').value = String(Math.round(cursorFrac * 1000));
-    updateTimeLabel();
+    fromFrac = Math.min(1 - w, fromFrac + 0.02); toFrac = fromFrac + w;
+    syncTimeInputs(); updateTimeLabel();
     if (dfrMap) dfrMap.refresh();
-    if (cursorFrac >= 1) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; }
-  }, 240);
+    if (toFrac >= 1) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; }
+  }, 180);
 }
 
 function renderMap(flights) {
   const m = ensureMap();
   if (!m) return;
+  computeFullSpan(flights);          // fixed span over the whole dataset
   m.render(flights);                 // map filters by viewport + timeFilter
-  recomputeTimeSpan(flights);        // span from what's now in view
+  updateTimeLabel();
   // Agencies rarely change; only (re)draw when the set changes.
   if (!agenciesDrawn && store?.agencies?.length) {
     m.renderAgencies(store.agencies, (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
@@ -621,6 +725,13 @@ function gateStatus(msg, level = '') { const e = $('gateStatus'); e.textContent 
 
 const LARGE_FILE = 48 * 1024 * 1024; // auto-route files this big to chained upload
 
+// Pause the background scraper for the duration of `fn` so a big import isn't
+// held up competing for the network / event loop. Always resumes.
+async function withImport(fn) {
+  try { scraper?.pause(); return await fn(); }
+  finally { scraper?.resume(); }
+}
+
 async function gateLoad(source) {
   const format = $('gateFormat').value;
   const isFile = typeof source.slice === 'function';
@@ -628,6 +739,7 @@ async function gateLoad(source) {
   gateAbort = gateAbort || new AbortController();
   $('gateLoad').disabled = true; $('gateStop').disabled = false;
   gateStatus(raw ? 'Uploading as chained blocks…' : 'Loading…');
+  scraper?.pause();
   try {
     if (raw) {
       const res = await store.hydrateRawChunked(source, {
@@ -661,6 +773,7 @@ async function gateLoad(source) {
     log(`Hydration failed: ${e.message}`, 'err');
   } finally {
     gateAbort = null; $('gateLoad').disabled = false; $('gateStop').disabled = true;
+    scraper?.resume();
   }
 }
 
@@ -760,12 +873,28 @@ function wire() {
   Term.subscribe(() => { if (tab === 'term') renderTerminal(); });
 
   // Time scrubber.
-  $('timeSlider').addEventListener('input', e => {
-    cursorFrac = (+e.target.value) / 1000;
+  const onWindow = () => {
+    let a = (+$('timeFrom').value) / 1000, b = (+$('timeTo').value) / 1000;
+    if (a > b) { const t = a; a = b; b = t; }   // keep from ≤ to
+    fromFrac = a; toFrac = b;
     updateTimeLabel();
     if (dfrMap) dfrMap.refresh();
+  };
+  $('timeFrom').addEventListener('input', onWindow);
+  $('timeTo').addEventListener('input', onWindow);
+  $('timeReset').addEventListener('click', () => {
+    fromFrac = 0; toFrac = 1; syncTimeInputs(); updateTimeLabel(); if (dfrMap) dfrMap.refresh();
   });
   $('playBtn').addEventListener('click', togglePlay);
+  $('fitBtn').addEventListener('click', () => dfrMap?.fitFlights(true));
+  $('exportBtn').addEventListener('click', () => {
+    try {
+      const flights = store?.flights || [];
+      exportFlights(flights, $('exportFmt').value, currentSpace?.uuid ? `dfr-${currentSpace.uuid.slice(0,8)}` : 'dfr-flights');
+      log(`Exported ${flights.length.toLocaleString()} flights as ${$('exportFmt').value.toUpperCase()}.`, 'ok');
+    } catch (e) { log(`Export failed: ${e.message}`, 'err'); }
+  });
+  $('tractToggle').addEventListener('change', e => toggleTracts(e.target.checked));
   $('focusToggle').addEventListener('change', e => {
     focusEnabled = e.target.checked;
     setFocusHint(focusEnabled ? 'Live focus on — zoom in to pull recent flights.' : 'Live focus off.');
@@ -792,14 +921,14 @@ function wire() {
 
   $('buildIndexBtn').addEventListener('click', async () => {
     $('buildIndexBtn').disabled = true;
-    try { const r = await store.buildIndexFromArchive(); log(`Built index: ${r.flights} flights.`, 'ok'); render(); }
+    try { const r = await withImport(() => store.buildIndexFromArchive()); log(`Built index: ${r.flights} flights.`, 'ok'); render(); }
     catch (e) { log(`Build index failed: ${e.message}`, 'err'); }
     finally { $('buildIndexBtn').disabled = false; }
   });
   $('reshardBtn').addEventListener('click', async () => {
     if (!confirm('Re-shard the dataset into per-department blocks? Clients will then load only the departments they open. The original raw archive is dropped.')) return;
     $('reshardBtn').disabled = true;
-    try { const r = await store.reshardByDepartment(); log(`Re-sharded (v${r.version}, ${r.mode}).`, 'ok'); render(); }
+    try { const r = await withImport(() => store.reshardByDepartment()); log(`Re-sharded (v${r.version}, ${r.mode}).`, 'ok'); render(); }
     catch (e) { log(`Re-shard failed: ${e.message}`, 'err'); }
     finally { $('reshardBtn').disabled = false; }
   });
@@ -833,7 +962,7 @@ function wire() {
     if (!currentRoomId) { log('Open or create a dataset first.', 'warn'); return; }
     log(`Loading agencies from ${file.name}…`);
     try {
-      const r = await store.hydrateAgencies(file, { onProgress: p => log(`…${p.kept} agencies`, 'mut') });
+      const r = await withImport(() => store.hydrateAgencies(file, { onProgress: p => log(`…${p.kept} agencies`, 'mut') }));
       log(`Loaded ${r.agencies} agencies.`, 'ok');
       render();
     } catch (err) { log(`Agencies load failed: ${err.message}`, 'err'); }

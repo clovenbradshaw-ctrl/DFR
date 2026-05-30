@@ -94,24 +94,25 @@ export class DepartmentsView {
     for (const [u, lab] of base) { if (!groups.has(lab)) groups.set(lab, []); groups.get(lab).push(u); }
     for (const [lab, uus] of groups) {
       if (uus.length === 1) { out.set(uus[0], lab); continue; }
-      // Disambiguate colliding "city, state" by the first field that's unique across the group.
+      // Colliding "city, state". Try to distinguish by address; otherwise append
+      // a SHORT UUID up front-ish so the three rows are visibly different even
+      // when the label gets truncated. (Same city+county+blank address is common
+      // when several department dashboards share a metro.)
       let chosen = null;
-      for (const field of ['county', 'address', null]) {
+      for (const field of ['address']) {
         const vals = new Map(); let anyEmpty = false; const counts = new Map();
         for (const u of uus) {
           const a = this._agencies.get(u) || {};
-          let v;
-          if (field === null) v = 'id ' + (u || '').slice(0, 6);
-          else if (field === 'county' && a.county) v = /county$/i.test(a.county) ? a.county : a.county + ' County';
-          else if (field === 'address' && a.address) v = a.address.length > 36 ? a.address.slice(0, 33) + '…' : a.address;
-          else v = '';
-          if (!v) { anyEmpty = true; }
+          const v = (field === 'address' && a.address) ? (a.address.length > 30 ? a.address.slice(0, 27) + '…' : a.address) : '';
+          if (!v) anyEmpty = true;
           vals.set(u, v); counts.set(v, (counts.get(v) || 0) + 1);
         }
         if (!anyEmpty && counts.size === uus.length) { chosen = vals; break; }
       }
-      if (!chosen) chosen = new Map(uus.map(u => [u, 'id ' + (u || '').slice(0, 6)]));
-      for (const u of uus) out.set(u, lab + ' · ' + chosen.get(u));
+      // Last resort: short id suffix (always unique, and short enough to survive
+      // truncation when placed right after the city).
+      if (!chosen) chosen = new Map(uus.map(u => [u, '#' + (u || '').slice(0, 5)]));
+      for (const u of uus) out.set(u, `${lab} ${chosen.get(u)}`);
     }
     return out;
   }
@@ -127,7 +128,10 @@ export class DepartmentsView {
       const name = this.deptName(u);
       if (q && name.toLowerCase().indexOf(q) < 0 && (u || '').toLowerCase().indexOf(q) < 0) continue;
       const a = this._agencies.get(u);
-      const sub = a ? [a.county, a.state].filter(Boolean).join(', ') : (u || '').slice(0, 12);
+      // Always include the org id in the sub-line so same-city departments are
+      // distinguishable even when the name truncates.
+      const place = a ? [a.county, a.state].filter(Boolean).join(', ') : '';
+      const sub = (place ? place + ' · ' : '') + (u || '').slice(0, 8);
       html += `<div class="dept ${this.selected === u ? 'sel' : ''}" data-u="${esc(u)}">
         <span class="name">${esc(name)}<div class="sub">${esc(sub)}</div></span>
         <span class="count">${this._depts.get(u).count.toLocaleString()}</span></div>`;

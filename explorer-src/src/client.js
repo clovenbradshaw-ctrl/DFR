@@ -163,18 +163,26 @@ function isCryptoStoreMismatch(err) {
          msg.includes('account in the store does not match');
 }
 
-async function initCryptoWithRetry(c, timeoutMs = 30000) {
+async function initCryptoWithRetry(c, timeoutMs = 60000) {
+  // Cold Rust-crypto WASM on a slow link can take a while; be patient (60s)
+  // and retry a couple of times with backoff before clearing the store, since
+  // the clear itself can be blocked by another open connection.
   try {
     await withTimeout(c.initRustCrypto(), timeoutMs, 'Crypto init');
+    return;
   } catch (err) {
-    // Any failure here — known mismatch, corrupted indexed DB, or partial
-    // wipe from a previous session — recovers the same way: drop the
-    // crypto store and let the SDK rebuild it from the server. Without
-    // this fallback, users hit "wipe local data to log in" loops.
-    progress('Crypto init failed — clearing crypto store and retrying: ' + err.message);
-    try { await clearCryptoStore(); } catch {}
-    await withTimeout(c.initRustCrypto(), timeoutMs, 'Crypto init (retry)');
+    progress('Crypto init slow/failed — retrying: ' + err.message);
   }
+  // Second attempt WITHOUT clearing (the WASM may simply have been cold).
+  try {
+    await withTimeout(c.initRustCrypto(), timeoutMs, 'Crypto init (retry)');
+    return;
+  } catch (err) {
+    progress('Crypto init failed again — clearing crypto store: ' + err.message);
+  }
+  // Last resort: clear the store (best-effort; may be blocked) and try once more.
+  try { await clearCryptoStore(); } catch {}
+  await withTimeout(c.initRustCrypto(), timeoutMs, 'Crypto init (after clear)');
 }
 
 function waitForSync(c, timeoutMs = 60000) {

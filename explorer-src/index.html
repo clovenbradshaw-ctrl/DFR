@@ -56,8 +56,12 @@ header .who{font-family:var(--mono);font-size:12px;color:var(--mut)}
 header select{width:auto;min-width:160px}
 .main{display:grid;grid-template-columns:340px 1fr;min-height:0;transition:grid-template-columns .2s ease}
 .main.side-hidden{grid-template-columns:0 1fr}
-.side{border-right:1px solid var(--line);overflow:auto;padding:14px}
-.main.side-hidden .side{display:none}
+.side{border-right:1px solid var(--line);overflow:auto;padding:14px;min-width:0}
+/* Hide the panel by collapsing its track — but keep it IN FLOW (visibility,
+   not display:none) so the single remaining grid item doesn't auto-place into
+   the 0px first track and collapse the content to zero width. */
+.main.side-hidden .side{visibility:hidden;overflow:hidden;padding:0;border:none}
+.content{min-width:0}
 #sideToggle{font-size:16px;line-height:1;padding:6px 10px;margin-right:4px}
 .panel{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
 .panel h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
@@ -142,6 +146,12 @@ details.setup > label:first-of-type{margin-top:0}
 .fp-body{flex:1;overflow:auto;padding:14px}
 .fp-row{display:grid;grid-template-columns:96px 1fr;gap:4px 10px;font-size:12.5px;margin-bottom:8px}
 .fp-row dt{color:var(--mut)} .fp-row dd{margin:0;word-break:break-all}
+.fp-sibs{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.fp-sibs-h{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin-bottom:8px}
+.fp-sib{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;
+  padding:6px 9px;margin-bottom:4px;background:var(--surf2);border:1px solid var(--line);border-radius:8px;font-size:12px}
+.fp-sib:hover{border-color:var(--acc)}
+.fp-sib-t{color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap}
 .fp-purpose{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;
   background:rgba(255,77,77,.15);border:1px solid rgba(255,107,107,.4);color:#ff9b9b;margin-bottom:12px}
 .fp-dept{font-size:12px;color:var(--acc);cursor:pointer;text-decoration:none;border-bottom:1px dotted var(--acc)}
@@ -161,12 +171,24 @@ details.setup > label:first-of-type{margin-top:0}
 
 /* ── time scrubber over the map ── */
 #mapView{position:relative}
-#timebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:600;
-  display:flex;align-items:center;gap:10px;background:rgba(12,16,24,.92);border:1px solid var(--line);
-  border-radius:10px;padding:7px 12px;box-shadow:0 6px 24px rgba(0,0,0,.5);width:min(560px,86%)}
-#timebar button{padding:3px 9px}
-#timeSlider{flex:1}
-#timeLabel{font-size:11px;color:var(--mut);white-space:nowrap;min-width:130px;text-align:right}
+#timebar{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:600;
+  display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.94);color:#1a1a17;
+  border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:8px 12px;
+  box-shadow:0 6px 24px rgba(0,0,0,.25);width:min(620px,92%);backdrop-filter:blur(8px)}
+#timebar button{padding:3px 9px;background:#eef1f4;color:#1a1a17;border:1px solid rgba(0,0,0,.12)}
+#timebar button:hover{border-color:var(--acc)}
+/* Dual-handle range: two stacked range inputs over a shared track. */
+#timeTrack{position:relative;flex:1;height:22px}
+#timeTrack input[type=range]{position:absolute;left:0;top:0;width:100%;margin:0;height:22px;
+  -webkit-appearance:none;appearance:none;background:transparent;pointer-events:none}
+#timeTrack input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;
+  width:16px;height:16px;border-radius:50%;background:var(--acc);border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer}
+#timeTrack input[type=range]::-moz-range-thumb{pointer-events:auto;width:16px;height:16px;
+  border-radius:50%;background:var(--acc);border:2px solid #fff;cursor:pointer}
+#timeTrack::before{content:'';position:absolute;left:0;right:0;top:9px;height:4px;border-radius:2px;background:#d3d8de}
+#timeFill{position:absolute;top:9px;height:4px;border-radius:2px;background:var(--acc);opacity:.55}
+#timeLabel{font-size:11px;color:#3a3f47;white-space:nowrap;min-width:188px;text-align:right;font-variant-numeric:tabular-nums}
 
 /* ── terminal view ── */
 #termView{display:flex;flex-direction:column;min-height:0}
@@ -307,7 +329,6 @@ tbody tr:hover{background:var(--surf2)}
   </header>
 
   <div class="main" id="mainGrid">
-    <div id="sideScrim"></div>
     <aside class="side">
       <div class="panel">
         <h2>Dataset</h2>
@@ -382,6 +403,15 @@ tbody tr:hover{background:var(--surf2)}
         <label class="focus-toggle" title="Pull recent flights from the live feed for the area you zoom into">
           <input type="checkbox" id="focusToggle" checked> live focus
         </label>
+        <label class="focus-toggle" title="Show U.S. Census tract demographics as a map layer">
+          <input type="checkbox" id="tractToggle"> tracts
+        </label>
+        <select id="exportFmt" title="Export format" style="width:auto;min-height:0;padding:4px 6px;font-size:12px">
+          <option value="ndjson">NDJSON</option>
+          <option value="geojson">GeoJSON</option>
+          <option value="csv">CSV</option>
+        </select>
+        <button id="exportBtn" title="Download the current flights">Export</button>
         <span class="focus-hint" id="focusHint"></span>
       </div>
       <div class="view" id="deptsView">
@@ -394,11 +424,17 @@ tbody tr:hover{background:var(--surf2)}
         </div>
       </div>
       <div class="view hidden" id="mapView">
-        <!-- time scrubber: drag to show only flights up to a moment in time -->
+        <!-- time scrubber: a draggable window over the dataset's full span -->
         <div id="timebar">
-          <button id="playBtn" title="Play / pause through time">▶</button>
-          <input type="range" id="timeSlider" min="0" max="1000" value="1000">
+          <button id="playBtn" title="Play the window forward through time">▶</button>
+          <div id="timeTrack">
+            <div id="timeFill"></div>
+            <input type="range" id="timeFrom" min="0" max="1000" value="0">
+            <input type="range" id="timeTo" min="0" max="1000" value="1000">
+          </div>
           <span id="timeLabel" class="mono">all time</span>
+          <button id="timeReset" title="Reset to full range">⤢</button>
+          <button id="fitBtn" title="Fit the map to where flights concentrate">Fit</button>
         </div>
         <div id="map"></div>
         <!-- flight details panel (slides in when a flight is clicked) -->
@@ -489,6 +525,8 @@ tbody tr:hover{background:var(--surf2)}
     <div id="gateStatus" class="status"></div>
   </div>
 </div>
+
+<div id="sideScrim"></div>
 
 <script type="module" src="./app/main.js"></script>
 </body>

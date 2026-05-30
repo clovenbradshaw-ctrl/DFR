@@ -24,11 +24,24 @@ async function root() {
   catch { return null; }
 }
 
-export async function saveLocal(roomId, bytes) {
+export async function saveLocal(roomId, bytes, { allowShrink = false } = {}) {
   if (!vault.isUnlocked()) return false;
   const dir = await root();
   if (!dir) return false;
   try {
+    // Guard against clobbering a populated local store with a tiny/empty blob
+    // (e.g. a save fired before the working set finished loading). Refuse to
+    // shrink the file by >50% unless the caller explicitly allows it.
+    if (!allowShrink) {
+      try {
+        const existing = await dir.getFileHandle(fileFor(roomId));
+        const cur = await (await existing.getFile()).size;
+        if (cur > 4096 && bytes.length < cur * 0.5) {
+          console.warn(`[opfsbin] refusing to shrink local store ${cur}→${bytes.length} bytes`);
+          return false;
+        }
+      } catch { /* no existing file — fine */ }
+    }
     const handle = await dir.getFileHandle(fileFor(roomId), { create: true });
     const enc = await vault.encryptBytes(bytes);
     const w = await handle.createWritable();
