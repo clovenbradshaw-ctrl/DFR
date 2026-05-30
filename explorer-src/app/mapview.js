@@ -18,10 +18,12 @@ export class DfrMap {
   constructor(el) {
     this.map = L.map(el, { zoomControl: true, attributionControl: false, preferCanvas: true })
       .setView([NASHVILLE.lat, NASHVILLE.lng], NASHVILLE.zoom);
-    // Simple, light basemap (Carto dark matter) — one flat label+street layer,
-    // no heavy satellite imagery. Faster to draw and far less to download.
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      { maxZoom: 19, subdomains: 'abcd' }).addTo(this.map);
+    // Light, legible basemap (Carto Voyager) — clearer than dark matter and a
+    // neutral ground for the demographic choropleth. Flat raster, cheap to draw.
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      { maxZoom: 20, subdomains: 'abcd' }).addTo(this.map);
+    // Tract choropleth sits above the basemap but below flight dots/paths.
+    this.tractLayer = L.layerGroup().addTo(this.map);
     this._canvas = L.canvas({ padding: 0.5 });   // one canvas for all flight dots
     this.flightLayer = L.layerGroup().addTo(this.map);
     this.pathLayer = L.layerGroup().addTo(this.map);
@@ -29,9 +31,11 @@ export class DfrMap {
     this._flights = [];
     this._fitDone = false;
     // Re-render the viewport subset as the user pans/zooms (cheap: only what's visible).
-    this.map.on('moveend', () => this._renderViewport());
-    this.onCount = null;  // (shown, total) → UI
-    this.onFlight = null; // (flight) → open the details panel
+    this.map.on('moveend', () => { if (this.onMove) this.onMove(); this._renderViewport(); });
+    this.onCount = null;     // (shown, total) → UI
+    this.onFlight = null;    // (flight) → open the details panel
+    this.onMove = null;      // () → recompute viewport-relative state (e.g. time span)
+    this.timeFilter = null;  // (flight) => boolean — cursor filter, applied per-marker
   }
 
   renderAgencies(agencies, onPick) {
@@ -90,6 +94,9 @@ export class DfrMap {
     this._renderViewport();
   }
 
+  /** Re-apply the viewport + time filter without recomputing fit (cheap; for the scrubber). */
+  refresh() { this._renderViewport(); }
+
   /** Draw the flights in the current viewport; at city zoom, draw movement lines too. */
   _renderViewport() {
     this.flightLayer.clearLayers();
@@ -102,6 +109,7 @@ export class DfrMap {
       const c = f.start_coords;
       if (!c || c.length < 2) continue;
       if (!b.contains([c[1], c[0]])) continue;
+      if (this.timeFilter && !this.timeFilter(f)) continue;   // time scrubber cutoff
       inView++;
       if (shown >= MAX_MARKERS) continue;
       const m = L.circleMarker([c[1], c[0]], {
@@ -119,7 +127,17 @@ export class DfrMap {
 
   _addPath(geom, fit) {
     if (!geom || !geom.coordinates) return;
-    const toLatLng = (seg) => seg.map(([lng, lat]) => [lat, lng]);
+    // Full geometry stays in memory; for the bulk (non-clicked) movement lines
+    // we draw a downsampled copy so 600 paths × thousands of points doesn't choke
+    // the canvas. The clicked path (fit=true) draws at full resolution.
+    const cap = fit ? Infinity : 60;
+    const reduce = (seg) => {
+      if (seg.length <= cap) return seg;
+      const step = (seg.length - 1) / (cap - 1), out = [];
+      for (let i = 0; i < cap; i++) out.push(seg[Math.round(i * step)]);
+      return out;
+    };
+    const toLatLng = (seg) => reduce(seg).map(([lng, lat]) => [lat, lng]);
     const lines = geom.type === 'MultiLineString' ? geom.coordinates.map(toLatLng) : [toLatLng(geom.coordinates)];
     for (const line of lines) {
       L.polyline(line, { renderer: this._canvas, color: fit ? '#ffd24d' : '#ff8c4d',
@@ -131,6 +149,31 @@ export class DfrMap {
   drawPath(f) {
     this._addPath(f.geometry, true);   // highlighted + fit to this flight
   }
+
+  /**
+   * Draw the tract choropleth. `feats` are TIGERweb GeoJSON tract features with
+   * `geoid`; `colorFor(geoid)` returns a fill; `overflown` is a Set of geoids to
+   * outline (the drone-overflown tracts).
+   */
+  renderTracts(feats, colorFor, overflown) {
+    this.tractLayer.clearLayers();
+    if (!feats || !feats.length) return;
+    for (const f of feats) {
+      const geoid = f.properties.geoid;
+      const over = overflown && overflown.has(geoid);
+      L.geoJSON(f, {
+        renderer: this._canvas,
+        style: {
+          fillColor: colorFor ? colorFor(geoid) : 'rgba(43,103,119,0.3)',
+          fillOpacity: 1, weight: over ? 2 : 0.5,
+          color: over ? '#ff4d4d' : 'rgba(120,120,120,0.4)',
+        },
+      }).addTo(this.tractLayer);
+    }
+    // Keep flight dots/paths on top.
+    this.flightLayer.bringToFront(); this.pathLayer.bringToFront();
+  }
+  clearTracts() { this.tractLayer.clearLayers(); }
 
   invalidate() { setTimeout(() => this.map.invalidateSize(), 50); }
 }

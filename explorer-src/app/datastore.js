@@ -17,11 +17,23 @@
  *     multiple GB) by streaming it straight into chained blocks without ever
  *     buffering or parsing the whole thing. The manifest records its
  *     payload_format so a client small enough to hold it can reassemble + parse.
+ *
+ * Live updates (scraper / focus fetch) use an event-log → rollup model:
+ *   • Each genuinely-new flight posts immediately as a durable room *event*
+ *     (INS, lean geometry) via the offline outbox — so it's in Matrix the moment
+ *     it's found and survives the user leaving; no flush race.
+ *   • Once ROLLUP_THRESHOLD loose events accumulate, they're folded into the
+ *     dataset blob (a fresh snapshot block) and the superseded events are
+ *     redacted, keeping the room timeline lean. The block is the compaction;
+ *     the events are the durable interim. open()/onTimeline fold loose events
+ *     into the working set (dedup by flight_id) so nothing is missed.
  */
 
 import { getClient } from '../src/client.js';
+import { ins } from '../src/operators.js';
+import { getTimeline } from '../src/rooms.js';
 import { uploadEncrypted, getMediaBytes } from '../src/media.js';
-import { packFlights, unpackFlights, mergeFlights, blobHash } from './packset.js';
+import { packFlights, unpackFlights, mergeFlights, blobHash, flightId } from './packset.js';
 import { saveLocal, loadLocal } from './opfsbin.js';
 import { readDatasetState, writeDatasetState } from './roomstate.js';
 import { toRecord, toAgency, agencyKey, focusQueryUrl, feedFetch } from './dfr.js';
@@ -29,11 +41,34 @@ import { textStreamFrom, readChunks, streamElements, streamNdjson } from './json
 import { chunkBlob, frameBlock, hash64, reassemble, reassembleStream } from './chunks.js';
 import { fileChunks, streamChunks, guessFormat } from './chunkstream.js';
 import { extractLeanFlights } from './leanindex.js';
+import { ENTITY } from './dfr.js';
 import { act } from './activity.js';
+
+// New flights post as durable room *events* the moment they're found, then get
+// rolled up into a block once enough accumulate (and the loose events redacted).
+// 100 ≈ a comfortable margin under Matrix homeservers' typical per-request /
+// timeline limits, so we compact well before hitting them.
+const ROLLUP_THRESHOLD = 100;
 
 const FORMAT = 'gzip-ndjson';
 const DEFAULT_MEDIA_LIMIT = 50 * 1024 * 1024;
 const MAX_CHUNK = 24 * 1024 * 1024;            // cap per-block payload memory
+
+// Keep a department's batch event comfortably under typical Matrix event-size
+// limits (~64KB). Beyond this we split into multiple events; a single flight
+// whose full geometry alone exceeds it is hoisted to media by the outbox.
+const EVENT_BUDGET = 48 * 1024;
+/** Split records into groups whose JSON stays under EVENT_BUDGET (≥1 each). */
+function sizeBatches(records) {
+  const out = []; let cur = [], size = 2;
+  for (const r of records) {
+    const s = JSON.stringify(r).length + 1;
+    if (cur.length && size + s > EVENT_BUDGET) { out.push(cur); cur = []; size = 2; }
+    cur.push(r); size += s;
+  }
+  if (cur.length) out.push(cur);
+  return out;
+}
 
 const PUBLISH_THRESHOLD = 25;
 const PUBLISH_MIN_INTERVAL = 30 * 60e3;
@@ -92,7 +127,41 @@ export class DataStore {
     this.meta = readDatasetState(roomId);
     if (this.meta && this.meta.version > this.localVersion) await this.sync();
     await this._loadAgencies();
+    this.mergeLooseEvents();   // fold in any flight events not yet rolled into the block
     return { hydrated: !!this.meta?.hydrated, count: this.flights.length };
+  }
+
+  /**
+   * Merge flight INS events from the live timeline into the working set. These
+   * are flights posted since the last rollup (durable, but not yet in a block).
+   * Idempotent — dedup by flight_id — so it's safe to call on open and on each
+   * new timeline event.
+   */
+  mergeLooseEvents() {
+    if (!this.roomId) return 0;
+    const evs = getTimeline(this.roomId) || [];
+    const recs = [];
+    let loose = 0;
+    for (const e of evs) {
+      const t = typeof e.getType === 'function' ? e.getType() : e.type;
+      if (!t || !t.endsWith('.ins')) continue;
+      const u = typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned;
+      if (u && u.redacted_because) continue;          // already rolled up
+      const c = typeof e.getContent === 'function' ? e.getContent() : e.content;
+      if (!c || !c.payload) continue;
+      if (c.entity_type === ENTITY.FLIGHT_BATCH) {
+        for (const f of (c.payload.flights || [])) recs.push(toRecord(f));
+        loose++;
+      } else if (c.entity_type === ENTITY.FLIGHT) {    // legacy single-flight events
+        recs.push(toRecord(c.payload));
+        loose++;
+      }
+    }
+    this.looseEvents = loose;
+    if (!recs.length) return 0;
+    const { merged, added } = mergeFlights(this.flights, recs);
+    if (added) { this.flights = merged; this._notify(); }
+    return added;
   }
 
   // ── agencies (a parallel lean layer) ────────────────────────────────────────
@@ -419,16 +488,81 @@ export class DataStore {
 
   async addFlights(rawFlights) {
     const recs = rawFlights.map(toRecord);
-    const { merged, added } = mergeFlights(this.flights, recs);
-    if (!added) return { added: 0 };
+    // Which are genuinely new (dedup against the working set)?
+    const have = new Set(this.flights.map(flightId).filter(Boolean));
+    const fresh = recs.filter(r => { const id = flightId(r); return id && !have.has(id); });
+    if (!fresh.length) return { added: 0 };
+
+    // 1) Post new flights as durable room EVENTS immediately — one batch event
+    //    PER DEPARTMENT where possible, split across multiple events only when a
+    //    department's batch would exceed the size budget. Events carry the FULL,
+    //    precise geometry (this is the research-grade history); oversized batches
+    //    are auto-hoisted to encrypted media by the foundation outbox. Delivery
+    //    is guaranteed even if the tab closes mid-send.
+    const byOrg = new Map();
+    for (const r of fresh) { const o = r.organization_id || 'unknown'; (byOrg.get(o) || byOrg.set(o, []).get(o)).push(r); }
+    for (const [org, list] of byOrg) {
+      for (const batch of sizeBatches(list)) {
+        try {
+          await ins(this.roomId, ENTITY.FLIGHT_BATCH, { org, flights: batch });
+          this.looseEvents = (this.looseEvents || 0) + 1;
+        } catch (e) { act.err(`Flight batch failed: ${e.message}`); }
+      }
+    }
+
+    // 2) Update the in-memory working set + local OPFS cache.
+    const { merged, added } = mergeFlights(this.flights, fresh);
     this.flights = merged;
-    this.dirty += added;
-    const newAgencies = this._discoverAgencies(recs);
+    const newAgencies = this._discoverAgencies(fresh);
     await saveLocal(this.roomId, await packFlights(this.flights));
     this._notify();
-    act.add(`Added ${added} flight(s) to the dataset`, { added, source: 'scraper' });
+    act.add(`Recorded ${added} flight(s) as room event(s)`, { added, loose: this.looseEvents, source: 'scraper' });
     if (newAgencies) act.add(`Discovered ${newAgencies} new department(s)`, { newAgencies });
+
+    // 3) Roll the loose events up into a block once enough accumulate.
+    if ((this.looseEvents || 0) >= ROLLUP_THRESHOLD) await this.rollup();
     return { added, newAgencies };
+  }
+
+  /**
+   * Compaction: fold the loose per-flight events into the dataset blob, publish
+   * a fresh snapshot block, then redact the now-superseded loose events so the
+   * room timeline stays lean. The block is the durable rollup; the events were
+   * the durable interim. Safe to call anytime.
+   */
+  async rollup() {
+    if (this._publishing || !this.roomId) return { rolled: 0 };
+    const client = getClient();
+    const looseIds = this._looseEventIds();   // event_ids of flight INS events
+    await this.publish({});                   // snapshot now supersedes them
+    let redacted = 0;
+    if (client && looseIds.length) {
+      act.block(`Rolling up ${looseIds.length} flight events into the block`, { count: looseIds.length });
+      for (const id of looseIds) {
+        try { await client.redactEvent(this.roomId, id); redacted++; }
+        catch { /* best-effort; a missed redaction is harmless */ }
+      }
+    }
+    this.looseEvents = 0;
+    act.block(`Rolled up: ${redacted} event(s) redacted into snapshot v${this.meta?.version ?? '?'}`, { redacted });
+    return { rolled: redacted };
+  }
+
+  /** Collect event_ids of our app's flight INS events currently in the timeline. */
+  _looseEventIds() {
+    const evs = getTimeline(this.roomId) || [];
+    const out = [];
+    for (const e of evs) {
+      const t = typeof e.getType === 'function' ? e.getType() : e.type;
+      if (!t || !t.endsWith('.ins')) continue;
+      const c = typeof e.getContent === 'function' ? e.getContent() : e.content;
+      if (c && (c.entity_type === ENTITY.FLIGHT_BATCH || c.entity_type === ENTITY.FLIGHT)) {
+        const id = typeof e.getId === 'function' ? e.getId() : e.event_id;
+        const u = typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned;
+        if (id && !(u && u.redacted_because)) out.push(id);
+      }
+    }
+    return out;
   }
 
   /**
@@ -464,6 +598,19 @@ export class DataStore {
     return due ? this.publish({}) : { published: false };
   }
 
+  /** True while a publish is in flight (used by the leave-guard). */
+  get publishing() { return !!this._publishing; }
+
+  /**
+   * Flush any unpublished local flights to the room *now* — used when the user
+   * is leaving (tab hidden) so scraped data isn't stranded in OPFS on this
+   * device. No-op when nothing is pending or a publish is already running.
+   */
+  async flushNow() {
+    if (this.dirty <= 0 || this._publishing) return { published: false };
+    return this.publish({});
+  }
+
   // ── publish (canonical: single block, or chained blocks + manifest) ─────────
 
   async _uploadManifest({ payload_format, name, total_bytes, chunks, head }) {
@@ -491,6 +638,12 @@ export class DataStore {
 
   async publish({ markHydrated = false, sourceUrl = null } = {}) {
     if (!this.roomId) return { published: false };
+    this._publishing = true;
+    try { return await this._publish({ markHydrated, sourceUrl }); }
+    finally { this._publishing = false; }
+  }
+
+  async _publish({ markHydrated = false, sourceUrl = null } = {}) {
     const bytes = await packFlights(this.flights);
     const limit = await this._mediaSizeLimit();
     const prev = readDatasetState(this.roomId);
@@ -517,6 +670,12 @@ export class DataStore {
       count: this.flights.length, hash: blobHash(bytes),
       blob, manifest, chunk_count: chunkCount,
       source_url: sourceUrl ?? prev?.source_url ?? null,
+      // Preserve the original full-resolution raw archive (the chunked-raw
+      // hydration upload) across snapshot publishes so it's never orphaned —
+      // the snapshot block carries lean geometry, this keeps the source of truth.
+      raw_archive: prev?.raw_archive ?? (prev?.mode === 'chunked-raw' ? prev?.manifest : null),
+      raw_payload_format: prev?.raw_payload_format ?? (prev?.mode === 'chunked-raw' ? prev?.payload_format : null),
+      raw_bytes: prev?.raw_bytes ?? (prev?.mode === 'chunked-raw' ? prev?.total_bytes : null),
       updated_at: Date.now(), updated_by: getClient()?.getUserId() || null,
     };
     await writeDatasetState(this.roomId, content);

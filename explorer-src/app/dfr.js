@@ -22,10 +22,11 @@ export const NAMESPACE = 'org.dfr.explorer';
 export const ROOM_TYPE = 'dfr.dataset';
 
 export const ENTITY = {
-  FLIGHT: 'flight',     // a single DFR drone flight
-  SITE: 'site',         // a sensitive site (school/childcare/playground/worship)
-  SNAPSHOT: 'snapshot', // one background-scraper poll (provenance)
-  DATASET: 'dataset',   // a hydration source descriptor (+ raw blob as media)
+  FLIGHT: 'flight',            // a single DFR drone flight (legacy single-flight event)
+  FLIGHT_BATCH: 'flight_batch',// a department's new flights, batched into one event
+  SITE: 'site',                // a sensitive site (school/childcare/playground/worship)
+  SNAPSHOT: 'snapshot',        // one background-scraper poll (provenance)
+  DATASET: 'dataset',          // a hydration source descriptor (+ raw blob as media)
 };
 
 // Field paths (DEF) we read/write. Treat as a public schema.
@@ -123,18 +124,27 @@ export function focusQueryUrl(bbox, { sinceTs = null, offset = 0, pageSize = 200
  * ArcGIS Online is usually CORS-enabled, so try a direct fetch first and fall
  * back to the proxy when the direct call is blocked — mirrors csiFetch() in the
  * main app. `proxy` is the prefix the encoded URL is appended to.
+ *
+ * Pass { preferProxy:true } to route through the proxy *first* (used for Census
+ * API / TIGERweb / geocoder, which can be slow or CORS-flaky direct) — it still
+ * falls back to a direct attempt if the proxy errors.
  */
-export async function feedFetch(url, proxy) {
-  try {
+export async function feedFetch(url, proxy, { preferProxy = false } = {}) {
+  const direct = async () => {
     const r = await fetch(url, { cache: 'no-store', mode: 'cors' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    return await r.json();
-  } catch (e) {
-    if (!proxy) throw e;
+    return r.json();
+  };
+  const viaProxy = async () => {
     const r = await fetch(proxied(url, proxy), { cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    return await r.json();
+    return r.json();
+  };
+  if (preferProxy && proxy) {
+    try { return await viaProxy(); } catch (e) { return direct(); }
   }
+  try { return await direct(); }
+  catch (e) { if (!proxy) throw e; return viaProxy(); }
 }
 
 /**

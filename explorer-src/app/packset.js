@@ -67,16 +67,26 @@ export async function unpackFlights(bytes) {
  * Incoming wins on conflict (newer geometry/metadata). Returns the merged
  * array (sorted newest-takeoff-first) and how many were genuinely new.
  */
+function geomPoints(g) {
+  if (!g || !g.coordinates) return 0;
+  return g.type === 'MultiLineString'
+    ? g.coordinates.reduce((n, s) => n + (s ? s.length : 0), 0)
+    : g.coordinates.length;
+}
+
 export function mergeFlights(base, incoming) {
   const byId = new Map();
-  let order = 0;
   for (const f of base) { const id = flightId(f); if (id) byId.set(id, f); }
   let added = 0;
   for (const f of incoming) {
     const id = flightId(f);
     if (!id) continue;
-    if (!byId.has(id)) added++;
-    byId.set(id, f);
+    const existing = byId.get(id);
+    if (!existing) { added++; byId.set(id, f); continue; }
+    // Conflict: incoming wins on metadata, but never let a coarser geometry
+    // overwrite a richer one (e.g. a lean event must not downgrade a full path).
+    const keepGeom = geomPoints(existing.geometry) > geomPoints(f.geometry) ? existing.geometry : f.geometry;
+    byId.set(id, { ...existing, ...f, geometry: keepGeom });
   }
   const merged = [...byId.values()].sort((a, b) => (b.takeoff || 0) - (a.takeoff || 0));
   return { merged, added };

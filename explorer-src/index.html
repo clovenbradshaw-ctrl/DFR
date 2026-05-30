@@ -145,6 +145,19 @@ details.setup > label:first-of-type{margin-top:0}
   background:rgba(255,77,77,.15);border:1px solid rgba(255,107,107,.4);color:#ff9b9b;margin-bottom:12px}
 .fp-dept{font-size:12px;color:var(--acc);cursor:pointer;text-decoration:none;border-bottom:1px dotted var(--acc)}
 
+/* ── demographics view ── */
+#demoView{display:flex;flex-direction:column;min-height:0}
+.demo-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap;font-size:12px;color:var(--mut)}
+.demo-head label{display:inline-flex;gap:6px;align-items:center}
+.demo-body{flex:1;overflow:auto;padding:18px}
+.demo-cmp{width:100%;max-width:680px;border-collapse:collapse;font-size:13px}
+.demo-cmp th,.demo-cmp td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.demo-cmp th:first-child,.demo-cmp td:first-child{text-align:left;color:var(--mut)}
+.demo-cmp thead th{color:var(--txt);font-weight:600}
+.demo-cmp .over{color:#ff9b9b;font-weight:600}
+.demo-cmp .delta.up{color:#ff6b6b} .demo-cmp .delta.down{color:#3ecf8e}
+.demo-note{font-size:11px;color:var(--mut2);margin-top:14px;max-width:680px;line-height:1.6}
+
 /* ── time scrubber over the map ── */
 #mapView{position:relative}
 #timebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:600;
@@ -253,7 +266,7 @@ tbody tr:hover{background:var(--surf2)}
           <div class="stat"><div class="n" id="sFlights">0</div><div class="l">flights</div></div>
           <div class="stat"><div class="n" id="sGeom">0</div><div class="l">with path</div></div>
           <div class="stat"><div class="n" id="sSnap">0</div><div class="l">snapshot v</div></div>
-          <div class="stat"><div class="n" id="sSites">0</div><div class="l">unpublished</div></div>
+          <div class="stat" title="New flights saved locally but not yet pushed to the shared room as a snapshot"><div class="n" id="sSites">0</div><div class="l">unpublished</div></div>
         </div>
         <div class="hint" id="span"></div>
       </div>
@@ -311,6 +324,7 @@ tbody tr:hover{background:var(--surf2)}
         <button id="tabDepts" aria-selected="true">Departments</button>
         <button id="tabMap" aria-selected="false">Map</button>
         <button id="tabActivity" aria-selected="false">Activity</button>
+        <button id="tabDemo" aria-selected="false">Demographics</button>
         <button id="tabTerm" aria-selected="false">Terminal</button>
         <label class="focus-toggle" title="Pull recent flights from the live feed for the area you zoom into">
           <input type="checkbox" id="focusToggle" checked> live focus
@@ -342,6 +356,23 @@ tbody tr:hover{background:var(--surf2)}
           </div>
           <div class="fp-body" id="fpBody"></div>
         </aside>
+      </div>
+      <div class="view hidden" id="demoView">
+        <div class="demo-head">
+          <span>Census ACS demographics — drone-overflown tracts vs. the rest of the county</span>
+          <span style="flex:1"></span>
+          <label>County FIPS <input id="demoFips" placeholder="47037 (Davidson/Nashville)" style="width:200px"></label>
+          <select id="demoMetric">
+            <option value="pct_poverty">% in poverty</option>
+            <option value="pct_black">% Black</option>
+            <option value="pct_hispanic">% Hispanic</option>
+            <option value="pct_white">% White</option>
+            <option value="median_household_income">Median income</option>
+            <option value="unemployment_rate">Unemployment</option>
+          </select>
+          <button id="demoLoad" class="primary">Load demographics</button>
+        </div>
+        <div class="demo-body" id="demoBody"><div class="empty">Enter a county FIPS (or load — it's guessed from where the flights are) to compare the demographics of drone-overflown census tracts against the rest of the county. Tracts also shade on the Map tab.</div></div>
       </div>
       <div class="view hidden" id="termView">
         <div class="term-head">

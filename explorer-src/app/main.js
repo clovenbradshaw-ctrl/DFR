@@ -17,7 +17,8 @@ import {
 } from '../src/client.js';
 import { setNamespace } from '../src/operators.js';
 import { createRoom, discoverRooms, onRoomChanges,
-         invite, getMembers, loadRoomMembers, onMembersChange } from '../src/rooms.js';
+         invite, getMembers, loadRoomMembers, onMembersChange,
+         onTimeline, onDecrypted } from '../src/rooms.js';
 
 import { NAMESPACE, ROOM_TYPE } from './dfr.js';
 import { DataStore } from './datastore.js';
@@ -28,12 +29,13 @@ import { DfrMap } from './mapview.js';
 import { DepartmentsView } from './departments.js';
 import { Swarm } from './swarm.js';
 import { Activity, act, Term } from './activity.js';
+import { loadACS, loadTractGeom, acsLabel, overflownTracts, contrast, choroplethColor } from './census.js';
 
 const $ = (id) => document.getElementById(id);
 let deptsView = null, swarm = null;
 
 let store = null, scraper = null, dfrMap = null;
-let currentRoomId = null, unsubDatasetState = null, unsubMembers = null;
+let currentRoomId = null, unsubDatasetState = null, unsubMembers = null, unsubTimeline = null;
 let gateAbort = null, gateMode = 'hydrate';
 
 // ── activity log (sidebar text) + structured Activity feed ──
@@ -56,6 +58,80 @@ function renderTerminal() {
   if (!el) return;
   el.textContent = Term.lines.join('\n');
   if ($('termFollow')?.checked) el.scrollTop = el.scrollHeight;
+}
+
+// ── Demographics view ──
+let demoData = null;   // { year, byGeoid, feats, overflown, metric }
+async function guessCountyFips() {
+  // Use the densest flight start as the probe point; reverse-geocode to FIPS via
+  // the Census geographies service.
+  const fl = store?.flights || [];
+  const pt = fl.find(f => f.start_coords)?.start_coords;
+  if (!pt) return '';
+  const url = `https://geocoding.geo.census.gov/geocoder/geographies/coordinates?x=${pt[0]}&y=${pt[1]}` +
+              `&benchmark=Public_AR_Current&vintage=Current_Current&layers=Counties&format=json`;
+  try {
+    const proxy = $('proxy').value.trim();
+    const r = await import('./dfr.js').then(m => m.feedFetch(url, proxy));
+    const c = r?.result?.geographies?.Counties?.[0];
+    if (c) return `${c.STATE}${c.COUNTY}`;
+  } catch {}
+  return '';
+}
+
+async function loadDemographics() {
+  const m = $('demoMetric').value;
+  let fips = $('demoFips').value.trim().replace(/[^0-9]/g, '');
+  if (!fips) { fips = await guessCountyFips(); if (fips) $('demoFips').value = fips; }
+  if (fips.length < 4) { $('demoBody').innerHTML = '<div class="empty">Enter a 5-digit county FIPS (state+county), e.g. 47037.</div>'; return; }
+  const stateFips = fips.slice(0, 2), countyFips = fips.slice(2);
+  const proxy = $('proxy').value.trim();
+  $('demoBody').innerHTML = '<div class="empty">Loading ACS + tract geometry…</div>';
+  try {
+    const [{ year, byGeoid }, feats] = await Promise.all([
+      loadACS(stateFips, countyFips, proxy),
+      loadTractGeom(stateFips, countyFips, proxy),
+    ]);
+    const over = overflownTracts(feats, store?.flights || []);
+    demoData = { year, byGeoid, feats, overflown: over, metric: m };
+    renderDemographics();
+    // Shade the tracts on the map too.
+    if (dfrMap) dfrMap.renderTracts(feats, (geoid) => choroplethColor(byGeoid[geoid]?.[m], m), over);
+    act.info(`Loaded ${Object.keys(byGeoid).length} tracts (${acsLabel(year)}); ${over.size} overflown`);
+  } catch (e) {
+    $('demoBody').innerHTML = `<div class="empty">Failed: ${esc(e.message)}</div>`;
+  }
+}
+
+const DEMO_ROWS = [
+  ['population', 'Population', (v) => v?.toLocaleString() ?? '—', false],
+  ['pct_black', '% Black', (v) => v != null ? v + '%' : '—', true],
+  ['pct_hispanic', '% Hispanic', (v) => v != null ? v + '%' : '—', true],
+  ['pct_white', '% White', (v) => v != null ? v + '%' : '—', false],
+  ['pct_poverty', '% in poverty', (v) => v != null ? v + '%' : '—', true],
+  ['unemployment_rate', 'Unemployment', (v) => v != null ? v + '%' : '—', true],
+  ['median_household_income', 'Median income', (v) => v != null ? '$' + v.toLocaleString() : '—', false],
+];
+function renderDemographics() {
+  if (!demoData) { $('demoBody').innerHTML = '<div class="empty">Load demographics to compare.</div>'; return; }
+  const c = contrast(demoData.byGeoid, demoData.overflown);
+  const fmtRow = ([k, label, fmt, higherIsWorse]) => {
+    const o = c.overflown?.[k], r = c.rest?.[k];
+    let delta = '';
+    if (typeof o === 'number' && typeof r === 'number' && r !== 0) {
+      const d = o - r; const cls = (d > 0) === !!higherIsWorse ? 'up' : 'down';
+      delta = `<span class="delta ${cls}">${d > 0 ? '+' : ''}${(+d.toFixed(1)).toLocaleString()}</span>`;
+    }
+    return `<tr><td>${label}</td><td class="over">${fmt(o)}</td><td>${fmt(r)}</td><td>${delta}</td></tr>`;
+  };
+  $('demoBody').innerHTML = `
+    <table class="demo-cmp"><thead><tr>
+      <th>Metric</th><th>Overflown tracts</th><th>Rest of county</th><th>Δ</th>
+    </tr></thead><tbody>${DEMO_ROWS.map(fmtRow).join('')}</tbody></table>
+    <div class="demo-note">${c.nOverflown} of ${c.nTotal} census tracts intersect a drone flight ·
+      ${esc(acsLabel(demoData.year))} · race/ethnicity from B03002. "Overflown" = any sampled flight-path
+      point falls inside the tract. Δ compares overflown vs. the rest of the county (red = higher where that
+      typically signals disadvantage). Tracts are shaded on the Map tab by the selected metric.</div>`;
 }
 
 // ── Activity view ──
@@ -121,11 +197,45 @@ async function onAuthed() {
   $('interval').value = scraper.intervalMin;
   $('proxy').value = scraper.proxy;
 
+  installLeaveGuard();
   onRoomChanges(() => refreshRooms());
   await refreshRooms();
 }
 
+// Don't lose scraped flights when the user leaves: push unpublished data to the
+// room as soon as the tab is hidden (the reliable "leaving" signal — a full
+// async media upload can't complete during beforeunload), and warn if they try
+// to close with data still pending / mid-publish.
+let _leaveGuardInstalled = false;
+function installLeaveGuard() {
+  if (_leaveGuardInstalled) return;
+  _leaveGuardInstalled = true;
+
+  const flush = (why) => {
+    if (!store || store.dirty <= 0) return;
+    log(`Flushing ${store.dirty} unpublished flight(s) to the room (${why})…`, 'mut');
+    // Fire-and-forget: visibilitychange/pagehide still allow async work to run
+    // while the tab is backgrounded, which is when this fires.
+    store.flushNow().catch(e => log(`Flush failed: ${e.message}`, 'err'));
+  };
+
+  // Primary trigger: tab hidden (switching away / closing on mobile & desktop).
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush('tab hidden'); });
+  // Secondary: page being unloaded (best-effort).
+  window.addEventListener('pagehide', () => flush('page hide'));
+
+  // Last-ditch warning if there's still unpublished data (or a publish racing).
+  window.addEventListener('beforeunload', (e) => {
+    if (store && (store.dirty > 0 || store.publishing)) {
+      e.preventDefault();
+      e.returnValue = 'New flights are still syncing to the room — leave anyway?';
+      return e.returnValue;
+    }
+  });
+}
+
 async function doLogout() {
+  try { if (store?.dirty > 0) await store.flushNow(); } catch {}
   try { scraper?.stop(); } catch {}
   await logout();
   location.reload();
@@ -166,6 +276,7 @@ async function createDataset() {
 async function openRoom(roomId) {
   if (unsubDatasetState) unsubDatasetState();
   if (unsubMembers) unsubMembers();
+  if (unsubTimeline) unsubTimeline();
   if (swarm) { swarm.lowerHand(); swarm.stop(); }
   currentRoomId = roomId;
   $('roomSel').value = roomId;
@@ -179,20 +290,23 @@ async function openRoom(roomId) {
     log('Dataset pointer changed — syncing…', 'mut');
     await store.sync(); render();
   });
+  // Live flight events (from this device or peers) fold into the working set as
+  // they arrive — durable the moment they're sent, no waiting for a block.
+  const onFlightEvents = () => { if (store.mergeLooseEvents()) scheduleRender(); };
+  const u1 = onTimeline(roomId, onFlightEvents);
+  const u2 = onDecrypted(roomId, onFlightEvents);
+  unsubTimeline = () => { u1(); u2(); };
   // Member list + live updates (joins, invites, power-level changes).
   unsubMembers = onMembersChange(roomId, () => renderMembers());
   renderMembers();
   if (swarm) swarm.start();
-  if (!hydrated) {
-    openGate('hydrate');
-  } else {
-    log('Dataset ready.', 'ok');
-    // Auto-start background checking once the dataset is hydrated — no manual
-    // "Start" needed. Honors a saved opt-out (autoStart=false).
-    if (scraper && !scraper.running && scraper.autoStart !== false) {
-      scraper.configure({ intervalMin: $('interval').value, proxy: $('proxy').value });
-      scraper.start();
-    }
+  if (!hydrated) openGate('hydrate');
+  else log('Dataset ready.', 'ok');
+  // Auto-start background checking whenever a dataset is open — no manual "Start"
+  // needed, hydrated or not. Honors a saved opt-out (a prior manual Stop).
+  if (scraper && !scraper.running && scraper.autoStart !== false) {
+    scraper.configure({ intervalMin: $('interval').value, proxy: $('proxy').value });
+    scraper.start();
   }
 }
 
@@ -291,6 +405,15 @@ function ensureMap() {
   dfrMap.onCount = (shown, total, capped) => setFocusHint(
     total ? `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} flights in view${capped ? ' (capped — zoom in for more)' : ''}` : '');
   dfrMap.onFlight = (f) => showFlight(f);
+  // Cursor cutoff is applied per-marker inside the map's viewport render.
+  dfrMap.timeFilter = (f) => {
+    if (cursorFrac >= 1 || !timeSpan) return true;
+    const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
+    return !f.takeoff || f.takeoff <= cut;
+  };
+  // On pan/zoom, recompute the span from the now-visible flights so the cursor
+  // is always relative to what's in focus.
+  dfrMap.onMove = () => { recomputeTimeSpan(store?.flights || []); };
   return dfrMap;
 }
 
@@ -332,27 +455,36 @@ function showFlight(f) {
 }
 function hideFlight() { $('flightPanel').classList.add('hidden'); }
 let agenciesDrawn = false;
-// Time scrubber state: tmin/tmax span the dataset; cursorFrac in [0,1] hides
-// flights with takeoff after the cursor. 1 = show all.
-let timeSpan = null;       // { min, max } in ms
+// Time scrubber state. The span is RELATIVE TO WHAT'S IN FOCUS: it's computed
+// from the flights currently in the map viewport, so zooming into a city makes
+// the cursor scrub that city's time range, not the whole dataset's.
+let timeSpan = null;       // { min, max } in ms — over the in-view flights
 let cursorFrac = 1;
 
-function flightsUpToCursor(flights) {
-  if (cursorFrac >= 1 || !timeSpan) return flights;
-  const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
-  return flights.filter(f => !f.takeoff || f.takeoff <= cut);
+/** Flights whose start point is in the current map viewport (the focus). */
+function viewportFlights(flights) {
+  if (!dfrMap) return flights;
+  const bb = dfrMap.bbox();   // [w,s,e,n]
+  return flights.filter(f => {
+    const c = f.start_coords;
+    return c && c.length >= 2 && c[0] >= bb[0] && c[0] <= bb[2] && c[1] >= bb[1] && c[1] <= bb[3];
+  });
 }
 
+/** Recompute the span from the focused (in-view) flights. */
 function recomputeTimeSpan(flights) {
+  const focus = viewportFlights(flights);
   let min = Infinity, max = 0;
-  for (const f of flights) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
+  for (const f of focus) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
   timeSpan = (min === Infinity) ? null : { min, max };
   updateTimeLabel();
 }
 
 function updateTimeLabel() {
   const lbl = $('timeLabel'); if (!lbl) return;
-  if (cursorFrac >= 1 || !timeSpan) { lbl.textContent = 'all time'; return; }
+  if (!timeSpan) { lbl.textContent = 'no flights in view'; return; }
+  const day = (ms) => new Date(ms).toISOString().slice(0, 10);
+  if (cursorFrac >= 1) { lbl.textContent = `${day(timeSpan.min)} → ${day(timeSpan.max)}`; return; }
   const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
   lbl.textContent = '≤ ' + new Date(cut).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
 }
@@ -368,7 +500,7 @@ function togglePlay() {
     cursorFrac = Math.min(1, cursorFrac + 0.02);
     $('timeSlider').value = String(Math.round(cursorFrac * 1000));
     updateTimeLabel();
-    if (dfrMap) dfrMap.render(flightsUpToCursor(store?.flights || []));
+    if (dfrMap) dfrMap.refresh();
     if (cursorFrac >= 1) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; }
   }, 240);
 }
@@ -376,8 +508,8 @@ function togglePlay() {
 function renderMap(flights) {
   const m = ensureMap();
   if (!m) return;
-  recomputeTimeSpan(flights);
-  m.render(flightsUpToCursor(flights));
+  m.render(flights);                 // map filters by viewport + timeFilter
+  recomputeTimeSpan(flights);        // span from what's now in view
   // Agencies rarely change; only (re)draw when the set changes.
   if (!agenciesDrawn && store?.agencies?.length) {
     m.renderAgencies(store.agencies, (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
@@ -514,15 +646,17 @@ function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;'
 // ── tabs ──
 function setTab(t) {
   tab = t;
-  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabTerm', 'term']])
+  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabDemo', 'demo'], ['tabTerm', 'term']])
     $(id).setAttribute('aria-selected', t === name);
   $('deptsView').classList.toggle('hidden', t !== 'depts');
   $('mapView').classList.toggle('hidden', t !== 'map');
   $('activityView').classList.toggle('hidden', t !== 'activity');
+  $('demoView').classList.toggle('hidden', t !== 'demo');
   $('termView').classList.toggle('hidden', t !== 'term');
   if (t === 'map') { renderMap(store?.flights || []); dfrMap?.invalidate(); }
   else if (t === 'depts') ensureDepts().refresh();
   else if (t === 'activity') renderActivity();
+  else if (t === 'demo') renderDemographics();
   else if (t === 'term') renderTerminal();
 }
 
@@ -554,7 +688,15 @@ function wire() {
   $('tabDepts').addEventListener('click', () => setTab('depts'));
   $('tabMap').addEventListener('click', () => setTab('map'));
   $('tabActivity').addEventListener('click', () => setTab('activity'));
+  $('tabDemo').addEventListener('click', () => setTab('demo'));
   $('tabTerm').addEventListener('click', () => setTab('term'));
+  $('demoLoad').addEventListener('click', () => loadDemographics());
+  $('demoMetric').addEventListener('change', () => {
+    if (!demoData) return;
+    demoData.metric = $('demoMetric').value;
+    if (dfrMap) dfrMap.renderTracts(demoData.feats, (g) => choroplethColor(demoData.byGeoid[g]?.[demoData.metric], demoData.metric), demoData.overflown);
+    renderDemographics();
+  });
   $('fpClose').addEventListener('click', hideFlight);
   $('actClear').addEventListener('click', () => { Activity.clear(); renderActivity(); });
   $('termClear').addEventListener('click', () => { Term.clear(); renderTerminal(); });
@@ -566,7 +708,7 @@ function wire() {
   $('timeSlider').addEventListener('input', e => {
     cursorFrac = (+e.target.value) / 1000;
     updateTimeLabel();
-    if (dfrMap) dfrMap.render(flightsUpToCursor(store?.flights || []));
+    if (dfrMap) dfrMap.refresh();
   });
   $('playBtn').addEventListener('click', togglePlay);
   $('focusToggle').addEventListener('change', e => {
