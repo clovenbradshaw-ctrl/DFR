@@ -176,7 +176,7 @@ function renderDemographics() {
 }
 
 // ── Activity view ──
-const ACT_KINDS = ['sync', 'api', 'add', 'block', 'swarm', 'err'];
+const ACT_KINDS = ['sync', 'api', 'check', 'add', 'block', 'swarm', 'err'];
 let actFilter = new Set(ACT_KINDS);   // all on
 function renderActivity() {
   const list = $('actList');
@@ -718,6 +718,15 @@ async function focusFetchNow(bbox, { agency } = {}) {
 
 function setFocusHint(msg) { const el = $('focusHint'); if (el) el.textContent = msg || ''; }
 
+// Background-updates status line. `level` ∈ '' | 'ok' | 'warn' | 'err' tints it.
+function setSyncStatus(msg, level = '') {
+  const el = $('syncStatus');
+  if (!el) return;
+  el.textContent = msg || '—';
+  el.classList.remove('ok', 'warn', 'err');
+  if (level) el.classList.add(level);
+}
+
 function renderScraper(st = scraper?.state) {
   if (!st) return;
   const pill = $('scrapeState');
@@ -940,6 +949,29 @@ function wire() {
   $('pollNow').addEventListener('click', () => {
     scraper.configure({ intervalMin: $('interval').value, proxy: $('proxy').value });
     scraper.pollOnce();
+  });
+  $('reconcileNow').addEventListener('click', async () => {
+    const btn = $('reconcileNow');
+    btn.disabled = true; const label = btn.textContent; btn.textContent = 'Verifying…';
+    setSyncStatus('Verifying per-department counts against the live feed…');
+    try {
+      const r = await store.reconcile({
+        proxy: $('proxy').value.trim(),
+        onProgress: ({ done, total }) => setSyncStatus(`Verifying counts… ${done}/${total}`),
+      });
+      const drift = r.behind + r.ahead;
+      if (drift) {
+        setSyncStatus(`Drift: ${r.behind} behind, ${r.ahead} ahead across ${r.checked} dept(s)${r.error ? `, ${r.error} unchecked` : ''}. See Activity.`, 'warn');
+        log(`Count check: ${r.behind} dept(s) behind the feed, ${r.ahead} ahead. See Activity for which.`, 'warn');
+      } else {
+        setSyncStatus(`In sync — all ${r.match} department(s) match the feed${r.error ? ` (${r.error} unchecked)` : ''}.`, 'ok');
+        log(`Count check: all ${r.match} department(s) match the live feed.`, 'ok');
+      }
+      if (tab === 'activity') renderActivity();
+    } catch (e) {
+      setSyncStatus(`Count check failed: ${e.message}`, 'err');
+      log(`Count check failed: ${e.message}`, 'err');
+    } finally { btn.disabled = false; btn.textContent = label; }
   });
   $('interval').addEventListener('change', () => scraper.configure({ intervalMin: $('interval').value }));
   $('proxy').addEventListener('change', () => scraper.configure({ proxy: $('proxy').value }));

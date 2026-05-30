@@ -878,6 +878,106 @@ export class DataStore {
     return { added: r.added || 0, cnt, have };
   }
 
+  /**
+   * Deduped local flight count per department — unique flight identity (not raw
+   * row count), so the duplicate-flight_id inflation noted in AUDIT (F-01) can't
+   * skew the comparison. Returns a Map<org, count>.
+   */
+  localDeptCounts() {
+    const byOrg = new Map();
+    const seen = new Set();
+    for (const f of this.flights) {
+      const id = flightId(f);
+      if (!id || seen.has(id)) continue;   // skip dupes so the count is true
+      seen.add(id);
+      const org = f.organization_id || 'unknown';
+      byOrg.set(org, (byOrg.get(org) || 0) + 1);
+    }
+    return byOrg;
+  }
+
+  /**
+   * Proactively check that what we hold per department matches the live ArcGIS
+   * feed. For every known department we fetch the live count (the cheap
+   * returnCountOnly query) and compare it against our deduped local count,
+   * flagging drift in BOTH directions:
+   *   behind  — feed has more than we hold (we're missing flights)
+   *   ahead   — we hold more than the feed reports (upstream removals / stale
+   *             feed / a duplicate that slipped in)
+   *   match   — counts agree
+   *   error   — the count query failed (network/proxy)
+   *
+   * This is read-only: it never fetches flights or mutates the dataset; it just
+   * reports the truth so you can decide whether to Sync. Results are emitted to
+   * the Activity feed (kind `check`) and returned as a structured report, also
+   * stashed on `this.lastReconcile` for the UI.
+   *
+   * @param {object}   [opts]
+   * @param {string}   [opts.proxy]        CORS proxy prefix
+   * @param {function} [opts.onProgress]   ({done,total}) => void
+   * @param {AbortSignal} [opts.signal]
+   */
+  async reconcile({ proxy = '', onProgress = null, signal = null } = {}) {
+    const local = this.localDeptCounts();
+    // Departments to check: everything we know about — agencies, sharded
+    // manifest, and any org seen on a flight — so nothing is silently skipped.
+    const orgs = new Set();
+    for (const a of (this.agencies || [])) if (a.id) orgs.add(a.id);
+    for (const d of this.deptIndex()) if (d.org) orgs.add(d.org);
+    for (const org of local.keys()) if (org && org !== 'unknown') orgs.add(org);
+    const list = [...orgs];
+
+    const report = { ts: Date.now(), checked: 0, total: list.length,
+                     match: 0, behind: 0, ahead: 0, error: 0, drift: [], errors: [] };
+    if (!list.length) { this.lastReconcile = report; return report; }
+
+    act.check(`Reconciling ${list.length} department(s) against the live feed…`, { total: list.length });
+
+    let next = 0;
+    const worker = async () => {
+      while (true) {
+        if (signal?.aborted) return;
+        const idx = next++;
+        if (idx >= list.length) return;
+        const org = list[idx];
+        const have = local.get(org) || 0;
+        let live = null;
+        try { live = (await feedFetch(countUrl(fsForOrg(org)), proxy, { preferProxy: true }))?.count ?? null; }
+        catch (e) { live = null; }
+        report.checked++;
+        if (live == null) {
+          report.error++; report.errors.push({ org, have });
+        } else if (live === have) {
+          report.match++;
+        } else if (live > have) {
+          report.behind++; report.drift.push({ org, have, live, gap: live - have, dir: 'behind' });
+        } else {
+          report.ahead++; report.drift.push({ org, have, live, gap: have - live, dir: 'ahead' });
+        }
+        if (onProgress) { try { onProgress({ done: report.checked, total: list.length }); } catch {} }
+      }
+    };
+    const CONCURRENCY = 3;
+    await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+
+    // Surface the verdict. Drift is the headline — sorted by biggest gap first.
+    report.drift.sort((a, b) => b.gap - a.gap);
+    if (report.behind || report.ahead) {
+      act.check(`Drift on ${report.drift.length}/${report.checked} dept(s): ${report.behind} behind, ${report.ahead} ahead`,
+                { behind: report.behind, ahead: report.ahead, errors: report.error });
+      for (const d of report.drift.slice(0, 25)) {
+        const verb = d.dir === 'behind' ? `feed has +${d.gap} we don't` : `we hold +${d.gap} the feed dropped`;
+        act.err(`${d.org.slice(0, 8)}: ${verb} (local ${d.have} vs live ${d.live})`,
+                { org: d.org.slice(0, 8), local: d.have, live: d.live, dir: d.dir });
+      }
+    } else {
+      act.check(`In sync: all ${report.match} department(s) match the live feed${report.error ? ` (${report.error} unchecked)` : ''}.`,
+                { match: report.match, errors: report.error });
+    }
+    this.lastReconcile = report;
+    return report;
+  }
+
   /** How many flights are in loose events but not yet rolled into a block. */
   unrolledCount() { return this.looseEvents || 0; }
 
