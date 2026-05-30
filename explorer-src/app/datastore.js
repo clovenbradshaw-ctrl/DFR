@@ -53,9 +53,11 @@ export class DataStore {
     this.lastPublish = 0;
     this._mediaLimit = DEFAULT_MEDIA_LIMIT;
     this.onChange = null;
+    this.onBusy = null;   // (info|null) → UI loading overlay; null clears it
   }
 
   _notify() { if (this.onChange) this.onChange(); }
+  _busy(title, sub, frac) { if (this.onBusy) this.onBusy(title == null ? null : { title, sub, frac }); }
 
   async _mediaSizeLimit() {
     try {
@@ -168,18 +170,28 @@ export class DataStore {
    * whole archive in memory. Returns the lean flight records.
    */
   async _indexFromManifest(manifest) {
+    const total = manifest.chunk_count || (manifest.chunks ? manifest.chunks.length : 0);
+    this._busy('Loading dataset from blocks', `0 / ${total} blocks`, 0);
     const payloadStream = reassembleStream(
       manifest.chunks,
       (ref) => getMediaBytes(ref),
-      (n, total) => { if (n % 10 === 0 || n === total) this.log(`Indexing block ${n}/${total}…`, 'mut'); },
+      (n, t) => {
+        if (n % 5 === 0 || n === t) this.log(`Reassembling block ${n}/${t}…`, 'mut');
+        this._busy('Loading dataset from blocks', `block ${n} / ${t}`, total ? n / total : 0);
+      },
     );
-    return extractLeanFlights(payloadStream, {
+    const flights = await extractLeanFlights(payloadStream, {
       payloadFormat: manifest.payload_format,
-      onProgress: (p) => { if (p.seen % 5000 === 0) this.log(`…${p.kept} of ${p.seen} parsed kept`, 'mut'); },
-      // Surface the real field names of the first record — turns a "0 flights"
-      // run into a self-diagnosing one when a dataset uses unexpected keys.
+      onProgress: (p) => {
+        if (p.seen % 5000 === 0) {
+          this.log(`…${p.kept} of ${p.seen} parsed kept`, 'mut');
+          this._busy('Indexing flights', `${p.kept.toLocaleString()} flights`, null);
+        }
+      },
       onSample: (info) => this.log(`First record keys: ${(info.keys || []).join(', ') || '(none)'}`, 'mut'),
     });
+    this._busy(null);
+    return flights;
   }
 
   /**

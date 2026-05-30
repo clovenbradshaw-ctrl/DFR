@@ -25,8 +25,10 @@ import { onDatasetState } from './roomstate.js';
 import * as sel from './selectors.js';
 import { Scraper } from './scraper.js';
 import { DfrMap } from './mapview.js';
+import { DepartmentsView } from './departments.js';
 
 const $ = (id) => document.getElementById(id);
+let deptsView = null;
 
 let store = null, scraper = null, dfrMap = null;
 let currentRoomId = null, unsubDatasetState = null, unsubMembers = null;
@@ -71,7 +73,8 @@ async function onAuthed() {
   $('app').classList.remove('hidden');
 
   store = new DataStore({ log });
-  store.onChange = render;
+  store.onChange = scheduleRender;
+  store.onBusy = showLoading;
   scraper = new Scraper({ store, log });
   scraper.onChange = renderScraper;
   $('interval').value = scraper.intervalMin;
@@ -125,6 +128,7 @@ async function openRoom(roomId) {
   currentRoomId = roomId;
   $('roomSel').value = roomId;
   dfrMap && (dfrMap._fitDone = false);
+  agenciesDrawn = false;
   log('Opening dataset…');
   const { hydrated } = await store.open(roomId);
   render();
@@ -176,7 +180,14 @@ async function doInvite() {
 }
 
 // ── render ──
-let tab = 'map';
+let tab = 'depts';
+// Coalesce bursts of onChange (e.g. during indexing) into one paint per frame.
+let renderScheduled = false;
+function scheduleRender() {
+  if (renderScheduled) return;
+  renderScheduled = true;
+  requestAnimationFrame(() => { renderScheduled = false; render(); });
+}
 function render() {
   const flights = store?.flights || [];
   const s = sel.stats(flights);
@@ -199,23 +210,13 @@ function render() {
       : (store?.flights?.length ? `${store.flights.length} local · not published` : 'not hydrated')) + ag;
   }
 
-  if (tab === 'table') renderTable(flights);
+  if (tab === 'depts') ensureDepts().refresh();
   if (tab === 'map') renderMap(flights);
-}
 
-function renderTable(flights) {
-  const rows = sel.sortedByTakeoff(flights).slice(0, 2000).map(f => `<tr>
-    <td><span class="dot" style="background:var(--red)"></span>${esc(f.flight_purpose || '')}</td>
-    <td>${esc(f.external_id || f.flight_id || '')}</td>
-    <td>${f.takeoff ? new Date(f.takeoff).toLocaleString() : ''}</td>
-    <td>${f.duration_min ?? ''}</td>
-    <td>${f.num_points ?? ''}</td>
-    <td>${f.geometry ? 'yes' : '—'}</td>
-  </tr>`).join('');
-  $('tableView').innerHTML = `<table>
-    <thead><tr><th>Purpose</th><th>Case / Flight ID</th><th>Takeoff</th><th>Min</th><th>Pts</th><th>Path</th></tr></thead>
-    <tbody>${rows || '<tr><td colspan="6" style="color:var(--mut)">No flights. Hydrate the dataset or start the scraper.</td></tr>'}</tbody>
-  </table>`;
+  // Once the room holds data, fold the hydration-setup panel away.
+  const hasData = (store?.flights?.length || 0) > 0;
+  const setup = $('setupPanel');
+  if (setup && hasData && !setup.dataset.autoclosed) { setup.open = false; setup.dataset.autoclosed = '1'; }
 }
 
 const FOCUS_MIN_ZOOM = 12;     // only auto-pull when zoomed in this far
@@ -229,13 +230,32 @@ function ensureMap() {
   dfrMap = new DfrMap('map');
   // Auto-pull recent flights for the viewport once zoomed in.
   dfrMap.onFocusChange((bbox, zoom) => scheduleFocus(bbox, zoom));
+  dfrMap.onCount = (shown, total, capped) => setFocusHint(
+    total ? `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} flights in view${capped ? ' (capped — zoom in for more)' : ''}` : '');
   return dfrMap;
 }
+let agenciesDrawn = false;
 function renderMap(flights) {
   const m = ensureMap();
   if (!m) return;
   m.render(flights);
-  m.renderAgencies(store?.agencies || [], (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
+  // Agencies rarely change; only (re)draw when the set changes.
+  if (!agenciesDrawn && store?.agencies?.length) {
+    m.renderAgencies(store.agencies, (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
+    agenciesDrawn = true;
+  }
+}
+
+// ── loading overlay (recurring: reassembling/indexing blocks) ──
+function showLoading(info) {
+  const el = $('loading');
+  if (!info) { el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  $('loadingTitle').textContent = info.title || 'Loading…';
+  $('loadingSub').textContent = info.sub || '';
+  const bar = $('loadingBar');
+  if (info.frac == null) { bar.style.width = '100%'; bar.style.opacity = '.35'; }
+  else { bar.style.opacity = '1'; bar.style.width = Math.round(Math.max(0, Math.min(1, info.frac)) * 100) + '%'; }
 }
 
 function scheduleFocus(bbox, zoom) {
@@ -345,12 +365,23 @@ function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;'
 // ── tabs ──
 function setTab(t) {
   tab = t;
+  $('tabDepts').setAttribute('aria-selected', t === 'depts');
   $('tabMap').setAttribute('aria-selected', t === 'map');
-  $('tabTable').setAttribute('aria-selected', t === 'table');
+  $('deptsView').classList.toggle('hidden', t !== 'depts');
   $('mapView').classList.toggle('hidden', t !== 'map');
-  $('tableView').classList.toggle('hidden', t !== 'table');
   if (t === 'map') { renderMap(store?.flights || []); dfrMap?.invalidate(); }
-  else renderTable(store?.flights || []);
+  else if (t === 'depts') ensureDepts().refresh();
+}
+
+function ensureDepts() {
+  if (deptsView) return deptsView;
+  deptsView = new DepartmentsView({
+    sidebar: $('deptList'), main: $('deptMain'),
+    getData: () => ({ flights: store?.flights || [], agencies: store?.agencies || [] }),
+    onPickAgency: (a) => { if (dfrMap && a.lat != null) { setTab('map'); dfrMap.focusOn(a); focusFetchNow(dfrMap.bbox(), { agency: a.name }); } },
+  });
+  $('deptSearch').addEventListener('input', e => deptsView.setFilter(e.target.value));
+  return deptsView;
 }
 
 // ── wire ──
@@ -362,8 +393,8 @@ function wire() {
   $('inviteBtn').addEventListener('click', doInvite);
   $('inviteId').addEventListener('keydown', e => { if (e.key === 'Enter') doInvite(); });
   $('roomSel').addEventListener('change', e => openRoom(e.target.value));
+  $('tabDepts').addEventListener('click', () => setTab('depts'));
   $('tabMap').addEventListener('click', () => setTab('map'));
-  $('tabTable').addEventListener('click', () => setTab('table'));
   $('focusToggle').addEventListener('change', e => {
     focusEnabled = e.target.checked;
     setFocusHint(focusEnabled ? 'Live focus on — zoom in to pull recent flights.' : 'Live focus off.');

@@ -67,6 +67,61 @@ header select{width:auto;min-width:160px}
 .focus-toggle{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mut);margin-left:8px}
 .focus-toggle input{width:auto}
 .focus-hint{font-size:11px;color:var(--mut2);font-family:var(--mono);align-self:center;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── departments view ── */
+#deptsView{display:flex;flex-direction:column}
+#deptLayout{display:flex;flex:1;min-height:0}
+#deptSidebar{width:280px;flex:none;border-right:1px solid var(--line);display:flex;flex-direction:column;background:var(--surf)}
+.dept-search{padding:10px;border-bottom:1px solid var(--line)}
+.dept-search input{width:100%}
+#deptList{overflow-y:auto;flex:1}
+.dept{padding:8px 12px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.dept:hover{background:var(--surf2)}
+.dept.sel{background:rgba(77,141,245,.12);box-shadow:inset 3px 0 0 var(--acc)}
+.dept .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dept .sub{font-size:11px;color:var(--mut)}
+.dept .count{font-variant-numeric:tabular-nums;font-weight:600;color:var(--acc);white-space:nowrap}
+#deptMain{flex:1;min-width:0;padding:18px 20px;overflow:auto}
+#deptMain .title{font-size:20px;font-weight:600;margin:0 0 2px}
+#deptMain .title-sub{color:var(--mut);font-family:var(--mono);font-size:12px;margin:0 0 16px;word-break:break-all}
+#deptMain .card{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+#deptMain .card h2{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:0 0 12px}
+#deptMain .stats{display:flex;gap:24px;flex-wrap:wrap}
+#deptMain .stat .n{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+#deptMain .stat .l{font-size:12px;color:var(--mut)}
+.meta{display:grid;grid-template-columns:120px 1fr;gap:4px 12px;font-size:13px}
+.meta dt{color:var(--mut)} .meta dd{margin:0;word-break:break-all}
+.bars{display:flex;flex-direction:column;gap:6px}
+.barrow{display:grid;grid-template-columns:180px 1fr 84px;gap:10px;align-items:center;font-size:12.5px}
+.barrow .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.barrow .track{background:var(--surf2);border-radius:3px;height:13px;overflow:hidden}
+.barrow .fill{background:var(--acc);height:100%;opacity:.7}
+.barrow .val{text-align:right;font-variant-numeric:tabular-nums;color:var(--mut)}
+#deptMain table{border-collapse:collapse;width:100%;font-size:12.5px}
+#deptMain th,#deptMain td{border-bottom:1px solid var(--line);padding:6px 9px;text-align:left;white-space:nowrap}
+#deptMain th{color:var(--mut);font-weight:600;cursor:pointer;position:sticky;top:0;background:var(--surf)}
+#deptMain td.num,#deptMain th.num{text-align:right;font-variant-numeric:tabular-nums}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px;flex-wrap:wrap}
+.pager{color:var(--mut);font-size:12px;display:flex;align-items:center;gap:8px}
+.empty{color:var(--mut);padding:40px;text-align:center}
+details.setup{padding:0}
+details.setup summary{cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);padding:14px}
+details.setup[open] summary{border-bottom:1px solid var(--line);margin-bottom:12px}
+details.setup > *:not(summary){margin-left:14px;margin-right:14px}
+details.setup > label:first-of-type{margin-top:0}
+
+/* ── recurring loading overlay ── */
+.loading{position:absolute;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;
+  background:rgba(8,10,14,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.loading-card{width:320px;max-width:88vw;background:var(--surf);border:1px solid var(--line);
+  border-radius:16px;padding:26px 24px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+.spinner{width:46px;height:46px;margin:2px auto 16px;border-radius:50%;
+  border:3px solid var(--line);border-top-color:var(--acc);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-size:15px;font-weight:600;color:var(--txt)}
+.loading-sub{font-size:12px;color:var(--mut);font-family:var(--mono);margin-top:6px;min-height:16px}
+.loading .bar{margin-top:14px}
+.loading .bar > i{transition:width .25s ease}
 .view{flex:1;min-height:0;overflow:auto}
 #map{width:100%;height:100%}
 .view#tableView{padding:14px}
@@ -138,23 +193,24 @@ tbody tr:hover{background:var(--surf2)}
       </div>
 
       <div class="panel">
-        <h2>Background scraper <span class="pill" id="scrapeState">off</span></h2>
-        <div class="hint">Polls the live ArcGIS feed on your machine and records
-          new flights into the room (geometry → encrypted media block, metadata → events).</div>
+        <h2>Background updates <span class="pill" id="scrapeState">off</span></h2>
+        <div class="hint">Check all departments for new flights on the live feed
+          and record them into the room. Runs on your machine while open.</div>
+        <div class="row" style="margin-top:10px">
+          <button id="scrapeToggle" class="primary" style="flex:1">Start checking</button>
+          <button id="pollNow">Check now</button>
+        </div>
+        <div class="hint" id="syncStatus" style="margin-top:8px">—</div>
+      </div>
+
+      <!-- Hydration & data setup — collapsed once the room holds data. -->
+      <details class="panel setup" id="setupPanel">
+        <summary>Data setup &amp; sync</summary>
         <label>Poll interval (minutes)</label>
         <input id="interval" type="number" min="1" value="15">
         <label>CORS proxy (optional, prefix)</label>
         <input id="proxy" placeholder="https://proxy.example/?url=">
         <div class="row" style="margin-top:12px">
-          <button id="scrapeToggle" class="primary" style="flex:1">Start</button>
-          <button id="pollNow">Poll now</button>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h2>Dataset sync</h2>
-        <div class="hint" id="syncStatus">—</div>
-        <div class="row" style="margin-top:10px">
           <button id="publishNow" class="primary" style="flex:1">Publish snapshot</button>
           <button id="syncNow">Sync</button>
         </div>
@@ -164,10 +220,7 @@ tbody tr:hover{background:var(--surf2)}
         </div>
         <button id="agenciesBtn" style="margin-top:8px;width:100%">Load agencies…</button>
         <input id="agenciesFile" type="file" accept=".jsonl,.ndjson,.json,.geojson,.gz" class="hidden">
-        <div class="hint" style="margin-top:8px">Updates live in OPFS as a binary
-          blob; snapshots upload to Matrix media and bump one room-state pointer
-          — peers download only when the version advances.</div>
-      </div>
+      </details>
 
       <div class="panel">
         <h2>Members &amp; sharing</h2>
@@ -189,15 +242,32 @@ tbody tr:hover{background:var(--surf2)}
 
     <section class="content">
       <div class="tabs">
-        <button id="tabMap" aria-selected="true">Map</button>
-        <button id="tabTable" aria-selected="false">Table</button>
+        <button id="tabDepts" aria-selected="true">Departments</button>
+        <button id="tabMap" aria-selected="false">Map</button>
         <label class="focus-toggle" title="Pull recent flights from the live feed for the area you zoom into">
           <input type="checkbox" id="focusToggle" checked> live focus
         </label>
         <span class="focus-hint" id="focusHint"></span>
       </div>
-      <div class="view" id="mapView"><div id="map"></div></div>
-      <div class="view hidden" id="tableView"></div>
+      <div class="view" id="deptsView">
+        <div id="deptLayout">
+          <aside id="deptSidebar">
+            <div class="dept-search"><input type="text" id="deptSearch" placeholder="Filter departments…"></div>
+            <div id="deptList"></div>
+          </aside>
+          <main id="deptMain"><div class="empty">Loading…</div></main>
+        </div>
+      </div>
+      <div class="view hidden" id="mapView"><div id="map"></div></div>
+      <!-- recurring loading overlay (reassembling/indexing blocks, syncing) -->
+      <div id="loading" class="loading hidden">
+        <div class="loading-card">
+          <div class="spinner"></div>
+          <div class="loading-title" id="loadingTitle">Loading…</div>
+          <div class="loading-sub" id="loadingSub"></div>
+          <div class="bar"><i id="loadingBar"></i></div>
+        </div>
+      </div>
     </section>
   </div>
 </div>
