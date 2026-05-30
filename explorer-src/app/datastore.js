@@ -24,7 +24,7 @@ import { uploadEncrypted, getMediaBytes } from '../src/media.js';
 import { packFlights, unpackFlights, mergeFlights, blobHash } from './packset.js';
 import { saveLocal, loadLocal } from './opfsbin.js';
 import { readDatasetState, writeDatasetState } from './roomstate.js';
-import { toRecord, toAgency, agencyKey } from './dfr.js';
+import { toRecord, toAgency, agencyKey, focusQueryUrl, feedFetch } from './dfr.js';
 import { textStreamFrom, readChunks, streamElements, streamNdjson } from './jsonstream.js';
 import { chunkBlob, frameBlock, hash64, reassemble, reassembleStream } from './chunks.js';
 import { fileChunks, streamChunks, guessFormat } from './chunkstream.js';
@@ -351,6 +351,46 @@ export class DataStore {
     this.log(`Uploaded ${i} chained blocks (${(total / 1048576).toFixed(1)} MB) + manifest; ${count} flights indexed; pointer v${version}.`, 'ok');
     this._notify();
     return { chunkCount: i, totalBytes: total, version, indexed: count };
+  }
+
+  // ── focus fetch (live, targeted — no full sync) ─────────────────────────────
+
+  /**
+   * Pull recent flights intersecting a map bbox straight from the live Skydio
+   * feed and merge them into the working set immediately — independent of the
+   * (possibly multi-GB) archive. Same bbox-query pattern as the main app, with
+   * a direct-then-proxy fetch and pagination.
+   *
+   * @param {[number,number,number,number]} bbox  [west,south,east,north] WGS84
+   * @param {object} opts
+   * @param {number} [opts.sinceTs]  recency floor on takeoff (ms); default 7 days
+   * @param {string} [opts.proxy]    CORS proxy prefix
+   * @param {AbortSignal} [opts.signal]
+   */
+  async focusFetch(bbox, { sinceTs = Date.now() - 7 * 864e5, proxy = '', signal } = {}) {
+    const PAGE = 2000, CAP = 8000;
+    let offset = 0, fetched = [];
+    while (offset < CAP) {
+      if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
+      const url = focusQueryUrl(bbox, { sinceTs, offset, pageSize: PAGE });
+      const gj = await feedFetch(url, proxy);
+      const fs = (gj && gj.features) || [];
+      fetched = fetched.concat(fs);
+      if (fs.length < PAGE) break;
+      offset += PAGE;
+    }
+    if (!fetched.length) { this.log('No recent flights in this area.', 'mut'); return { added: 0, fetched: 0 }; }
+
+    const recs = fetched.map(toRecord);
+    const { merged, added } = mergeFlights(this.flights, recs);
+    this.flights = merged;
+    if (added) {
+      this.dirty += added;
+      await saveLocal(this.roomId, await packFlights(this.flights));
+    }
+    this._notify();
+    this.log(`Focus fetch: ${fetched.length} flights here, ${added} new.`, added ? 'ok' : 'mut');
+    return { added, fetched: fetched.length };
   }
 
   // ── scraper feed ────────────────────────────────────────────────────────────

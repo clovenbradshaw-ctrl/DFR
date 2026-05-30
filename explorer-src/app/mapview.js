@@ -22,22 +22,45 @@ export class DfrMap {
     this._fitDone = false;
   }
 
-  renderAgencies(agencies) {
+  renderAgencies(agencies, onPick) {
     this.agencyLayer.clearLayers();
     for (const a of agencies) {
       if (a.lat == null || a.lng == null) continue;
-      L.circleMarker([a.lat, a.lng], {
+      const mk = L.circleMarker([a.lat, a.lng], {
         radius: 4, color: '#b06ef5', weight: 1, fillColor: '#c79bff', fillOpacity: 0.7,
       }).bindPopup(`<b>${esc(a.name || 'Agency')}</b><br>` +
           `<span style="opacity:.75">${esc([a.city, a.county, a.state].filter(Boolean).join(', '))}</span>` +
-          `${a.address ? '<br>' + esc(a.address) : ''}`)
-        .addTo(this.agencyLayer);
+          `${a.address ? '<br>' + esc(a.address) : ''}` +
+          `${onPick ? '<br><i>pulling recent flights…</i>' : ''}`);
+      if (onPick) mk.on('click', () => onPick(a));
+      mk.addTo(this.agencyLayer);
     }
+  }
+
+  /** Recenter on an agency at a zoom that triggers a focus fetch. */
+  focusOn(a, zoom = 13) {
+    if (a.lat == null || a.lng == null) return;
+    this.map.setView([a.lat, a.lng], Math.max(this.map.getZoom(), zoom));
   }
 
   toggleAgencies(show) {
     if (show) this.agencyLayer.addTo(this.map);
     else this.map.removeLayer(this.agencyLayer);
+  }
+
+  /** Current viewport as [west, south, east, north] (WGS84). */
+  bbox() {
+    const b = this.map.getBounds();
+    return [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
+  }
+
+  zoom() { return this.map.getZoom(); }
+
+  /** Fire `cb(bbox, zoom)` after the user stops panning/zooming. */
+  onFocusChange(cb) {
+    const handler = () => cb(this.bbox(), this.map.getZoom());
+    this.map.on('moveend', handler);
+    return () => this.map.off('moveend', handler);
   }
 
   render(flights) {

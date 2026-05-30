@@ -218,18 +218,52 @@ function renderTable(flights) {
   </table>`;
 }
 
+const FOCUS_MIN_ZOOM = 12;     // only auto-pull when zoomed in this far
+const FOCUS_DEBOUNCE = 700;    // ms after the user stops moving
+let focusEnabled = true;
+let focusTimer = null, focusAbort = null, lastFocusKey = '';
+
 function ensureMap() {
   if (dfrMap) return dfrMap;
   if (typeof L === 'undefined') { log('Leaflet failed to load (offline?).', 'warn'); return null; }
   dfrMap = new DfrMap('map');
+  // Auto-pull recent flights for the viewport once zoomed in.
+  dfrMap.onFocusChange((bbox, zoom) => scheduleFocus(bbox, zoom));
   return dfrMap;
 }
 function renderMap(flights) {
   const m = ensureMap();
   if (!m) return;
   m.render(flights);
-  m.renderAgencies(store?.agencies || []);
+  m.renderAgencies(store?.agencies || [], (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
 }
+
+function scheduleFocus(bbox, zoom) {
+  if (!focusEnabled || !store?.roomId) return;
+  if (zoom < FOCUS_MIN_ZOOM) { setFocusHint(`Zoom in to level ${FOCUS_MIN_ZOOM}+ to pull recent flights here.`); return; }
+  // Skip if the viewport hasn't meaningfully changed.
+  const key = bbox.map(n => n.toFixed(3)).join(',');
+  if (key === lastFocusKey) return;
+  clearTimeout(focusTimer);
+  focusTimer = setTimeout(() => { lastFocusKey = key; focusFetchNow(bbox); }, FOCUS_DEBOUNCE);
+}
+
+async function focusFetchNow(bbox, { agency } = {}) {
+  if (!store?.roomId) return;
+  if (focusAbort) focusAbort.abort();
+  focusAbort = new AbortController();
+  setFocusHint(agency ? `Pulling recent flights near ${agency}…` : 'Pulling recent flights in view…');
+  try {
+    const proxy = $('proxy').value.trim();
+    const r = await store.focusFetch(bbox, { proxy, signal: focusAbort.signal });
+    setFocusHint(r.fetched ? `${r.fetched} recent flights here (${r.added} new).` : 'No recent flights in this area.');
+    render();
+  } catch (e) {
+    if (e.name !== 'AbortError') setFocusHint(`Live pull failed: ${e.message}`);
+  } finally { focusAbort = null; }
+}
+
+function setFocusHint(msg) { const el = $('focusHint'); if (el) el.textContent = msg || ''; }
 
 function renderScraper(st = scraper?.state) {
   if (!st) return;
@@ -330,6 +364,11 @@ function wire() {
   $('roomSel').addEventListener('change', e => openRoom(e.target.value));
   $('tabMap').addEventListener('click', () => setTab('map'));
   $('tabTable').addEventListener('click', () => setTab('table'));
+  $('focusToggle').addEventListener('change', e => {
+    focusEnabled = e.target.checked;
+    setFocusHint(focusEnabled ? 'Live focus on — zoom in to pull recent flights.' : 'Live focus off.');
+    if (focusEnabled && dfrMap && dfrMap.zoom() >= FOCUS_MIN_ZOOM) { lastFocusKey = ''; scheduleFocus(dfrMap.bbox(), dfrMap.zoom()); }
+  });
 
   $('scrapeToggle').addEventListener('click', () => {
     scraper.configure({ intervalMin: $('interval').value, proxy: $('proxy').value });

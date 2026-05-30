@@ -47,6 +47,49 @@ export function feedQueryUrl() {
 }
 
 /**
+ * Build a bbox-filtered query against the live feed — the exact pattern the
+ * main DFR index.html uses (esriGeometryEnvelope + esriSpatialRelIntersects,
+ * paginated). `bbox` is [west, south, east, north] in WGS84. `sinceTs` (ms)
+ * adds a recency floor on `takeoff`. Used by the "pull recent flights here"
+ * focus fetch so we never wait for the full archive.
+ */
+export function focusQueryUrl(bbox, { sinceTs = null, offset = 0, pageSize = 2000 } = {}) {
+  const params = {
+    where: sinceTs ? `takeoff >= ${Math.floor(sinceTs)}` : '1=1',
+    geometry: bbox.join(','),
+    geometryType: 'esriGeometryEnvelope',
+    inSR: '4326',
+    spatialRel: 'esriSpatialRelIntersects',
+    outFields: '*',
+    outSR: '4326',
+    returnGeometry: 'true',
+    f: 'geojson',
+    resultRecordCount: String(pageSize),
+    resultOffset: String(offset),
+    orderByFields: 'takeoff DESC',
+  };
+  return `${FEATURE_SERVICE}/query?${new URLSearchParams(params).toString()}`;
+}
+
+/**
+ * ArcGIS Online is usually CORS-enabled, so try a direct fetch first and fall
+ * back to the proxy when the direct call is blocked — mirrors csiFetch() in the
+ * main app. `proxy` is the prefix the encoded URL is appended to.
+ */
+export async function feedFetch(url, proxy) {
+  try {
+    const r = await fetch(url, { cache: 'no-store', mode: 'cors' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch (e) {
+    if (!proxy) throw e;
+    const r = await fetch(proxied(url, proxy), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  }
+}
+
+/**
  * Apply an optional CORS proxy. The live ArcGIS service may not send
  * Access-Control-Allow-Origin for browser callers; the existing DFR
  * index.html routes some feeds through an n8n proxy for exactly this.

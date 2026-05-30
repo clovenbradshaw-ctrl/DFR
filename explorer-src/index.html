@@ -64,6 +64,9 @@ header select{width:auto;min-width:160px}
 .content{min-height:0;display:flex;flex-direction:column}
 .tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line)}
 .tabs button[aria-selected=true]{background:var(--acc);border-color:var(--acc);color:#06101f}
+.focus-toggle{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mut);margin-left:8px}
+.focus-toggle input{width:auto}
+.focus-hint{font-size:11px;color:var(--mut2);font-family:var(--mono);align-self:center;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .view{flex:1;min-height:0;overflow:auto}
 #map{width:100%;height:100%}
 .view#tableView{padding:14px}
@@ -188,6 +191,10 @@ tbody tr:hover{background:var(--surf2)}
       <div class="tabs">
         <button id="tabMap" aria-selected="true">Map</button>
         <button id="tabTable" aria-selected="false">Table</button>
+        <label class="focus-toggle" title="Pull recent flights from the live feed for the area you zoom into">
+          <input type="checkbox" id="focusToggle" checked> live focus
+        </label>
+        <span class="focus-hint" id="focusHint"></span>
       </div>
       <div class="view" id="mapView"><div id="map"></div></div>
       <div class="view hidden" id="tableView"></div>
