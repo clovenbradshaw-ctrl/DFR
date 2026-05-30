@@ -186,7 +186,12 @@ async function onAuthed() {
   $('who').textContent = client.getUserId();
   $('login').classList.add('hidden');
   $('app').classList.remove('hidden');
-  try { if (localStorage.getItem('dfr.sideHidden') === '1') $('mainGrid').classList.add('side-hidden'); } catch {}
+  // On phones the side panel is an off-canvas drawer — start it closed. On
+  // desktop, honor the saved collapse preference.
+  const isMobile = window.matchMedia('(max-width:760px)').matches;
+  let collapsed = false;
+  try { collapsed = isMobile || localStorage.getItem('dfr.sideHidden') === '1'; } catch { collapsed = isMobile; }
+  $('mainGrid').classList.toggle('side-hidden', collapsed);
 
   store = new DataStore({ log });
   store.onChange = scheduleRender;
@@ -676,11 +681,14 @@ function wire() {
   $('signin').addEventListener('click', doSignIn);
   $('pw').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
   $('logout').addEventListener('click', doLogout);
-  $('sideToggle').addEventListener('click', () => {
-    const hidden = $('mainGrid').classList.toggle('side-hidden');
+  const setSide = (hidden) => {
+    $('mainGrid').classList.toggle('side-hidden', hidden);
     try { localStorage.setItem('dfr.sideHidden', hidden ? '1' : '0'); } catch {}
     if (tab === 'map') dfrMap?.invalidate();   // map reclaims the space
-  });
+  };
+  $('sideToggle').addEventListener('click', () => setSide(!$('mainGrid').classList.contains('side-hidden')));
+  // Tapping the dimmed backdrop closes the mobile drawer.
+  $('sideScrim').addEventListener('click', () => setSide(true));
   $('newRoom').addEventListener('click', createDataset);
   $('inviteBtn').addEventListener('click', doInvite);
   $('inviteId').addEventListener('keydown', e => { if (e.key === 'Enter') doInvite(); });
