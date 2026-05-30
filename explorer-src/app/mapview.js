@@ -18,10 +18,12 @@ export class DfrMap {
   constructor(el) {
     this.map = L.map(el, { zoomControl: true, attributionControl: false, preferCanvas: true })
       .setView([NASHVILLE.lat, NASHVILLE.lng], NASHVILLE.zoom);
-    // Simple, light basemap (Carto dark matter) — one flat label+street layer,
-    // no heavy satellite imagery. Faster to draw and far less to download.
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-      { maxZoom: 19, subdomains: 'abcd' }).addTo(this.map);
+    // Light, legible basemap (Carto Voyager) — clearer than dark matter and a
+    // neutral ground for the demographic choropleth. Flat raster, cheap to draw.
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      { maxZoom: 20, subdomains: 'abcd' }).addTo(this.map);
+    // Tract choropleth sits above the basemap but below flight dots/paths.
+    this.tractLayer = L.layerGroup().addTo(this.map);
     this._canvas = L.canvas({ padding: 0.5 });   // one canvas for all flight dots
     this.flightLayer = L.layerGroup().addTo(this.map);
     this.pathLayer = L.layerGroup().addTo(this.map);

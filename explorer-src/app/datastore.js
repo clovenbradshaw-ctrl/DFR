@@ -40,17 +40,35 @@ import { toRecord, toAgency, agencyKey, focusQueryUrl, feedFetch } from './dfr.j
 import { textStreamFrom, readChunks, streamElements, streamNdjson } from './jsonstream.js';
 import { chunkBlob, frameBlock, hash64, reassemble, reassembleStream } from './chunks.js';
 import { fileChunks, streamChunks, guessFormat } from './chunkstream.js';
-import { extractLeanFlights, simplifyGeometry } from './leanindex.js';
+import { extractLeanFlights } from './leanindex.js';
 import { ENTITY } from './dfr.js';
 import { act } from './activity.js';
 
 // New flights post as durable room *events* the moment they're found, then get
 // rolled up into a block once enough accumulate (and the loose events redacted).
-const ROLLUP_THRESHOLD = 200;
+// 100 ≈ a comfortable margin under Matrix homeservers' typical per-request /
+// timeline limits, so we compact well before hitting them.
+const ROLLUP_THRESHOLD = 100;
 
 const FORMAT = 'gzip-ndjson';
 const DEFAULT_MEDIA_LIMIT = 50 * 1024 * 1024;
 const MAX_CHUNK = 24 * 1024 * 1024;            // cap per-block payload memory
+
+// Keep a department's batch event comfortably under typical Matrix event-size
+// limits (~64KB). Beyond this we split into multiple events; a single flight
+// whose full geometry alone exceeds it is hoisted to media by the outbox.
+const EVENT_BUDGET = 48 * 1024;
+/** Split records into groups whose JSON stays under EVENT_BUDGET (≥1 each). */
+function sizeBatches(records) {
+  const out = []; let cur = [], size = 2;
+  for (const r of records) {
+    const s = JSON.stringify(r).length + 1;
+    if (cur.length && size + s > EVENT_BUDGET) { out.push(cur); cur = []; size = 2; }
+    cur.push(r); size += s;
+  }
+  if (cur.length) out.push(cur);
+  return out;
+}
 
 const PUBLISH_THRESHOLD = 25;
 const PUBLISH_MIN_INTERVAL = 30 * 60e3;
@@ -130,9 +148,14 @@ export class DataStore {
       const u = typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned;
       if (u && u.redacted_because) continue;          // already rolled up
       const c = typeof e.getContent === 'function' ? e.getContent() : e.content;
-      if (!c || c.entity_type !== ENTITY.FLIGHT || !c.payload) continue;
-      recs.push(toRecord(c.payload));
-      loose++;
+      if (!c || !c.payload) continue;
+      if (c.entity_type === ENTITY.FLIGHT_BATCH) {
+        for (const f of (c.payload.flights || [])) recs.push(toRecord(f));
+        loose++;
+      } else if (c.entity_type === ENTITY.FLIGHT) {    // legacy single-flight events
+        recs.push(toRecord(c.payload));
+        loose++;
+      }
     }
     this.looseEvents = loose;
     if (!recs.length) return 0;
@@ -470,14 +493,21 @@ export class DataStore {
     const fresh = recs.filter(r => { const id = flightId(r); return id && !have.has(id); });
     if (!fresh.length) return { added: 0 };
 
-    // 1) Post each new flight as a durable room EVENT immediately. ins() goes
-    //    through the foundation's offline outbox, so delivery is guaranteed even
-    //    if the user closes the tab mid-send — the data is no longer stranded in
-    //    OPFS. Events carry lean (simplified) geometry so lines draw at once.
-    for (const r of fresh) {
-      const ev = { ...r, geometry: simplifyGeometry(r.geometry) };
-      try { await ins(this.roomId, ENTITY.FLIGHT, ev); this.looseEvents = (this.looseEvents || 0) + 1; }
-      catch (e) { act.err(`Flight event failed: ${e.message}`); }
+    // 1) Post new flights as durable room EVENTS immediately — one batch event
+    //    PER DEPARTMENT where possible, split across multiple events only when a
+    //    department's batch would exceed the size budget. Events carry the FULL,
+    //    precise geometry (this is the research-grade history); oversized batches
+    //    are auto-hoisted to encrypted media by the foundation outbox. Delivery
+    //    is guaranteed even if the tab closes mid-send.
+    const byOrg = new Map();
+    for (const r of fresh) { const o = r.organization_id || 'unknown'; (byOrg.get(o) || byOrg.set(o, []).get(o)).push(r); }
+    for (const [org, list] of byOrg) {
+      for (const batch of sizeBatches(list)) {
+        try {
+          await ins(this.roomId, ENTITY.FLIGHT_BATCH, { org, flights: batch });
+          this.looseEvents = (this.looseEvents || 0) + 1;
+        } catch (e) { act.err(`Flight batch failed: ${e.message}`); }
+      }
     }
 
     // 2) Update the in-memory working set + local OPFS cache.
@@ -526,7 +556,7 @@ export class DataStore {
       const t = typeof e.getType === 'function' ? e.getType() : e.type;
       if (!t || !t.endsWith('.ins')) continue;
       const c = typeof e.getContent === 'function' ? e.getContent() : e.content;
-      if (c && c.entity_type === ENTITY.FLIGHT) {
+      if (c && (c.entity_type === ENTITY.FLIGHT_BATCH || c.entity_type === ENTITY.FLIGHT)) {
         const id = typeof e.getId === 'function' ? e.getId() : e.event_id;
         const u = typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned;
         if (id && !(u && u.redacted_because)) out.push(id);

@@ -22,10 +22,11 @@ export const NAMESPACE = 'org.dfr.explorer';
 export const ROOM_TYPE = 'dfr.dataset';
 
 export const ENTITY = {
-  FLIGHT: 'flight',     // a single DFR drone flight
-  SITE: 'site',         // a sensitive site (school/childcare/playground/worship)
-  SNAPSHOT: 'snapshot', // one background-scraper poll (provenance)
-  DATASET: 'dataset',   // a hydration source descriptor (+ raw blob as media)
+  FLIGHT: 'flight',            // a single DFR drone flight (legacy single-flight event)
+  FLIGHT_BATCH: 'flight_batch',// a department's new flights, batched into one event
+  SITE: 'site',                // a sensitive site (school/childcare/playground/worship)
+  SNAPSHOT: 'snapshot',        // one background-scraper poll (provenance)
+  DATASET: 'dataset',          // a hydration source descriptor (+ raw blob as media)
 };
 
 // Field paths (DEF) we read/write. Treat as a public schema.
