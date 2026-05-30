@@ -387,7 +387,7 @@ export class DataStore {
    * @param {string} [opts.proxy]    CORS proxy prefix
    * @param {AbortSignal} [opts.signal]
    */
-  async focusFetch(bbox, { sinceTs = Date.now() - 7 * 864e5, proxy = '', signal } = {}) {
+  async focusFetch(bbox, { sinceTs = Date.now() - 90 * 864e5, proxy = '', signal } = {}) {
     act.api('Checking live feed for recent flights in view', { bbox: bbox.map(n => +n.toFixed(3)) });
     const PAGE = 2000, CAP = 8000;
     let offset = 0, fetched = [];

@@ -53,8 +53,11 @@ header .brand small{color:var(--mut);font-weight:400;margin-left:6px}
 header .spacer{flex:1}
 header .who{font-family:var(--mono);font-size:12px;color:var(--mut)}
 header select{width:auto;min-width:160px}
-.main{display:grid;grid-template-columns:340px 1fr;min-height:0}
+.main{display:grid;grid-template-columns:340px 1fr;min-height:0;transition:grid-template-columns .2s ease}
+.main.side-hidden{grid-template-columns:0 1fr}
 .side{border-right:1px solid var(--line);overflow:auto;padding:14px}
+.main.side-hidden .side{display:none}
+#sideToggle{font-size:16px;line-height:1;padding:6px 10px;margin-right:4px}
 .panel{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
 .panel h2{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -127,17 +130,31 @@ details.setup > label:first-of-type{margin-top:0}
 .k.swarm{color:#4dd0e1} .k.err{color:var(--err)} .k.info{color:var(--mut)}
 .act-empty{color:var(--mut);padding:40px;text-align:center}
 
-/* ── recurring loading overlay ── */
-.loading{position:absolute;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;
-  background:rgba(8,10,14,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.loading-card{width:320px;max-width:88vw;background:var(--surf);border:1px solid var(--line);
-  border-radius:16px;padding:26px 24px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.55)}
-.spinner{width:46px;height:46px;margin:2px auto 16px;border-radius:50%;
-  border:3px solid var(--line);border-top-color:var(--acc);animation:spin .9s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-title{font-size:15px;font-weight:600;color:var(--txt)}
+/* ── loading screen (radar sweep) ── */
+.loading{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(900px 600px at 50% 40%,#10151d,#070a0f 75%)}
+.loading-card{width:340px;max-width:90vw;text-align:center}
+.radar{position:relative;width:150px;height:150px;margin:0 auto 22px;border-radius:50%;
+  background:radial-gradient(circle,rgba(77,141,245,.06) 0%,transparent 70%);
+  border:1px solid rgba(77,141,245,.25);box-shadow:0 0 40px rgba(77,141,245,.12) inset}
+.radar::before,.radar::after{content:'';position:absolute;border-radius:50%;border:1px solid rgba(77,141,245,.16)}
+.radar::before{inset:33px} .radar::after{inset:66px}
+.radar .grid-x,.radar .grid-y{position:absolute;background:rgba(77,141,245,.14)}
+.radar .grid-x{left:0;right:0;top:50%;height:1px} .radar .grid-y{top:0;bottom:0;left:50%;width:1px}
+.radar .sweep{position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(77,141,245,.55),rgba(77,141,245,0) 60deg,transparent);
+  animation:sweep 1.8s linear infinite;mask:radial-gradient(circle,#000 70%,transparent 71%);-webkit-mask:radial-gradient(circle,#000 70%,transparent 71%)}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.radar .blip{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--red);
+  box-shadow:0 0 10px var(--red);transform:translate(-50%,-50%);opacity:0;animation:blip 1.8s ease-in-out infinite}
+.radar .blip.b1{top:34%;left:62%;animation-delay:.2s}
+.radar .blip.b2{top:58%;left:40%;animation-delay:.7s}
+.radar .blip.b3{top:46%;left:70%;animation-delay:1.1s}
+.radar .blip.b4{top:68%;left:56%;animation-delay:1.5s}
+@keyframes blip{0%,100%{opacity:0}10%{opacity:1}60%{opacity:.4}}
+.loading-title{font-size:16px;font-weight:600;color:var(--txt);letter-spacing:.01em}
 .loading-sub{font-size:12px;color:var(--mut);font-family:var(--mono);margin-top:6px;min-height:16px}
-.loading .bar{margin-top:14px}
+.loading .bar{margin-top:16px;max-width:240px;margin-left:auto;margin-right:auto}
 .loading .bar > i{transition:width .25s ease}
 .view{flex:1;min-height:0;overflow:auto}
 #map{width:100%;height:100%}
@@ -162,7 +179,7 @@ tbody tr:hover{background:var(--surf2)}
 .bar > i{display:block;height:100%;background:var(--acc);width:0}
 @media(max-width:760px){.main{grid-template-columns:1fr}.side{max-height:42vh}}
 </style>
-  <script type="module" crossorigin src="./assets/index-DppehXG-.js"></script>
+  <script type="module" crossorigin src="./assets/index-CYhlKFo3.js"></script>
 </head>
 <body>
 
@@ -189,6 +206,7 @@ tbody tr:hover{background:var(--surf2)}
 <!-- ── app ── -->
 <div id="app" class="hidden">
   <header>
+    <button id="sideToggle" title="Hide/show the panel">☰</button>
     <div class="brand">DFR Explorer <small>Drone-as-First-Responder dataset</small></div>
     <div class="spacer"></div>
     <select id="roomSel" title="Dataset room"></select>
@@ -197,7 +215,7 @@ tbody tr:hover{background:var(--surf2)}
     <button id="logout">Sign out</button>
   </header>
 
-  <div class="main">
+  <div class="main" id="mainGrid">
     <aside class="side">
       <div class="panel">
         <h2>Dataset</h2>
@@ -288,7 +306,12 @@ tbody tr:hover{background:var(--surf2)}
       <!-- recurring loading overlay (reassembling/indexing blocks, syncing) -->
       <div id="loading" class="loading hidden">
         <div class="loading-card">
-          <div class="spinner"></div>
+          <div class="radar">
+            <span class="grid-x"></span><span class="grid-y"></span>
+            <span class="sweep"></span>
+            <span class="blip b1"></span><span class="blip b2"></span>
+            <span class="blip b3"></span><span class="blip b4"></span>
+          </div>
           <div class="loading-title" id="loadingTitle">Loading…</div>
           <div class="loading-sub" id="loadingSub"></div>
           <div class="bar"><i id="loadingBar"></i></div>
