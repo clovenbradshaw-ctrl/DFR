@@ -42,6 +42,7 @@ export class Scraper {
     this.timer = null; this.running = false; this.busy = false;
     this.paused = false;          // set true during a big import so the cycle yields
     this.busyDelayMs = 8;         // per-iteration yield → never freezes the UI
+    this.concurrency = 3;         // departments processed in parallel, continuously
     this.cycleN = 0; this.onChange = null;
   }
 
@@ -144,65 +145,25 @@ export class Scraper {
       this._t(`  ${allUuids.length} dashboards live  (${fresh.length} new, ${allUuids.length - fresh.length} known) — priority order`);
       act.api(`${allUuids.length} departments live`, { total: allUuids.length, new: fresh.length });
 
-      let i = 0;
       const known = this.store.knownIds();   // dedup set (flight_id / oid)
-      for (const uuid of uuids) {
-        if (!this.running && this.timer === null && i > 0) break;  // stopped mid-cycle
-        // Stand aside while a big import/hydration is running so the scraper
-        // doesn't compete for the network or block the UI. Resumes after.
-        while (this.paused) { this._t('  (paused — import in progress)'); await sleep(2000); if (!this.running) break; }
-        // Yield to the event loop each iteration so the tab stays responsive
-        // even across 787 departments.
-        await sleep(this.busyDelayMs || 0);
-        i++;
-        const { env, fs } = found[uuid];
-        const isNew = !knownDepts.has(uuid);
-        const tag = isNew ? 'NEW ' : '    ';
-        const head = `  [${String(i).padStart(3)}/${uuids.length}] ${tag}${uuid.slice(0, 8)}`;
-        let cnt = null;
-        try { cnt = (await feedFetch(countUrl(fs), this.proxy))?.count ?? null; } catch {}
-        const prev = this.counts[uuid];
-        // Track per-department stats for prioritization: volume, when its count
-        // last changed (activity recency), and when we last checked it.
-        const st = this.stats[uuid] || (this.stats[uuid] = {});
-        st.lastChecked = Date.now();
-        if (cnt != null) { st.count = cnt; if (cnt !== prev) st.lastChange = Date.now(); }
-        // Empty departments: record the count and skip the fetch entirely — no
-        // point pulling a 0-flight layer (most of the 787 are empty).
-        if (cnt === 0) { skipped++; this.counts[uuid] = 0; this._t(`${head} cnt=0 = empty, skip`); continue; }
-        const why = isNew ? 'new' : (cnt !== prev ? 'count changed' : null);
-        if (why === null) { skipped++; this._t(`${head} cnt=${cnt} = unchanged, skip`); continue; }
+      const ctx = { i: 0, fetched: 0, skipped: 0, totAdded: 0, newDepts: 0, known, knownDepts, found, total: uuids.length };
 
-        // Tail fetch: rows are ordered OBJECTID ASC, so only the last
-        // (cnt - prev) are new when a known department's count grew. Fetch just
-        // that tail instead of re-paging the whole layer — big speedup on large
-        // departments. Full fetch only for new depts, shrinking counts, or a
-        // first sight.
-        const grew = typeof prev === 'number' && cnt > prev;
-        let feats, mode;
-        try {
-          if (grew && (cnt - prev) <= 5000) { feats = await this._fetchTail(fs, cnt - prev); mode = `tail +${cnt - prev}`; }
-          else { feats = await this._fetchAll(fs); mode = 'full'; }
-        } catch (e) { this._t(`${head} cnt=${cnt} -> ! fetch failed: ${e.message}`); continue; }
-        this._t(`${head} cnt=${cnt} (was ${prev ?? '—'}) -> FETCH [${why}, ${mode}] …`);
-        fetched++;
-
-        const newFeats = feats.filter(f => {
-          const p = f.properties || f;
-          const id = p.flight_id || p.id || (p.ObjectId != null ? 'oid_' + p.ObjectId : null);
-          return id && !known.has(id);
-        });
-        let added = 0;
-        if (newFeats.length) {
-          const r = await this.store.addFlights(newFeats);
-          added = r.added; totAdded += added;
-          for (const f of newFeats) { const p = f.properties || f; if (p.flight_id) known.add(p.flight_id); }
-          if (r.newAgencies) newDepts += r.newAgencies;
+      // Worker pool: process CONCURRENCY departments at once, continuously. The
+      // network calls (count + fetch) run in parallel; the shared-state merge
+      // (addFlights → OPFS) is serialized via _mergeLock so they don't race.
+      const CONCURRENCY = this.concurrency || 3;
+      let next = 0;
+      const worker = async () => {
+        while (true) {
+          if (!this.running && this.timer === null) return;
+          while (this.paused) { await sleep(1500); if (!this.running) return; }
+          const idx = next++;
+          if (idx >= uuids.length) return;
+          await this._processDept(uuids[idx], ctx);
         }
-        this.counts[uuid] = cnt; saveJSON(COUNTS_KEY, this.counts);
-        this._t(`            + fetched ${feats.length}  added ${added}  archived ${cnt}`);
-        if (isNew) act.api(`New department ${uuid.slice(0, 8)} (+${added})`, { uuid: uuid.slice(0, 8), added });
-      }
+      };
+      await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+      fetched = ctx.fetched; skipped = ctx.skipped; totAdded = ctx.totAdded; newDepts = ctx.newDepts;
 
       saveJSON(COUNTS_KEY, this.counts);   // persist all counts (incl. empties) once per cycle
       saveJSON(STATS_KEY, this.stats);     // persist priority stats
@@ -217,6 +178,57 @@ export class Scraper {
     } finally {
       this.busy = false; this._emit();
     }
+  }
+
+  /**
+   * Process one department: count-check, skip-if-unchanged, fetch (tail/full),
+   * dedupe, merge. Network I/O runs free (the pool gives parallelism); the
+   * shared-state merge is serialized via _mergeLock to avoid races on the
+   * working set / OPFS / dedup sets.
+   */
+  async _processDept(uuid, ctx) {
+    const i = ++ctx.i;
+    const { fs } = ctx.found[uuid];
+    const isNew = !ctx.knownDepts.has(uuid);
+    const head = `  [${String(i).padStart(3)}/${ctx.total}] ${isNew ? 'NEW ' : '    '}${uuid.slice(0, 8)}`;
+
+    let cnt = null;
+    try { cnt = (await feedFetch(countUrl(fs), this.proxy))?.count ?? null; } catch {}
+    const prev = this.counts[uuid];
+    const st = this.stats[uuid] || (this.stats[uuid] = {});
+    st.lastChecked = Date.now();
+    if (cnt != null) { st.count = cnt; if (cnt !== prev) st.lastChange = Date.now(); }
+    if (cnt === 0) { ctx.skipped++; this.counts[uuid] = 0; this._t(`${head} cnt=0 = empty, skip`); return; }
+    const why = isNew ? 'new' : (cnt !== prev ? 'count changed' : null);
+    if (why === null) { ctx.skipped++; this._t(`${head} cnt=${cnt} = unchanged, skip`); return; }
+
+    const grew = typeof prev === 'number' && cnt > prev;
+    let feats, mode;
+    try {
+      if (grew && (cnt - prev) <= 5000) { feats = await this._fetchTail(fs, cnt - prev); mode = `tail +${cnt - prev}`; }
+      else { feats = await this._fetchAll(fs); mode = 'full'; }
+    } catch (e) { this._t(`${head} cnt=${cnt} -> ! fetch failed: ${e.message}`); return; }
+    ctx.fetched++;
+    this._t(`${head} cnt=${cnt} (was ${prev ?? '—'}) -> FETCH [${why}, ${mode}] …`);
+
+    // Serialize the merge so parallel workers don't race shared state.
+    await (this._mergeLock = (this._mergeLock || Promise.resolve()).then(async () => {
+      const newFeats = feats.filter(f => {
+        const p = f.properties || f;
+        const id = p.flight_id || p.id || (p.ObjectId != null ? 'oid_' + p.ObjectId : null);
+        return id && !ctx.known.has(id);
+      });
+      let added = 0;
+      if (newFeats.length) {
+        const r = await this.store.addFlights(newFeats);
+        added = r.added; ctx.totAdded += added;
+        for (const f of newFeats) { const p = f.properties || f; if (p.flight_id) ctx.known.add(p.flight_id); }
+        if (r.newAgencies) ctx.newDepts += r.newAgencies;
+      }
+      this.counts[uuid] = cnt;
+      this._t(`            + fetched ${feats.length}  added ${added}  archived ${cnt}`);
+      if (isNew) act.api(`New department ${uuid.slice(0, 8)} (+${added})`, { uuid: uuid.slice(0, 8), added });
+    }));
   }
 
   /** Fetch just the newest `n` rows (OBJECTID DESC), paged if n exceeds a page. */
