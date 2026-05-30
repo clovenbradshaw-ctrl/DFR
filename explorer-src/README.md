@@ -13,6 +13,10 @@ https://<pages-domain>/            ← existing DFR surveillance-footprint site
 https://<pages-domain>/explorer/   ← this app
 ```
 
+The main site links here through a deliberately understated **`login`** link in
+its header brand row (`index.html`), so the explorer is reachable without
+advertising itself on the landing page.
+
 ## What it does
 
 - **Sign in with Matrix.** Bring your own homeserver (default `matrix.org`).
@@ -39,8 +43,30 @@ geometry, inline). It lives in three places:
 | Where | Role |
 |---|---|
 | **OPFS** (vault-encrypted, one file per room) | the fast local working set — written on every local change, read once on open |
-| **Matrix media** (encrypted, when within the server's upload limit) | the durable, shareable copy |
-| **a single room-state event** (`org.dfr.explorer.dataset`) | the pointer: hydration status, version, count, the media ref / external URL |
+| **Matrix media** | the durable, shareable copy — a **single block** when it fits the server's upload limit, otherwise **chained blocks + a manifest** (see below) |
+| **a single room-state event** (`org.dfr.explorer.dataset`) | the pointer: hydration status, version, count, the media/manifest ref / external URL |
+
+### Chained blocks (the media store can't hold GBs natively)
+
+A homeserver caps a single upload (`m.upload.size`), so anything larger — and
+the hydration file may be **multiple GB** — is "blockchained" into media:
+
+- The blob is sliced into block-sized pieces; each piece is framed in a small
+  binary envelope (`chunks.js`) carrying its index and the **FNV-1a/64 hash of
+  the previous block's payload** — a verifiable chain.
+- Each framed block is uploaded as its own encrypted media block.
+- A **manifest** (itself a media block) lists every block's `mxc` ref + hash in
+  order. The room-state pointer references the manifest.
+- Reassembly downloads the blocks, **verifies the chain** (contiguous indices,
+  each `prev` matching the previous block's hash), concatenates, and parses.
+
+The **hydration file can be uploaded this way directly**: the gate streams a
+local file (or URL) straight into chained blocks via `file.slice()` /
+stream-reading, so a multi-GB upload never holds more than ~one block in memory
+(`DataStore.hydrateRawChunked`). The manifest records the payload's format
+(`gzip` / `ndjson` / `geojson` / …); a client small enough to hold the dataset
+reassembles and parses it, while a multi-GB archive stays in media and is shown
+as metadata only (it can't fit in a browser tab).
 
 This is deliberate. A naïve "one INS event per flight" would flood the timeline
 and force a fold over thousands of rows on every open. Instead:
@@ -65,6 +91,9 @@ treated as a library (do not fork them). All DFR-specific code lives in
 |---|---|
 | `app/dfr.js` | Domain: namespace `org.dfr.explorer`, the ArcGIS feed URL, feature→record normalization (`toRecord`). |
 | `app/packset.js` | The dataset codec: flights ⇄ gzip-NDJSON, merge/dedupe, hashing. Unit-tested. |
+| `app/chunks.js` | Binary block envelope + hash chain: `chunkBlob`, `frameBlock`, `reassemble`. Unit-tested. |
+| `app/chunkstream.js` | Stream a File/Response into fixed-size payloads for multi-GB uploads. |
+| `app/parseflights.js` | Parse reassembled raw bytes (gzip / NDJSON / GeoJSON) into records. Unit-tested. |
 | `app/opfsbin.js` | Vault-encrypted OPFS persistence of the blob, one file per room. |
 | `app/roomstate.js` | The single room-state pointer (status + version + blob ref). |
 | `app/datastore.js` | Orchestrates working set ↔ OPFS ↔ media ↔ pointer; hydration, publish (throttled), intelligent sync. |
