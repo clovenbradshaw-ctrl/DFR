@@ -762,6 +762,27 @@ function wire() {
     catch (e) { log(`Re-shard failed: ${e.message}`, 'err'); }
     finally { $('reshardBtn').disabled = false; }
   });
+  $('purgeListBtn').addEventListener('click', () => {
+    const uris = store?.purgeableMedia() || [];
+    if (!uris.length) { log('No orphaned media to purge (re-shard first).', 'warn'); return; }
+    // A ready-to-run Synapse admin purge: one DELETE per mxc. Hand to the
+    // homeserver admin to reclaim the space the old raw archive occupies.
+    const base = '<HOMESERVER_BASE_URL>';
+    const lines = [
+      '# Orphaned DFR media after re-shard — purge to reclaim space.',
+      '# Synapse admin API (needs an admin token):',
+      ...uris.map(mxc => {
+        const m = /^mxc:\/\/([^/]+)\/(.+)$/.exec(mxc) || [];
+        return `curl -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" "${base}/_synapse/admin/v1/media/${m[1]||'SERVER'}/${m[2]||''}"`;
+      }),
+      '', '# Raw mxc list:', ...uris,
+    ].join('\n');
+    const blob = new Blob([lines], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'dfr-media-purge.txt'; a.click();
+    URL.revokeObjectURL(a.href);
+    log(`Purge list downloaded: ${uris.length} media URIs.`, 'ok');
+  });
 
   // Agencies: pick a local NDJSON/JSON file and load it as its own layer.
   $('agenciesBtn').addEventListener('click', () => $('agenciesFile').click());

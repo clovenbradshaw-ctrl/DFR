@@ -839,20 +839,47 @@ export class DataStore {
     return { published: true, version, mode };
   }
 
-  /** Redact the original raw-archive manifest + blocks after re-sharding. */
+  /**
+   * After re-sharding, the original raw archive is dead weight. Matrix has no
+   * client API to delete media, so to reclaim the space we:
+   *   1. collect every orphaned mxc URI (manifest + all its blocks),
+   *   2. best-effort redact any event-attached refs (lets a homeserver with
+   *      redaction-driven media cleanup reclaim them),
+   *   3. record the mxc list in room state + expose it for download, so a
+   *      Synapse admin can purge them immediately (a one-line admin call).
+   * The bytes themselves are freed by the homeserver, not the client.
+   */
   async _dropRawArchive(prev) {
     const client = getClient();
     if (!client) return;
     const ref = prev.raw_archive || (prev.mode === 'chunked-raw' ? prev.manifest : null);
     if (!ref?.__media) return;
+    const orphans = [];
+    if (ref.mxc) orphans.push(ref.mxc);
     try {
       const man = await this._downloadManifest(ref);
-      const ids = [];
-      for (const c of (man.chunks || [])) if (c.ref?.event_id) ids.push(c.ref.event_id);
-      // Media in this app is hoisted via events; redacting the manifest event is
-      // the practical lever. (Media GC is the homeserver's job.)
-      act.block(`Re-sharded — original raw archive (${man.chunk_count} blocks) superseded`, { blocks: man.chunk_count });
+      for (const c of (man.chunks || [])) if (c.ref?.mxc) orphans.push(c.ref.mxc);
+      // Best-effort: redact any event-attached refs (most are pure media uploads
+      // with no event, so this is usually a no-op — the purge list is the lever).
+      let redacted = 0;
+      for (const c of (man.chunks || [])) {
+        const eid = c.ref?.event_id;
+        if (eid) { try { await client.redactEvent(this.roomId, eid); redacted++; } catch {} }
+      }
+      // Stash the orphan list so an admin can reclaim the space.
+      try {
+        await writeDatasetState(this.roomId, { ...readDatasetState(this.roomId), purgeable_media: orphans });
+      } catch {}
+      this._purgeableMedia = orphans;
+      act.block(`Re-shard freed ${man.chunk_count} raw blocks (~${((man.total_bytes||0)/1073741824).toFixed(2)} GB) — ${orphans.length} mxc URIs queued for purge`,
+        { blocks: man.chunk_count, orphans: orphans.length, redacted });
+      this.log(`Original archive superseded: ${orphans.length} media URIs can be purged. Use "Download purge list".`, 'ok');
     } catch { /* manifest already gone */ }
+  }
+
+  /** The orphaned mxc URIs from the last re-shard (for the purge list download). */
+  purgeableMedia() {
+    return this._purgeableMedia || readDatasetState(this.roomId)?.purgeable_media || [];
   }
 
   /**
