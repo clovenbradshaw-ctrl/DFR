@@ -13,6 +13,7 @@
  */
 
 import { feedQueryUrl, proxied } from './dfr.js';
+import { act } from './activity.js';
 
 const SETTINGS_KEY = 'dfr.scraper.settings';
 const loadSettings = () => { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch { return {}; } };
@@ -74,17 +75,20 @@ export class Scraper {
     this.busy = true; this._emit();
     try {
       this.log('Checking all departments for new flights…', 'mut');
+      act.api('Checking all departments for new flights…');
       // The feature service returns every department's flights; one paginated
       // sweep covers them all. We page so we don't miss anything past the
       // server's max record count.
       const features = await this._fetchAll();
 
       const known = this.store.knownIds();
+      const knownDepts = new Set((this.store.agencies || []).map(a => a.id));
       const fresh = features.filter(f => {
         const p = f.properties || f;
         const id = p.flight_id || p.id || (p.ObjectId != null ? 'oid_' + p.ObjectId : null);
         return id && !known.has(id);
       });
+      act.api(`Feed returned ${features.length.toLocaleString()} flights; ${fresh.length} new`, { total: features.length, fresh: fresh.length });
 
       if (fresh.length) {
         // Group the new flights by department (org/operator id) for reporting.
@@ -94,9 +98,11 @@ export class Scraper {
           const org = p.organization_id || p.u || p.o || 'unknown';
           byOrg[org] = (byOrg[org] || 0) + 1;
         }
+        const newDepts = Object.keys(byOrg).filter(o => !knownDepts.has(o));
         const { added } = await this.store.addFlights(fresh);
         const depts = Object.keys(byOrg).length;
         this.log(`Found ${added} new flight(s) across ${depts} department(s).`, 'ok');
+        if (newDepts.length) act.api(`${newDepts.length} new department(s) seen on the feed`, { newDepts: newDepts.length });
         for (const [org, n] of Object.entries(byOrg).sort((a, b) => b[1] - a[1]).slice(0, 8)) {
           this.log(`  ${this._deptLabel(org)}: +${n}`, 'mut');
         }

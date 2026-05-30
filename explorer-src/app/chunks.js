@@ -110,23 +110,34 @@ export function parseBlock(bytes) {
  * @param {(msg)=>void} [onBlock]  progress callback (1-based index, count)
  * @returns {ReadableStream<Uint8Array>} payloads in order
  */
-export function reassembleStream(chunkRefs, fetchBytes, onBlock) {
+export function reassembleStream(chunkRefs, fetchBytes, onBlock, { concurrency = 6 } = {}) {
   const ordered = [...chunkRefs].sort((a, b) => a.i - b.i);
-  let prev = [0, 0];
-  let idx = 0;
+  const n = ordered.length;
+  // Prefetch a sliding window of blocks in parallel (downloads are the cost),
+  // but still consume — and chain-verify — them strictly in order.
+  const inflight = new Array(n);
+  let fetchPtr = 0, idx = 0, prev = [0, 0];
+  const pump = () => {
+    while (fetchPtr < n && fetchPtr < idx + concurrency) {
+      const i = fetchPtr++;
+      inflight[i] = Promise.resolve(fetchBytes(ordered[i].ref));
+    }
+  };
   return new ReadableStream({
     async pull(controller) {
-      if (idx >= ordered.length) { controller.close(); return; }
-      const c = ordered[idx];
-      const raw = await fetchBytes(c.ref);
-      if (!raw) { controller.error(new Error(`block ${c.i} unavailable`)); return; }
+      if (idx >= n) { controller.close(); return; }
+      pump();                               // keep the window full
+      const raw = await inflight[idx];
+      if (!raw) { controller.error(new Error(`block ${ordered[idx].i} unavailable`)); return; }
       const b = parseBlock(raw);
       if (b.index !== idx) { controller.error(new Error(`chain gap at index ${idx}`)); return; }
       if (!hEq(b.prev, prev)) { controller.error(new Error(`broken chain link at block ${idx}`)); return; }
       prev = b.self;
+      inflight[idx] = null;                 // release
       idx++;
-      if (onBlock) onBlock(idx, ordered.length);
-      controller.enqueue(b.payload.slice()); // detach from the parsed buffer
+      pump();
+      if (onBlock) onBlock(idx, n);
+      controller.enqueue(b.payload.slice());
     },
   });
 }

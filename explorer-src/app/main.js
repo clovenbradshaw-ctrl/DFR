@@ -27,6 +27,7 @@ import { Scraper } from './scraper.js';
 import { DfrMap } from './mapview.js';
 import { DepartmentsView } from './departments.js';
 import { Swarm } from './swarm.js';
+import { Activity, act } from './activity.js';
 
 const $ = (id) => document.getElementById(id);
 let deptsView = null, swarm = null;
@@ -35,14 +36,43 @@ let store = null, scraper = null, dfrMap = null;
 let currentRoomId = null, unsubDatasetState = null, unsubMembers = null;
 let gateAbort = null, gateMode = 'hydrate';
 
-// ── activity log ──
+// ── activity log (sidebar text) + structured Activity feed ──
 function log(msg, level = 'mut') {
-  const el = $('log'); if (!el) return;
-  const line = document.createElement('div');
-  line.className = level;
-  line.textContent = `${new Date().toLocaleTimeString()}  ${msg}`;
-  el.appendChild(line); el.scrollTop = el.scrollHeight;
-  while (el.children.length > 200) el.removeChild(el.firstChild);
+  const el = $('log');
+  if (el) {
+    const line = document.createElement('div');
+    line.className = level;
+    line.textContent = `${new Date().toLocaleTimeString()}  ${msg}`;
+    el.appendChild(line); el.scrollTop = el.scrollHeight;
+    while (el.children.length > 200) el.removeChild(el.firstChild);
+  }
+  // Mirror errors/warnings into the structured feed so they appear in Activity.
+  if (level === 'err') act.err(msg);
+}
+
+// ── Activity view ──
+const ACT_KINDS = ['sync', 'api', 'add', 'block', 'swarm', 'err'];
+let actFilter = new Set(ACT_KINDS);   // all on
+function renderActivity() {
+  const list = $('actList');
+  if (!list) return;
+  const counts = Activity.counts();
+  // filter chips
+  $('actFilters').innerHTML = ACT_KINDS.map(k =>
+    `<span class="act-chip ${actFilter.has(k) ? 'on' : ''}" data-k="${k}">${k}<span class="c">${counts[k] || 0}</span></span>`).join('');
+  $('actFilters').querySelectorAll('.act-chip').forEach(ch => ch.onclick = () => {
+    const k = ch.getAttribute('data-k');
+    if (actFilter.has(k)) actFilter.delete(k); else actFilter.add(k);
+    renderActivity();
+  });
+  const rows = Activity.events.filter(e => actFilter.has(e.kind))
+    .slice(-400).reverse().map(e => {
+      const t = new Date(e.ts).toLocaleTimeString();
+      const d = e.data && Object.keys(e.data).length
+        ? `<span class="d">${esc(Object.entries(e.data).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(',') : v}`).join(' · '))}</span>` : '';
+      return `<div class="act-row"><span class="t">${t}</span><span class="k ${e.kind}">${e.kind}</span><span class="m">${esc(e.message)}${d}</span></div>`;
+    }).join('');
+  list.innerHTML = rows || '<div class="act-empty">No activity yet. Sync, scraping, and block creation will appear here.</div>';
 }
 
 // ── auth ──
@@ -192,6 +222,12 @@ function scheduleRender() {
   renderScheduled = true;
   requestAnimationFrame(() => { renderScheduled = false; render(); });
 }
+let actRenderScheduled = false;
+function scheduleActRender() {
+  if (actRenderScheduled) return;
+  actRenderScheduled = true;
+  requestAnimationFrame(() => { actRenderScheduled = false; renderActivity(); });
+}
 function render() {
   const flights = store?.flights || [];
   const s = sel.stats(flights);
@@ -279,6 +315,7 @@ async function focusFetchNow(bbox, { agency } = {}) {
     const decision = swarm.shouldFetch(bbox);
     if (!decision.fetch) {
       setFocusHint(`Covered by a peer device — their results sync here.`);
+      act.swarm('Yielded this area to a peer device', { by: decision.by?.device?.slice(0, 8) });
       return;
     }
   }
@@ -380,10 +417,13 @@ function setTab(t) {
   tab = t;
   $('tabDepts').setAttribute('aria-selected', t === 'depts');
   $('tabMap').setAttribute('aria-selected', t === 'map');
+  $('tabActivity').setAttribute('aria-selected', t === 'activity');
   $('deptsView').classList.toggle('hidden', t !== 'depts');
   $('mapView').classList.toggle('hidden', t !== 'map');
+  $('activityView').classList.toggle('hidden', t !== 'activity');
   if (t === 'map') { renderMap(store?.flights || []); dfrMap?.invalidate(); }
   else if (t === 'depts') ensureDepts().refresh();
+  else if (t === 'activity') renderActivity();
 }
 
 function ensureDepts() {
@@ -408,6 +448,10 @@ function wire() {
   $('roomSel').addEventListener('change', e => openRoom(e.target.value));
   $('tabDepts').addEventListener('click', () => setTab('depts'));
   $('tabMap').addEventListener('click', () => setTab('map'));
+  $('tabActivity').addEventListener('click', () => setTab('activity'));
+  $('actClear').addEventListener('click', () => { Activity.clear(); renderActivity(); });
+  // Live-update the Activity view (and the tab is cheap to repaint when visible).
+  Activity.subscribe(() => { if (tab === 'activity') scheduleActRender(); });
   $('focusToggle').addEventListener('change', e => {
     focusEnabled = e.target.checked;
     setFocusHint(focusEnabled ? 'Live focus on — zoom in to pull recent flights.' : 'Live focus off.');
