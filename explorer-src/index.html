@@ -196,6 +196,11 @@ details.setup > label:first-of-type{margin-top:0}
   font-family:var(--mono);font-size:11px;color:var(--mut)}
 .term-body{flex:1;margin:0;overflow:auto;padding:12px 14px;font-family:var(--mono);font-size:12px;
   line-height:1.5;color:#9fe7b8;background:#070b0e;white-space:pre-wrap;word-break:break-word}
+#eventsView{display:flex;flex-direction:column;min-height:0}
+.events-body{flex:1;overflow:auto;font-family:var(--mono);font-size:12px}
+.ev-row{display:grid;grid-template-columns:150px 120px 1fr;gap:10px;padding:5px 14px;border-bottom:1px solid var(--line)}
+.ev-row .t{color:var(--mut2)} .ev-row .ty{color:var(--acc)} .ev-row .s{color:var(--txt)}
+.ev-row.redacted{opacity:.4;text-decoration:line-through}
 
 /* ── loading screen (radar sweep) ── */
 .loading{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;
@@ -400,6 +405,7 @@ tbody tr:hover{background:var(--surf2)}
         <button id="tabActivity" aria-selected="false">Activity</button>
         <button id="tabDemo" aria-selected="false">Demographics</button>
         <button id="tabTerm" aria-selected="false">Terminal</button>
+        <button id="tabEvents" aria-selected="false">Events</button>
         <label class="focus-toggle" title="Pull recent flights from the live feed for the area you zoom into">
           <input type="checkbox" id="focusToggle" checked> live focus
         </label>
@@ -471,6 +477,15 @@ tbody tr:hover{background:var(--surf2)}
           <button id="termClear">Clear</button>
         </div>
         <pre class="term-body" id="termBody"></pre>
+      </div>
+      <div class="view hidden" id="eventsView">
+        <div class="term-head">
+          <span>Room timeline — actual Matrix events written to the database</span>
+          <span style="flex:1"></span>
+          <span id="eventsCount" class="mono"></span>
+          <button id="eventsRefresh">Refresh</button>
+        </div>
+        <div class="events-body" id="eventsBody"></div>
       </div>
       <div class="view hidden" id="activityView">
         <div class="act-head">

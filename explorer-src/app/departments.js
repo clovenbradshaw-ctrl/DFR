@@ -31,11 +31,12 @@ export class DepartmentsView {
    * @param {()=>{flights:Array,agencies:Array}} deps.getData
    * @param {(a)=>void} [deps.onPickAgency]  focus the map on a department's agency
    */
-  constructor({ sidebar, main, getData, onPickAgency, deptIndex, onSelectDept }) {
+  constructor({ sidebar, main, getData, onPickAgency, deptIndex, onSelectDept, onSyncDept }) {
     this.sidebar = sidebar; this.main = main; this.getData = getData;
     this.onPickAgency = onPickAgency || (() => {});
     this.deptIndex = deptIndex || (() => null);   // lazy manifest counts, or null
     this.onSelectDept = onSelectDept || (() => {});
+    this.onSyncDept = onSyncDept || (() => {});
     this.selected = null; this.filter = '';
     this.sort = { key: 't', dir: -1 }; this.page = 0;
     this._depts = new Map(); this._order = []; this._labels = new Map(); this._agencies = new Map();
@@ -204,7 +205,8 @@ export class DepartmentsView {
     const meta = '<dl class="meta">' +
       this._row('City', a.city) + this._row('County', a.county) + this._row('State', a.state) +
       this._row('Address', a.address) + this._row('UUID', u) + '</dl>';
-    return `<div class="title">${esc(this.deptName(u))}</div>
+    return `<div class="title">${esc(this.deptName(u))}
+        <button id="syncDeptBtn" class="dept-sync" title="Check this department's live feed and pull any new flights">⟳ Sync</button></div>
       <p class="title-sub">${esc(u)}</p>
       <div class="card"><div class="stats">
         ${this._stat(d.count, 'flights observed')}${this._stat(purposes.length, 'purposes')}
@@ -267,6 +269,13 @@ export class DepartmentsView {
     });
     const csv = this.main.querySelector('#csvBtn');
     if (csv) csv.onclick = () => this._downloadCSV();
+    const sync = this.main.querySelector('#syncDeptBtn');
+    if (sync) sync.onclick = async () => {
+      if (!this.selected) return;
+      sync.disabled = true; sync.textContent = '⟳ Syncing…';
+      try { await this.onSyncDept(this.selected); }
+      finally { this.refresh(true); }   // re-renders with fresh count + re-enables
+    };
   }
 
   _downloadCSV() {

@@ -63,6 +63,18 @@ function renderTerminal() {
   if ($('termFollow')?.checked) el.scrollTop = el.scrollHeight;
 }
 
+// ── Room Events view (diagnostic: what's actually in the Matrix timeline) ──
+function renderEvents() {
+  const el = $('eventsBody'); if (!el || !store) return;
+  const evs = store.roomEvents(800);
+  const flightEvents = evs.filter(e => /flight/.test(e.summary)).length;
+  $('eventsCount').textContent = `${evs.length} events · ${flightEvents} flight · ${store.unrolledCount()} loose · ${store.flights.length.toLocaleString()} in set`;
+  el.innerHTML = evs.map(e => {
+    const t = e.ts ? new Date(e.ts).toISOString().slice(5, 16).replace('T', ' ') : '';
+    return `<div class="ev-row${e.redacted ? ' redacted' : ''}"><span class="t">${t}</span><span class="ty">${esc(e.type)}</span><span class="s">${esc(e.summary)}</span></div>`;
+  }).join('') || '<div class="empty">No room events in the loaded timeline.</div>';
+}
+
 // ── Demographics view ──
 let demoData = null;   // { year, byGeoid, feats, overflown, metric }
 async function guessCountyFips() {
@@ -795,18 +807,20 @@ function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;'
 // ── tabs ──
 function setTab(t) {
   tab = t;
-  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabDemo', 'demo'], ['tabTerm', 'term']])
+  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabDemo', 'demo'], ['tabTerm', 'term'], ['tabEvents', 'events']])
     $(id).setAttribute('aria-selected', t === name);
   $('deptsView').classList.toggle('hidden', t !== 'depts');
   $('mapView').classList.toggle('hidden', t !== 'map');
   $('activityView').classList.toggle('hidden', t !== 'activity');
   $('demoView').classList.toggle('hidden', t !== 'demo');
   $('termView').classList.toggle('hidden', t !== 'term');
+  $('eventsView').classList.toggle('hidden', t !== 'events');
   if (t === 'map') { renderMap(store?.flights || []); dfrMap?.invalidate(); }
   else if (t === 'depts') ensureDepts().refresh();
   else if (t === 'activity') renderActivity();
   else if (t === 'demo') renderDemographics();
   else if (t === 'term') renderTerminal();
+  else if (t === 'events') renderEvents();
 }
 
 function ensureDepts() {
@@ -825,6 +839,12 @@ function ensureDepts() {
         const r = await store.refreshDepartment(org, $('proxy').value.trim());
         if (r.added) { log(`${org.slice(0, 8)}: pulled ${r.added} new from live feed (${r.have}→${r.cnt}).`, 'ok'); deptsView.refresh(true); }
       } catch (e) { /* feed unreachable — keep stored count */ }
+    },
+    onSyncDept: async (org) => {
+      try {
+        const r = await store.refreshDepartment(org, $('proxy').value.trim());
+        log(r.added ? `${org.slice(0, 8)}: +${r.added} from live feed (${r.have}→${r.cnt}).` : `${org.slice(0, 8)}: up to date (${r.have ?? '?'}).`, 'ok');
+      } catch (e) { log(`Sync failed: ${e.message}`, 'err'); }
     },
     onPickAgency: (a) => { if (dfrMap && a.lat != null) { setTab('map'); dfrMap.focusOn(a); focusFetchNow(dfrMap.bbox(), { agency: a.name }); } },
   });
@@ -868,6 +888,8 @@ function wire() {
   $('tabActivity').addEventListener('click', () => setTab('activity'));
   $('tabDemo').addEventListener('click', () => setTab('demo'));
   $('tabTerm').addEventListener('click', () => setTab('term'));
+  $('tabEvents').addEventListener('click', () => setTab('events'));
+  $('eventsRefresh').addEventListener('click', renderEvents);
   $('demoLoad').addEventListener('click', () => loadDemographics());
   $('demoMetric').addEventListener('change', () => {
     if (!demoData) return;
