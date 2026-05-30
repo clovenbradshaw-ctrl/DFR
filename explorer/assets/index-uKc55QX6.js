@@ -23694,7 +23694,7 @@ Date.now: "`.concat(Date.now()));
                 var o = t.getDeviceId();
                 if (o === null) throw new Error("Cannot enable encryption on MatrixClient with unknown deviceId: ensure deviceId is passed in createClient().");
                 t.logger.debug("Downloading Rust crypto library");
-                var l = yield nf(()=>import("./index-DV4Xzhz-.js"), [], import.meta.url), d = yield l.initRustCrypto({
+                var l = yield nf(()=>import("./index-D6IOjhLM.js"), [], import.meta.url), d = yield l.initRustCrypto({
                     logger: t.logger,
                     http: t.http,
                     userId: s,
@@ -36839,21 +36839,31 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         };
         return `${Zd}/query?${new URLSearchParams(n).toString()}`;
     }
-    async function Lr(i, e) {
-        try {
-            const t = await fetch(i, {
+    async function Lr(i, e, { preferProxy: t = !1 } = {}) {
+        const r = async ()=>{
+            const a = await fetch(i, {
                 cache: "no-store",
                 mode: "cors"
             });
-            if (!t.ok) throw new Error("HTTP " + t.status);
-            return await t.json();
-        } catch (t) {
-            if (!e) throw t;
-            const r = await fetch($p(i, e), {
+            if (!a.ok) throw new Error("HTTP " + a.status);
+            return a.json();
+        }, n = async ()=>{
+            const a = await fetch($p(i, e), {
                 cache: "no-store"
             });
-            if (!r.ok) throw new Error("HTTP " + r.status);
-            return await r.json();
+            if (!a.ok) throw new Error("HTTP " + a.status);
+            return a.json();
+        };
+        if (t && e) try {
+            return await n();
+        } catch  {
+            return r();
+        }
+        try {
+            return await r();
+        } catch (a) {
+            if (!e) throw a;
+            return n();
         }
     }
     function $p(i, e) {
@@ -38981,7 +38991,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         for (const r of lw){
             const n = `https://api.census.gov/data/${r}/acs/acs5?get=${dw.join(",")}&for=tract:*&in=state:${i}&in=county:${e}`;
             try {
-                const a = await Lr(n, t);
+                const a = await Lr(n, t, {
+                    preferProxy: !0
+                });
                 if (!Array.isArray(a) || a.length < 2) continue;
                 const s = a[0], o = {};
                 for(let l = 1; l < a.length; l++){
@@ -39002,7 +39014,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return `ACS ${i - 4}–${i} 5-Year Estimates`;
     }
     async function fw(i, e, t) {
-        const r = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Tracts_Blocks/MapServer", n = `STATE='${i}' AND COUNTY='${e}'`, a = `${r}/0/query?where=${encodeURIComponent(n)}&outFields=GEOID,STATE,COUNTY,TRACT,BASENAME&returnGeometry=true&outSR=4326&f=geojson`, s = await Lr(a, t), o = s && s.features || [];
+        const r = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/Tracts_Blocks/MapServer", n = `STATE='${i}' AND COUNTY='${e}'`, a = `${r}/0/query?where=${encodeURIComponent(n)}&outFields=GEOID,STATE,COUNTY,TRACT,BASENAME&returnGeometry=true&outSR=4326&f=geojson`, s = await Lr(a, t, {
+            preferProxy: !0
+        }), o = s && s.features || [];
         for (const l of o){
             const d = l.properties || {};
             d.geoid = d.GEOID || `${d.STATE}${d.COUNTY}${d.TRACT}`;

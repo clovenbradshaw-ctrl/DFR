@@ -67,7 +67,7 @@ export async function loadACS(stateFips, countyFips, proxy) {
     const url = `https://api.census.gov/data/${year}/acs/acs5?get=${ACS_VARS.join(',')}` +
                 `&for=tract:*&in=state:${stateFips}&in=county:${countyFips}`;
     try {
-      const rows = await feedFetch(url, proxy);
+      const rows = await feedFetch(url, proxy, { preferProxy: true });
       if (!Array.isArray(rows) || rows.length < 2) continue;
       const hdr = rows[0];
       const byGeoid = {};
@@ -93,7 +93,7 @@ export async function loadTractGeom(stateFips, countyFips, proxy) {
   const where = `STATE='${stateFips}' AND COUNTY='${countyFips}'`;
   const url = `${base}/0/query?where=${encodeURIComponent(where)}&outFields=GEOID,STATE,COUNTY,TRACT,BASENAME` +
               `&returnGeometry=true&outSR=4326&f=geojson`;
-  const gj = await feedFetch(url, proxy);
+  const gj = await feedFetch(url, proxy, { preferProxy: true });
   const feats = (gj && gj.features) || [];
   for (const f of feats) {
     const p = f.properties || {};
