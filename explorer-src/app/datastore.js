@@ -835,6 +835,35 @@ export class DataStore {
   /** How many flights are in loose events but not yet rolled into a block. */
   unrolledCount() { return this.looseEvents || 0; }
 
+  /**
+   * Summarize the room's live timeline for the diagnostic Events view: the
+   * actual Matrix events (newest first), so you can SEE whether flight/agency/
+   * dataset events landed in the database. Decodes our app's op types.
+   */
+  roomEvents(limit = 500) {
+    const evs = getTimeline(this.roomId) || [];
+    const out = [];
+    for (let i = evs.length - 1; i >= 0 && out.length < limit; i--) {
+      const e = evs[i];
+      const type = typeof e.getType === 'function' ? e.getType() : e.type;
+      if (!type) continue;
+      const ts = typeof e.getTs === 'function' ? e.getTs() : e.origin_server_ts;
+      const sender = typeof e.getSender === 'function' ? e.getSender() : e.sender;
+      const c = (typeof e.getContent === 'function' ? e.getContent() : e.content) || {};
+      const u = (typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned) || {};
+      const id = typeof e.getId === 'function' ? e.getId() : e.event_id;
+      let summary = '';
+      if (type.endsWith('.ins') && c.entity_type === ENTITY.FLIGHT_BATCH) summary = `flight batch · ${c.payload?.flights?.length || 0} flights · org ${(c.payload?.org || '').slice(0, 8)}`;
+      else if (type.endsWith('.ins') && c.entity_type === ENTITY.FLIGHT) summary = `flight · ${c.payload?.flight_id?.slice(0, 8) || ''}`;
+      else if (type.endsWith('.ins')) summary = `ins ${c.entity_type || ''}`;
+      else if (type.endsWith('.def')) summary = `def ${c.path || ''}`;
+      else if (type === 'm.room.encrypted') summary = '(encrypted — not yet decrypted)';
+      else summary = type.replace(/^.*\./, '');
+      out.push({ id, type: type.replace('org.dfr.explorer.', '·'), ts, sender, summary, redacted: !!u.redacted_because });
+    }
+    return out;
+  }
+
   /** True while a publish is in flight (used by the leave-guard). */
   get publishing() { return !!this._publishing; }
 
