@@ -564,34 +564,38 @@ let agenciesDrawn = false;
 // full time span. The span is computed once from the whole dataset (not on every
 // pan — that's what felt broken), so a handle position always means the same
 // date. Showing flights whose takeoff falls inside the window.
-let timeSpan = null;       // { min, max } in ms over ALL flights (fixed)
+let timeSpan = null;       // { min, max } in ms over ALL flights (fixed slider scale)
 let fromFrac = 0, toFrac = 1;
-let timeInited = false;    // have we set the initial "now" window yet?
+let handleHeld = false;    // user is dragging a handle → don't auto-move the window
 
 /** Compute the fixed full-dataset span (slider scale) when flights change. */
 function computeFullSpan(flights) {
   let min = Infinity, max = 0;
   for (const f of flights) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
   timeSpan = (min === Infinity) ? null : (min === max ? { min, max: min + 1 } : { min, max });
-  if (timeSpan && !timeInited) { timeInited = true; initWindowToViewport(flights); }
 }
 
-/** Set the initial window: from the EARLIEST in-view flight → now (latest). */
-function initWindowToViewport(flights) {
-  if (!timeSpan) return;
+/**
+ * Set the window to [earliest in-view flight → now]. Called on initial render
+ * and whenever the map is panned/zoomed (unless the user is holding a handle),
+ * so the left edge always tracks the earliest flight actually visible.
+ */
+function windowToViewport() {
+  if (!timeSpan || handleHeld) return;
   let inViewMin = Infinity;
   const bb = dfrMap ? dfrMap.bbox() : null;
-  for (const f of flights) {
+  for (const f of (store?.flights || [])) {
     if (!f.takeoff) continue;
     const c = f.start_coords;
-    const inView = !bb || (c && c.length >= 2 && c[0] >= bb[0] && c[0] <= bb[2] && c[1] >= bb[1] && c[1] <= bb[3]);
-    if (inView && f.takeoff < inViewMin) inViewMin = f.takeoff;
+    if (bb && !(c && c.length >= 2 && c[0] >= bb[0] && c[0] <= bb[2] && c[1] >= bb[1] && c[1] <= bb[3])) continue;
+    if (f.takeoff < inViewMin) inViewMin = f.takeoff;
   }
   const start = inViewMin === Infinity ? timeSpan.min : inViewMin;
   const span = timeSpan.max - timeSpan.min;
-  fromFrac = span > 0 ? Math.max(0, (start - timeSpan.min) / span) : 0;
+  fromFrac = span > 0 ? Math.max(0, Math.min(1, (start - timeSpan.min) / span)) : 0;
   toFrac = 1;
   syncTimeInputs();
+  updateTimeLabel();
 }
 
 const fracToTs = (fr) => timeSpan ? timeSpan.min + (timeSpan.max - timeSpan.min) * fr : 0;
@@ -815,6 +819,12 @@ function ensureDepts() {
     deptIndex: () => (store?.isLazy() ? store.deptIndex() : null),
     onSelectDept: async (org) => {
       if (store?.isLazy()) { await store.loadDepartment(org); deptsView.refresh(true); }
+      // Live-refresh this department against its ArcGIS feed so its count is
+      // current (fixes "stored 45 but the feed has 47").
+      try {
+        const r = await store.refreshDepartment(org, $('proxy').value.trim());
+        if (r.added) { log(`${org.slice(0, 8)}: pulled ${r.added} new from live feed (${r.have}→${r.cnt}).`, 'ok'); deptsView.refresh(true); }
+      } catch (e) { /* feed unreachable — keep stored count */ }
     },
     onPickAgency: (a) => { if (dfrMap && a.lat != null) { setTab('map'); dfrMap.focusOn(a); focusFetchNow(dfrMap.bbox(), { agency: a.name }); } },
   });

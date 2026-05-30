@@ -71,6 +71,11 @@ export function discoverFromDirectory(json, includeStaging = false) {
   return out;
 }
 
+/** The FeatureServer base for a department org UUID (production dashboard). */
+export function fsForOrg(org) {
+  return `${SVC_BASE}/${org}-production/FeatureServer`;
+}
+
 /** Cheap count-only query for one agency's layer (skip-if-unchanged). */
 export function countUrl(fs) {
   return `${fs}/0/query?where=1%3D1&returnCountOnly=true&f=json`;

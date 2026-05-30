@@ -181,8 +181,8 @@ export class DfrMap {
         },
       }).addTo(this.tractLayer);
     }
-    // Keep flight dots/paths on top.
-    this.flightLayer.bringToFront(); this.pathLayer.bringToFront();
+    // tractLayer is added to the map before the flight/path/agency layers, so it
+    // naturally sits beneath them — no manual z-reordering needed.
   }
   clearTracts() { this.tractLayer.clearLayers(); }
 
