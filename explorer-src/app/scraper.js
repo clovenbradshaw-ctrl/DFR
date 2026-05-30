@@ -1,54 +1,56 @@
 /**
- * scraper.js — the background updater that runs on the user's computer.
+ * scraper.js — background updater, faithful to dfr.py's pipeline.
  *
- * Browser port of dfr_scraper.py. Polls Skydio's ArcGIS FeatureServer on an
- * interval, diffs against flights already in the working set, and appends new
- * ones to the DataStore.
+ * Per cycle (runs on the user's machine, in the tab):
+ *   1. DISCOVER  every -production FeatureServer in Skydio's ArcGIS org
+ *                (auto-finds new agencies/departments).
+ *   2. COUNT     each agency's flight count (cheap) and skip it when the count
+ *                is unchanged since last cycle — exactly dfr.py's optimisation.
+ *   3. FETCH     only changed/new agencies, paginated.
+ *   4. DEDUPE    by flight_id against the working set before adding.
+ *   5. RECORD    new flights locally; throttled snapshot to Matrix media.
  *
- * It does NOT write to Matrix per flight. New flights land in OPFS instantly;
- * a Matrix snapshot (one media blob + one room-state pointer update) is
- * published only when enough has changed (DataStore.maybePublish) — so the
- * room is never spammed. Closing/reopening the tab loses nothing: the working
- * set is in OPFS and the pointer is in room state.
+ * It emits terminal-style lines so the Activity/Terminal view shows what a
+ * `python3 dfr.py` run would print. Per-agency counts persist in localStorage
+ * so "unchanged, skip" survives reloads.
  */
 
-import { feedQueryUrl, proxied } from './dfr.js';
+import { discoverFromDirectory, countUrl, agencyQueryUrl, feedFetch,
+         DIRECTORY_URL } from './dfr.js';
 import { act } from './activity.js';
 
 const SETTINGS_KEY = 'dfr.scraper.settings';
-const loadSettings = () => { try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch { return {}; } };
-const saveSettings = (s) => { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch {} };
+const COUNTS_KEY = 'dfr.scraper.counts';
+const loadJSON = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+const saveJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
 export class Scraper {
-  /**
-   * @param {object} deps
-   * @param {import('./datastore.js').DataStore} deps.store
-   * @param {(msg,level)=>void} deps.log
-   */
-  constructor({ store, log }) {
+  constructor({ store, log, term }) {
     this.store = store;
     this.log = log || (() => {});
-    const s = loadSettings();
+    this.term = term || ((line) => {});   // terminal-style sink
+    const s = loadJSON(SETTINGS_KEY, {});
     this.intervalMin = s.intervalMin || 15;
-    // Default to the shared n8n CORS proxy (same one the main DFR site uses)
-    // so live fetches work without setup; feedFetch still tries direct first.
     this.proxy = s.proxy != null ? s.proxy : 'https://n8n.intelechia.com/webhook/feed?url=';
+    this.includeStaging = !!s.includeStaging;
     this.lastRun = s.lastRun || null;
-    this.timer = null;
-    this.running = false;
-    this.busy = false;
-    this.onChange = null;
+    this.counts = loadJSON(COUNTS_KEY, {});   // uuid -> last flight_count
+    this.timer = null; this.running = false; this.busy = false;
+    this.cycleN = 0; this.onChange = null;
   }
 
   get state() {
-    return { running: this.running, busy: this.busy, intervalMin: this.intervalMin, proxy: this.proxy, lastRun: this.lastRun };
+    return { running: this.running, busy: this.busy, intervalMin: this.intervalMin,
+             proxy: this.proxy, lastRun: this.lastRun, cycleN: this.cycleN };
   }
   _emit() { if (this.onChange) this.onChange(this.state); }
+  _persist() { saveJSON(SETTINGS_KEY, { intervalMin: this.intervalMin, proxy: this.proxy, includeStaging: this.includeStaging, lastRun: this.lastRun }); }
 
-  configure({ intervalMin, proxy } = {}) {
+  configure({ intervalMin, proxy, includeStaging } = {}) {
     if (intervalMin != null) this.intervalMin = Math.max(1, +intervalMin || 15);
     if (proxy != null) this.proxy = proxy.trim();
-    saveSettings({ intervalMin: this.intervalMin, proxy: this.proxy, lastRun: this.lastRun });
+    if (includeStaging != null) this.includeStaging = !!includeStaging;
+    this._persist();
     if (this.running) { this.stop(); this.start(); }
     this._emit();
   }
@@ -56,93 +58,107 @@ export class Scraper {
   start() {
     if (this.running) return;
     this.running = true;
-    this.log(`Scraper started — polling every ${this.intervalMin} min.`, 'ok');
+    this.log(`Background updates on — every ${this.intervalMin} min.`, 'ok');
     this._emit();
-    this.pollOnce();
-    this.timer = setInterval(() => this.pollOnce(), this.intervalMin * 60 * 1000);
+    this.cycle();
+    this.timer = setInterval(() => this.cycle(), this.intervalMin * 60 * 1000);
   }
-
   stop() {
     this.running = false;
     if (this.timer) { clearInterval(this.timer); this.timer = null; }
-    this.log('Scraper stopped.', 'mut');
+    this.log('Background updates off.', 'mut');
     this._emit();
   }
 
-  async pollOnce() {
+  _t(line) { this.term(line); }
+
+  async cycle() {
     if (this.busy) return;
     if (!this.store?.roomId) { this.log('No active dataset — open or create one first.', 'warn'); return; }
     this.busy = true; this._emit();
+    const n = ++this.cycleN;
+    const stamp = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    this._t(`${'='.repeat(56)}`);
+    this._t(`[${stamp}] cycle ${n}`);
+    this._t(`  discovering dashboards from ArcGIS org …`);
+    act.api(`Cycle ${n}: discovering departments`);
+    let fetched = 0, skipped = 0, totAdded = 0, totRemoved = 0, newDepts = 0;
     try {
-      this.log('Checking all departments for new flights…', 'mut');
-      act.api('Checking all departments for new flights…');
-      // The feature service returns every department's flights; one paginated
-      // sweep covers them all. We page so we don't miss anything past the
-      // server's max record count.
-      const features = await this._fetchAll();
-
-      const known = this.store.knownIds();
+      const dir = await feedFetch(DIRECTORY_URL, this.proxy);
+      const found = discoverFromDirectory(dir, this.includeStaging);
+      const uuids = Object.keys(found);
       const knownDepts = new Set((this.store.agencies || []).map(a => a.id));
-      const fresh = features.filter(f => {
-        const p = f.properties || f;
-        const id = p.flight_id || p.id || (p.ObjectId != null ? 'oid_' + p.ObjectId : null);
-        return id && !known.has(id);
-      });
-      act.api(`Feed returned ${features.length.toLocaleString()} flights; ${fresh.length} new`, { total: features.length, fresh: fresh.length });
+      const fresh = uuids.filter(u => !knownDepts.has(u));
+      this._t(`  ${uuids.length} dashboards live  (${fresh.length} new, ${uuids.length - fresh.length} known)`);
+      act.api(`${uuids.length} departments live`, { total: uuids.length, new: fresh.length });
 
-      if (fresh.length) {
-        // Group the new flights by department (org/operator id) for reporting.
-        const byOrg = {};
-        for (const f of fresh) {
+      let i = 0;
+      const known = this.store.knownIds();   // dedup set (flight_id / oid)
+      for (const uuid of uuids) {
+        if (!this.running && this.timer === null && i > 0) break;  // stopped mid-cycle
+        i++;
+        const { env, fs } = found[uuid];
+        const isNew = !knownDepts.has(uuid);
+        const tag = isNew ? 'NEW ' : '    ';
+        const head = `  [${String(i).padStart(3)}/${uuids.length}] ${tag}${uuid.slice(0, 8)}`;
+        let cnt = null;
+        try { cnt = (await feedFetch(countUrl(fs), this.proxy))?.count ?? null; } catch {}
+        const prev = this.counts[uuid];
+        const why = isNew ? 'new' : (cnt !== prev ? 'count changed' : null);
+        if (why === null) { skipped++; this._t(`${head} cnt=${cnt} = unchanged, skip`); continue; }
+
+        this._t(`${head} cnt=${cnt} (was ${prev ?? '—'}) -> FETCH [${why}] …`);
+        let feats;
+        try { feats = await this._fetchAll(fs); }
+        catch (e) { this._t(`            ! fetch failed: ${e.message}`); continue; }
+        fetched++;
+
+        const newFeats = feats.filter(f => {
           const p = f.properties || f;
-          const org = p.organization_id || p.u || p.o || 'unknown';
-          byOrg[org] = (byOrg[org] || 0) + 1;
+          const id = p.flight_id || p.id || (p.ObjectId != null ? 'oid_' + p.ObjectId : null);
+          return id && !known.has(id);
+        });
+        let added = 0;
+        if (newFeats.length) {
+          const r = await this.store.addFlights(newFeats);
+          added = r.added; totAdded += added;
+          for (const f of newFeats) { const p = f.properties || f; if (p.flight_id) known.add(p.flight_id); }
+          if (r.newAgencies) newDepts += r.newAgencies;
         }
-        const newDepts = Object.keys(byOrg).filter(o => !knownDepts.has(o));
-        const { added } = await this.store.addFlights(fresh);
-        const depts = Object.keys(byOrg).length;
-        this.log(`Found ${added} new flight(s) across ${depts} department(s).`, 'ok');
-        if (newDepts.length) act.api(`${newDepts.length} new department(s) seen on the feed`, { newDepts: newDepts.length });
-        for (const [org, n] of Object.entries(byOrg).sort((a, b) => b[1] - a[1]).slice(0, 8)) {
-          this.log(`  ${this._deptLabel(org)}: +${n}`, 'mut');
-        }
-        const r = await this.store.maybePublish();
-        if (r.published) this.log(`Snapshot published as block(s) (v${r.version}).`, 'ok');
-        else this.log(`Holding ${this.store.dirty} unpublished — will snapshot when it's worth it.`, 'mut');
-      } else {
-        this.log(`No new flights (${features.length} in feed across all departments).`, 'mut');
+        this.counts[uuid] = cnt; saveJSON(COUNTS_KEY, this.counts);
+        this._t(`            + fetched ${feats.length}  added ${added}  archived ${cnt}`);
+        if (isNew) act.api(`New department ${uuid.slice(0, 8)} (+${added})`, { uuid: uuid.slice(0, 8), added });
       }
 
-      this.lastRun = Date.now();
-      saveSettings({ intervalMin: this.intervalMin, proxy: this.proxy, lastRun: this.lastRun });
+      const r = await this.store.maybePublish();
+      if (r.published) { this._t(`  snapshot published as block(s) (v${r.version})`); act.block(`Snapshot v${r.version} published`, { version: r.version }); }
+      this._t(`  --- cycle ${n} done: fetched ${fetched}, skipped ${skipped} | +${totAdded} flights, ${newDepts} new dept(s)`);
+      act.add(`Cycle ${n}: +${totAdded} flights, ${newDepts} new department(s)`, { added: totAdded, newDepts, fetched, skipped });
+      this.lastRun = Date.now(); this._persist();
     } catch (e) {
-      this.log(`Poll failed: ${e.message}. ${this.proxy ? '' : 'A CORS proxy may be required.'}`, 'err');
+      this._t(`  ! cycle ${n} failed: ${e.message}`);
+      this.log(`Update cycle failed: ${e.message}. ${this.proxy ? '' : 'A CORS proxy may be required.'}`, 'err');
     } finally {
       this.busy = false; this._emit();
     }
   }
 
-  /** Map an org/operator UUID to a readable department name via the agencies layer. */
-  _deptLabel(org) {
-    const a = (this.store.agencies || []).find(x => x.id === org);
-    if (a) return a.name || [a.city, a.county, a.state].filter(Boolean).join(', ') || org;
-    return org.length > 12 ? org.slice(0, 8) + '…' : org;
-  }
-
-  /** Paginate the whole feed (all departments). */
-  async _fetchAll() {
+  /** Paginate one agency's layer fully (GeoJSON). */
+  async _fetchAll(fs) {
     const PAGE = 2000, CAP = 100000;
-    let offset = 0, all = [];
+    let offset = 0, all = [], pages = 0;
     while (offset < CAP) {
-      const url = `${feedQueryUrl()}&resultRecordCount=${PAGE}&resultOffset=${offset}`;
-      const resp = await fetch(proxied(url, this.proxy), { headers: { Accept: 'application/json' } });
-      if (!resp.ok) throw new Error(`feed HTTP ${resp.status}`);
-      const gj = await resp.json();
-      const fs = (gj && gj.features) || [];
-      all = all.concat(fs);
-      if (fs.length < PAGE) break;
-      offset += PAGE;
+      const gj = await feedFetch(agencyQueryUrl(fs, { offset, pageSize: PAGE }), this.proxy);
+      const fsx = (gj && gj.features) || [];
+      all = all.concat(fsx); pages++;
+      const more = (gj && (gj.exceededTransferLimit || gj.properties?.exceededTransferLimit)) || fsx.length === PAGE;
+      if (pages > 1) this._t(`            page ${pages}: +${fsx.length} (total ${all.length})`);
+      if (!fsx.length || !more) break;
+      offset += fsx.length;
     }
     return all;
   }
+
+  // Manual "check now".
+  pollOnce() { return this.cycle(); }
 }

@@ -35,15 +35,50 @@ export const FIELD = {
   STATUS: 'status',
 };
 
-// ── Live feed (Skydio ArcGIS FeatureServer — same source as dfr_scraper.py) ──
+// ── Live feed (Skydio ArcGIS — mirrors dfr.py's per-department pipeline) ──
 
+export const ORG = 'mnhQTdIYDA7UoY2l';
+export const SVC_BASE = `https://services7.arcgis.com/${ORG}/arcgis/rest/services`;
+export const DIRECTORY_URL = `${SVC_BASE}?f=json`;
+export const DASH_URL = (uuid) => `https://cloud.skydio.com/dashboard/${uuid}`;
+
+// Back-compat single service (still used as a fallback).
 export const FEATURE_SERVICE =
-  'https://services7.arcgis.com/mnhQTdIYDA7UoY2l/arcgis/rest/services/' +
-  '678dee26-6aa8-4d60-bf1c-30c7b0f6b517-production/FeatureServer/0';
+  `${SVC_BASE}/678dee26-6aa8-4d60-bf1c-30c7b0f6b517-production/FeatureServer/0`;
 
 export function feedQueryUrl() {
   return `${FEATURE_SERVICE}/query?where=1%3D1&outFields=*` +
          `&returnGeometry=true&outSR=4326&f=geojson`;
+}
+
+/** Directory listing → { uuid: { env, name, fs } } for every -production
+ *  (and optionally -staging) FeatureServer in the org. Mirrors dfr.py discover(). */
+export function discoverFromDirectory(json, includeStaging = false) {
+  const out = {};
+  for (const svc of (json && json.services) || []) {
+    if (svc.type !== 'FeatureServer') continue;
+    const name = String(svc.name || '').split('/').pop();
+    const fs = `${SVC_BASE}/${name}/FeatureServer`;
+    if (name.endsWith('-production')) out[name.slice(0, -11)] = { env: 'production', name, fs };
+    else if (includeStaging && name.endsWith('-staging') && !out[name.slice(0, -8)])
+      out[name.slice(0, -8)] = { env: 'staging', name, fs };
+  }
+  return out;
+}
+
+/** Cheap count-only query for one agency's layer (skip-if-unchanged). */
+export function countUrl(fs) {
+  return `${fs}/0/query?where=1%3D1&returnCountOnly=true&f=json`;
+}
+
+/** Paginated full fetch for one agency's layer (GeoJSON, 4326). */
+export function agencyQueryUrl(fs, { offset = 0, pageSize = 2000 } = {}) {
+  const p = {
+    where: '1=1', outFields: '*', returnGeometry: 'true', outSR: '4326',
+    orderByFields: 'OBJECTID ASC', resultOffset: String(offset),
+    resultRecordCount: String(pageSize), f: 'geojson',
+  };
+  return `${fs}/0/query?${new URLSearchParams(p).toString()}`;
 }
 
 /**

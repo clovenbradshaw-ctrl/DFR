@@ -130,6 +130,22 @@ details.setup > label:first-of-type{margin-top:0}
 .k.swarm{color:#4dd0e1} .k.err{color:var(--err)} .k.info{color:var(--mut)}
 .act-empty{color:var(--mut);padding:40px;text-align:center}
 
+/* ── time scrubber over the map ── */
+#mapView{position:relative}
+#timebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:600;
+  display:flex;align-items:center;gap:10px;background:rgba(12,16,24,.92);border:1px solid var(--line);
+  border-radius:10px;padding:7px 12px;box-shadow:0 6px 24px rgba(0,0,0,.5);width:min(560px,86%)}
+#timebar button{padding:3px 9px}
+#timeSlider{flex:1}
+#timeLabel{font-size:11px;color:var(--mut);white-space:nowrap;min-width:130px;text-align:right}
+
+/* ── terminal view ── */
+#termView{display:flex;flex-direction:column;min-height:0}
+.term-head{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;color:var(--mut)}
+.term-body{flex:1;margin:0;overflow:auto;padding:12px 14px;font-family:var(--mono);font-size:12px;
+  line-height:1.5;color:#9fe7b8;background:#070b0e;white-space:pre-wrap;word-break:break-word}
+
 /* ── loading screen (radar sweep) ── */
 .loading{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;
   background:radial-gradient(900px 600px at 50% 40%,#10151d,#070a0f 75%)}
@@ -179,7 +195,7 @@ tbody tr:hover{background:var(--surf2)}
 .bar > i{display:block;height:100%;background:var(--acc);width:0}
 @media(max-width:760px){.main{grid-template-columns:1fr}.side{max-height:42vh}}
 </style>
-  <script type="module" crossorigin src="./assets/index-CYhlKFo3.js"></script>
+  <script type="module" crossorigin src="./assets/index-CTNjC4Cl.js"></script>
 </head>
 <body>
 
@@ -281,6 +297,7 @@ tbody tr:hover{background:var(--surf2)}
         <button id="tabDepts" aria-selected="true">Departments</button>
         <button id="tabMap" aria-selected="false">Map</button>
         <button id="tabActivity" aria-selected="false">Activity</button>
+        <button id="tabTerm" aria-selected="false">Terminal</button>
         <label class="focus-toggle" title="Pull recent flights from the live feed for the area you zoom into">
           <input type="checkbox" id="focusToggle" checked> live focus
         </label>
@@ -295,7 +312,24 @@ tbody tr:hover{background:var(--surf2)}
           <main id="deptMain"><div class="empty">Loading…</div></main>
         </div>
       </div>
-      <div class="view hidden" id="mapView"><div id="map"></div></div>
+      <div class="view hidden" id="mapView">
+        <!-- time scrubber: drag to show only flights up to a moment in time -->
+        <div id="timebar">
+          <button id="playBtn" title="Play / pause through time">▶</button>
+          <input type="range" id="timeSlider" min="0" max="1000" value="1000">
+          <span id="timeLabel" class="mono">all time</span>
+        </div>
+        <div id="map"></div>
+      </div>
+      <div class="view hidden" id="termView">
+        <div class="term-head">
+          <span>dfr.py — live department check</span>
+          <span style="flex:1"></span>
+          <label class="focus-toggle"><input type="checkbox" id="termFollow" checked> follow</label>
+          <button id="termClear">Clear</button>
+        </div>
+        <pre class="term-body" id="termBody"></pre>
+      </div>
       <div class="view hidden" id="activityView">
         <div class="act-head">
           <div class="act-filters" id="actFilters"></div>
