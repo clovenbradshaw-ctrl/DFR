@@ -82,6 +82,19 @@ export function agencyQueryUrl(fs, { offset = 0, pageSize = 2000 } = {}) {
 }
 
 /**
+ * Tail query: the newest `n` rows in one request, by ordering OBJECTID DESC.
+ * (The records come back newest-first; the caller can reverse if it cares.)
+ */
+export function agencyTailUrl(fs, n) {
+  const p = {
+    where: '1=1', outFields: '*', returnGeometry: 'true', outSR: '4326',
+    orderByFields: 'OBJECTID DESC', resultRecordCount: String(Math.max(1, n)),
+    f: 'geojson',
+  };
+  return `${fs}/0/query?${new URLSearchParams(p).toString()}`;
+}
+
+/**
  * Build a bbox-filtered query against the live feed — the exact pattern the
  * main DFR index.html uses (esriGeometryEnvelope + esriSpatialRelIntersects,
  * paginated). `bbox` is [west, south, east, north] in WGS84. `sinceTs` (ms)
