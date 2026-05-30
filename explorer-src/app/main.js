@@ -294,7 +294,13 @@ async function createNewSpace() {
   finally { $('newSpace').disabled = false; }
 }
 
+let _openingRoom = null;
 async function openRoom(roomId) {
+  // Idempotent / re-entrancy guard: never open the same room twice (the deep
+  // link + refreshRooms + onRoomChanges all raced openRoom, and the second
+  // open clobbered the freshly-loaded working set in OPFS).
+  if (roomId === currentRoomId || roomId === _openingRoom) { $('roomSel').value = roomId; return; }
+  _openingRoom = roomId;
   if (unsubDatasetState) unsubDatasetState();
   if (unsubMembers) unsubMembers();
   if (unsubTimeline) unsubTimeline();
@@ -311,6 +317,7 @@ async function openRoom(roomId) {
   } catch {}
   log('Opening dataset…');
   const { hydrated } = await store.open(roomId);
+  _openingRoom = null;   // open completed; allow future (different) opens
   render();
   // React to snapshots published by peers (intelligent, version-gated sync).
   unsubDatasetState = onDatasetState(roomId, async () => {
