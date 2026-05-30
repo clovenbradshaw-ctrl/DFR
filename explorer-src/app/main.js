@@ -823,6 +823,16 @@ function setTab(t) {
   else if (t === 'events') renderEvents();
 }
 
+// Write a freshly-verified feed-vs-stored result into the scraper's
+// reconciliation stats so the department badge reflects a manual sync without
+// waiting for the next background cycle.
+function recordReconcile(org, r) {
+  if (!scraper || !r || r.cnt == null) return;
+  const s = scraper.stats[org] || (scraper.stats[org] = {});
+  s.feed = r.cnt; s.stored = r.stored ?? r.have ?? null;
+  s.synced = r.synced !== false; s.reconciled = Date.now();
+}
+
 function ensureDepts() {
   if (deptsView) return deptsView;
   deptsView = new DepartmentsView({
@@ -831,19 +841,25 @@ function ensureDepts() {
     // In lazy (sharded) mode, the manifest supplies per-department counts before
     // any block is fetched; opening a department pulls just its block.
     deptIndex: () => (store?.isLazy() ? store.deptIndex() : null),
+    // Per-department reconciliation: feed count vs. what we hold (from the
+    // scraper's last count-check), so the list can badge in/out of sync.
+    reconcile: () => scraper?.reconciliation() || {},
     onSelectDept: async (org) => {
       if (store?.isLazy()) { await store.loadDepartment(org); deptsView.refresh(true); }
       // Live-refresh this department against its ArcGIS feed so its count is
       // current (fixes "stored 45 but the feed has 47").
       try {
         const r = await store.refreshDepartment(org, $('proxy').value.trim());
+        recordReconcile(org, r);
         if (r.added) { log(`${org.slice(0, 8)}: pulled ${r.added} new from live feed (${r.have}→${r.cnt}).`, 'ok'); deptsView.refresh(true); }
       } catch (e) { /* feed unreachable — keep stored count */ }
     },
     onSyncDept: async (org) => {
       try {
         const r = await store.refreshDepartment(org, $('proxy').value.trim());
-        log(r.added ? `${org.slice(0, 8)}: +${r.added} from live feed (${r.have}→${r.cnt}).` : `${org.slice(0, 8)}: up to date (${r.have ?? '?'}).`, 'ok');
+        recordReconcile(org, r);   // feed the badge with the just-verified counts
+        const synced = r.synced === false ? ` (still behind ${r.stored}/${r.cnt})` : '';
+        log(r.added ? `${org.slice(0, 8)}: +${r.added} from live feed (${r.have}→${r.cnt})${synced}.` : `${org.slice(0, 8)}: in sync (${r.stored ?? r.have ?? '?'}/${r.cnt ?? '?'}).`, r.synced === false ? 'warn' : 'ok');
       } catch (e) { log(`Sync failed: ${e.message}`, 'err'); }
     },
     onPickAgency: (a) => { if (dfrMap && a.lat != null) { setTab('map'); dfrMap.focusOn(a); focusFetchNow(dfrMap.bbox(), { agency: a.name }); } },
