@@ -16,7 +16,8 @@ import {
   hasLocalAccount, getClient, setProgress, setRecoveryKeyProvider,
 } from '../src/client.js';
 import { setNamespace } from '../src/operators.js';
-import { createRoom, discoverRooms, onRoomChanges } from '../src/rooms.js';
+import { createRoom, discoverRooms, onRoomChanges,
+         invite, getMembers, loadRoomMembers, onMembersChange } from '../src/rooms.js';
 
 import { NAMESPACE, ROOM_TYPE } from './dfr.js';
 import { DataStore } from './datastore.js';
@@ -28,7 +29,7 @@ import { DfrMap } from './mapview.js';
 const $ = (id) => document.getElementById(id);
 
 let store = null, scraper = null, dfrMap = null;
-let currentRoomId = null, unsubDatasetState = null;
+let currentRoomId = null, unsubDatasetState = null, unsubMembers = null;
 let gateAbort = null, gateMode = 'hydrate';
 
 // ── activity log ──
@@ -120,6 +121,7 @@ async function createDataset() {
 
 async function openRoom(roomId) {
   if (unsubDatasetState) unsubDatasetState();
+  if (unsubMembers) unsubMembers();
   currentRoomId = roomId;
   $('roomSel').value = roomId;
   dfrMap && (dfrMap._fitDone = false);
@@ -131,8 +133,46 @@ async function openRoom(roomId) {
     log('Dataset pointer changed — syncing…', 'mut');
     await store.sync(); render();
   });
+  // Member list + live updates (joins, invites, power-level changes).
+  unsubMembers = onMembersChange(roomId, () => renderMembers());
+  renderMembers();
   if (!hydrated) openGate('hydrate');
   else log('Dataset ready.', 'ok');
+}
+
+async function renderMembers() {
+  const el = $('memberList');
+  if (!el || !currentRoomId) return;
+  const roomId = currentRoomId;
+  try { await loadRoomMembers(roomId); } catch {}
+  if (roomId !== currentRoomId) return; // room switched while loading
+  const me = getClient()?.getUserId();
+  const members = getMembers(roomId);
+  el.innerHTML = members.map(m => {
+    const role = m.membership === 'invite' ? 'invited'
+      : m.powerLevel >= 100 ? 'admin' : m.powerLevel >= 50 ? 'mod' : 'member';
+    return `<div class="member${m.membership === 'invite' ? ' invited' : ''}">
+      <span class="mid">${esc(m.displayName || m.userId)}${m.userId === me ? ' (you)' : ''}</span>
+      <span class="role">${role}</span>
+    </div>`;
+  }).join('') || '<div class="hint">No members loaded.</div>';
+}
+
+async function doInvite() {
+  const raw = $('inviteId').value.trim();
+  if (!currentRoomId) { log('Open or create a dataset first.', 'warn'); return; }
+  if (!/^@[^:]+:.+/.test(raw)) { log('Enter a full Matrix ID, e.g. @name:hyphae.social', 'warn'); return; }
+  $('inviteBtn').disabled = true;
+  try {
+    await invite(currentRoomId, raw);
+    log(`Invited ${raw}.`, 'ok');
+    $('inviteId').value = '';
+    renderMembers();
+  } catch (e) {
+    log(`Invite failed: ${e.message}`, 'err');
+  } finally {
+    $('inviteBtn').disabled = false;
+  }
 }
 
 // ── render ──
@@ -275,6 +315,8 @@ function wire() {
   $('pw').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
   $('logout').addEventListener('click', doLogout);
   $('newRoom').addEventListener('click', createDataset);
+  $('inviteBtn').addEventListener('click', doInvite);
+  $('inviteId').addEventListener('keydown', e => { if (e.key === 'Enter') doInvite(); });
   $('roomSel').addEventListener('change', e => openRoom(e.target.value));
   $('tabMap').addEventListener('click', () => setTab('map'));
   $('tabTable').addEventListener('click', () => setTab('table'));

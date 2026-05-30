@@ -78,11 +78,16 @@ tbody tr:hover{background:var(--surf2)}
 .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--surf2);border:1px solid var(--line)}
 .pill.on{background:rgba(62,207,142,.15);border-color:var(--ok);color:var(--ok)}
 .hint{font-size:11px;color:var(--mut2);margin-top:6px}
+.members{margin-top:10px;display:flex;flex-direction:column;gap:4px}
+.member{display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 8px;background:var(--surf2);border:1px solid var(--line);border-radius:8px}
+.member .mid{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono)}
+.member .role{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.member.invited .role{color:var(--warn)}
 .bar{height:6px;background:var(--surf2);border-radius:999px;overflow:hidden;margin-top:8px}
 .bar > i{display:block;height:100%;background:var(--acc);width:0}
 @media(max-width:760px){.main{grid-template-columns:1fr}.side{max-height:42vh}}
 </style>
-  <script type="module" crossorigin src="./assets/index-BlPjZjwI.js"></script>
+  <script type="module" crossorigin src="./assets/index-ai6_Wn_u.js"></script>
 </head>
 <body>
 
@@ -155,6 +160,18 @@ tbody tr:hover{background:var(--surf2)}
         <div class="hint" style="margin-top:8px">Updates live in OPFS as a binary
           blob; snapshots upload to Matrix media and bump one room-state pointer
           — peers download only when the version advances.</div>
+      </div>
+
+      <div class="panel">
+        <h2>Members &amp; sharing</h2>
+        <div class="hint">Invite people by Matrix ID to share this encrypted
+          dataset. They'll see the same data and can contribute updates.</div>
+        <label>Invite by Matrix ID</label>
+        <div class="row">
+          <input id="inviteId" placeholder="@someone:hyphae.social" style="flex:1">
+          <button id="inviteBtn" class="primary">Invite</button>
+        </div>
+        <div id="memberList" class="members"></div>
       </div>
 
       <div class="panel">
