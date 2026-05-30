@@ -102,6 +102,7 @@ async function onAuthed() {
   $('who').textContent = client.getUserId();
   $('login').classList.add('hidden');
   $('app').classList.remove('hidden');
+  try { if (localStorage.getItem('dfr.sideHidden') === '1') $('mainGrid').classList.add('side-hidden'); } catch {}
 
   store = new DataStore({ log });
   store.onChange = scheduleRender;
@@ -442,6 +443,11 @@ function wire() {
   $('signin').addEventListener('click', doSignIn);
   $('pw').addEventListener('keydown', e => { if (e.key === 'Enter') doSignIn(); });
   $('logout').addEventListener('click', doLogout);
+  $('sideToggle').addEventListener('click', () => {
+    const hidden = $('mainGrid').classList.toggle('side-hidden');
+    try { localStorage.setItem('dfr.sideHidden', hidden ? '1' : '0'); } catch {}
+    if (tab === 'map') dfrMap?.invalidate();   // map reclaims the space
+  });
   $('newRoom').addEventListener('click', createDataset);
   $('inviteBtn').addEventListener('click', doInvite);
   $('inviteId').addEventListener('keydown', e => { if (e.key === 'Enter') doInvite(); });
