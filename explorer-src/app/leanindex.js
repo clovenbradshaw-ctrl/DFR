@@ -30,7 +30,7 @@ function downsampleSeg(seg) {
 }
 
 /** Reduce a flight's geometry to a light version for the index (or null). */
-function simplifyGeometry(geom) {
+export function simplifyGeometry(geom) {
   if (!geom || !geom.coordinates) return null;
   if (geom.type === 'MultiLineString') {
     // Keep at most the longest few segments, each downsampled.

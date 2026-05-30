@@ -17,7 +17,8 @@ import {
 } from '../src/client.js';
 import { setNamespace } from '../src/operators.js';
 import { createRoom, discoverRooms, onRoomChanges,
-         invite, getMembers, loadRoomMembers, onMembersChange } from '../src/rooms.js';
+         invite, getMembers, loadRoomMembers, onMembersChange,
+         onTimeline, onDecrypted } from '../src/rooms.js';
 
 import { NAMESPACE, ROOM_TYPE } from './dfr.js';
 import { DataStore } from './datastore.js';
@@ -33,7 +34,7 @@ const $ = (id) => document.getElementById(id);
 let deptsView = null, swarm = null;
 
 let store = null, scraper = null, dfrMap = null;
-let currentRoomId = null, unsubDatasetState = null, unsubMembers = null;
+let currentRoomId = null, unsubDatasetState = null, unsubMembers = null, unsubTimeline = null;
 let gateAbort = null, gateMode = 'hydrate';
 
 // ── activity log (sidebar text) + structured Activity feed ──
@@ -200,6 +201,7 @@ async function createDataset() {
 async function openRoom(roomId) {
   if (unsubDatasetState) unsubDatasetState();
   if (unsubMembers) unsubMembers();
+  if (unsubTimeline) unsubTimeline();
   if (swarm) { swarm.lowerHand(); swarm.stop(); }
   currentRoomId = roomId;
   $('roomSel').value = roomId;
@@ -213,6 +215,12 @@ async function openRoom(roomId) {
     log('Dataset pointer changed — syncing…', 'mut');
     await store.sync(); render();
   });
+  // Live flight events (from this device or peers) fold into the working set as
+  // they arrive — durable the moment they're sent, no waiting for a block.
+  const onFlightEvents = () => { if (store.mergeLooseEvents()) scheduleRender(); };
+  const u1 = onTimeline(roomId, onFlightEvents);
+  const u2 = onDecrypted(roomId, onFlightEvents);
+  unsubTimeline = () => { u1(); u2(); };
   // Member list + live updates (joins, invites, power-level changes).
   unsubMembers = onMembersChange(roomId, () => renderMembers());
   renderMembers();

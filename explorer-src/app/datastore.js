@@ -17,19 +17,36 @@
  *     multiple GB) by streaming it straight into chained blocks without ever
  *     buffering or parsing the whole thing. The manifest records its
  *     payload_format so a client small enough to hold it can reassemble + parse.
+ *
+ * Live updates (scraper / focus fetch) use an event-log → rollup model:
+ *   • Each genuinely-new flight posts immediately as a durable room *event*
+ *     (INS, lean geometry) via the offline outbox — so it's in Matrix the moment
+ *     it's found and survives the user leaving; no flush race.
+ *   • Once ROLLUP_THRESHOLD loose events accumulate, they're folded into the
+ *     dataset blob (a fresh snapshot block) and the superseded events are
+ *     redacted, keeping the room timeline lean. The block is the compaction;
+ *     the events are the durable interim. open()/onTimeline fold loose events
+ *     into the working set (dedup by flight_id) so nothing is missed.
  */
 
 import { getClient } from '../src/client.js';
+import { ins } from '../src/operators.js';
+import { getTimeline } from '../src/rooms.js';
 import { uploadEncrypted, getMediaBytes } from '../src/media.js';
-import { packFlights, unpackFlights, mergeFlights, blobHash } from './packset.js';
+import { packFlights, unpackFlights, mergeFlights, blobHash, flightId } from './packset.js';
 import { saveLocal, loadLocal } from './opfsbin.js';
 import { readDatasetState, writeDatasetState } from './roomstate.js';
 import { toRecord, toAgency, agencyKey, focusQueryUrl, feedFetch } from './dfr.js';
 import { textStreamFrom, readChunks, streamElements, streamNdjson } from './jsonstream.js';
 import { chunkBlob, frameBlock, hash64, reassemble, reassembleStream } from './chunks.js';
 import { fileChunks, streamChunks, guessFormat } from './chunkstream.js';
-import { extractLeanFlights } from './leanindex.js';
+import { extractLeanFlights, simplifyGeometry } from './leanindex.js';
+import { ENTITY } from './dfr.js';
 import { act } from './activity.js';
+
+// New flights post as durable room *events* the moment they're found, then get
+// rolled up into a block once enough accumulate (and the loose events redacted).
+const ROLLUP_THRESHOLD = 200;
 
 const FORMAT = 'gzip-ndjson';
 const DEFAULT_MEDIA_LIMIT = 50 * 1024 * 1024;
@@ -92,7 +109,36 @@ export class DataStore {
     this.meta = readDatasetState(roomId);
     if (this.meta && this.meta.version > this.localVersion) await this.sync();
     await this._loadAgencies();
+    this.mergeLooseEvents();   // fold in any flight events not yet rolled into the block
     return { hydrated: !!this.meta?.hydrated, count: this.flights.length };
+  }
+
+  /**
+   * Merge flight INS events from the live timeline into the working set. These
+   * are flights posted since the last rollup (durable, but not yet in a block).
+   * Idempotent — dedup by flight_id — so it's safe to call on open and on each
+   * new timeline event.
+   */
+  mergeLooseEvents() {
+    if (!this.roomId) return 0;
+    const evs = getTimeline(this.roomId) || [];
+    const recs = [];
+    let loose = 0;
+    for (const e of evs) {
+      const t = typeof e.getType === 'function' ? e.getType() : e.type;
+      if (!t || !t.endsWith('.ins')) continue;
+      const u = typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned;
+      if (u && u.redacted_because) continue;          // already rolled up
+      const c = typeof e.getContent === 'function' ? e.getContent() : e.content;
+      if (!c || c.entity_type !== ENTITY.FLIGHT || !c.payload) continue;
+      recs.push(toRecord(c.payload));
+      loose++;
+    }
+    this.looseEvents = loose;
+    if (!recs.length) return 0;
+    const { merged, added } = mergeFlights(this.flights, recs);
+    if (added) { this.flights = merged; this._notify(); }
+    return added;
   }
 
   // ── agencies (a parallel lean layer) ────────────────────────────────────────
@@ -419,16 +465,74 @@ export class DataStore {
 
   async addFlights(rawFlights) {
     const recs = rawFlights.map(toRecord);
-    const { merged, added } = mergeFlights(this.flights, recs);
-    if (!added) return { added: 0 };
+    // Which are genuinely new (dedup against the working set)?
+    const have = new Set(this.flights.map(flightId).filter(Boolean));
+    const fresh = recs.filter(r => { const id = flightId(r); return id && !have.has(id); });
+    if (!fresh.length) return { added: 0 };
+
+    // 1) Post each new flight as a durable room EVENT immediately. ins() goes
+    //    through the foundation's offline outbox, so delivery is guaranteed even
+    //    if the user closes the tab mid-send — the data is no longer stranded in
+    //    OPFS. Events carry lean (simplified) geometry so lines draw at once.
+    for (const r of fresh) {
+      const ev = { ...r, geometry: simplifyGeometry(r.geometry) };
+      try { await ins(this.roomId, ENTITY.FLIGHT, ev); this.looseEvents = (this.looseEvents || 0) + 1; }
+      catch (e) { act.err(`Flight event failed: ${e.message}`); }
+    }
+
+    // 2) Update the in-memory working set + local OPFS cache.
+    const { merged, added } = mergeFlights(this.flights, fresh);
     this.flights = merged;
-    this.dirty += added;
-    const newAgencies = this._discoverAgencies(recs);
+    const newAgencies = this._discoverAgencies(fresh);
     await saveLocal(this.roomId, await packFlights(this.flights));
     this._notify();
-    act.add(`Added ${added} flight(s) to the dataset`, { added, source: 'scraper' });
+    act.add(`Recorded ${added} flight(s) as room event(s)`, { added, loose: this.looseEvents, source: 'scraper' });
     if (newAgencies) act.add(`Discovered ${newAgencies} new department(s)`, { newAgencies });
+
+    // 3) Roll the loose events up into a block once enough accumulate.
+    if ((this.looseEvents || 0) >= ROLLUP_THRESHOLD) await this.rollup();
     return { added, newAgencies };
+  }
+
+  /**
+   * Compaction: fold the loose per-flight events into the dataset blob, publish
+   * a fresh snapshot block, then redact the now-superseded loose events so the
+   * room timeline stays lean. The block is the durable rollup; the events were
+   * the durable interim. Safe to call anytime.
+   */
+  async rollup() {
+    if (this._publishing || !this.roomId) return { rolled: 0 };
+    const client = getClient();
+    const looseIds = this._looseEventIds();   // event_ids of flight INS events
+    await this.publish({});                   // snapshot now supersedes them
+    let redacted = 0;
+    if (client && looseIds.length) {
+      act.block(`Rolling up ${looseIds.length} flight events into the block`, { count: looseIds.length });
+      for (const id of looseIds) {
+        try { await client.redactEvent(this.roomId, id); redacted++; }
+        catch { /* best-effort; a missed redaction is harmless */ }
+      }
+    }
+    this.looseEvents = 0;
+    act.block(`Rolled up: ${redacted} event(s) redacted into snapshot v${this.meta?.version ?? '?'}`, { redacted });
+    return { rolled: redacted };
+  }
+
+  /** Collect event_ids of our app's flight INS events currently in the timeline. */
+  _looseEventIds() {
+    const evs = getTimeline(this.roomId) || [];
+    const out = [];
+    for (const e of evs) {
+      const t = typeof e.getType === 'function' ? e.getType() : e.type;
+      if (!t || !t.endsWith('.ins')) continue;
+      const c = typeof e.getContent === 'function' ? e.getContent() : e.content;
+      if (c && c.entity_type === ENTITY.FLIGHT) {
+        const id = typeof e.getId === 'function' ? e.getId() : e.event_id;
+        const u = typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned;
+        if (id && !(u && u.redacted_because)) out.push(id);
+      }
+    }
+    return out;
   }
 
   /**
