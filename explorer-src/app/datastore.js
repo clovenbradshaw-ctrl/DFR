@@ -464,6 +464,19 @@ export class DataStore {
     return due ? this.publish({}) : { published: false };
   }
 
+  /** True while a publish is in flight (used by the leave-guard). */
+  get publishing() { return !!this._publishing; }
+
+  /**
+   * Flush any unpublished local flights to the room *now* — used when the user
+   * is leaving (tab hidden) so scraped data isn't stranded in OPFS on this
+   * device. No-op when nothing is pending or a publish is already running.
+   */
+  async flushNow() {
+    if (this.dirty <= 0 || this._publishing) return { published: false };
+    return this.publish({});
+  }
+
   // ── publish (canonical: single block, or chained blocks + manifest) ─────────
 
   async _uploadManifest({ payload_format, name, total_bytes, chunks, head }) {
@@ -491,6 +504,12 @@ export class DataStore {
 
   async publish({ markHydrated = false, sourceUrl = null } = {}) {
     if (!this.roomId) return { published: false };
+    this._publishing = true;
+    try { return await this._publish({ markHydrated, sourceUrl }); }
+    finally { this._publishing = false; }
+  }
+
+  async _publish({ markHydrated = false, sourceUrl = null } = {}) {
     const bytes = await packFlights(this.flights);
     const limit = await this._mediaSizeLimit();
     const prev = readDatasetState(this.roomId);

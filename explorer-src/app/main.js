@@ -121,11 +121,45 @@ async function onAuthed() {
   $('interval').value = scraper.intervalMin;
   $('proxy').value = scraper.proxy;
 
+  installLeaveGuard();
   onRoomChanges(() => refreshRooms());
   await refreshRooms();
 }
 
+// Don't lose scraped flights when the user leaves: push unpublished data to the
+// room as soon as the tab is hidden (the reliable "leaving" signal — a full
+// async media upload can't complete during beforeunload), and warn if they try
+// to close with data still pending / mid-publish.
+let _leaveGuardInstalled = false;
+function installLeaveGuard() {
+  if (_leaveGuardInstalled) return;
+  _leaveGuardInstalled = true;
+
+  const flush = (why) => {
+    if (!store || store.dirty <= 0) return;
+    log(`Flushing ${store.dirty} unpublished flight(s) to the room (${why})…`, 'mut');
+    // Fire-and-forget: visibilitychange/pagehide still allow async work to run
+    // while the tab is backgrounded, which is when this fires.
+    store.flushNow().catch(e => log(`Flush failed: ${e.message}`, 'err'));
+  };
+
+  // Primary trigger: tab hidden (switching away / closing on mobile & desktop).
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush('tab hidden'); });
+  // Secondary: page being unloaded (best-effort).
+  window.addEventListener('pagehide', () => flush('page hide'));
+
+  // Last-ditch warning if there's still unpublished data (or a publish racing).
+  window.addEventListener('beforeunload', (e) => {
+    if (store && (store.dirty > 0 || store.publishing)) {
+      e.preventDefault();
+      e.returnValue = 'New flights are still syncing to the room — leave anyway?';
+      return e.returnValue;
+    }
+  });
+}
+
 async function doLogout() {
+  try { if (store?.dirty > 0) await store.flushNow(); } catch {}
   try { scraper?.stop(); } catch {}
   await logout();
   location.reload();
