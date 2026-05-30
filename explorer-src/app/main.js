@@ -670,6 +670,12 @@ function ensureDepts() {
   deptsView = new DepartmentsView({
     sidebar: $('deptList'), main: $('deptMain'),
     getData: () => ({ flights: store?.flights || [], agencies: store?.agencies || [] }),
+    // In lazy (sharded) mode, the manifest supplies per-department counts before
+    // any block is fetched; opening a department pulls just its block.
+    deptIndex: () => (store?.isLazy() ? store.deptIndex() : null),
+    onSelectDept: async (org) => {
+      if (store?.isLazy()) { await store.loadDepartment(org); deptsView.refresh(true); }
+    },
     onPickAgency: (a) => { if (dfrMap && a.lat != null) { setTab('map'); dfrMap.focusOn(a); focusFetchNow(dfrMap.bbox(), { agency: a.name }); } },
   });
   $('deptSearch').addEventListener('input', e => deptsView.setFilter(e.target.value));
@@ -748,6 +754,13 @@ function wire() {
     try { const r = await store.buildIndexFromArchive(); log(`Built index: ${r.flights} flights.`, 'ok'); render(); }
     catch (e) { log(`Build index failed: ${e.message}`, 'err'); }
     finally { $('buildIndexBtn').disabled = false; }
+  });
+  $('reshardBtn').addEventListener('click', async () => {
+    if (!confirm('Re-shard the dataset into per-department blocks? Clients will then load only the departments they open. The original raw archive is dropped.')) return;
+    $('reshardBtn').disabled = true;
+    try { const r = await store.reshardByDepartment(); log(`Re-sharded (v${r.version}, ${r.mode}).`, 'ok'); render(); }
+    catch (e) { log(`Re-shard failed: ${e.message}`, 'err'); }
+    finally { $('reshardBtn').disabled = false; }
   });
 
   // Agencies: pick a local NDJSON/JSON file and load it as its own layer.
