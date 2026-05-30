@@ -27,7 +27,7 @@ import { Scraper } from './scraper.js';
 import { DfrMap } from './mapview.js';
 import { DepartmentsView } from './departments.js';
 import { Swarm } from './swarm.js';
-import { Activity, act } from './activity.js';
+import { Activity, act, Term } from './activity.js';
 
 const $ = (id) => document.getElementById(id);
 let deptsView = null, swarm = null;
@@ -48,6 +48,14 @@ function log(msg, level = 'mut') {
   }
   // Mirror errors/warnings into the structured feed so they appear in Activity.
   if (level === 'err') act.err(msg);
+}
+
+// ── Terminal view (mirrors `python3 dfr.py` output) ──
+function renderTerminal() {
+  const el = $('termBody');
+  if (!el) return;
+  el.textContent = Term.lines.join('\n');
+  if ($('termFollow')?.checked) el.scrollTop = el.scrollHeight;
 }
 
 // ── Activity view ──
@@ -107,7 +115,7 @@ async function onAuthed() {
   store = new DataStore({ log });
   store.onChange = scheduleRender;
   store.onBusy = showLoading;
-  scraper = new Scraper({ store, log });
+  scraper = new Scraper({ store, log, term: (line) => Term.write(line) });
   scraper.onChange = renderScraper;
   swarm = new Swarm({ getRoomId: () => currentRoomId, log, onPeersChange: () => {} });
   $('interval').value = scraper.intervalMin;
@@ -276,10 +284,52 @@ function ensureMap() {
   return dfrMap;
 }
 let agenciesDrawn = false;
+// Time scrubber state: tmin/tmax span the dataset; cursorFrac in [0,1] hides
+// flights with takeoff after the cursor. 1 = show all.
+let timeSpan = null;       // { min, max } in ms
+let cursorFrac = 1;
+
+function flightsUpToCursor(flights) {
+  if (cursorFrac >= 1 || !timeSpan) return flights;
+  const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
+  return flights.filter(f => !f.takeoff || f.takeoff <= cut);
+}
+
+function recomputeTimeSpan(flights) {
+  let min = Infinity, max = 0;
+  for (const f of flights) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
+  timeSpan = (min === Infinity) ? null : { min, max };
+  updateTimeLabel();
+}
+
+function updateTimeLabel() {
+  const lbl = $('timeLabel'); if (!lbl) return;
+  if (cursorFrac >= 1 || !timeSpan) { lbl.textContent = 'all time'; return; }
+  const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
+  lbl.textContent = '≤ ' + new Date(cut).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+}
+
+let playTimer = null;
+function togglePlay() {
+  const btn = $('playBtn');
+  if (playTimer) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; return; }
+  btn.textContent = '⏸';
+  // Sweep from the current cursor to the end over ~12s, then stop.
+  if (cursorFrac >= 1) cursorFrac = 0;
+  playTimer = setInterval(() => {
+    cursorFrac = Math.min(1, cursorFrac + 0.02);
+    $('timeSlider').value = String(Math.round(cursorFrac * 1000));
+    updateTimeLabel();
+    if (dfrMap) dfrMap.render(flightsUpToCursor(store?.flights || []));
+    if (cursorFrac >= 1) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; }
+  }, 240);
+}
+
 function renderMap(flights) {
   const m = ensureMap();
   if (!m) return;
-  m.render(flights);
+  recomputeTimeSpan(flights);
+  m.render(flightsUpToCursor(flights));
   // Agencies rarely change; only (re)draw when the set changes.
   if (!agenciesDrawn && store?.agencies?.length) {
     m.renderAgencies(store.agencies, (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
@@ -416,15 +466,16 @@ function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;'
 // ── tabs ──
 function setTab(t) {
   tab = t;
-  $('tabDepts').setAttribute('aria-selected', t === 'depts');
-  $('tabMap').setAttribute('aria-selected', t === 'map');
-  $('tabActivity').setAttribute('aria-selected', t === 'activity');
+  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabTerm', 'term']])
+    $(id).setAttribute('aria-selected', t === name);
   $('deptsView').classList.toggle('hidden', t !== 'depts');
   $('mapView').classList.toggle('hidden', t !== 'map');
   $('activityView').classList.toggle('hidden', t !== 'activity');
+  $('termView').classList.toggle('hidden', t !== 'term');
   if (t === 'map') { renderMap(store?.flights || []); dfrMap?.invalidate(); }
   else if (t === 'depts') ensureDepts().refresh();
   else if (t === 'activity') renderActivity();
+  else if (t === 'term') renderTerminal();
 }
 
 function ensureDepts() {
@@ -455,9 +506,20 @@ function wire() {
   $('tabDepts').addEventListener('click', () => setTab('depts'));
   $('tabMap').addEventListener('click', () => setTab('map'));
   $('tabActivity').addEventListener('click', () => setTab('activity'));
+  $('tabTerm').addEventListener('click', () => setTab('term'));
   $('actClear').addEventListener('click', () => { Activity.clear(); renderActivity(); });
-  // Live-update the Activity view (and the tab is cheap to repaint when visible).
+  $('termClear').addEventListener('click', () => { Term.clear(); renderTerminal(); });
+  // Live-update Activity + Terminal views (cheap repaint only when visible).
   Activity.subscribe(() => { if (tab === 'activity') scheduleActRender(); });
+  Term.subscribe(() => { if (tab === 'term') renderTerminal(); });
+
+  // Time scrubber.
+  $('timeSlider').addEventListener('input', e => {
+    cursorFrac = (+e.target.value) / 1000;
+    updateTimeLabel();
+    if (dfrMap) dfrMap.render(flightsUpToCursor(store?.flights || []));
+  });
+  $('playBtn').addEventListener('click', togglePlay);
   $('focusToggle').addEventListener('change', e => {
     focusEnabled = e.target.checked;
     setFocusHint(focusEnabled ? 'Live focus on — zoom in to pull recent flights.' : 'Live focus off.');

@@ -43,6 +43,24 @@ export const Activity = {
   },
 };
 
+/**
+ * Terminal — a raw line buffer mirroring what `python3 dfr.py` prints, so the
+ * user can watch the per-department discover/count/fetch/dedupe run as if in a
+ * console. Separate from the structured Activity feed above.
+ */
+const TERM_MAX = 1000;
+export const Term = {
+  lines: [],
+  _subs: new Set(),
+  write(line) {
+    this.lines.push(line);
+    if (this.lines.length > TERM_MAX) this.lines.splice(0, this.lines.length - TERM_MAX);
+    for (const fn of this._subs) { try { fn(line); } catch {} }
+  },
+  subscribe(fn) { this._subs.add(fn); return () => this._subs.delete(fn); },
+  clear() { this.lines = []; for (const fn of this._subs) { try { fn(null); } catch {} } },
+};
+
 // Convenience emitters (keep call sites terse).
 export const act = {
   sync:  (m, d) => Activity.push('sync', m, d),
