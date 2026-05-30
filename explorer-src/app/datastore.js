@@ -36,7 +36,8 @@ import { uploadEncrypted, getMediaBytes } from '../src/media.js';
 import { packFlights, unpackFlights, mergeFlights, blobHash, flightId } from './packset.js';
 import { saveLocal, loadLocal } from './opfsbin.js';
 import { readDatasetState, writeDatasetState } from './roomstate.js';
-import { toRecord, toAgency, agencyKey, focusQueryUrl, feedFetch } from './dfr.js';
+import { toRecord, toAgency, agencyKey, focusQueryUrl, feedFetch,
+         fsForOrg, countUrl, agencyTailUrl, agencyQueryUrl } from './dfr.js';
 import { textStreamFrom, readChunks, streamElements, streamNdjson } from './jsonstream.js';
 import { chunkBlob, frameBlock, hash64, reassemble, reassembleStream } from './chunks.js';
 import { fileChunks, streamChunks, guessFormat } from './chunkstream.js';
@@ -664,14 +665,16 @@ export class DataStore {
     // 2) Update the in-memory working set + local OPFS cache.
     const { merged, added } = mergeFlights(this.flights, fresh);
     this.flights = merged;
+    this.dirty = (this.dirty || 0) + added;   // flights pending in the next block
     const newAgencies = this._discoverAgencies(fresh);
     await saveLocal(this.roomId, await packFlights(this.flights));
     this._notify();
-    act.add(`Recorded ${added} flight(s) as room event(s)`, { added, loose: this.looseEvents, source: 'scraper' });
+    act.add(`Recorded ${added} flight(s) as room event(s)`, { added, events: this.looseEvents, unpublished: this.dirty, source: 'scraper' });
     if (newAgencies) act.add(`Discovered ${newAgencies} new department(s)`, { newAgencies });
 
-    // 3) Roll the loose events up into a block once enough accumulate.
-    if ((this.looseEvents || 0) >= ROLLUP_THRESHOLD) await this.rollup();
+    // 3) Roll up into a block when ~100 timeline events have accrued OR a large
+    //    flight backlog has built up (so a big import doesn't sit uncompacted).
+    if ((this.looseEvents || 0) >= ROLLUP_THRESHOLD || this.dirty >= 2000) await this.rollup();
     return { added, newAgencies };
   }
 
@@ -757,6 +760,15 @@ export class DataStore {
     return out;
   }
 
+  /** Redact the loose flight events now superseded by a published block. */
+  async _redactLooseEvents() {
+    const client = getClient();
+    if (!client) return;
+    const ids = this._looseEventIds();
+    for (const id of ids) { try { await client.redactEvent(this.roomId, id); } catch {} }
+    if (ids.length) act.block(`Rolled ${ids.length} flight event(s) into the block`, { redacted: ids.length });
+  }
+
   /**
    * Mint stub agencies for any organization_id we see on flights but don't yet
    * have an agency record for. Keeps the department list complete as new
@@ -785,10 +797,43 @@ export class DataStore {
   }
 
   async maybePublish() {
-    const due = this.dirty >= PUBLISH_THRESHOLD ||
+    // Roll loose timeline events into a block once ~100 have accumulated (a
+    // comfortable margin under Matrix per-request limits), or after the time
+    // interval if anything is pending. Until then the flights live durably as
+    // room events (read back via mergeLooseEvents) — the block is compaction.
+    const due = (this.looseEvents || 0) >= ROLLUP_THRESHOLD ||
+                (this.dirty || 0) >= 2000 ||
                 (this.dirty > 0 && Date.now() - this.lastPublish >= PUBLISH_MIN_INTERVAL);
     return due ? this.publish({}) : { published: false };
   }
+
+  /**
+   * Live-refresh ONE department against its ArcGIS feed: count-check, and if the
+   * feed has more than we hold, pull the delta (tail) and merge. Used when a
+   * department detail is opened so its count reflects the true live total
+   * (fixes "stored 45 but feed has 47"). `proxy` is the CORS proxy prefix.
+   */
+  async refreshDepartment(org, proxy = '') {
+    if (!org) return { added: 0 };
+    const fs = fsForOrg(org);
+    let cnt = null;
+    try { cnt = (await feedFetch(countUrl(fs), proxy, { preferProxy: true }))?.count ?? null; } catch { return { added: 0 }; }
+    const have = this.flights.filter(f => f.organization_id === org).length;
+    if (cnt == null || cnt <= have) return { added: 0, cnt, have };
+    const delta = cnt - have;
+    let feats;
+    try {
+      feats = delta <= 5000
+        ? (await feedFetch(agencyTailUrl(fs, delta), proxy, { preferProxy: true }))?.features || []
+        : (await feedFetch(agencyQueryUrl(fs), proxy, { preferProxy: true }))?.features || [];
+    } catch { return { added: 0, cnt, have }; }
+    const r = await this.addFlights(feats);   // dedups, posts events, persists
+    if (r.added) act.add(`Department ${org.slice(0, 8)}: +${r.added} from live feed`, { added: r.added });
+    return { added: r.added || 0, cnt, have };
+  }
+
+  /** How many flights are in loose events but not yet rolled into a block. */
+  unrolledCount() { return this.looseEvents || 0; }
 
   /** True while a publish is in flight (used by the leave-guard). */
   get publishing() { return !!this._publishing; }
@@ -958,6 +1003,10 @@ export class DataStore {
     if (!keepRaw && (prev?.raw_archive || prev?.mode === 'chunked-raw')) {
       this._dropRawArchive(prev).catch(() => {});   // best-effort cleanup
     }
+    // The block now supersedes the loose per-flight events — redact them so the
+    // timeline stays lean, and reset the loose counter that gates the next roll.
+    if (mode !== 'empty') this._redactLooseEvents().catch(() => {});
+    this.looseEvents = 0;
     this.log(`Published v${version} (${content.count} flights, ${mode}).`, 'ok');
     this._notify();
     return { published: true, version, mode };
