@@ -35,19 +35,24 @@ function looksNdjson(head) {
  * @param {AbortSignal} [opts.signal]
  * @param {(p:{seen,kept})=>void} [opts.onProgress]
  * @param {(rec)=>void} [opts.onRecord]   optional sink (records not retained)
+ * @param {(info:{keys:string[],sample:object})=>void} [opts.onSample]  first parsed element
  * @returns {Promise<Array>} lean flight records (geometry null)
  */
-export async function extractLeanFlights(byteStream, { payloadFormat = 'auto', signal, onProgress, onRecord } = {}) {
+export async function extractLeanFlights(byteStream, { payloadFormat = 'auto', signal, onProgress, onRecord, onSample } = {}) {
   const text = await textStreamFrom(byteStream);
   const reader = text.getReader();
 
   // Buffer a head to auto-detect shape, then re-emit it ahead of the rest.
+  // A single NDJSON flight (with full geometry) can exceed any fixed sniff
+  // buffer, so cap the head at the first newline once we have one — we only
+  // need enough to tell NDJSON from an array/FeatureCollection.
   let head = '';
   let firstDone = false;
-  while (head.length < 16384) {
+  while (head.length < 1 << 20) {            // up to 1 MB, but stop early on a newline
     const { done, value } = await reader.read();
     if (done) { firstDone = true; break; }
     head += value;
+    if (head.indexOf('\n') >= 0 && head.length >= 64) break;
   }
 
   let ndjson;
@@ -68,10 +73,17 @@ export async function extractLeanFlights(byteStream, { payloadFormat = 'auto', s
 
   const elements = ndjson ? streamNdjson(chunks()) : streamElements(chunks());
   const out = [];
-  let seen = 0;
+  let seen = 0, sampled = false;
   for await (const el of elements) {
     if (signal?.aborted) break;
     seen++;
+    // Surface the real field names of the first record so the mapping can be
+    // corrected when a dataset uses non-standard keys.
+    if (!sampled && onSample) {
+      sampled = true;
+      const src = (el && el.properties) ? el.properties : el;
+      try { onSample({ keys: src && typeof src === 'object' ? Object.keys(src) : [], sample: src }); } catch {}
+    }
     let rec;
     try { rec = toRecord(el); } catch { continue; }
     if (rec.geometry) rec.geometry = null;          // drop the bulky path
