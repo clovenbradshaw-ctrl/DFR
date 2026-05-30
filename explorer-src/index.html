@@ -130,6 +130,21 @@ details.setup > label:first-of-type{margin-top:0}
 .k.swarm{color:#4dd0e1} .k.err{color:var(--err)} .k.info{color:var(--mut)}
 .act-empty{color:var(--mut);padding:40px;text-align:center}
 
+/* ── flight details panel ── */
+#flightPanel{position:absolute;top:0;right:0;bottom:0;z-index:650;width:320px;max-width:88%;
+  background:var(--surf);border-left:1px solid var(--line);box-shadow:-8px 0 32px rgba(0,0,0,.45);
+  display:flex;flex-direction:column;transform:translateX(0);transition:transform .2s ease}
+#flightPanel.hidden{transform:translateX(105%);display:flex}
+.fp-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.fp-title{flex:1;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#fpClose{padding:4px 9px}
+.fp-body{flex:1;overflow:auto;padding:14px}
+.fp-row{display:grid;grid-template-columns:96px 1fr;gap:4px 10px;font-size:12.5px;margin-bottom:8px}
+.fp-row dt{color:var(--mut)} .fp-row dd{margin:0;word-break:break-all}
+.fp-purpose{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;
+  background:rgba(255,77,77,.15);border:1px solid rgba(255,107,107,.4);color:#ff9b9b;margin-bottom:12px}
+.fp-dept{font-size:12px;color:var(--acc);cursor:pointer;text-decoration:none;border-bottom:1px dotted var(--acc)}
+
 /* ── time scrubber over the map ── */
 #mapView{position:relative}
 #timebar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:600;
@@ -319,6 +334,14 @@ tbody tr:hover{background:var(--surf2)}
           <span id="timeLabel" class="mono">all time</span>
         </div>
         <div id="map"></div>
+        <!-- flight details panel (slides in when a flight is clicked) -->
+        <aside id="flightPanel" class="hidden">
+          <div class="fp-head">
+            <span class="fp-title" id="fpTitle">Flight</span>
+            <button id="fpClose" title="Close">✕</button>
+          </div>
+          <div class="fp-body" id="fpBody"></div>
+        </aside>
       </div>
       <div class="view hidden" id="termView">
         <div class="term-head">
