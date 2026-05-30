@@ -1,4 +1,4 @@
-let BE, jE, et, jc, qE, ne, Vh, Vn, KE, xs, Te, FE, Lr, xE, Jr, hi, yn, js, $E, _, Fy, VE, mt, Ty, HE, zS, Iy, jv, WE, GE, B, Ne, He, Fe, K, ai, fr, tt, mi, y, ge, Bf, Yn, ky, Ry, ta;
+let BE, jE, tt, Fc, qE, ne, Kh, Vn, KE, xs, Te, FE, Lr, xE, Jr, hi, yn, js, $E, _, Fy, VE, mt, Ty, HE, zS, Iy, Fv, WE, GE, B, Ne, ze, Fe, K, ai, vr, rt, mi, y, ge, jf, Yn, ky, Ry, ta;
 let __tla = (async ()=>{
     (function() {
         const e = document.createElement("link").relList;
@@ -21,16 +21,16 @@ let __tla = (async ()=>{
             fetch(n.href, a);
         }
     })();
-    const Hd = "eomx::";
-    function zd(i) {
+    const Gd = "eomx::";
+    function Hd(i) {
         return typeof i == "string" && i.startsWith("matrix-js-sdk");
     }
     if (typeof IDBFactory < "u" && !IDBFactory.prototype.__eomxScoped) {
         const i = IDBFactory.prototype, e = i.open, t = i.deleteDatabase;
         i.open = function(r, ...n) {
-            return e.call(this, zd(r) ? Hd + r : r, ...n);
+            return e.call(this, Hd(r) ? Gd + r : r, ...n);
         }, i.deleteDatabase = function(r, ...n) {
-            return t.call(this, zd(r) ? Hd + r : r, ...n);
+            return t.call(this, Hd(r) ? Gd + r : r, ...n);
         }, Object.defineProperty(i, "__eomxScoped", {
             value: !0,
             enumerable: !1,
@@ -38,7 +38,7 @@ let __tla = (async ()=>{
             writable: !1
         });
     }
-    function $h(i) {
+    function Bh(i) {
         if (Array.isArray(i)) return i;
     }
     function Pp(i, e) {
@@ -62,26 +62,26 @@ let __tla = (async ()=>{
             return o;
         }
     }
-    function Jd(i, e) {
+    function zd(i, e) {
         (e == null || e > i.length) && (e = i.length);
         for(var t = 0, r = Array(e); t < e; t++)r[t] = i[t];
         return r;
     }
-    function Wh(i, e) {
+    function $h(i, e) {
         if (i) {
-            if (typeof i == "string") return Jd(i, e);
+            if (typeof i == "string") return zd(i, e);
             var t = {}.toString.call(i).slice(8, -1);
-            return t === "Object" && i.constructor && (t = i.constructor.name), t === "Map" || t === "Set" ? Array.from(i) : t === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? Jd(i, e) : void 0;
+            return t === "Object" && i.constructor && (t = i.constructor.name), t === "Map" || t === "Set" ? Array.from(i) : t === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? zd(i, e) : void 0;
         }
     }
-    function Kh() {
+    function Wh() {
         throw new TypeError(`Invalid attempt to destructure non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
     }
     ge = function(i, e) {
-        return $h(i) || Pp(i, e) || Wh(i, e) || Kh();
+        return Bh(i) || Pp(i, e) || $h(i, e) || Wh();
     };
-    function Yd(i, e, t, r, n, a, s) {
+    function Jd(i, e, t, r, n, a, s) {
         try {
             var o = i[a](s), l = o.value;
         } catch (d) {
@@ -95,10 +95,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return new Promise(function(r, n) {
                 var a = i.apply(e, t);
                 function s(l) {
-                    Yd(a, r, n, s, o, "next", l);
+                    Jd(a, r, n, s, o, "next", l);
                 }
                 function o(l) {
-                    Yd(a, r, n, s, o, "throw", l);
+                    Jd(a, r, n, s, o, "throw", l);
                 }
                 s(void 0);
             });
@@ -134,7 +134,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             writable: !0
         }) : i[e] = t, i;
     };
-    Vh = function(i) {
+    Kh = function(i) {
         return i && i.__esModule && Object.prototype.hasOwnProperty.call(i, "default") ? i.default : i;
     };
     const Lp = "l", Up = "rn", Np = {
@@ -6450,10 +6450,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         "⻳": "龟",
         "⿕": "龠"
     };
-    var Qs, Xd;
+    var Qs, Yd;
     function xp() {
-        if (Xd) return Qs;
-        Xd = 1;
+        if (Yd) return Qs;
+        Yd = 1;
         var i = Np;
         function e(a) {
             return a.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
@@ -6468,7 +6468,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return Qs = n, Qs;
     }
     var Fp = xp();
-    const jp = Vh(Fp), Bp = Object.prototype.toString, $p = (i)=>Bp.call(i) === "[object Error]", Wp = new Set([
+    const jp = Kh(Fp), Bp = Object.prototype.toString, $p = (i)=>Bp.call(i) === "[object Error]", Wp = new Set([
         "network error",
         "NetworkError when attempting to fetch resource.",
         "The Internet connection appears to be offline.",
@@ -6489,7 +6489,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (Number.isNaN(i)) throw new TypeError("Expected `retries` to be a valid number or Infinity, got NaN.");
         } else if (i !== void 0) throw new TypeError("Expected `retries` to be a number or Infinity.");
     }
-    function Ma(i, e, { min: t = 0, allowInfinity: r = !1 } = {}) {
+    function Oa(i, e, { min: t = 0, allowInfinity: r = !1 } = {}) {
         if (e !== void 0) {
             if (typeof e != "number" || Number.isNaN(e)) throw new TypeError(`Expected \`${i}\` to be a number${r ? " or Infinity" : ""}.`);
             if (!r && !Number.isFinite(e)) throw new TypeError(`Expected \`${i}\` to be a finite number.`);
@@ -6499,7 +6499,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Zs(i, e) {
         if (e !== void 0 && typeof e != "function") throw new TypeError(`Expected \`${i}\` to be a function.`);
     }
-    class qh extends Error {
+    class Vh extends Error {
         constructor(e){
             super(), e instanceof Error ? (this.originalError = e, { message: e } = e) : (this.originalError = new Error(e), this.originalError.stack = this.stack), this.name = "AbortError", this.message = e;
         }
@@ -6526,7 +6526,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     async function Hp({ error: i, attemptNumber: e, retriesConsumed: t, startTime: r, options: n }) {
         const a = i instanceof Error ? i : new TypeError(`Non-error was thrown: "${i}". You should only throw errors.`);
-        if (a instanceof qh) throw a.originalError;
+        if (a instanceof Vh) throw a.originalError;
         const s = Number.isFinite(n.retries) ? Math.max(0, n.retries - t) : n.retries, o = n.maxRetryTime ?? Number.POSITIVE_INFINITY, l = qp(t, n);
         if (Pa(r, o) <= 0) {
             const R = Object.freeze({
@@ -6562,16 +6562,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         if (e = {
             ...e
         }, Vp(e.retries), Object.hasOwn(e, "forever")) throw new Error("The `forever` option is no longer supported. For many use-cases, you can set `retries: Infinity` instead.");
-        e.retries ??= 10, e.factor ??= 2, e.minTimeout ??= 1e3, e.maxTimeout ??= Number.POSITIVE_INFINITY, e.maxRetryTime ??= Number.POSITIVE_INFINITY, e.randomize ??= !1, e.onFailedAttempt ??= ()=>{}, e.shouldRetry ??= ()=>!0, e.shouldConsumeRetry ??= ()=>!0, Zs("onFailedAttempt", e.onFailedAttempt), Zs("shouldRetry", e.shouldRetry), Zs("shouldConsumeRetry", e.shouldConsumeRetry), Ma("factor", e.factor, {
+        e.retries ??= 10, e.factor ??= 2, e.minTimeout ??= 1e3, e.maxTimeout ??= Number.POSITIVE_INFINITY, e.maxRetryTime ??= Number.POSITIVE_INFINITY, e.randomize ??= !1, e.onFailedAttempt ??= ()=>{}, e.shouldRetry ??= ()=>!0, e.shouldConsumeRetry ??= ()=>!0, Zs("onFailedAttempt", e.onFailedAttempt), Zs("shouldRetry", e.shouldRetry), Zs("shouldConsumeRetry", e.shouldConsumeRetry), Oa("factor", e.factor, {
             min: 0,
             allowInfinity: !1
-        }), Ma("minTimeout", e.minTimeout, {
+        }), Oa("minTimeout", e.minTimeout, {
             min: 0,
             allowInfinity: !1
-        }), Ma("maxTimeout", e.maxTimeout, {
+        }), Oa("maxTimeout", e.maxTimeout, {
             min: 0,
             allowInfinity: !0
-        }), Ma("maxRetryTime", e.maxRetryTime, {
+        }), Oa("maxRetryTime", e.maxRetryTime, {
             min: 0,
             allowInfinity: !0
         }), e.factor > 0 || (e.factor = 1), e.signal?.throwIfAborted();
@@ -6650,7 +6650,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     })({}), wa = new ut("m.asset", "org.matrix.msc3488.asset"), Zr = new ut("m.ts", "org.matrix.msc3488.ts"), Ra = new ut("m.location", "org.matrix.msc3488.location"), It = (function(i) {
         return i.Read = "m.read", i.FullyRead = "m.fully_read", i.ReadPrivate = "m.read.private", i;
     })({}), Ta = "main";
-    function Qd(i, e) {
+    function Xd(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -6660,12 +6660,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return t;
     }
-    function Zd(i) {
+    function Qd(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? Qd(Object(t), !0).forEach(function(r) {
+            e % 2 ? Xd(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Qd(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Xd(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -6686,8 +6686,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         for (var a of Object.entries(i))r();
         return t;
     }
-    function eu(i, e, t) {
-        var r = Zd(Zd({}, t), {}, {
+    function Zd(i, e, t) {
+        var r = Qd(Qd({}, t), {}, {
             [e]: t[i]
         });
         return delete r[i], r;
@@ -6706,7 +6706,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         } else for(r = 0; r < i.length; r++)if (e(i[r], r, i)) return i.splice(r, 1), !0;
         return !1;
     }
-    function Gh(i, e) {
+    function qh(i, e) {
         for (var t of e)if (!i.hasOwnProperty(t)) throw new Error("Missing required key: " + t);
     }
     function Ia(i) {
@@ -6740,24 +6740,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return e.sort((s, o)=>is(s[0], o[0])), e;
     }
-    function tu(i) {
+    function eu(i) {
         return typeof i == "number" && isFinite(i);
     }
-    function Ir(i) {
+    function Cr(i) {
         return typeof i == "string" ? jp(i.normalize("NFD").replace(Yp, "")) : "";
     }
     function Wo(i) {
         return typeof i == "string" ? i.replace(/[\u202d-\u202e]/g, "") : "";
     }
     function Jp(i) {
-        return Ir(i.toLowerCase()).replace(/[\\'!"#$%&()*+,\-./:;<=>?@[\]^_`{|}~\u2000-\u206f\u2e00-\u2e7f]/g, "").toLowerCase();
+        return Cr(i.toLowerCase()).replace(/[\\'!"#$%&()*+,\-./:;<=>?@[\]^_`{|}~\u2000-\u206f\u2e00-\u2e7f]/g, "").toLowerCase();
     }
     var Yp = /[\u2000-\u200F\u202A-\u202F\u0300-\u036F\uFEFF\u061C\u2800\u2062-\u2063\s]/g;
-    function Hh(i) {
+    function Gh(i) {
         return i.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
-    function zh(i) {
-        return Hh(i).replace(/\\\*/g, ".*").replace(/\?/g, ".");
+    function Hh(i) {
+        return Gh(i).replace(/\\\*/g, ".*").replace(/\?/g, ".");
     }
     function ro(i) {
         return i != null && i.endsWith("/") ? i.slice(0, -1) : i;
@@ -6790,10 +6790,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             i.debug("[Perf]: ".concat(e, " took ").concat(n - r, "ms"));
         }
     }
-    function Jh(i) {
+    function zh(i) {
         return i == null;
     }
-    function ru(i, e) {
+    function tu(i, e) {
         return Vo.apply(this, arguments);
     }
     function Vo() {
@@ -6801,7 +6801,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             for (var t of i)yield e(yield t);
         }), Vo.apply(this, arguments);
     }
-    function Mn(i) {
+    function On(i) {
         return Promise.resolve(i());
     }
     function Qp(i, e) {
@@ -6820,7 +6820,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         for(var i = "", e = 32; e <= 126; e++)i += String.fromCharCode(e);
         return i;
     })();
-    function nu(i, e) {
+    function ru(i, e) {
         var t = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : Xr;
         return i.padEnd(e, t[0]);
     }
@@ -6841,26 +6841,26 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return r;
     }
     function Zp(i, e) {
-        var t = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : Xr, r = Math.max(i.length, e.length), n = gs(nu(i, r, t), t), a = gs(nu(e, r, t), t), s = (n + a) / BigInt(2);
+        var t = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : Xr, r = Math.max(i.length, e.length), n = gs(ru(i, r, t), t), a = gs(ru(e, r, t), t), s = (n + a) / BigInt(2);
         return s === n || s == a ? da(s, t) + t[0] : da(s, t);
     }
     function gi(i) {
         var e = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : Xr;
         return da(gs(i, e) + BigInt(1), e);
     }
-    function iu(i) {
+    function nu(i) {
         var e = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : Xr;
         return da(gs(i, e) - BigInt(1), e);
     }
     function is(i, e) {
         return i < e ? -1 : i > e ? 1 : 0;
     }
-    function Yh(i, e) {
+    function Jh(i, e) {
         var t = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : !1;
         for (var r of Object.entries(e)){
             var n = ge(r, 2), a = n[0], s = n[1];
             if (i[a] instanceof Object && s) {
-                Yh(i[a], s);
+                Jh(i[a], s);
                 continue;
             }
             if (s != null || !t) {
@@ -6870,12 +6870,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return i;
     }
-    function au(i) {
+    function iu(i) {
         var e;
         return (e = Zr.findIn(i.getContent())) !== null && e !== void 0 ? e : -1;
     }
     function em(i, e) {
-        return au(e) - au(i);
+        return iu(e) - iu(i);
     }
     function Jl(i) {
         return [
@@ -6883,7 +6883,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             It.ReadPrivate
         ].includes(i);
     }
-    function su(i, e) {
+    function au(i, e) {
         var t = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : (l, d)=>l === d;
         if (i.size !== e.size) return !1;
         for (var r of i){
@@ -6892,14 +6892,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return !0;
     }
-    function Xh(i) {
-        return i instanceof Map ? bn(i) : Array.isArray(i) ? i.map((e)=>Xh(e)) : i;
+    function Yh(i) {
+        return i instanceof Map ? bn(i) : Array.isArray(i) ? i.map((e)=>Yh(e)) : i;
     }
     function bn(i) {
         var e = new Map;
         for (var t of i){
             var r = ge(t, 2), n = r[0], a = r[1];
-            e.set(n, Xh(a));
+            e.set(n, Yh(a));
         }
         return Object.fromEntries(e.entries());
     }
@@ -6927,7 +6927,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return i[i.NOT_STARTED = 0] = "NOT_STARTED", i[i.INITIAL_DATA_MIGRATED = 1] = "INITIAL_DATA_MIGRATED", i[i.OLM_SESSIONS_MIGRATED = 2] = "OLM_SESSIONS_MIGRATED", i[i.MEGOLM_SESSIONS_MIGRATED = 3] = "MEGOLM_SESSIONS_MIGRATED", i[i.ROOM_SETTINGS_MIGRATED = 4] = "ROOM_SETTINGS_MIGRATED", i[i.INITIAL_OWN_KEY_QUERY_DONE = 5] = "INITIAL_OWN_KEY_QUERY_DONE", i;
     })({});
     si = 50;
-    function ou(i, e) {
+    function su(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -6937,12 +6937,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return t;
     }
-    function lu(i) {
+    function ou(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? ou(Object(t), !0).forEach(function(r) {
+            e % 2 ? su(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : ou(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : su(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -7058,7 +7058,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var t = [];
                 for (var r of Object.entries(e.inboundGroupSessions)){
                     var n = ge(r, 2), a = n[0], s = n[1];
-                    if (t.push(lu(lu({}, tm(a)), {}, {
+                    if (t.push(ou(ou({}, tm(a)), {}, {
                         sessionData: s,
                         needsBackup: a in e.sessionsNeedingBackup
                     })), t.length >= si) return t;
@@ -7093,7 +7093,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         if (typeof Symbol < "u" && i[Symbol.iterator] != null || i["@@iterator"] != null) return Array.from(i);
     }
     function Ss(i) {
-        return $h(i) || rm(i) || Wh(i) || Kh();
+        return Bh(i) || rm(i) || $h(i) || Wh();
     }
     function nm(i, e) {
         (e == null || e > i.length) && (e = i.length);
@@ -7124,9 +7124,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     };
     var as = {
         exports: {}
-    }, lm = as.exports, du;
+    }, lm = as.exports, lu;
     function dm() {
-        return du || (du = 1, (function(i) {
+        return lu || (lu = 1, (function(i) {
             (function(e, t) {
                 i.exports ? i.exports = t() : e.log = t();
             })(lm, function() {
@@ -7258,7 +7258,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })(as)), as.exports;
     }
     var um = dm();
-    const Go = Vh(um);
+    const Go = Kh(um);
     var cm = "matrix";
     Go.methodFactory = function(i, e, t) {
         return function() {
@@ -7268,14 +7268,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return s ? console[i](...n) : console.log(...n);
         };
     };
-    function Qh(i) {
+    function Xh(i) {
         var e = cm + (i === void 0 ? "" : "-".concat(i)), t = Go.getLogger(e);
         return t.getChild === void 0 && (t.prefix = i, t.getChild = (r)=>{
-            var n = Qh((i ?? "") + r);
+            var n = Xh((i ?? "") + r);
             return n.methodFactory = t.methodFactory, n.rebuild(), n;
         }, t.setLevel(Go.levels.DEBUG, !1)), t;
     }
-    var k = Qh();
+    var k = Xh();
     FE = class {
         constructor(e, t){
             this.parent = e, this.name = t + ":";
@@ -7340,10 +7340,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     var Da = {
         exports: {}
-    }, uu;
+    }, du;
     function Fs() {
-        if (uu) return Da.exports;
-        uu = 1;
+        if (du) return Da.exports;
+        du = 1;
         var i = typeof Reflect == "object" ? Reflect : null, e = i && typeof i.apply == "function" ? i.apply : function(b, m, T) {
             return Function.prototype.apply.call(b, m, T);
         }, t;
@@ -7536,10 +7536,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return Da.exports;
     }
-    var hm = Fs(), Zh = (function(i) {
+    var hm = Fs(), Qh = (function(i) {
         return i.NewListener = "newListener", i.RemoveListener = "removeListener", i.Error = "error", i;
     })({});
-    tt = class extends hm.EventEmitter {
+    rt = class extends hm.EventEmitter {
         addListener(e, t) {
             return super.addListener(e, t);
         }
@@ -7586,14 +7586,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return super.rawListeners(e);
         }
     };
-    let Ve, bs, zn, Ho, zo, Jo, ef, Cr, tf, Yo, rf, _n, Xo, fm, nf, _s, af, kt;
+    let Ve, bs, zn, Ho, zo, Jo, Zh, kr, ef, Yo, tf, _n, Xo, fm, rf, _s, nf, kt;
     B = (function(i) {
         return i.RoomCanonicalAlias = "m.room.canonical_alias", i.RoomCreate = "m.room.create", i.RoomJoinRules = "m.room.join_rules", i.RoomMember = "m.room.member", i.RoomThirdPartyInvite = "m.room.third_party_invite", i.RoomPowerLevels = "m.room.power_levels", i.RoomName = "m.room.name", i.RoomTopic = "m.room.topic", i.RoomAvatar = "m.room.avatar", i.RoomPinnedEvents = "m.room.pinned_events", i.RoomEncryption = "m.room.encryption", i.RoomHistoryVisibility = "m.room.history_visibility", i.RoomGuestAccess = "m.room.guest_access", i.RoomServerAcl = "m.room.server_acl", i.RoomTombstone = "m.room.tombstone", i.RoomPredecessor = "org.matrix.msc3946.room_predecessor", i.PolicyRuleUser = "m.policy.rule.user", i.PolicyRuleRoom = "m.policy.rule.room", i.PolicyRuleServer = "m.policy.rule.server", i.SpaceChild = "m.space.child", i.SpaceParent = "m.space.parent", i.RoomRedaction = "m.room.redaction", i.RoomMessage = "m.room.message", i.RoomMessageEncrypted = "m.room.encrypted", i.Sticker = "m.sticker", i.CallInvite = "m.call.invite", i.CallCandidates = "m.call.candidates", i.CallAnswer = "m.call.answer", i.CallHangup = "m.call.hangup", i.CallReject = "m.call.reject", i.CallSelectAnswer = "m.call.select_answer", i.CallNegotiate = "m.call.negotiate", i.CallSDPStreamMetadataChanged = "m.call.sdp_stream_metadata_changed", i.CallSDPStreamMetadataChangedPrefix = "org.matrix.call.sdp_stream_metadata_changed", i.CallReplaces = "m.call.replaces", i.CallAssertedIdentity = "m.call.asserted_identity", i.CallAssertedIdentityPrefix = "org.matrix.call.asserted_identity", i.CallEncryptionKeysPrefix = "io.element.call.encryption_keys", i.KeyVerificationRequest = "m.key.verification.request", i.KeyVerificationStart = "m.key.verification.start", i.KeyVerificationCancel = "m.key.verification.cancel", i.KeyVerificationMac = "m.key.verification.mac", i.KeyVerificationDone = "m.key.verification.done", i.KeyVerificationKey = "m.key.verification.key", i.KeyVerificationAccept = "m.key.verification.accept", i.KeyVerificationReady = "m.key.verification.ready", i.RoomMessageFeedback = "m.room.message.feedback", i.Reaction = "m.reaction", i.PollStart = "org.matrix.msc3381.poll.start", i.Typing = "m.typing", i.Receipt = "m.receipt", i.Presence = "m.presence", i.FullyRead = "m.fully_read", i.Tag = "m.tag", i.SpaceOrder = "org.matrix.msc3230.space_order", i.MarkedUnread = "m.marked_unread", i.PushRules = "m.push_rules", i.Direct = "m.direct", i.IgnoredUserList = "m.ignored_user_list", i.InvitePermissionConfig = "m.invite_permission_config", i.RoomKey = "m.room_key", i.RoomKeyRequest = "m.room_key_request", i.ForwardedRoomKey = "m.forwarded_room_key", i.Dummy = "m.dummy", i.SecretRequest = "m.secret.request", i.SecretSend = "m.secret.send", i.GroupCallPrefix = "org.matrix.msc3401.call", i.GroupCallMemberPrefix = "org.matrix.msc3401.call.member", i.RTCMembership = "org.matrix.msc4143.rtc.member", i.CallNotify = "org.matrix.msc4075.call.notify", i.RTCNotification = "org.matrix.msc4075.rtc.notification", i.RTCDecline = "org.matrix.msc4310.rtc.decline", i.RoomPolicy = "org.matrix.msc4284.policy", i;
     })({});
     Ve = (function(i) {
         return i.Annotation = "m.annotation", i.Replace = "m.replace", i.Reference = "m.reference", i.Thread = "m.thread", i;
     })({});
-    fr = (function(i) {
+    vr = (function(i) {
         return i.Text = "m.text", i.Emote = "m.emote", i.Notice = "m.notice", i.Image = "m.image", i.File = "m.file", i.Audio = "m.audio", i.Location = "m.location", i.Video = "m.video", i.KeyVerificationRequest = "m.key.verification.request", i;
     })({});
     bs = "type";
@@ -7604,24 +7604,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     Ho = new ut("m.room.purpose", "org.matrix.msc3088.purpose");
     zo = new ut("m.enabled", "org.matrix.msc3088.enabled");
     Jo = new ut("m.data_tree", "org.matrix.msc3089.data_tree");
-    ef = new ut("m.leaf", "org.matrix.msc3089.leaf");
-    Cr = new ut("m.branch", "org.matrix.msc3089.branch");
-    tf = new ut("m.room.marker", "org.matrix.msc2716.marker");
+    Zh = new ut("m.leaf", "org.matrix.msc3089.leaf");
+    kr = new ut("m.branch", "org.matrix.msc3089.branch");
+    ef = new ut("m.room.marker", "org.matrix.msc2716.marker");
     Yo = new ut("with_rel_types", "org.matrix.msc3912.with_relations");
-    rf = new ut("io.element.functional_members", "io.element.functional_members");
+    tf = new ut("io.element.functional_members", "io.element.functional_members");
     _n = new ut("m.visibility", "org.matrix.msc3531.visibility");
     Xo = new ut("enabled", "org.matrix.msc3881.enabled");
     fm = new ut("device_id", "org.matrix.msc3881.device_id");
-    nf = new ut("m.local_notification_settings", "org.matrix.msc3890.local_notification_settings");
+    rf = new ut("m.local_notification_settings", "org.matrix.msc3890.local_notification_settings");
     _s = new ut("thread_id", "org.matrix.msc4023.thread_id");
-    af = new Qr("membership", "io.element.msc4115.membership");
+    nf = new Qr("membership", "io.element.msc4115.membership");
     Te = (function(i) {
         return i.Ban = "ban", i.Invite = "invite", i.Join = "join", i.Knock = "knock", i.Leave = "leave", i;
     })({});
     kt = (function(i) {
         return i.Membership = "RoomMember.membership", i.Name = "RoomMember.name", i.PowerLevel = "RoomMember.powerLevel", i.Typing = "RoomMember.typing", i;
     })({});
-    class ua extends tt {
+    class ua extends rt {
         constructor(e, t){
             super(), y(this, "_isOutOfBand", !1), y(this, "modified", -1), y(this, "requestedProfileInfo", !1), y(this, "typing", !1), y(this, "powerLevel", 0), y(this, "disambiguate", !1), y(this, "events", {}), this.roomId = e, this.userId = t, this.name = t, this.rawDisplayName = t, this.updateModifiedTime();
         }
@@ -7636,19 +7636,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (e.getType() === B.RoomMember) {
                 this._isOutOfBand = !1, this.events.member = e;
                 var s = this.membership;
-                this.membership = e.getDirectionalContent().membership, this.membership === void 0 && k.trace("membership event with membership undefined (forwardLooking: ".concat(e.forwardLooking, ")!"), e.getContent(), "prevcontent is ", e.getPrevContent()), this.disambiguate = cu(this.userId, a, t);
+                this.membership = e.getDirectionalContent().membership, this.membership === void 0 && k.trace("membership event with membership undefined (forwardLooking: ".concat(e.forwardLooking, ")!"), e.getContent(), "prevcontent is ", e.getPrevContent()), this.disambiguate = uu(this.userId, a, t);
                 var o = this.name;
-                this.name = hu(this.userId, a, this.disambiguate), this.rawDisplayName = Wo((n = e.getDirectionalContent().displayname) !== null && n !== void 0 ? n : ""), (!this.rawDisplayName || !Ir(this.rawDisplayName)) && (this.rawDisplayName = this.userId), s !== this.membership && (this.updateModifiedTime(), this.emit(kt.Membership, e, this, s)), o !== this.name && (this.updateModifiedTime(), this.emit(kt.Name, e, this, o));
+                this.name = cu(this.userId, a, this.disambiguate), this.rawDisplayName = Wo((n = e.getDirectionalContent().displayname) !== null && n !== void 0 ? n : ""), (!this.rawDisplayName || !Cr(this.rawDisplayName)) && (this.rawDisplayName = this.userId), s !== this.membership && (this.updateModifiedTime(), this.emit(kt.Membership, e, this, s)), o !== this.name && (this.updateModifiedTime(), this.emit(kt.Name, e, this, o));
             }
         }
         recalculateDisambiguatedName(e) {
             var t;
             if (!this.events.member) return !1;
-            var r = (t = this.events.member.getDirectionalContent().displayname) !== null && t !== void 0 ? t : "", n = cu(this.userId, r, e);
+            var r = (t = this.events.member.getDirectionalContent().displayname) !== null && t !== void 0 ? t : "", n = uu(this.userId, r, e);
             if (n === this.disambiguate) return !1;
             this.disambiguate = n;
             var a = this.name;
-            return this.name = hu(this.userId, r, this.disambiguate), a !== this.name ? (this.updateModifiedTime(), this.emit(kt.Name, this.events.member, this, a), !0) : !1;
+            return this.name = cu(this.userId, r, this.disambiguate), a !== this.name ? (this.updateModifiedTime(), this.emit(kt.Name, this.events.member, this, a), !0) : !1;
         }
         setPowerLevel(e, t) {
             var r = this.powerLevel;
@@ -7689,21 +7689,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
     }
     var Xl = /@.+:.+/, vm = /[\u200E\u200F\u202A-\u202F]/;
-    function cu(i, e, t) {
+    function uu(i, e, t) {
         if (!e || e === i || !t) return !1;
-        var r = Ir(e);
+        var r = Cr(e);
         if (!r) return !1;
         if (Xl.test(r) || vm.test(e)) return !0;
         var n = t.getUserIdsWithDisplayName(e);
         return !!n.some((a)=>a !== i);
     }
-    function hu(i, e, t) {
-        return !e || e === i ? i : t ? Wo(e) + " (" + i + ")" : Ir(e) ? Wo(e) : i;
+    function cu(i, e, t) {
+        return !e || e === i ? i : t ? Wo(e) + " (" + i + ")" : Cr(e) ? Wo(e) : i;
     }
-    var no = {}, yi = {}, Si = {}, fu;
-    function sf() {
-        if (fu) return Si;
-        fu = 1, Object.defineProperty(Si, "__esModule", {
+    var no = {}, yi = {}, Si = {}, hu;
+    function af() {
+        if (hu) return Si;
+        hu = 1, Object.defineProperty(Si, "__esModule", {
             value: !0
         }), Si.NamespacedMap = void 0;
         function i(l, d) {
@@ -7844,10 +7844,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })();
         return Si.NamespacedMap = o, Si;
     }
-    var bi = {}, vu;
+    var bi = {}, fu;
     function fi() {
-        if (vu) return bi;
-        vu = 1;
+        if (fu) return bi;
+        fu = 1;
         function i(f) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(p) {
@@ -7963,10 +7963,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })(o(Error));
         return bi.InvalidEventError = v, bi;
     }
-    var Pn = {}, _i = {}, Ei = {}, pu;
+    var Pn = {}, _i = {}, Ei = {}, vu;
     function Ca() {
-        if (pu) return Ei;
-        pu = 1, Object.defineProperty(Ei, "__esModule", {
+        if (vu) return Ei;
+        vu = 1, Object.defineProperty(Ei, "__esModule", {
             value: !0
         }), Ei.ExtensibleEvent = void 0;
         function i(n, a) {
@@ -7998,10 +7998,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })();
         return Ei.ExtensibleEvent = r, Ei;
     }
-    var wi = {}, mu;
-    function of() {
-        if (mu) return wi;
-        mu = 1, Object.defineProperty(wi, "__esModule", {
+    var wi = {}, pu;
+    function sf() {
+        if (pu) return wi;
+        pu = 1, Object.defineProperty(wi, "__esModule", {
             value: !0
         }), wi.isOptionalAString = i, wi.isProvided = e;
         function i(t) {
@@ -8012,10 +8012,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return wi;
     }
-    var At = {}, nn = {}, gu;
+    var At = {}, nn = {}, mu;
     function vi() {
-        if (gu) return nn;
-        gu = 1;
+        if (mu) return nn;
+        mu = 1;
         function i(v) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(f) {
@@ -8157,10 +8157,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })(c);
         return nn.UnstableValue = h, nn;
     }
-    var yu;
-    function vr() {
-        if (yu) return At;
-        yu = 1, Object.defineProperty(At, "__esModule", {
+    var gu;
+    function pr() {
+        if (gu) return At;
+        gu = 1, Object.defineProperty(At, "__esModule", {
             value: !0
         }), At.M_TEXT = At.M_NOTICE = At.M_MESSAGE = At.M_HTML = At.M_EMOTE = void 0;
         var i = vi(), e = new i.UnstableValue("m.message", "org.matrix.msc1767.message");
@@ -8174,10 +8174,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         var a = new i.UnstableValue("m.notice", "org.matrix.msc1767.notice");
         return At.M_NOTICE = a, At;
     }
-    var La = {}, Su;
+    var La = {}, yu;
     function In() {
-        if (Su) return La;
-        Su = 1, Object.defineProperty(La, "__esModule", {
+        if (yu) return La;
+        yu = 1, Object.defineProperty(La, "__esModule", {
             value: !0
         }), La.isEventTypeSame = i;
         function i(e, t) {
@@ -8188,10 +8188,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return La;
     }
-    var bu;
+    var Su;
     function Cn() {
-        if (bu) return _i;
-        bu = 1;
+        if (Su) return _i;
+        Su = 1;
         function i(w) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(b) {
@@ -8203,7 +8203,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         Object.defineProperty(_i, "__esModule", {
             value: !0
         }), _i.MessageEvent = void 0;
-        var e = Ca(), t = of(), r = fi(), n = vr(), a = In();
+        var e = Ca(), t = sf(), r = fi(), n = pr(), a = In();
         function s(w, b) {
             var m = Object.keys(w);
             if (Object.getOwnPropertySymbols) {
@@ -8386,10 +8386,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })(e.ExtensibleEvent);
         return _i.MessageEvent = C, _i;
     }
-    var Ri = {}, _u;
+    var Ri = {}, bu;
     function Ql() {
-        if (_u) return Ri;
-        _u = 1;
+        if (bu) return Ri;
+        bu = 1;
         function i(E) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(C) {
@@ -8401,7 +8401,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         Object.defineProperty(Ri, "__esModule", {
             value: !0
         }), Ri.NoticeEvent = void 0;
-        var e = Cn(), t = vr(), r = In();
+        var e = Cn(), t = pr(), r = In();
         function n(E, C, w) {
             return C in E ? Object.defineProperty(E, C, {
                 value: w,
@@ -8529,10 +8529,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })(e.MessageEvent);
         return Ri.NoticeEvent = R, Ri;
     }
-    var Ti = {}, Eu;
+    var Ti = {}, _u;
     function Zl() {
-        if (Eu) return Ti;
-        Eu = 1;
+        if (_u) return Ti;
+        _u = 1;
         function i(E) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(C) {
@@ -8544,7 +8544,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         Object.defineProperty(Ti, "__esModule", {
             value: !0
         }), Ti.EmoteEvent = void 0;
-        var e = Cn(), t = vr(), r = In();
+        var e = Cn(), t = pr(), r = In();
         function n(E, C, w) {
             return C in E ? Object.defineProperty(E, C, {
                 value: w,
@@ -8672,13 +8672,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })(e.MessageEvent);
         return Ti.EmoteEvent = R, Ti;
     }
-    var wu;
-    function lf() {
-        if (wu) return Pn;
-        wu = 1, Object.defineProperty(Pn, "__esModule", {
+    var Eu;
+    function of() {
+        if (Eu) return Pn;
+        Eu = 1, Object.defineProperty(Pn, "__esModule", {
             value: !0
         }), Pn.LEGACY_M_ROOM_MESSAGE = void 0, Pn.parseMRoomMessage = d;
-        var i = Cn(), e = Ql(), t = Zl(), r = vi(), n = vr();
+        var i = Cn(), e = Ql(), t = Zl(), r = vi(), n = pr();
         function a(u, c) {
             var h = Object.keys(u);
             if (Object.getOwnPropertySymbols) {
@@ -8733,22 +8733,22 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return Pn;
     }
-    var Ua = {}, Ru;
-    function df() {
-        if (Ru) return Ua;
-        Ru = 1, Object.defineProperty(Ua, "__esModule", {
+    var Ua = {}, wu;
+    function lf() {
+        if (wu) return Ua;
+        wu = 1, Object.defineProperty(Ua, "__esModule", {
             value: !0
         }), Ua.parseMMessage = n;
-        var i = Cn(), e = vr(), t = Zl(), r = Ql();
+        var i = Cn(), e = pr(), t = Zl(), r = Ql();
         function n(a) {
             return e.M_EMOTE.matches(a.type) ? new t.EmoteEvent(a) : e.M_NOTICE.matches(a.type) ? new r.NoticeEvent(a) : new i.MessageEvent(a);
         }
         return Ua;
     }
-    var Dt = {}, Tu;
+    var Dt = {}, Ru;
     function pi() {
-        if (Tu) return Dt;
-        Tu = 1, Object.defineProperty(Dt, "__esModule", {
+        if (Ru) return Dt;
+        Ru = 1, Object.defineProperty(Dt, "__esModule", {
             value: !0
         }), Dt.M_POLL_START = Dt.M_POLL_RESPONSE = Dt.M_POLL_KIND_UNDISCLOSED = Dt.M_POLL_KIND_DISCLOSED = Dt.M_POLL_END = void 0;
         var i = vi(), e = new i.UnstableValue("m.poll.disclosed", "org.matrix.msc3381.poll.disclosed");
@@ -8762,10 +8762,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         var a = new i.UnstableValue("m.poll.end", "org.matrix.msc3381.poll.end");
         return Dt.M_POLL_END = a, Dt;
     }
-    var Na = {}, an = {}, Iu;
-    function uf() {
-        if (Iu) return an;
-        Iu = 1;
+    var Na = {}, an = {}, Tu;
+    function df() {
+        if (Tu) return an;
+        Tu = 1;
         function i(z) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(re) {
@@ -8777,7 +8777,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         Object.defineProperty(an, "__esModule", {
             value: !0
         }), an.PollStartEvent = an.PollAnswerSubevent = void 0;
-        var e = pi(), t = Cn(), r = vr(), n = fi(), a = vi(), s = In(), o = Ca();
+        var e = pi(), t = Cn(), r = pr(), n = fi(), a = vi(), s = In(), o = Ca();
         function l(z) {
             return h(z) || c(z) || u(z) || d();
         }
@@ -8861,8 +8861,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return function() {
                 var ue = P(z), me;
                 if (re) {
-                    var Ae = P(this).constructor;
-                    me = Reflect.construct(ue, arguments, Ae);
+                    var Pe = P(this).constructor;
+                    me = Reflect.construct(ue, arguments, Pe);
                 } else me = ue.apply(this, arguments);
                 return m(this, me);
             };
@@ -8904,9 +8904,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             function ce(ue) {
                 var me;
                 S(this, ce), me = re.call(this, ue), D(T(me), "id", void 0);
-                var Ae = ue.content.id;
-                if (!Ae || typeof Ae != "string") throw new n.InvalidEventError("Answer ID must be a non-empty string");
-                return me.id = Ae, me;
+                var Pe = ue.content.id;
+                if (!Pe || typeof Pe != "string") throw new n.InvalidEventError("Answer ID must be a non-empty string");
+                return me.id = Pe, me;
             }
             return E(ce, [
                 {
@@ -8923,12 +8923,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ], [
                 {
                     key: "from",
-                    value: function(me, Ae) {
+                    value: function(me, Pe) {
                         return new ce({
                             type: "org.matrix.sdk.poll.answer",
                             content: D({
                                 id: me
-                            }, r.M_TEXT.name, Ae)
+                            }, r.M_TEXT.name, Pe)
                         });
                     }
                 }
@@ -8941,20 +8941,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             function ce(ue) {
                 var me;
                 S(this, ce), me = re.call(this, ue), D(T(me), "question", void 0), D(T(me), "kind", void 0), D(T(me), "rawKind", void 0), D(T(me), "maxSelections", void 0), D(T(me), "answers", void 0);
-                var Ae = e.M_POLL_START.findIn(me.wireContent);
-                if (!Ae.question) throw new n.InvalidEventError("A question is required");
+                var Pe = e.M_POLL_START.findIn(me.wireContent);
+                if (!Pe.question) throw new n.InvalidEventError("A question is required");
                 if (me.question = new t.MessageEvent({
                     type: "org.matrix.sdk.poll.question",
-                    content: Ae.question
-                }), me.rawKind = Ae.kind, e.M_POLL_KIND_DISCLOSED.matches(me.rawKind) ? me.kind = e.M_POLL_KIND_DISCLOSED : me.kind = e.M_POLL_KIND_UNDISCLOSED, me.maxSelections = Number.isFinite(Ae.max_selections) && Ae.max_selections > 0 ? Ae.max_selections : 1, !Array.isArray(Ae.answers)) throw new n.InvalidEventError("Poll answers must be an array");
-                var at = Ae.answers.slice(0, 20).map(function(Je) {
+                    content: Pe.question
+                }), me.rawKind = Pe.kind, e.M_POLL_KIND_DISCLOSED.matches(me.rawKind) ? me.kind = e.M_POLL_KIND_DISCLOSED : me.kind = e.M_POLL_KIND_UNDISCLOSED, me.maxSelections = Number.isFinite(Pe.max_selections) && Pe.max_selections > 0 ? Pe.max_selections : 1, !Array.isArray(Pe.answers)) throw new n.InvalidEventError("Poll answers must be an array");
+                var st = Pe.answers.slice(0, 20).map(function(Ye) {
                     return new j({
                         type: "org.matrix.sdk.poll.answer",
-                        content: Je
+                        content: Ye
                     });
                 });
-                if (at.length <= 0) throw new n.InvalidEventError("No answers available");
-                return me.answers = at, me;
+                if (st.length <= 0) throw new n.InvalidEventError("No answers available");
+                return me.answers = st, me;
             }
             return E(ce, [
                 {
@@ -8973,12 +8973,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                 question: this.question.serialize().content,
                                 kind: this.rawKind,
                                 max_selections: this.maxSelections,
-                                answers: this.answers.map(function(Ae) {
-                                    return Ae.serialize().content;
+                                answers: this.answers.map(function(Pe) {
+                                    return Pe.serialize().content;
                                 })
                             }), D(me, r.M_TEXT.name, "".concat(this.question.text, `
-`).concat(this.answers.map(function(Ae, at) {
-                                return "".concat(at + 1, ". ").concat(Ae.text);
+`).concat(this.answers.map(function(Pe, st) {
+                                return "".concat(st + 1, ". ").concat(Pe.text);
                             }).join(`
 `))), me)
                         };
@@ -8987,20 +8987,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ], [
                 {
                     key: "from",
-                    value: function(me, Ae, at) {
-                        var Je, ir = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : 1;
+                    value: function(me, Pe, st) {
+                        var Ye, ar = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : 1;
                         return new ce({
                             type: e.M_POLL_START.name,
-                            content: (Je = {}, D(Je, r.M_TEXT.name, me), D(Je, e.M_POLL_START.name, {
+                            content: (Ye = {}, D(Ye, r.M_TEXT.name, me), D(Ye, e.M_POLL_START.name, {
                                 question: D({}, r.M_TEXT.name, me),
-                                kind: at instanceof a.NamespacedValue ? at.name : at,
-                                max_selections: ir,
-                                answers: Ae.map(function(J) {
+                                kind: st instanceof a.NamespacedValue ? st.name : st,
+                                max_selections: ar,
+                                answers: Pe.map(function(J) {
                                     return D({
                                         id: ye()
                                     }, r.M_TEXT.name, J);
                                 })
-                            }), Je)
+                            }), Ye)
                         });
                     }
                 }
@@ -9015,19 +9015,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return an;
     }
-    var Ii = {}, Ci = {}, Cu;
+    var Ii = {}, Ci = {}, Iu;
     function ed() {
-        if (Cu) return Ci;
-        Cu = 1, Object.defineProperty(Ci, "__esModule", {
+        if (Iu) return Ci;
+        Iu = 1, Object.defineProperty(Ci, "__esModule", {
             value: !0
         }), Ci.REFERENCE_RELATION = void 0;
         var i = vi(), e = new i.NamespacedValue("m.reference");
         return Ci.REFERENCE_RELATION = e, Ci;
     }
-    var ku;
-    function cf() {
-        if (ku) return Ii;
-        ku = 1;
+    var Cu;
+    function uf() {
+        if (Cu) return Ii;
+        Cu = 1;
         function i(E) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(C) {
@@ -9208,10 +9208,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })(e.ExtensibleEvent);
         return Ii.PollResponseEvent = R, Ii;
     }
-    var ki = {}, Ou;
-    function hf() {
-        if (Ou) return ki;
-        Ou = 1;
+    var ki = {}, ku;
+    function cf() {
+        if (ku) return ki;
+        ku = 1;
         function i(m) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(T) {
@@ -9223,7 +9223,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         Object.defineProperty(ki, "__esModule", {
             value: !0
         }), ki.PollEndEvent = void 0;
-        var e = pi(), t = fi(), r = ed(), n = Cn(), a = vr(), s = In(), o = Ca();
+        var e = pi(), t = fi(), r = ed(), n = Cn(), a = pr(), s = In(), o = Ca();
         function l(m, T) {
             var g = Object.keys(m);
             if (Object.getOwnPropertySymbols) {
@@ -9370,24 +9370,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return ki.PollEndEvent = b, ki;
     }
     var Mu;
-    function ff() {
+    function hf() {
         if (Mu) return Na;
         Mu = 1, Object.defineProperty(Na, "__esModule", {
             value: !0
         }), Na.parseMPoll = n;
-        var i = pi(), e = uf(), t = cf(), r = hf();
+        var i = pi(), e = df(), t = uf(), r = cf();
         function n(a) {
             return i.M_POLL_START.matches(a.type) ? new e.PollStartEvent(a) : i.M_POLL_RESPONSE.matches(a.type) ? new t.PollResponseEvent(a) : i.M_POLL_END.matches(a.type) ? new r.PollEndEvent(a) : null;
         }
         return Na;
     }
-    var Pu;
+    var Ou;
     function pm() {
-        if (Pu) return yi;
-        Pu = 1, Object.defineProperty(yi, "__esModule", {
+        if (Ou) return yi;
+        Ou = 1, Object.defineProperty(yi, "__esModule", {
             value: !0
         }), yi.ExtensibleEvents = void 0;
-        var i = sf(), e = fi(), t = lf(), r = df(), n = vr(), a = pi(), s = ff();
+        var i = af(), e = fi(), t = of(), r = lf(), n = pr(), a = pi(), s = hf();
         function o(p, S) {
             var R = typeof Symbol < "u" && p[Symbol.iterator] || p["@@iterator"];
             if (!R) {
@@ -9579,19 +9579,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })();
         return yi.ExtensibleEvents = f, v(f, "_defaultInstance", new f), yi;
     }
-    var io = {}, Au;
+    var io = {}, Pu;
     function mm() {
-        return Au || (Au = 1, Object.defineProperty(io, "__esModule", {
+        return Pu || (Pu = 1, Object.defineProperty(io, "__esModule", {
             value: !0
         })), io;
     }
-    var sn = {}, Du;
+    var sn = {}, Au;
     function gm() {
-        if (Du) return sn;
-        Du = 1, Object.defineProperty(sn, "__esModule", {
+        if (Au) return sn;
+        Au = 1, Object.defineProperty(sn, "__esModule", {
             value: !0
         }), sn.LegacyMsgType = void 0, sn.isEventLike = t;
-        var i = vr(), e;
+        var i = pr(), e;
         sn.LegacyMsgType = e, (function(r) {
             r.Text = "m.text", r.Notice = "m.notice", r.Emote = "m.emote";
         })(e || (sn.LegacyMsgType = e = {}));
@@ -9601,9 +9601,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return sn;
     }
-    var Lu;
+    var Du;
     function ym() {
-        return Lu || (Lu = 1, (function(i) {
+        return Du || (Du = 1, (function(i) {
             Object.defineProperty(i, "__esModule", {
                 value: !0
             });
@@ -9643,7 +9643,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var a = sf();
+            var a = af();
             Object.keys(a).forEach(function(m) {
                 m === "default" || m === "__esModule" || m in i && i[m] === a[m] || Object.defineProperty(i, m, {
                     enumerable: !0,
@@ -9652,7 +9652,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var s = of();
+            var s = sf();
             Object.keys(s).forEach(function(m) {
                 m === "default" || m === "__esModule" || m in i && i[m] === s[m] || Object.defineProperty(i, m, {
                     enumerable: !0,
@@ -9679,7 +9679,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var d = lf();
+            var d = of();
             Object.keys(d).forEach(function(m) {
                 m === "default" || m === "__esModule" || m in i && i[m] === d[m] || Object.defineProperty(i, m, {
                     enumerable: !0,
@@ -9688,7 +9688,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var u = df();
+            var u = lf();
             Object.keys(u).forEach(function(m) {
                 m === "default" || m === "__esModule" || m in i && i[m] === u[m] || Object.defineProperty(i, m, {
                     enumerable: !0,
@@ -9697,7 +9697,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var c = ff();
+            var c = hf();
             Object.keys(c).forEach(function(m) {
                 m === "default" || m === "__esModule" || m in i && i[m] === c[m] || Object.defineProperty(i, m, {
                     enumerable: !0,
@@ -9724,7 +9724,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var f = vr();
+            var f = pr();
             Object.keys(f).forEach(function(m) {
                 m === "default" || m === "__esModule" || m in i && i[m] === f[m] || Object.defineProperty(i, m, {
                     enumerable: !0,
@@ -9769,7 +9769,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var C = uf();
+            var C = df();
             Object.keys(C).forEach(function(m) {
                 m === "default" || m === "__esModule" || m in i && i[m] === C[m] || Object.defineProperty(i, m, {
                     enumerable: !0,
@@ -9778,7 +9778,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var w = cf();
+            var w = uf();
             Object.keys(w).forEach(function(m) {
                 m === "default" || m === "__esModule" || m in i && i[m] === w[m] || Object.defineProperty(i, m, {
                     enumerable: !0,
@@ -9787,7 +9787,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var b = hf();
+            var b = cf();
             Object.keys(b).forEach(function(m) {
                 m === "default" || m === "__esModule" || m in i && i[m] === b[m] || Object.defineProperty(i, m, {
                     enumerable: !0,
@@ -9801,7 +9801,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     var Pt = ym();
     const Sm = "modulepreload", bm = function(i, e) {
         return new URL(i, e).href;
-    }, Uu = {}, _m = function(e, t, r) {
+    }, Lu = {}, _m = function(e, t, r) {
         let n = Promise.resolve();
         if (t && t.length > 0) {
             let s = function(u) {
@@ -9815,8 +9815,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
             const o = document.getElementsByTagName("link"), l = document.querySelector("meta[property=csp-nonce]"), d = l?.nonce || l?.getAttribute("nonce");
             n = s(t.map((u)=>{
-                if (u = bm(u, r), u in Uu) return;
-                Uu[u] = !0;
+                if (u = bm(u, r), u in Lu) return;
+                Lu[u] = !0;
                 const c = u.endsWith(".css"), h = c ? '[rel="stylesheet"]' : "";
                 if (!!r) for(let p = o.length - 1; p >= 0; p--){
                     const S = o[p];
@@ -9861,7 +9861,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     var xt = (function(i) {
         return i.DisplayName = "User.displayName", i.AvatarUrl = "User.avatarUrl", i.Presence = "User.presence", i.CurrentlyActive = "User.currentlyActive", i.LastPresenceTs = "User.lastPresenceTs", i;
     })({});
-    class Ur extends tt {
+    class Ur extends rt {
         constructor(e){
             super(), y(this, "modified", -1), y(this, "presence", "offline"), y(this, "lastActiveAgo", 0), y(this, "lastPresenceTs", 0), y(this, "currentlyActive", !1), y(this, "events", {}), this.userId = e, this.displayName = e, this.rawDisplayName = e, this.updateModifiedTime();
         }
@@ -10020,7 +10020,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ...r
         ].includes(e);
     };
-    class td extends tt {
+    class td extends rt {
         constructor(e, t, r, n){
             var a;
             super(), a = this, y(this, "relationEventIds", new Set), y(this, "relations", new Set), y(this, "annotationsByKey", {}), y(this, "annotationsBySender", {}), y(this, "sortedAnnotationsByKey", []), y(this, "targetEvent", null), y(this, "creationEmitted", !1), y(this, "replacementUpdateId", 0), y(this, "onEventStatus", (s, o)=>{
@@ -10127,7 +10127,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.creationEmitted || !this.targetEvent || !this.relations.size || (this.creationEmitted = !0, this.targetEvent.emit(Fe.RelationsCreated, this.relationType, this.eventType));
         }
     }
-    class vf {
+    class ff {
         constructor(e, t){
             y(this, "relations", new Map), this.client = e, this.room = t;
         }
@@ -10180,12 +10180,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     var ea = (function(i) {
         return i.Ignore = "ignore", i.Replace = "replace", i;
     })({});
-    class Wn extends tt {
+    class Wn extends rt {
         constructor(e){
             var t, r, n, a = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {}, s = arguments.length > 2 ? arguments[2] : void 0, o = arguments.length > 3 ? arguments[3] : void 0, l = arguments.length > 4 && arguments[4] !== void 0 ? arguments[4] : null;
             super(), y(this, "_eventIdToTimeline", new Map), this.room = e, this.thread = o, this.threadListType = l, this.timelineSupport = !!a.timelineSupport, this.liveTimeline = new se(this), this.displayPendingEvents = a.pendingEvents !== !1, this.timelines = [
                 this.liveTimeline
-            ], this._eventIdToTimeline = new Map, this.filter = a.filter, this.relations = (t = (r = this.room) === null || r === void 0 ? void 0 : r.relations) !== null && t !== void 0 ? t : new vf((n = e?.client) !== null && n !== void 0 ? n : s);
+            ], this._eventIdToTimeline = new Map, this.filter = a.filter, this.relations = (t = (r = this.room) === null || r === void 0 ? void 0 : r.relations) !== null && t !== void 0 ? t : new ff((n = e?.client) !== null && n !== void 0 ? n : s);
         }
         getTimelines() {
             return this.timelines;
@@ -10421,12 +10421,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     var Se = (function(i) {
         return i.NOT_SENT = "not_sent", i.ENCRYPTING = "encrypting", i.SENDING = "sending", i.QUEUED = "queued", i.SENT = "sent", i.CANCELLED = "cancelled", i;
     })({});
-    class pf {
+    class vf {
         constructor(e, t){
             this.roomId = e;
         }
     }
-    class mf {
+    class pf {
         constructor(e){
             y(this, "reEmitters", new WeakMap), this.target = e;
         }
@@ -10453,7 +10453,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
         }
     }
-    mi = class extends mf {
+    mi = class extends pf {
         constructor(e){
             super(e);
         }
@@ -10471,7 +10471,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return i.slice(0, t.length) === t;
         } else return i === e;
     }
-    class Nu {
+    class Uu {
         constructor(e, t){
             this.filterJson = e, this.userId = t;
         }
@@ -10532,7 +10532,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return this.filterJson.limit !== void 0 ? this.filterJson.limit : 10;
         }
     }
-    function xu(i, e) {
+    function Nu(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -10545,9 +10545,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function An(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? xu(Object(t), !0).forEach(function(r) {
+            e % 2 ? Nu(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : xu(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Nu(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -10575,7 +10575,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         setDefinition(e) {
             this.definition = e;
             var t = e.room, r = {};
-            t && (t.rooms && (r.rooms = t.rooms), t.rooms && (r.not_rooms = t.not_rooms)), this.roomFilter = new Nu(r, this.userId), this.roomTimelineFilter = new Nu(t?.timeline || {}, this.userId);
+            t && (t.rooms && (r.rooms = t.rooms), t.rooms && (r.not_rooms = t.not_rooms)), this.roomFilter = new Uu(r, this.userId), this.roomTimelineFilter = new Uu(t?.timeline || {}, this.userId);
         }
         getRoomTimelineFilterComponent() {
             return this.roomTimelineFilter;
@@ -10615,7 +10615,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Es(i) {
         return i != null;
     }
-    var Im = new Pt.UnstableValue("m.message", "org.matrix.msc1767.message"), rd = new Pt.UnstableValue("m.text", "org.matrix.msc1767.text"), Cm = new Pt.UnstableValue("m.html", "org.matrix.msc1767.html"), gf = new Pt.NamespacedValue("m.reference");
+    var Im = new Pt.UnstableValue("m.message", "org.matrix.msc1767.message"), rd = new Pt.UnstableValue("m.text", "org.matrix.msc1767.text"), Cm = new Pt.UnstableValue("m.html", "org.matrix.msc1767.html"), mf = new Pt.NamespacedValue("m.reference");
     function km(i, e) {
         if (typeof i == "string") return typeof e == "string" ? e === i : e.matches(i);
         if (typeof e == "string") return i.matches(e);
@@ -10623,7 +10623,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return t.matches(r.name) || Es(r.altName) && t.matches(r.altName);
     }
     var nd = new Qr("m.topic", null);
-    function Fu(i, e) {
+    function xu(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -10633,20 +10633,28 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return t;
     }
-    function Om(i) {
+    function Mm(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? Fu(Object(t), !0).forEach(function(r) {
+            e % 2 ? xu(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Fu(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : xu(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
         return i;
     }
+    function gf(i, e) {
+        return {
+            msgtype: vr.Text,
+            format: "org.matrix.custom.html",
+            body: i,
+            formatted_body: e
+        };
+    }
     function yf(i, e) {
         return {
-            msgtype: fr.Text,
+            msgtype: vr.Notice,
             format: "org.matrix.custom.html",
             body: i,
             formatted_body: e
@@ -10654,39 +10662,31 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     function Sf(i, e) {
         return {
-            msgtype: fr.Notice,
+            msgtype: vr.Emote,
             format: "org.matrix.custom.html",
             body: i,
             formatted_body: e
         };
     }
-    function bf(i, e) {
+    function bf(i) {
         return {
-            msgtype: fr.Emote,
-            format: "org.matrix.custom.html",
-            body: i,
-            formatted_body: e
+            msgtype: vr.Text,
+            body: i
         };
     }
     function _f(i) {
         return {
-            msgtype: fr.Text,
+            msgtype: vr.Notice,
             body: i
         };
     }
     function Ef(i) {
         return {
-            msgtype: fr.Notice,
+            msgtype: vr.Emote,
             body: i
         };
     }
-    function wf(i) {
-        return {
-            msgtype: fr.Emote,
-            body: i
-        };
-    }
-    var Rf = (i, e, t, r)=>{
+    var wf = (i, e, t, r)=>{
         var n = "at ".concat(new Date(t).toISOString()), a = e === ni.Self ? "User" : void 0, s = r ? '"'.concat(r, '"') : void 0;
         return [
             a,
@@ -10695,12 +10695,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             i,
             n
         ].filter(Boolean).join(" ");
-    }, Tf = (i, e, t, r, n)=>{
-        var a = i ?? Rf(e, n || ni.Self, t, r), s = t ? {
+    }, Rf = (i, e, t, r, n)=>{
+        var a = i ?? wf(e, n || ni.Self, t, r), s = t ? {
             [Zr.name]: t
         } : {};
-        return Om({
-            msgtype: fr.Location,
+        return Mm({
+            msgtype: vr.Location,
             body: a,
             geo_uri: e,
             [Ra.name]: {
@@ -10712,10 +10712,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             },
             [rd.name]: a
         }, s);
-    }, Mm = (i)=>{
+    }, Om = (i)=>{
         var e, t, r = Ra.findIn(i), n = wa.findIn(i), a = Zr.findIn(i), s = rd.findIn(i), o = (e = r?.uri) !== null && e !== void 0 ? e : i?.geo_uri, l = r?.description, d = (t = n?.type) !== null && t !== void 0 ? t : ni.Self, u = s ?? i.body;
-        return Tf(u, o, a ?? void 0, l, d);
-    }, If = (i, e)=>{
+        return Rf(u, o, a ?? void 0, l, d);
+    }, Tf = (i, e)=>{
         var t = [];
         return Es(e) && t.push({
             body: e,
@@ -10750,7 +10750,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             [wa.name]: {
                 type: r ?? ni.Self
             }
-        }), Cf = (i)=>{
+        }), If = (i)=>{
         var e, t = i.description, r = i.timeout, n = i.live, a = (e = Zr.findIn(i)) !== null && e !== void 0 ? e : void 0, s = wa.findIn(i);
         return {
             description: t,
@@ -10766,7 +10766,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             },
             [Zr.name]: e,
             "m.relates_to": {
-                rel_type: gf.name,
+                rel_type: mf.name,
                 event_id: t
             }
         }), Qo = (i)=>{
@@ -10779,31 +10779,31 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     };
     const Lm = Object.freeze(Object.defineProperty({
         __proto__: null,
-        getTextForLocationEvent: Rf,
+        getTextForLocationEvent: wf,
         makeBeaconContent: Dm,
         makeBeaconInfoContent: Am,
-        makeEmoteMessage: wf,
-        makeHtmlEmote: bf,
-        makeHtmlMessage: yf,
-        makeHtmlNotice: Sf,
-        makeLocationContent: Tf,
-        makeNotice: Ef,
-        makeTextMessage: _f,
-        makeTopicContent: If,
+        makeEmoteMessage: Ef,
+        makeHtmlEmote: Sf,
+        makeHtmlMessage: gf,
+        makeHtmlNotice: yf,
+        makeLocationContent: Rf,
+        makeNotice: _f,
+        makeTextMessage: bf,
+        makeTopicContent: Tf,
         parseBeaconContent: Qo,
-        parseBeaconInfoContent: Cf,
-        parseLocationEvent: Mm,
+        parseBeaconInfoContent: If,
+        parseLocationEvent: Om,
         parseTopicContent: Pm
     }, Symbol.toStringTag, {
         value: "Module"
     }));
-    var Qe = (function(i) {
+    var Ze = (function(i) {
         return i.New = "Beacon.new", i.Update = "Beacon.update", i.LivenessChange = "Beacon.LivenessChange", i.Destroy = "Beacon.Destroy", i.LocationUpdate = "Beacon.LocationUpdate", i;
     })({}), Zo = (i, e, t)=>t >= i && i + e >= t, ws = (i)=>"".concat(i.getRoomId(), "_").concat(i.getStateKey());
-    class kf extends tt {
+    class Cf extends rt {
         constructor(e){
             super(), y(this, "clearLatestLocation", ()=>{
-                this._latestLocationEvent = void 0, this.emit(Qe.LocationUpdate, this.latestLocationState);
+                this._latestLocationEvent = void 0, this.emit(Ze.LocationUpdate, this.latestLocationState);
             }), this.rootEvent = e, this.roomId = this.rootEvent.getRoomId(), this.setBeaconInfo(this.rootEvent);
         }
         get isLive() {
@@ -10832,10 +10832,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         update(e) {
             if (ws(e) !== this.identifier) throw new Error("Invalid updating event");
-            e.getTs() < this.rootEvent.getTs() || (this.rootEvent = e, this.setBeaconInfo(this.rootEvent), this.emit(Qe.Update, e, this), this.clearLatestLocation());
+            e.getTs() < this.rootEvent.getTs() || (this.rootEvent = e, this.setBeaconInfo(this.rootEvent), this.emit(Ze.Update, e, this), this.clearLatestLocation());
         }
         destroy() {
-            this.livenessWatchTimeout && clearTimeout(this.livenessWatchTimeout), this._isLive = !1, this.emit(Qe.Destroy, this.identifier);
+            this.livenessWatchTimeout && clearTimeout(this.livenessWatchTimeout), this._isLive = !1, this.emit(Ze.Destroy, this.identifier);
         }
         monitorLiveness() {
             if (this.livenessWatchTimeout && clearTimeout(this.livenessWatchTimeout), this.checkLiveness(), !!this.beaconInfo) if (this.isLive) {
@@ -10856,21 +10856,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     var l = o.timestamp;
                     return this._beaconInfo.timestamp && Zo(this._beaconInfo.timestamp, this._beaconInfo.timeout, l) && (!this.latestLocationState || l > this.latestLocationState.timestamp);
                 }), n = (t = r.sort(em)) === null || t === void 0 ? void 0 : t[0];
-                n && (this._latestLocationEvent = n, this.emit(Qe.LocationUpdate, this.latestLocationState));
+                n && (this._latestLocationEvent = n, this.emit(Ze.LocationUpdate, this.latestLocationState));
             }
         }
         setBeaconInfo(e) {
-            this._beaconInfo = Cf(e.getContent()), this.checkLiveness();
+            this._beaconInfo = If(e.getContent()), this.checkLiveness();
         }
         checkLiveness() {
             var e = this.isLive;
             if (this.beaconInfo) {
                 var t = this.beaconInfo.timestamp > Date.now() ? this.beaconInfo.timestamp - 36e4 : this.beaconInfo.timestamp;
-                this._isLive = !!this._beaconInfo.live && !!t && Zo(t, this._beaconInfo.timeout, Date.now()), e !== this.isLive && this.emit(Qe.LivenessChange, this.isLive, this);
+                this._isLive = !!this._beaconInfo.live && !!t && Zo(t, this._beaconInfo.timeout, Date.now()), e !== this.isLive && this.emit(Ze.LivenessChange, this.isLive, this);
             }
         }
     }
-    function ju(i, e) {
+    function Fu(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -10883,15 +10883,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Um(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? ju(Object(t), !0).forEach(function(r) {
+            e % 2 ? Fu(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : ju(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Fu(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
         return i;
     }
-    function Of(i, e, t) {
+    function kf(i, e, t) {
         var r = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : !1;
         return new Et({
             content: {
@@ -10910,7 +10910,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         });
     }
     var Dn = 0, Ln = 1;
-    class Mf extends tt {
+    class Mf extends rt {
         constructor(){
             super(...arguments), y(this, "receipts", new Lr(()=>new Map)), y(this, "receiptCacheByEventId", new Map);
         }
@@ -10988,7 +10988,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         addLocalEchoReceipt(e, t, r) {
             var n = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : !1;
-            this.addReceipt(Of(e, t, r, n), !0);
+            this.addReceipt(kf(e, t, r, n), !0);
         }
         getUsersReadUpTo(e) {
             return this.getReceiptsForEvent(e).filter(function(t) {
@@ -11000,7 +11000,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     var Nm = new Pt.UnstableValue("m.poll.disclosed", "org.matrix.msc3381.poll.disclosed"), xm = new Pt.UnstableValue("m.poll.undisclosed", "org.matrix.msc3381.poll.undisclosed"), Fm = new Pt.UnstableValue("m.poll.start", "org.matrix.msc3381.poll.start"), ha = new Pt.UnstableValue("m.poll.response", "org.matrix.msc3381.poll.response"), Rs = new Pt.UnstableValue("m.poll.end", "org.matrix.msc3381.poll.end"), Wr = (function(i) {
         return i.New = "Poll.new", i.End = "Poll.end", i.Update = "Poll.update", i.Responses = "Poll.Responses", i.Destroy = "Poll.Destroy", i.UndecryptableRelations = "Poll.UndecryptableRelations", i;
-    })({}), Bu = (i, e)=>{
+    })({}), ju = (i, e)=>{
         var t = i.filter((r)=>{
             if (!r.isDecryptionFailure()) return ha.matches(r.getType()) && r.getTs() <= e;
         });
@@ -11008,7 +11008,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             responseEvents: t
         };
     };
-    class Pf extends tt {
+    class Of extends rt {
         constructor(e, t, r){
             if (super(), y(this, "_isFetchingResponses", !1), y(this, "responses", null), y(this, "undecryptableRelationEventIds", new Set), y(this, "countUndecryptableEvents", (n)=>{
                 var a = n.filter((o)=>o.isDecryptionFailure()).map((o)=>o.getId()), s = this.undecryptableRelationsCount;
@@ -11044,7 +11044,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         onNewRelation(e) {
             var t;
             if (Rs.matches(e.getType()) && this.validateEndEvent(e) && (this.endEvent = e, this.refilterResponsesOnEnd(), this.emit(Wr.End)), !!this.responses) {
-                var r = ((t = this.endEvent) === null || t === void 0 ? void 0 : t.getTs()) || Number.MAX_SAFE_INTEGER, n = Bu([
+                var r = ((t = this.endEvent) === null || t === void 0 ? void 0 : t.getTs()) || Number.MAX_SAFE_INTEGER, n = ju([
                     e
                 ], r), a = n.responseEvents;
                 this.countUndecryptableEvents([
@@ -11067,7 +11067,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     ha.altName
                 ]), s = n.events.find((u)=>Rs.matches(u.getType()));
                 e.validateEndEvent(s) && (e.endEvent = s, e.refilterResponsesOnEnd(), e.emit(Wr.End));
-                var o = ((t = e.endEvent) === null || t === void 0 ? void 0 : t.getTs()) || Number.MAX_SAFE_INTEGER, l = Bu(n.events, o), d = l.responseEvents;
+                var o = ((t = e.endEvent) === null || t === void 0 ? void 0 : t.getTs()) || Number.MAX_SAFE_INTEGER, l = ju(n.events, o), d = l.responseEvents;
                 d.forEach((u)=>{
                     a.addEvent(u);
                 }), e.relationsNextBatch = (r = n.nextBatch) !== null && r !== void 0 ? r : void 0, e.responses = a, e.countUndecryptableEvents(n.events), e.relationsNextBatch ? e.fetchResponses() : e._isFetchingResponses = !1, e.emit(Wr.Responses, e.responses);
@@ -11091,7 +11091,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return !!r && (r === this.rootEvent.getSender() || t.maySendRedactionForEvent(this.rootEvent, r));
         }
     }
-    var Af = (i)=>{
+    var Pf = (i)=>{
         var e = i.getType();
         return Pt.M_POLL_START.matches(e) || ha.matches(e) || Rs.matches(e);
     };
@@ -11105,7 +11105,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         a.receipt.thread_id ? this.threadedReceipts.set(a.receipt.thread_id, a.eventId, a.receiptType, a.userId, a.receipt.ts, a.synthetic) : this.unthreadedReceipts.set(r, a.receiptType, a.userId, a.receipt.ts, a.synthetic);
                     });
                 }
-            }), this.room = e, this.threadedReceipts = new Km(e), this.unthreadedReceipts = new Df(e), this.danglingReceipts = new Vm, e.on(de.Timeline, this.onTimelineEvent);
+            }), this.room = e, this.threadedReceipts = new Km(e), this.unthreadedReceipts = new Af(e), this.danglingReceipts = new Vm, e.on(de.Timeline, this.onTimelineEvent);
         }
         add(e, t) {
             for (var r of Object.entries(e)){
@@ -11157,7 +11157,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return e ? this.synthetic : this.real;
         }
     }
-    class Df {
+    class Af {
         constructor(e){
             this.room = e, this.data = new Map;
         }
@@ -11175,7 +11175,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.room = e, this.data = new Map;
         }
         set(e, t, r, n, a, s) {
-            var o = id(this.data, e, ()=>new Df(this.room));
+            var o = id(this.data, e, ()=>new Af(this.room));
             o.set(t, r, n, a, s);
         }
         get(e, t) {
@@ -11222,20 +11222,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         var o = a.getTimelineForEvent(e);
         if (o === a.getLiveTimeline()) return 1;
         var l = a.getTimelineForEvent(t);
-        return l === a.getLiveTimeline() ? -1 : Lf(r, n);
+        return l === a.getLiveTimeline() ? -1 : Df(r, n);
     }
     function zm(i, e, t, r) {
         var n = ci(t), a = ci(r), s = t.getThread();
-        return s && n === a ? s.timelineSet.compareEventOrdering(i, e) : Lf(t, r);
+        return s && n === a ? s.timelineSet.compareEventOrdering(i, e) : Df(t, r);
     }
-    function Lf(i, e) {
+    function Df(i, e) {
         var t = i.getTs(), r = e.getTs();
         return t < r ? -1 : t > r ? 1 : 0;
     }
     K = (function(i) {
         return i.Get = "GET", i.Put = "PUT", i.Post = "POST", i.Delete = "DELETE", i.Options = "OPTIONS", i.Head = "HEAD", i.Patch = "PATCH", i;
     })({});
-    function $u(i, e) {
+    function Bu(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -11248,9 +11248,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Jm(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? $u(Object(t), !0).forEach(function(r) {
+            e % 2 ? Bu(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : $u(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Bu(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -11278,7 +11278,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return null;
         }
     }
-    He = class extends Tn {
+    ze = class extends Tn {
         constructor(){
             var e = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, t = arguments.length > 1 ? arguments[1] : void 0, r = arguments.length > 2 ? arguments[2] : void 0, n = arguments.length > 3 ? arguments[3] : void 0, a = arguments.length > 4 ? arguments[4] : void 0, s = e.error || "Unknown message";
             t && (s = "[".concat(t, "] ").concat(s)), r && (s = "".concat(s, " (").concat(r, ")")), super("MatrixError: ".concat(s), t, a), this.url = r, this.event = n, this.errcode = e.errcode, this.error = e.error, this.name = e.errcode || "Unknown error code", this.data = e;
@@ -11312,10 +11312,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
         }
         static fromWidgetApiErrorData(e) {
-            return new He(e.response, e.http_status, e.url, void 0, new Headers(e.http_headers));
+            return new ze(e.response, e.http_status, e.url, void 0, new Headers(e.http_headers));
         }
     };
-    function Uf(i, e) {
+    function Lf(i, e) {
         if (!(i instanceof Tn) || !i.isRateLimitError()) return e;
         try {
             var t;
@@ -11332,7 +11332,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return "ConnectionError";
         }
     }
-    class Nf extends Error {
+    class Uf extends Error {
         constructor(e){
             var t;
             super((t = e?.message) !== null && t !== void 0 ? t : "");
@@ -11350,8 +11350,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return "TokenRefreshLogoutError";
         }
     }
-    var xf = new Qr(null, "ORG.MATRIX.MSC4387_SAFETY");
-    class Ff extends He {
+    var Nf = new Qr(null, "ORG.MATRIX.MSC4387_SAFETY");
+    class xf extends ze {
         constructor(){
             super(...arguments);
             var e = arguments.length <= 0 ? void 0 : arguments[0];
@@ -11363,10 +11363,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     var tl = (function(i) {
         return i.SessionLoggedOut = "Session.logged_out", i.NoConsent = "no_consent", i;
     })({}), xa = {};
-    var Wu;
+    var $u;
     function Ym() {
-        if (Wu) return xa;
-        Wu = 1;
+        if ($u) return xa;
+        $u = 1;
         var i = /; *([!#$%&'*+.^_`|~0-9A-Za-z-]+) *= *("(?:[\u000b\u0020\u0021\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|\\[\u000b\u0020-\u00ff])*"|[!#$%&'*+.^_`|~0-9A-Za-z-]+) */g, e = /^[\u000b\u0020-\u007e\u0080-\u00ff]+$/, t = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/, r = /\\([\u000b\u0020-\u00ff])/g, n = /([\\"])/g, a = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
         xa.format = s, xa.parse = o;
         function s(c) {
@@ -11420,7 +11420,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             e.abort();
         }, i), e.signal;
     }
-    function jf(i) {
+    function Ff(i) {
         var e = new AbortController;
         function t() {
             for (var a of i)a.removeEventListener("abort", r);
@@ -11455,7 +11455,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         if (((t = a) === null || t === void 0 ? void 0 : t.type) === "application/json" && e) {
             var s = JSON.parse(e);
-            return s.errcode && xf.matches(s.errcode) ? new Ff(s, i.status, oo(i) ? i.responseURL : i.url, void 0, n) : new He(s, i.status, oo(i) ? i.responseURL : i.url, void 0, n);
+            return s.errcode && Nf.matches(s.errcode) ? new xf(s, i.status, oo(i) ? i.responseURL : i.url, void 0, n) : new ze(s, i.status, oo(i) ? i.responseURL : i.url, void 0, n);
         }
         return ((r = a) === null || r === void 0 ? void 0 : r.type) === "text/plain" ? new Tn("Server returned ".concat(i.status, " error: ").concat(e), i.status, n) : new Tn("Server returned ".concat(i.status, " error"), i.status, n);
     }
@@ -11489,8 +11489,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             throw r;
         }), nl.apply(this, arguments);
     }
-    Bf = function(i, e, t) {
-        return e > 4 || i instanceof kn && !t || i.httpStatus && Math.floor(i.httpStatus / 100) === 4 && i.httpStatus !== 429 || i.name === "AbortError" || i.name === "M_TOO_LARGE" ? -1 : Uf(i, 1e3 * Math.pow(2, e));
+    jf = function(i, e, t) {
+        return e > 4 || i instanceof kn && !t || i.httpStatus && Math.floor(i.httpStatus / 100) === 4 && i.httpStatus !== 429 || i.name === "AbortError" || i.name === "M_TOO_LARGE" ? -1 : Lf(i, 1e3 * Math.pow(2, e));
     };
     var Kr = (function(i) {
         return i.Success = "success", i.Failure = "failure", i.Logout = "logout", i;
@@ -11559,7 +11559,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     return t.opts.accessToken = o, t.opts.refreshToken = l, t.latestTokenRefreshExpiry = d, (a = t.opts.logger) === null || a === void 0 || a.debug("... token refresh complete, new token expiry:", d), Kr.Success;
                 } catch (h) {
                     var u;
-                    if (h instanceof ad || h instanceof He) {
+                    if (h instanceof ad || h instanceof ze) {
                         var c;
                         return (c = t.opts.logger) === null || c === void 0 || c.error("Failed to refresh token", h), Kr.Logout;
                     }
@@ -11568,7 +11568,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             })();
         }
     }
-    function Ku(i, e) {
+    function Wu(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -11578,12 +11578,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return t;
     }
-    function Vu(i) {
+    function Ku(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? Ku(Object(t), !0).forEach(function(r) {
+            e % 2 ? Wu(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Ku(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Wu(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -11592,7 +11592,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     class rg {
         constructor(e, t){
             var r;
-            if (y(this, "abortController", new AbortController), this.eventEmitter = e, this.opts = t, Gh(t, [
+            if (y(this, "abortController", new AbortController), this.eventEmitter = e, this.opts = t, qh(t, [
                 "baseUrl",
                 "prefix"
             ]), !t.onlyData) throw new Error("Constructing FetchHttpApi without `onlyData=true` is no longer supported.");
@@ -11632,11 +11632,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     var c = yield o.request(t, r, n, a, d);
                     return c;
                 } catch (v) {
-                    if (!(v instanceof He)) throw v;
+                    if (!(v instanceof ze)) throw v;
                     if (v.errcode === "M_UNKNOWN_TOKEN") {
                         var h = yield o.tokenRefresher.handleUnknownToken(u, e);
                         if (h === Kr.Success) return o.doAuthedRequest(e + 1, t, r, n, a, l);
-                        if (h === Kr.Failure) throw new Nf(v);
+                        if (h === Kr.Failure) throw new Uf(v);
                         d != null && d.inhibitLogoutEmit || o.eventEmitter.emit(tl.SessionLoggedOut, v);
                     } else v.errcode == "M_CONSENT_NOT_GIVEN" && o.eventEmitter.emit(tl.NoConsent, v.message, v.data.consent_uri);
                     throw v;
@@ -11662,7 +11662,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 f !== void 0 && S.push(Bs(f)), u.abortSignal && S.push(u.abortSignal);
                 var R;
                 u.json !== !1 && (r == null || (d = r.constructor) === null || d === void 0 ? void 0 : d.name) === Object.name ? (R = JSON.stringify(r), h["Content-Type"] || (h["Content-Type"] = "application/json")) : R = r;
-                var E = jf(S), C = E.signal, w = E.cleanup, b = "Authorization" in h ? void 0 : "no-cache", m, T = Date.now();
+                var E = Ff(S), C = E.signal, w = E.cleanup, b = "Authorization" in h ? void 0 : "no-cache", m, T = Date.now();
                 try {
                     var g;
                     m = yield a.fetch(t, {
@@ -11704,17 +11704,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         getUrl(e, t, r, n) {
             var a = n ?? this.opts.baseUrl, s = a.endsWith("/") ? a.slice(0, -1) : a, o = new URL(s + (r ?? this.opts.prefix) + e);
             if (this.opts.extraParams || t) {
-                var l = Vu(Vu({}, this.opts.extraParams), t);
+                var l = Ku(Ku({}, this.opts.extraParams), t);
                 Bo(l, o.searchParams);
             }
             return o;
         }
     }
-    let Er, Jn, ng, ig, lo, Mr, ag;
-    et = (function(i) {
+    let wr, Jn, ng, ig, lo, Pr, ag;
+    tt = (function(i) {
         return i.V1 = "/_matrix/client/v1", i.V3 = "/_matrix/client/v3", i.Unstable = "/_matrix/client/unstable", i;
     })({});
-    Er = (function(i) {
+    wr = (function(i) {
         return i.V2 = "/_matrix/identity/v2", i;
     })({});
     Jn = (function(i) {
@@ -11722,9 +11722,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     })({});
     ng = 1e3;
     ig = 0;
-    Mr = [];
+    Pr = [];
     ag = function() {};
-    function qu(i, e) {
+    function Vu(i, e) {
         for(var t = arguments.length, r = new Array(t > 2 ? t - 2 : 0), n = 2; n < t; n++)r[n - 2] = arguments[n];
         e = e || 0, e < 0 && (e = 0);
         var a = Date.now() + e, s = ig++, o = {
@@ -11732,18 +11732,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             func: i,
             params: r,
             key: s
-        }, l = og(Mr, function(d) {
+        }, l = og(Pr, function(d) {
             return d.runAt - a;
         });
-        return Mr.splice(l, 0, o), od(), s;
+        return Pr.splice(l, 0, o), od(), s;
     }
-    function Gu(i) {
-        if (Mr.length !== 0) {
+    function qu(i) {
+        if (Pr.length !== 0) {
             var e;
-            for(e = 0; e < Mr.length; e++){
-                var t = Mr[e];
+            for(e = 0; e < Pr.length; e++){
+                var t = Pr[e];
                 if (t.key == i) {
-                    Mr.splice(e, 1);
+                    Pr.splice(e, 1);
                     break;
                 }
             }
@@ -11752,7 +11752,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     function od() {
         lo && globalThis.clearTimeout(lo);
-        var i = Mr[0];
+        var i = Pr[0];
         if (i) {
             var e = Date.now(), t = Math.min(i.runAt - e, ng);
             lo = globalThis.setTimeout(sg, t);
@@ -11760,9 +11760,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     function sg() {
         for(var i = Date.now(), e = [];;){
-            var t = Mr[0];
+            var t = Pr[0];
             if (!t || t.runAt > i) break;
-            var r = Mr.shift();
+            var r = Pr.shift();
             ag("runCallbacks: popping", r.key), e.push(r);
         }
         od();
@@ -11779,7 +11779,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return t;
     }
-    class $f extends rg {
+    class Bf extends rg {
         constructor(){
             super(...arguments), y(this, "uploads", []);
         }
@@ -11792,11 +11792,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (globalThis.XMLHttpRequest) {
                 var v = new globalThis.XMLHttpRequest, f = function() {
                     v.abort(), h.reject(new Error("Timeout"));
-                }, p = qu(f, 3e4);
+                }, p = Vu(f, 3e4);
                 v.onreadystatechange = function() {
                     switch(v.readyState){
                         case globalThis.XMLHttpRequest.DONE:
-                            Gu(p);
+                            qu(p);
                             try {
                                 if (v.status === 0) throw new DOMException(v.statusText, "AbortError");
                                 if (!v.responseText) throw new Error("No response body.");
@@ -11812,7 +11812,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 }, v.upload.onprogress = (C)=>{
                     var w;
-                    Gu(p), c.loaded = C.loaded, c.total = C.total, p = qu(f, 3e4), (w = s.progressHandler) === null || w === void 0 || w.call(s, {
+                    qu(p), c.loaded = C.loaded, c.total = C.total, p = Vu(f, 3e4), (w = s.progressHandler) === null || w === void 0 || w.call(s, {
                         loaded: C.loaded,
                         total: C.total
                     });
@@ -11856,10 +11856,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
         }
     }
-    var lg = 360 * 60 * 1e3, dg = 30 * 1e3, Wf = (function(i) {
+    var lg = 360 * 60 * 1e3, dg = 30 * 1e3, $f = (function(i) {
         return i.Stable = "stable", i.Unstable = "unstable", i;
     })({});
-    class Kf {
+    class Wf {
         constructor(e, t){
             var r = this;
             y(this, "fetchCapabilities", _(function*() {
@@ -11888,19 +11888,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.refreshTimeout && (clearInterval(this.refreshTimeout), this.refreshTimeout = void 0), this.retryTimeout && (clearTimeout(this.retryTimeout), this.retryTimeout = void 0);
         }
     }
-    function Hu(i, e) {
+    function Gu(i, e) {
         (e == null || e > i.length) && (e = i.length);
         for(var t = 0, r = Array(e); t < e; t++)r[t] = i[t];
         return r;
     }
-    var Oi = k.getChild("RoomStickyEvents"), kr = (function(i) {
+    var Mi = k.getChild("RoomStickyEvents"), Mr = (function(i) {
         return i.Update = "RoomStickyEvents.Update", i;
     })({});
     function uo(i) {
         if (typeof i != "string") throw new Error("Not a string");
         if (!i.startsWith("@")) throw new Error("Not a userId");
     }
-    class Sn extends tt {
+    class Sn extends rt {
         constructor(){
             super(...arguments), y(this, "stickyEventsMap", new Map), y(this, "unkeyedStickyEvents", new Set), y(this, "nextStickyEventExpiryTs", Number.MAX_SAFE_INTEGER), y(this, "cleanExpiredStickyEvents", ()=>{
                 var e = Date.now(), t = [];
@@ -11908,16 +11908,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 for (var r of this.stickyEventsMap.entries()){
                     var n, a = ge(r, 2), s = a[0], o = a[1];
                     for (var l of o){
-                        var d = ge(l, 2), u = d[0], c = Ss(d[1]), h = c[0], v = Hu(c).slice(1);
-                        e >= h.unstableStickyExpiresAt ? (Oi.debug("Expiring sticky event", h.getId()), t.push(h), this.stickyEventsMap.get(s).delete(u)) : (this.stickyEventsMap.get(s).set(u, [
+                        var d = ge(l, 2), u = d[0], c = Ss(d[1]), h = c[0], v = Gu(c).slice(1);
+                        e >= h.unstableStickyExpiresAt ? (Mi.debug("Expiring sticky event", h.getId()), t.push(h), this.stickyEventsMap.get(s).delete(u)) : (this.stickyEventsMap.get(s).set(u, [
                             h,
                             ...v.filter((p)=>p.unstableStickyExpiresAt <= e)
                         ]), this.nextStickyEventExpiryTs = Math.min(this.nextStickyEventExpiryTs, h.unstableStickyExpiresAt));
                     }
                     ((n = this.stickyEventsMap.get(s)) === null || n === void 0 ? void 0 : n.size) === 0 && this.stickyEventsMap.delete(s);
                 }
-                for (var f of this.unkeyedStickyEvents)e >= f.unstableStickyExpiresAt ? (Oi.debug("Expiring sticky event", f.getId()), this.unkeyedStickyEvents.delete(f), t.push(f)) : this.nextStickyEventExpiryTs = Math.min(this.nextStickyEventExpiryTs, f.unstableStickyExpiresAt);
-                t.length && this.emit(kr.Update, [], [], t), this.scheduleStickyTimer();
+                for (var f of this.unkeyedStickyEvents)e >= f.unstableStickyExpiresAt ? (Mi.debug("Expiring sticky event", f.getId()), this.unkeyedStickyEvents.delete(f), t.push(f)) : this.nextStickyEventExpiryTs = Math.min(this.nextStickyEventExpiryTs, f.unstableStickyExpiresAt);
+                t.length && this.emit(Mr.Update, [], [], t), this.scheduleStickyTimer();
             });
         }
         static sortStickyEvent(e, t) {
@@ -11947,7 +11947,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (typeof a != "string" && a !== void 0) throw new Error("".concat(e.getId(), " is missing msc4354_sticky_key"));
             if (e.unstableStickyExpiresAt === void 0) throw new Error("".concat(e.getId(), " is missing msc4354_sticky.duration_ms"));
             var s = e.getSender(), o = e.getType();
-            if (uo(s), e.unstableStickyExpiresAt <= Date.now()) return Oi.info("ignored sticky event with older expiration time than current time", a), {
+            if (uo(s), e.unstableStickyExpiresAt <= Date.now()) return Mi.info("ignored sticky event with older expiration time than current time", a), {
                 added: !1
             };
             if (!s.startsWith("@")) throw new Error("Expected sender to start with @");
@@ -11973,9 +11973,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     previous: a.prevEvent
                 }) : t.push(n));
             } catch (s) {
-                Oi.warn("ignored invalid sticky event", s);
+                Mi.warn("ignored invalid sticky event", s);
             }
-            (t.length || r.length) && this.emit(kr.Update, t, r, []), this.scheduleStickyTimer();
+            (t.length || r.length) && this.emit(Mr.Update, t, r, []), this.scheduleStickyTimer();
         }
         scheduleStickyTimer() {
             this.stickyEventTimer && (clearTimeout(this.stickyEventTimer), this.stickyEventTimer = void 0), this.nextStickyEventExpiryTs !== Number.MAX_SAFE_INTEGER && (this.stickyEventTimer = setTimeout(this.cleanExpiredStickyEvents, this.nextStickyEventExpiryTs - Date.now()));
@@ -11983,7 +11983,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         handleRedaction(e) {
             var t = typeof e == "string" ? e : e.getId();
             for (var r of this.unkeyedStickyEvents)if (r.getId() === t) {
-                this.unkeyedStickyEvents.delete(r), this.emit(kr.Update, [], [], [
+                this.unkeyedStickyEvents.delete(r), this.emit(Mr.Update, [], [], [
                     r
                 ]);
                 return;
@@ -11995,16 +11995,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 uo(l);
                 var d = this.stickyEventsMap.get(o);
                 if (!d) return;
-                var u = Sn.stickyMapKey(s, l), c = (n = d.get(u)) !== null && n !== void 0 ? n : [], h = Ss(c), v = h[0], f = Hu(h).slice(1);
+                var u = Sn.stickyMapKey(s, l), c = (n = d.get(u)) !== null && n !== void 0 ? n : [], h = Ss(c), v = h[0], f = Gu(h).slice(1);
                 if (!v) return;
-                Oi.debug("Redaction for ".concat(t, " under sticky key ").concat(s));
+                Mi.debug("Redaction for ".concat(t, " under sticky key ").concat(s));
                 var p = f.filter((w)=>!w.isRedacted()).sort(Sn.sortStickyEvent);
-                (a = this.stickyEventsMap.get(o)) === null || a === void 0 || a.set(u, p), p.length ? this.emit(kr.Update, [], [
+                (a = this.stickyEventsMap.get(o)) === null || a === void 0 || a.set(u, p), p.length ? this.emit(Mr.Update, [], [
                     {
                         previous: v,
                         current: p[0]
                     }
-                ], []) : (d.delete(u), d.size === 0 && this.stickyEventsMap.delete(o), this.emit(kr.Update, [], [], [
+                ], []) : (d.delete(u), d.size === 0 && this.stickyEventsMap.delete(o), this.emit(Mr.Update, [], [], [
                     v
                 ]));
                 return;
@@ -12018,7 +12018,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.stickyEventsMap.clear(), this.nextStickyEventExpiryTs = Number.MAX_SAFE_INTEGER, this.scheduleStickyTimer();
         }
     }
-    function zu(i, e) {
+    function Hu(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -12028,18 +12028,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return t;
     }
-    function Mi(i) {
+    function Oi(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? zu(Object(t), !0).forEach(function(r) {
+            e % 2 ? Hu(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : zu(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Hu(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
         return i;
     }
-    var Vf = "10", ug = [
+    var Kf = "10", ug = [
         "1",
         "2",
         "3",
@@ -12095,8 +12095,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     var h = this.getTimelineSets().map((f)=>f.getTimelines()).reduce((f, p)=>(f.push(...p), f), []).map((f)=>f.getEvents().filter((p)=>p.getSender() === s.getStateKey())).reduce((f, p)=>(f.push(...p), p), []);
                     for (var v of h)this.applyEventAsRedaction(s, v);
                 }
-            }), this.roomId = e, this.client = t, this.myUserId = r, this.opts = a, this.setMaxListeners(100), this.reEmitter = new mi(this), a.pendingEventOrdering = a.pendingEventOrdering || ui.Chronological, this.name = e, this.normalizedName = e, this.relations = new vf(this.client, this), this.on(de.Receipt, this.onReceipt), this.reEmitter.reEmit(this.stickyEvents, [
-                kr.Update
+            }), this.roomId = e, this.client = t, this.myUserId = r, this.opts = a, this.setMaxListeners(100), this.reEmitter = new mi(this), a.pendingEventOrdering = a.pendingEventOrdering || ui.Chronological, this.name = e, this.normalizedName = e, this.relations = new ff(this.client, this), this.on(de.Receipt, this.onReceipt), this.reEmitter.reEmit(this.stickyEvents, [
+                Mr.Update
             ]), this.timelineSets = [
                 new Wn(this, a)
             ], this.reEmitter.reEmit(this.getUnfilteredTimelineSet(), [
@@ -12170,10 +12170,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var r = t["m.room_versions"];
                 if (!r) {
                     r = {
-                        default: Vf,
+                        default: Kf,
                         available: {}
                     };
-                    for (var n of ug)r.available[n] = Wf.Stable;
+                    for (var n of ug)r.available[n] = $f.Stable;
                 }
                 var a = e.checkVersionAgainstCapability(r);
                 if (a.urgent && a.needsUpgrade) {
@@ -12276,7 +12276,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return n ? n.userId : this.myUserId;
         }
         getFunctionalMembers() {
-            var e = this.currentState.getStateEvents(rf.name, "");
+            var e = this.currentState.getStateEvents(tf.name, "");
             return Array.isArray(e?.getContent().service_members) ? e.getContent().service_members : [];
         }
         getAvatarFallbackMember() {
@@ -12401,20 +12401,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 be.NewMember,
                 be.Update,
                 be.Marker,
-                Qe.New,
-                Qe.Update,
-                Qe.Destroy,
-                Qe.LivenessChange
+                Ze.New,
+                Ze.Update,
+                Ze.Destroy,
+                Ze.LivenessChange
             ]), this.reEmitter.reEmit(this.currentState, [
                 be.Events,
                 be.Members,
                 be.NewMember,
                 be.Update,
                 be.Marker,
-                Qe.New,
-                Qe.Update,
-                Qe.Destroy,
-                Qe.LivenessChange
+                Ze.New,
+                Ze.Update,
+                Ze.Destroy,
+                Ze.LivenessChange
             ]));
         }
         onReceipt(e) {
@@ -12505,7 +12505,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return !1;
         }
         setThreadUnreadNotificationCount(e, t, r) {
-            var n, a, s = Mi({
+            var n, a, s = Oi({
                 highlight: (n = this.threadNotifications.get(e)) === null || n === void 0 ? void 0 : n.highlight,
                 total: (a = this.threadNotifications.get(e)) === null || a === void 0 ? void 0 : a.total
             }, {
@@ -12684,7 +12684,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var t = this;
             return _(function*() {
                 var r;
-                if (Ge.hasServerSideListSupport) r = new Wn(t, Mi(Mi({}, t.opts), {}, {
+                if (Ge.hasServerSideListSupport) r = new Wn(t, Oi(Oi({}, t.opts), {}, {
                     pendingEvents: !1
                 }), void 0, void 0, e ?? Jt.All), t.reEmitter.reEmit(r, [
                     de.Timeline,
@@ -12754,7 +12754,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var t = this;
             return _(function*() {
                 for (var r of e)try {
-                    if (!r.isEncrypted() && !Af(r)) continue;
+                    if (!r.isEncrypted() && !Pf(r)) continue;
                     yield t.client.decryptEventIfNeeded(r), t.processPollEvent(r);
                 } catch (n) {
                     k.warn("Error processing poll event", r.getId(), n);
@@ -12772,7 +12772,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }
                 if (Pt.M_POLL_START.matches(e.getType())) {
                     try {
-                        var r = new Pf(e, t.client, t);
+                        var r = new Of(e, t.client, t);
                         t.polls.set(e.getId(), r), t.emit(Wr.New, r), e.once(Fe.BeforeRedaction, (s)=>{
                             t.polls.delete(s.getId());
                         });
@@ -12934,7 +12934,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 timelineWasEmpty: n,
                 addToState: s
             });
-            e.sender && e.getType() !== B.RoomRedaction && this.addReceipt(Of(e.sender.userId, e, It.Read), !0);
+            e.sender && e.getType() !== B.RoomRedaction && this.addReceipt(kf(e.sender.userId, e, It.Read), !0);
         }
         addPendingEvent(e, t) {
             if (e.status !== Se.SENDING && e.status !== Se.NOT_SENT) throw new Error("addPendingEvent called on an event with status " + e.status);
@@ -12957,7 +12957,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         savePendingEvents() {
             if (this.pendingEventList) {
-                var e = this.pendingEventList.map((t)=>Mi(Mi({}, t.event), {}, {
+                var e = this.pendingEventList.map((t)=>Oi(Oi({}, t.event), {}, {
                         txn_id: t.getTxnId()
                     })).filter((t)=>{
                     var r = t.type === B.RoomMessageEncrypted, n = this.hasEncryptionStateEvent();
@@ -13164,7 +13164,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }
             }
             var n = this.name;
-            this.name = this.calculateRoomName(this.myUserId), this.normalizedName = Jp(this.name), this.summary = new pf(this.roomId, {
+            this.name = this.calculateRoomName(this.myUserId), this.normalizedName = Jp(this.name), this.summary = new vf(this.roomId, {
                 title: this.name
             }), n !== this.name && this.emit(de.Name, this);
         }
@@ -13236,16 +13236,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (t !== null) return t;
             }
             switch(e.type){
-                case or.Actual:
+                case lr.Actual:
                     return e.name;
-                case or.Generated:
+                case lr.Generated:
                     switch(e.subtype){
                         case "Inviting":
-                            return "Inviting ".concat(Ju(e.names, e.count));
+                            return "Inviting ".concat(zu(e.names, e.count));
                         default:
-                            return Ju(e.names, e.count);
+                            return zu(e.names, e.count);
                     }
-                case or.EmptyRoom:
+                case lr.EmptyRoom:
                     return e.oldName ? "Empty room (was ".concat(e.oldName, ")") : "Empty room";
             }
         }
@@ -13254,13 +13254,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (!t) {
                 var r, n = (r = this.currentState.getStateEvents(B.RoomName, "")) === null || r === void 0 ? void 0 : r.getContent().name;
                 if (n && typeof n == "string") return this.roomNameGenerator({
-                    type: or.Actual,
+                    type: lr.Actual,
                     name: n
                 });
             }
             var a = this.getCanonicalAlias();
             if (a) return this.roomNameGenerator({
-                type: or.Actual,
+                type: lr.Actual,
                 name: a
             });
             var s = this.currentState.getJoinedMemberCount(), o = this.currentState.getInvitedMemberCount(), l = s + o - 1, d = this.getFunctionalMembers(), u = [];
@@ -13285,7 +13285,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 c.sort((E, C)=>h.compare(E.userId, C.userId)), c = c.slice(0, 5), u = c.map((E)=>E.name);
             }
             if (l) return this.roomNameGenerator({
-                type: or.Generated,
+                type: lr.Generated,
                 names: u,
                 count: l
             });
@@ -13295,7 +13295,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (f != null && f.length) {
                     var p = f.map((E)=>E.getContent().display_name);
                     return this.roomNameGenerator({
-                        type: or.Generated,
+                        type: lr.Generated,
                         subtype: "Inviting",
                         names: p,
                         count: p.length + 1
@@ -13306,11 +13306,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             S.length || (S = this.currentState.getMembers().filter((E)=>E.userId !== e && E.membership !== Te.Invite && E.membership !== Te.Join).map((E)=>E.name));
             var R;
             return S.length && (R = this.roomNameGenerator({
-                type: or.Generated,
+                type: lr.Generated,
                 names: S,
                 count: S.length + 1
             })), this.roomNameGenerator({
-                type: or.EmptyRoom,
+                type: lr.EmptyRoom,
                 oldName: R
             });
         }
@@ -13407,10 +13407,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             Se.CANCELLED
         ],
         [Se.CANCELLED]: []
-    }, or = (function(i) {
+    }, lr = (function(i) {
         return i[i.EmptyRoom = 0] = "EmptyRoom", i[i.Generated = 1] = "Generated", i[i.Actual = 2] = "Actual", i;
     })({});
-    function Ju(i, e) {
+    function zu(i, e) {
         var t = e - 1;
         if (i.length) {
             if (i.length === 1 && t <= 1) return i[0];
@@ -13481,7 +13481,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return e;
         }), il.apply(this, arguments);
     }
-    function Yu(i, e) {
+    function Ju(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -13494,26 +13494,26 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Kn(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? Yu(Object(t), !0).forEach(function(r) {
+            e % 2 ? Ju(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Yu(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Ju(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
         return i;
     }
-    var Xu = 80 * 1e3, pg = 3, je = (function(i) {
+    var Yu = 80 * 1e3, pg = 3, je = (function(i) {
         return i.Error = "ERROR", i.Prepared = "PREPARED", i.Stopped = "STOPPED", i.Syncing = "SYNCING", i.Catchup = "CATCHUP", i.Reconnecting = "RECONNECTING", i;
     })({}), mg = [
         "org.matrix.msc2716v3"
     ];
-    function Qu(i, e) {
+    function Xu(i, e) {
         return "FILTER_SYNC_".concat(i) + (e ? "_" + e : "");
     }
-    var qf = (function(i) {
+    var Vf = (function(i) {
         return i.Offline = "offline", i.Online = "online", i.Unavailable = "unavailable", i;
     })({});
-    function Gf(i) {
+    function qf(i) {
         return Kn({
             initialSyncLimit: 8,
             resolveInvitesToProfiles: !1,
@@ -13522,7 +13522,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             threadSupport: !1
         }, i);
     }
-    function Hf(i) {
+    function Gf(i) {
         return Kn({
             canResetEntireTimeline: (e)=>!1
         }, i);
@@ -13558,7 +13558,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 n.opts.filter ? a = n.opts.filter : a = n.buildDefaultFilter();
                 var s;
                 try {
-                    s = yield n.client.getOrCreateFilter(Qu(n.client.credentials.userId), a);
+                    s = yield n.client.getOrCreateFilter(Xu(n.client.credentials.userId), a);
                 } catch (o) {
                     return n.syncOpts.logger.error("Getting filter failed", o), n.shouldAbortSync(o) ? {} : (n.syncOpts.logger.debug("Waiting for saved sync before retrying filter..."), yield n.recoverFromSyncStartupError(n.savedSyncPromise, o), n.getFilter());
                 }
@@ -13568,13 +13568,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 };
             })), y(this, "onOnline", ()=>{
                 this.syncOpts.logger.debug("Browser thinks we are back online"), this.startKeepAlives(0);
-            }), this.client = e, this.opts = Gf(t), this.syncOpts = Hf(r), e.getNotifTimelineSet() && e.reEmitter.reEmit(e.getNotifTimelineSet(), [
+            }), this.client = e, this.opts = qf(t), this.syncOpts = Gf(r), e.getNotifTimelineSet() && e.reEmitter.reEmit(e.getNotifTimelineSet(), [
                 de.Timeline,
                 de.TimelineReset
             ]);
         }
         createRoom(e) {
-            var t = zf(this.client, e, this.opts);
+            var t = Hf(this.client, e, this.opts);
             return t.on(be.Marker, (r, n)=>{
                 this.onMarkerStateEvent(t, r, n);
             }), t;
@@ -13593,7 +13593,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return _(function*() {
                 var t, r = e.client, n = new jt(e.client.credentials.userId);
                 n.setTimelineLimit(1), n.setIncludeLeaveRooms(!0);
-                var a = e.opts.pollTimeout + Xu, s = yield r.getOrCreateFilter(Qu(r.credentials.userId, "LEFT_ROOMS"), n), o = {
+                var a = e.opts.pollTimeout + Yu, s = yield r.getOrCreateFilter(Xu(r.credentials.userId, "LEFT_ROOMS"), n), o = {
                     timeout: 0,
                     filter: s,
                     "org.matrix.msc4222.use_state_after": !0
@@ -13800,7 +13800,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         doSyncRequest(e, t) {
             var r, n = this.getSyncParams(e, t);
             return this.client.http.authedRequest(K.Get, "/sync", n, void 0, {
-                localTimeoutMs: n.timeout + Xu,
+                localTimeoutMs: n.timeout + Yu,
                 abortSignal: (r = this.abortController) === null || r === void 0 ? void 0 : r.signal
             });
         }
@@ -13814,7 +13814,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 timeout: r,
                 "org.matrix.msc4222.use_state_after": !0
             };
-            return this.opts.disablePresence ? a.set_presence = qf.Offline : this.presence !== void 0 && (a.set_presence = this.presence), t ? a.since = t : a._cacheBuster = Date.now(), [
+            return this.opts.disablePresence ? a.set_presence = Vf.Offline : this.presence !== void 0 && (a.set_presence = this.presence), t ? a.since = t : a._cacheBuster = Date.now(), [
                 je.Reconnecting,
                 je.Error
             ].includes(this.getSyncState()) && (a.timeout = 0), a;
@@ -13874,7 +13874,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     r.syncOpts.cryptoCallbacks ? b = yield r.syncOpts.cryptoCallbacks.preprocessToDeviceMessages(w) : b = w.map((D)=>({
                             message: D,
                             encryptionInfo: null
-                        })), Jf(b, d);
+                        })), zf(b, d);
                 } else r.catchingUp = !1;
                 var m = [], T = [], g = [], P = [];
                 t.rooms && (t.rooms.invite && (m = r.mapSyncResponseToRoomArray(t.rooms.invite)), t.rooms.join && (T = r.mapSyncResponseToRoomArray(t.rooms.join)), t.rooms.leave && (g = r.mapSyncResponseToRoomArray(t.rooms.leave)), t.rooms.knock && (P = r.mapSyncResponseToRoomArray(t.rooms.knock))), r.notifEvents = [], yield Promise.all(m.map((function() {
@@ -13889,30 +13889,30 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     };
                 })())), yield Promise.all(T.map((function() {
                     var D = _(function*(j) {
-                        var Y, X = j.room, ye = r.mapSyncEventsFormat(j.state, X), z = r.mapSyncEventsFormat(j["org.matrix.msc4222.state_after"], X), re = r.mapSyncEventsFormat(j.timeline, X, !1), ce = r.mapSyncEventsFormat(j.ephemeral), ue = r.mapSyncEventsFormat(j.account_data), me = r.mapSyncEventsFormat(j.msc4354_sticky), Ae = j["org.matrix.msc4222.state_after"] ? z : ye.concat(re), at = r.isRoomEncrypted(X, Ae);
+                        var Y, X = j.room, ye = r.mapSyncEventsFormat(j.state, X), z = r.mapSyncEventsFormat(j["org.matrix.msc4222.state_after"], X), re = r.mapSyncEventsFormat(j.timeline, X, !1), ce = r.mapSyncEventsFormat(j.ephemeral), ue = r.mapSyncEventsFormat(j.account_data), me = r.mapSyncEventsFormat(j.msc4354_sticky), Pe = j["org.matrix.msc4222.state_after"] ? z : ye.concat(re), st = r.isRoomEncrypted(X, Pe);
                         if (j.unread_notifications) {
-                            if (!at || j.unread_notifications.notification_count === 0) {
-                                var Je;
-                                X.setUnreadNotificationCount(xe.Total, (Je = j.unread_notifications.notification_count) !== null && Je !== void 0 ? Je : 0);
+                            if (!st || j.unread_notifications.notification_count === 0) {
+                                var Ye;
+                                X.setUnreadNotificationCount(xe.Total, (Ye = j.unread_notifications.notification_count) !== null && Ye !== void 0 ? Ye : 0);
                             }
-                            if (!at || X.getUnreadNotificationCount(xe.Highlight) <= 0) {
-                                var ir;
-                                X.setUnreadNotificationCount(xe.Highlight, (ir = j.unread_notifications.highlight_count) !== null && ir !== void 0 ? ir : 0);
+                            if (!st || X.getUnreadNotificationCount(xe.Highlight) <= 0) {
+                                var ar;
+                                X.setUnreadNotificationCount(xe.Highlight, (ar = j.unread_notifications.highlight_count) !== null && ar !== void 0 ? ar : 0);
                             }
                         }
                         var J = (Y = j[ca.name]) !== null && Y !== void 0 ? Y : j[ca.altName];
                         if (J) {
                             X.resetThreadUnreadNotificationCountFromSync(Object.keys(J));
                             for (var te of Object.entries(J)){
-                                var F = ge(te, 2), A = F[0], O = F[1];
-                                if (!at || O.notification_count === 0) {
-                                    var M;
-                                    X.setThreadUnreadNotificationCount(A, xe.Total, (M = O.notification_count) !== null && M !== void 0 ? M : 0);
+                                var F = ge(te, 2), A = F[0], M = F[1];
+                                if (!st || M.notification_count === 0) {
+                                    var O;
+                                    X.setThreadUnreadNotificationCount(A, xe.Total, (O = M.notification_count) !== null && O !== void 0 ? O : 0);
                                 }
                                 var I = X.getThreadUnreadNotificationCount(A, xe.Highlight) <= 0;
-                                if (!at || at && I) {
+                                if (!st || st && I) {
                                     var N;
-                                    X.setThreadUnreadNotificationCount(A, xe.Highlight, (N = O.highlight_count) !== null && N !== void 0 ? N : 0);
+                                    X.setThreadUnreadNotificationCount(A, xe.Highlight, (N = M.highlight_count) !== null && N !== void 0 ? N : 0);
                                 }
                             }
                         } else X.resetThreadUnreadNotificationCountFromSync();
@@ -13930,7 +13930,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                 X.resetLiveTimeline(j.timeline.prev_batch, r.syncOpts.canResetEntireTimeline(X.roomId) ? null : (V = e.oldSyncToken) !== null && V !== void 0 ? V : null), d.resetNotifTimelineSet();
                             }
                         }
-                        if (r.syncOpts.cryptoCallbacks) for (var Q of Ae)Q.isState() && Q.getType() === B.RoomEncryption && Q.getStateKey() === "" && (yield r.syncOpts.cryptoCallbacks.onCryptoEvent(X, Q));
+                        if (r.syncOpts.cryptoCallbacks) for (var Q of Pe)Q.isState() && Q.getType() === B.RoomEncryption && Q.getStateKey() === "" && (yield r.syncOpts.cryptoCallbacks.onCryptoEvent(X, Q));
                         for (var pe of re.filter((Re)=>Re.isState()))yield r.client.decryptEventIfNeeded(pe);
                         try {
                             "org.matrix.msc4222.state_after" in j ? yield r.injectRoomEvents(X, void 0, z, re, e.fromCache) : yield r.injectRoomEvents(X, ye, void 0, re, e.fromCache);
@@ -14092,7 +14092,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.syncState = e, this.syncStateData = t, this.client.emit(ie.Sync, this.syncState, r, t);
         }
     }
-    function zf(i, e, t) {
+    function Hf(i, e, t) {
         var r = i.timelineSupport, n = new $s(e, i, i.getUserId(), {
             lazyLoadMembers: t.lazyLoadMembers,
             pendingEventOrdering: t.pendingEventOrdering,
@@ -14113,10 +14113,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             be.Members,
             be.NewMember,
             be.Update,
-            Qe.New,
-            Qe.Update,
-            Qe.Destroy,
-            Qe.LivenessChange
+            Ze.New,
+            Ze.Update,
+            Ze.Destroy,
+            Ze.LivenessChange
         ]), n.on(be.NewMember, (a, s, o)=>{
             var l;
             o.user = (l = i.getUser(o.userId)) !== null && l !== void 0 ? l : void 0, i.reEmitter.reEmit(o, [
@@ -14127,7 +14127,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ]);
         }), n;
     }
-    function Jf(i, e) {
+    function zf(i, e) {
         var t = [];
         i.map((r)=>{
             if (r.message.type === "m.key.verification.cancel") {
@@ -14267,10 +14267,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     var Gt = {}, co = {}, ho = {
         exports: {}
-    }, Zu;
+    }, Qu;
     function ld() {
-        if (Zu) return ho.exports;
-        Zu = 1;
+        if (Qu) return ho.exports;
+        Qu = 1;
         var i = ho.exports = {
             v: [
                 {
@@ -14787,9 +14787,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
         }), ho.exports;
     }
-    var ec;
+    var Zu;
     function yg() {
-        return ec || (ec = 1, (function(i) {
+        return Zu || (Zu = 1, (function(i) {
             var e = function(o) {
                 return String(Number(o)) === o ? Number(o) : o;
             }, t = function(o, l, d, u) {
@@ -14847,10 +14847,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
         })(co)), co;
     }
-    var fo, tc;
+    var fo, ec;
     function Sg() {
-        if (tc) return fo;
-        tc = 1;
+        if (ec) return fo;
+        ec = 1;
         var i = ld(), e = /%[sdv%]/g, t = function(s) {
             var o = 1, l = arguments, d = l.length;
             return s.replace(e, function(u) {
@@ -14921,10 +14921,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
 `;
         }, fo;
     }
-    var rc;
+    var tc;
     function bg() {
-        if (rc) return Gt;
-        rc = 1;
+        if (tc) return Gt;
+        tc = 1;
         var i = yg(), e = Sg(), t = ld();
         return Gt.grammar = t, Gt.write = e, Gt.parse = i.parse, Gt.parseParams = i.parseParams, Gt.parseFmtpConfig = i.parseFmtpConfig, Gt.parsePayloads = i.parsePayloads, Gt.parseRemoteCandidates = i.parseRemoteCandidates, Gt.parseImageAttributes = i.parseImageAttributes, Gt.parseSimulcastStreamList = i.parseSimulcastStreamList, Gt;
     }
@@ -14940,7 +14940,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             omitPadding: !1
         });
     };
-    function Yf(i) {
+    function Jf(i) {
         return dd(i, {
             alphabet: "base64",
             omitPadding: !0
@@ -14982,13 +14982,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var i;
             (i = ra) === null || i === void 0 || i.close(), ra = null;
         }
-    }, kg = 200, ol = -60, Og = 8, lr = (function(i) {
+    }, kg = 200, ol = -60, Mg = 8, dr = (function(i) {
         return i.NewStream = "new_stream", i.MuteStateChanged = "mute_state_changed", i.LocalVolumeChanged = "local_volume_changed", i.VolumeChanged = "volume_changed", i.ConnectedChanged = "connected_changed", i.Speaking = "speaking", i.Disposed = "disposed", i;
     })({});
-    class Or extends tt {
+    class Or extends rt {
         constructor(e){
             super(), y(this, "localVolume", 1), y(this, "measuringVolumeActivity", !1), y(this, "speakingThreshold", ol), y(this, "speaking", !1), y(this, "_disposed", !1), y(this, "_connected", !1), y(this, "onAddTrack", ()=>{
-                this.emit(lr.NewStream, this.stream);
+                this.emit(dr.NewStream, this.stream);
             }), y(this, "onCallState", (t)=>{
                 t === Ee.Connected ? this.connected = !0 : t === Ee.Connecting && (this.connected = !1);
             }), y(this, "volumeLooper", ()=>{
@@ -14996,21 +14996,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     this.analyser.getFloatFrequencyData(this.frequencyBinCount);
                     var t = -1 / 0;
                     for (var r of this.frequencyBinCount)r > t && (t = r);
-                    this.speakingVolumeSamples.shift(), this.speakingVolumeSamples.push(t), this.emit(lr.VolumeChanged, t);
+                    this.speakingVolumeSamples.shift(), this.speakingVolumeSamples.push(t), this.emit(dr.VolumeChanged, t);
                     var n = !1;
                     for (var a of this.speakingVolumeSamples)if (a > this.speakingThreshold) {
                         n = !0;
                         break;
                     }
-                    this.speaking !== n && (this.speaking = n, this.emit(lr.Speaking, this.speaking)), this.volumeLooperTimeout = setTimeout(this.volumeLooper, kg);
+                    this.speaking !== n && (this.speaking = n, this.emit(dr.Speaking, this.speaking)), this.volumeLooperTimeout = setTimeout(this.volumeLooper, kg);
                 }
-            }), this.client = e.client, this.call = e.call, this.roomId = e.roomId, this.userId = e.userId, this.deviceId = e.deviceId, this.purpose = e.purpose, this.audioMuted = e.audioMuted, this.videoMuted = e.videoMuted, this.speakingVolumeSamples = new Array(Og).fill(-1 / 0), this.sdpMetadataStreamId = e.stream.id, this.updateStream(null, e.stream), this.stream = e.stream, this.hasAudioTrack && this.initVolumeMeasuring(), e.call && (e.call.addListener(ke.State, this.onCallState), this.onCallState(e.call.state));
+            }), this.client = e.client, this.call = e.call, this.roomId = e.roomId, this.userId = e.userId, this.deviceId = e.deviceId, this.purpose = e.purpose, this.audioMuted = e.audioMuted, this.videoMuted = e.videoMuted, this.speakingVolumeSamples = new Array(Mg).fill(-1 / 0), this.sdpMetadataStreamId = e.stream.id, this.updateStream(null, e.stream), this.stream = e.stream, this.hasAudioTrack && this.initVolumeMeasuring(), e.call && (e.call.addListener(ke.State, this.onCallState), this.onCallState(e.call.state));
         }
         get connected() {
             return this.isLocal() || this._connected;
         }
         set connected(e) {
-            this._connected = e, this.emit(lr.ConnectedChanged, this.connected);
+            this._connected = e, this.emit(dr.ConnectedChanged, this.connected);
         }
         get hasAudioTrack() {
             return this.stream.getAudioTracks().length > 0;
@@ -15018,7 +15018,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         updateStream(e, t) {
             if (t !== e) {
                 var r = this.measuringVolumeActivity;
-                e && (e.removeEventListener("addtrack", this.onAddTrack), this.measureVolumeActivity(!1)), this.stream = t, t.addEventListener("addtrack", this.onAddTrack), this.hasAudioTrack ? (this.initVolumeMeasuring(), r && this.measureVolumeActivity(!0)) : this.measureVolumeActivity(!1), this.emit(lr.NewStream, this.stream);
+                e && (e.removeEventListener("addtrack", this.onAddTrack), this.measureVolumeActivity(!1)), this.stream = t, t.addEventListener("addtrack", this.onAddTrack), this.hasAudioTrack ? (this.initVolumeMeasuring(), r && this.measureVolumeActivity(!0)) : this.measureVolumeActivity(!1), this.emit(dr.NewStream, this.stream);
             }
         }
         initVolumeMeasuring() {
@@ -15048,13 +15048,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.updateStream(this.stream, e);
         }
         setAudioVideoMuted(e, t) {
-            e !== null && (this.audioMuted !== e && this.speakingVolumeSamples.fill(-1 / 0), this.audioMuted = e), t !== null && (this.videoMuted = t), this.emit(lr.MuteStateChanged, this.audioMuted, this.videoMuted);
+            e !== null && (this.audioMuted !== e && this.speakingVolumeSamples.fill(-1 / 0), this.audioMuted = e), t !== null && (this.videoMuted = t), this.emit(dr.MuteStateChanged, this.audioMuted, this.videoMuted);
         }
         measureVolumeActivity(e) {
             if (e) {
                 if (!this.analyser || !this.frequencyBinCount || !this.hasAudioTrack) return;
                 this.measuringVolumeActivity = !0, this.volumeLooper();
-            } else this.measuringVolumeActivity = !1, this.speakingVolumeSamples.fill(-1 / 0), this.emit(lr.VolumeChanged, -1 / 0);
+            } else this.measuringVolumeActivity = !1, this.speakingVolumeSamples.fill(-1 / 0), this.emit(dr.VolumeChanged, -1 / 0);
         }
         setSpeakingThreshold(e) {
             this.speakingThreshold = e;
@@ -15074,7 +15074,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         dispose() {
             var e, t;
-            clearTimeout(this.volumeLooperTimeout), (e = this.stream) === null || e === void 0 || e.removeEventListener("addtrack", this.onAddTrack), (t = this.call) === null || t === void 0 || t.removeListener(ke.State, this.onCallState), this.audioContext && (this.audioContext = void 0, this.analyser = void 0, Cg()), this._disposed = !0, this.emit(lr.Disposed);
+            clearTimeout(this.volumeLooperTimeout), (e = this.stream) === null || e === void 0 || e.removeEventListener("addtrack", this.onAddTrack), (t = this.call) === null || t === void 0 || t.removeListener(ke.State, this.onCallState), this.audioContext && (this.audioContext = void 0, this.analyser = void 0, Cg()), this._disposed = !0, this.emit(dr.Disposed);
         }
         get disposed() {
             return this._disposed;
@@ -15086,10 +15086,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return this.localVolume;
         }
         setLocalVolume(e) {
-            this.localVolume = e, this.emit(lr.LocalVolumeChanged, e);
+            this.localVolume = e, this.emit(dr.LocalVolumeChanged, e);
         }
     }
-    var Mg = 3e3, ll = (function(i) {
+    var Og = 3e3, ll = (function(i) {
         return i.Incoming = "Call.incoming", i;
     })({});
     class Pg {
@@ -15161,7 +15161,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         return;
                     }
                     if (u = n.device_id, !u) {
-                        k.warn("CallEventHandler handleCallEvent() could not find a device id - ignoring event (senderId=".concat(l, ")")), c.emit(We.Error, new Zf(l));
+                        k.warn("CallEventHandler handleCallEvent() could not find a device id - ignoring event (senderId=".concat(l, ")")), c.emit(We.Error, new Qf(l));
                         return;
                     }
                     if (n.dest_session_id !== t.client.getSessionId()) {
@@ -15173,7 +15173,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (a) {
                     if (o === B.CallInvite) {
                         var v, f, p;
-                        if (h || e.getLocalAge() > n.lifetime - Mg || d && d.state === Ee.Ended || (d && k.warn("CallEventHandler handleCallEvent() already has a call but got an invite - clobbering (callId=".concat(n.call_id, ")")), n.invitee && n.invitee !== t.client.getUserId())) return;
+                        if (h || e.getLocalAge() > n.lifetime - Og || d && d.state === Ee.Ended || (d && k.warn("CallEventHandler handleCallEvent() already has a call but got an invite - clobbering (callId=".concat(n.call_id, ")")), n.invitee && n.invitee !== t.client.getUserId())) return;
                         var S = ((v = t.client.getTurnServersExpiry()) !== null && v !== void 0 ? v : 0) - Date.now();
                         if (k.info("CallEventHandler handleCallEvent() current turn creds expire in " + S + " ms"), d = (f = fa(t.client, a, {
                             forceTURN: t.client.forceTURN,
@@ -15190,7 +15190,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         try {
                             yield d.initWithInvite(e);
                         } catch (P) {
-                            if (P instanceof Rr) if (P.code === ia.UnknownDevice) {
+                            if (P instanceof Tr) if (P.code === ia.UnknownDevice) {
                                 var E;
                                 (E = c) === null || E === void 0 || E.emit(We.Error, P);
                             } else k.error(P);
@@ -15330,7 +15330,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 return;
             }
             var o = r["m.intent"];
-            if (!Object.values(Qf).includes(o)) {
+            if (!Object.values(Xf).includes(o)) {
                 k.warn("Received invalid group call intent (type=".concat(s, ", roomId=").concat(t, ")"));
                 return;
             }
@@ -15782,7 +15782,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }), e;
         }
     }
-    function nc(i, e) {
+    function rc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -15795,9 +15795,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Fa(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? nc(Object(t), !0).forEach(function(r) {
+            e % 2 ? rc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : nc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : rc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -15899,24 +15899,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.opponentMemberId = e;
         }
     }
-    var Pr = (function(i) {
+    var Ar = (function(i) {
         return i.CONNECTION_STATS = "StatsReport.connection_stats", i.CALL_FEED_REPORT = "StatsReport.call_feed_report", i.BYTE_SENT_STATS = "StatsReport.byte_sent_stats", i.SUMMARY_STATS = "StatsReport.summary_stats", i;
     })({});
-    class $g extends tt {
+    class $g extends rt {
         emitByteSendReport(e) {
-            this.emit(Pr.BYTE_SENT_STATS, e);
+            this.emit(Ar.BYTE_SENT_STATS, e);
         }
         emitConnectionStatsReport(e) {
-            this.emit(Pr.CONNECTION_STATS, e);
+            this.emit(Ar.CONNECTION_STATS, e);
         }
         emitCallFeedReport(e) {
-            this.emit(Pr.CALL_FEED_REPORT, e);
+            this.emit(Ar.CALL_FEED_REPORT, e);
         }
         emitSummaryStatsReport(e) {
-            this.emit(Pr.SUMMARY_STATS, e);
+            this.emit(Ar.SUMMARY_STATS, e);
         }
     }
-    class Xf {
+    class Yf {
         constructor(e){
             this.emitter = e;
         }
@@ -15970,7 +15970,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     class Wg {
         constructor(e, t){
             var r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : 1e4;
-            y(this, "gatherers", new Map), y(this, "reports", new $g), y(this, "summaryStatsReportGatherer", new Xf(this.reports)), this.groupCallId = e, this.userId = t, this.interval = r;
+            y(this, "gatherers", new Map), y(this, "reports", new $g), y(this, "summaryStatsReportGatherer", new Yf(this.reports)), this.groupCallId = e, this.userId = t, this.interval = r;
         }
         start() {
             this.timer === void 0 && this.interval > 0 && (this.timer = setInterval(()=>{
@@ -16008,7 +16008,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.interval = e;
         }
     }
-    function ic(i, e) {
+    function nc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -16021,15 +16021,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function ja(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? ic(Object(t), !0).forEach(function(r) {
+            e % 2 ? nc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : ic(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : nc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
         return i;
     }
-    var Qf = (function(i) {
+    var Xf = (function(i) {
         return i.Ring = "m.ring", i.Prompt = "m.prompt", i.Room = "m.room", i;
     })({}), Ws = (function(i) {
         return i.Video = "m.video", i.Voice = "m.voice", i;
@@ -16047,19 +16047,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             r ? super(t + ": " + r) : super(t), this.code = e;
         }
     }
-    class Zf extends ul {
+    class Qf extends ul {
         constructor(e){
             super(ia.UnknownDevice, "No device found for " + e), this.userId = e;
         }
     }
-    var it = (function(i) {
+    var at = (function(i) {
         return i.LocalCallFeedUninitialized = "local_call_feed_uninitialized", i.InitializingLocalCallFeed = "initializing_local_call_feed", i.LocalCallFeedInitialized = "local_call_feed_initialized", i.Entered = "entered", i.Ended = "ended", i;
-    })({}), ac = 1e3 * 60 * 60;
+    })({}), ic = 1e3 * 60 * 60;
     function Ba(i) {
         var e;
         return ((e = i.getOpponentMember()) === null || e === void 0 ? void 0 : e.userId) || i.invitee || null;
     }
-    class cd extends tt {
+    class cd extends rt {
         constructor(e, t, r, n, a, s, o, l, d){
             var u, c, h = arguments.length > 9 && arguments[9] !== void 0 ? arguments[9] : !1, v = arguments.length > 10 ? arguments[10] : void 0;
             super(), y(this, "activeSpeakerInterval", 1e3), y(this, "retryCallInterval", 5e3), y(this, "participantTimeout", 1e3 * 15), y(this, "pttMaxTransmitTime", 1e3 * 20), y(this, "userMediaFeeds", []), y(this, "screenshareFeeds", []), y(this, "calls", new Map), y(this, "callHandlers", new Map), y(this, "retryCallCounts", new Map), y(this, "transmitTimer", null), y(this, "participantsExpirationTimer", null), y(this, "resendMemberStateTimer", null), y(this, "initWithAudioMuted", !1), y(this, "initWithVideoMuted", !1), y(this, "statsCollectIntervalTime", 0), y(this, "onConnectionStats", (f)=>{
@@ -16071,7 +16071,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     report: f
                 });
             }), y(this, "onSummaryStats", (f)=>{
-                Xf.extendSummaryReport(f, this.participants), this.emit(Yi.SummaryStats, {
+                Yf.extendSummaryReport(f, this.participants), this.emit(Yi.SummaryStats, {
                     report: f
                 });
             }), y(this, "onCallFeedReport", (f)=>{
@@ -16084,7 +16084,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }), f = Hr.expandCallFeedReport(f, p, "from-call-feed"), this.emit(Yi.CallFeedStats, {
                     report: f
                 });
-            }), y(this, "_state", it.LocalCallFeedUninitialized), y(this, "_participants", new Map), y(this, "_creationTs", null), y(this, "_enteredViaAnotherSession", !1), y(this, "onIncomingCall", (f)=>{
+            }), y(this, "_state", at.LocalCallFeedUninitialized), y(this, "_participants", new Map), y(this, "_creationTs", null), y(this, "_enteredViaAnotherSession", !1), y(this, "onIncomingCall", (f)=>{
                 var p, S;
                 if (f.roomId === this.room.roomId) {
                     if (f.state !== Ee.Ringing) {
@@ -16164,12 +16164,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 this.forEachCall((f)=>{
                     var p = this.callExpected(f);
                     for (var S of f.getLocalFeeds())ct(S.stream.getAudioTracks(), !S.isAudioMuted() && p), ct(S.stream.getVideoTracks(), !S.isVideoMuted() && p);
-                }), this.state === it.Entered && !this.useLivekit && this.placeOutgoingCalls();
+                }), this.state === at.Entered && !this.useLivekit && this.placeOutgoingCalls();
             }), y(this, "onStateChanged", (f, p)=>{
-                (f === it.Entered || p === it.Entered || f === it.Ended) && (this.updateParticipants(), this.updateMemberState().catch((S)=>k.error("GroupCall ".concat(this.groupCallId, ' onStateChanged() failed to update member state devices"'), S)));
+                (f === at.Entered || p === at.Entered || f === at.Ended) && (this.updateParticipants(), this.updateMemberState().catch((S)=>k.error("GroupCall ".concat(this.groupCallId, ' onStateChanged() failed to update member state devices"'), S)));
             }), y(this, "onLocalFeedsChanged", ()=>{
-                this.state === it.Entered && this.updateMemberState().catch((f)=>k.error("GroupCall ".concat(this.groupCallId, " onLocalFeedsChanged() failed to update member state feeds"), f));
-            }), this.client = e, this.room = t, this.type = r, this.isPtt = n, this.intent = a, this.dataChannelsEnabled = o, this.dataChannelOptions = l, this.useLivekit = h, this.reEmitter = new mf(this), this.groupCallId = s ?? mn(), this._livekitServiceURL = v, this.creationTs = (u = (c = t.currentState.getStateEvents(B.GroupCallPrefix, this.groupCallId)) === null || c === void 0 ? void 0 : c.getTs()) !== null && u !== void 0 ? u : null, this.updateParticipants(), t.on(be.Update, this.onRoomState), this.on(We.ParticipantsChanged, this.onParticipantsChanged), this.on(We.GroupCallStateChanged, this.onStateChanged), this.on(We.LocalScreenshareStateChanged, this.onLocalFeedsChanged), this.allowCallWithoutVideoAndAudio = !!d;
+                this.state === at.Entered && this.updateMemberState().catch((f)=>k.error("GroupCall ".concat(this.groupCallId, " onLocalFeedsChanged() failed to update member state feeds"), f));
+            }), this.client = e, this.room = t, this.type = r, this.isPtt = n, this.intent = a, this.dataChannelsEnabled = o, this.dataChannelOptions = l, this.useLivekit = h, this.reEmitter = new pf(this), this.groupCallId = s ?? mn(), this._livekitServiceURL = v, this.creationTs = (u = (c = t.currentState.getStateEvents(B.GroupCallPrefix, this.groupCallId)) === null || c === void 0 ? void 0 : c.getTs()) !== null && u !== void 0 ? u : null, this.updateParticipants(), t.on(be.Update, this.onRoomState), this.on(We.ParticipantsChanged, this.onParticipantsChanged), this.on(We.GroupCallStateChanged, this.onStateChanged), this.on(We.LocalScreenshareStateChanged, this.onLocalFeedsChanged), this.allowCallWithoutVideoAndAudio = !!d;
         }
         create() {
             var e = this;
@@ -16207,8 +16207,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return this._participants;
         }
         set participants(e) {
-            var t = this._participants, r = (a, s)=>a.sessionId === s.sessionId && a.screensharing === s.screensharing, n = (a, s)=>su(a, s, r);
-            su(e, t, n) || (this._participants = e, this.emit(We.ParticipantsChanged, e));
+            var t = this._participants, r = (a, s)=>a.sessionId === s.sessionId && a.screensharing === s.screensharing, n = (a, s)=>au(a, s, r);
+            au(e, t, n) || (this._participants = e, this.emit(We.ParticipantsChanged, e));
         }
         get creationTs() {
             return this._creationTs;
@@ -16244,8 +16244,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     k.info("Livekit group call: not starting local call feed.");
                     return;
                 }
-                if (e.state !== it.LocalCallFeedUninitialized) throw new Error('Cannot initialize local call feed in the "'.concat(e.state, '" state.'));
-                if (e.state = it.InitializingLocalCallFeed, e.initCallFeedPromise) return e.initCallFeedPromise;
+                if (e.state !== at.LocalCallFeedUninitialized) throw new Error('Cannot initialize local call feed in the "'.concat(e.state, '" state.'));
+                if (e.state = at.InitializingLocalCallFeed, e.initCallFeedPromise) return e.initCallFeedPromise;
                 try {
                     e.initCallFeedPromise = e.initLocalCallFeedInternal(), yield e.initCallFeedPromise;
                 } finally{
@@ -16262,9 +16262,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     t = yield e.client.getMediaHandler().getUserMediaStream(!0, e.type === Ws.Video);
                 } catch (n) {
                     if (e.allowCallWithoutVideoAndAudio) t = new MediaStream;
-                    else throw e.state = it.LocalCallFeedUninitialized, n;
+                    else throw e.state = at.LocalCallFeedUninitialized, n;
                 }
-                if (e._state !== it.InitializingLocalCallFeed) throw e.client.getMediaHandler().stopUserMediaStream(t), new Error("Group call disposed while gathering media stream");
+                if (e._state !== at.InitializingLocalCallFeed) throw e.client.getMediaHandler().stopUserMediaStream(t), new Error("Group call disposed while gathering media stream");
                 var r = new Or({
                     client: e.client,
                     roomId: e.room.roomId,
@@ -16275,7 +16275,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     audioMuted: e.initWithAudioMuted || t.getAudioTracks().length === 0 || e.isPtt,
                     videoMuted: e.initWithVideoMuted || t.getVideoTracks().length === 0
                 });
-                ct(t.getAudioTracks(), !r.isAudioMuted()), ct(t.getVideoTracks(), !r.isVideoMuted()), e.localCallFeed = r, e.addUserMediaFeed(r), e.state = it.LocalCallFeedInitialized;
+                ct(t.getAudioTracks(), !r.isAudioMuted()), ct(t.getVideoTracks(), !r.isVideoMuted()), e.localCallFeed = r, e.addUserMediaFeed(r), e.state = at.LocalCallFeedInitialized;
             })();
         }
         updateLocalUsermediaStream(e) {
@@ -16292,25 +16292,25 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         enter() {
             var e = this;
             return _(function*() {
-                if (e.state === it.LocalCallFeedUninitialized) yield e.initLocalCallFeed();
-                else if (e.state !== it.LocalCallFeedInitialized) throw new Error('Cannot enter call in the "'.concat(e.state, '" state'));
-                k.log("GroupCall ".concat(e.groupCallId, " enter() running")), e.state = it.Entered, e.client.on(ll.Incoming, e.onIncomingCall);
+                if (e.state === at.LocalCallFeedUninitialized) yield e.initLocalCallFeed();
+                else if (e.state !== at.LocalCallFeedInitialized) throw new Error('Cannot enter call in the "'.concat(e.state, '" state'));
+                k.log("GroupCall ".concat(e.groupCallId, " enter() running")), e.state = at.Entered, e.client.on(ll.Incoming, e.onIncomingCall);
                 for (var t of e.client.callEventHandler.calls.values())e.onIncomingCall(t);
                 e.useLivekit || (e.retryCallLoopInterval = setInterval(e.onRetryCallLoop, e.retryCallInterval), e.activeSpeaker = void 0, e.onActiveSpeakerLoop(), e.activeSpeakerLoopInterval = setInterval(e.onActiveSpeakerLoop, e.activeSpeakerInterval));
             })();
         }
         dispose() {
             var e;
-            this.localCallFeed && (this.removeUserMediaFeed(this.localCallFeed), this.localCallFeed = void 0), this.localScreenshareFeed && (this.client.getMediaHandler().stopScreensharingStream(this.localScreenshareFeed.stream), this.removeScreenshareFeed(this.localScreenshareFeed), this.localScreenshareFeed = void 0, this.localDesktopCapturerSourceId = void 0), this.client.getMediaHandler().stopAllStreams(), this.transmitTimer !== null && (clearTimeout(this.transmitTimer), this.transmitTimer = null), this.retryCallLoopInterval !== void 0 && (clearInterval(this.retryCallLoopInterval), this.retryCallLoopInterval = void 0), this.participantsExpirationTimer !== null && (clearTimeout(this.participantsExpirationTimer), this.participantsExpirationTimer = null), this.state === it.Entered && (this.forEachCall((t)=>t.hangup(Ie.UserHangup, !1)), this.activeSpeaker = void 0, clearInterval(this.activeSpeakerLoopInterval), this.retryCallCounts.clear(), clearInterval(this.retryCallLoopInterval), this.client.removeListener(ll.Incoming, this.onIncomingCall), (e = this.stats) === null || e === void 0 || e.stop());
+            this.localCallFeed && (this.removeUserMediaFeed(this.localCallFeed), this.localCallFeed = void 0), this.localScreenshareFeed && (this.client.getMediaHandler().stopScreensharingStream(this.localScreenshareFeed.stream), this.removeScreenshareFeed(this.localScreenshareFeed), this.localScreenshareFeed = void 0, this.localDesktopCapturerSourceId = void 0), this.client.getMediaHandler().stopAllStreams(), this.transmitTimer !== null && (clearTimeout(this.transmitTimer), this.transmitTimer = null), this.retryCallLoopInterval !== void 0 && (clearInterval(this.retryCallLoopInterval), this.retryCallLoopInterval = void 0), this.participantsExpirationTimer !== null && (clearTimeout(this.participantsExpirationTimer), this.participantsExpirationTimer = null), this.state === at.Entered && (this.forEachCall((t)=>t.hangup(Ie.UserHangup, !1)), this.activeSpeaker = void 0, clearInterval(this.activeSpeakerLoopInterval), this.retryCallCounts.clear(), clearInterval(this.retryCallLoopInterval), this.client.removeListener(ll.Incoming, this.onIncomingCall), (e = this.stats) === null || e === void 0 || e.stop());
         }
         leave() {
-            this.dispose(), this.state = it.LocalCallFeedUninitialized;
+            this.dispose(), this.state = at.LocalCallFeedUninitialized;
         }
         terminate() {
             var e = arguments, t = this;
             return _(function*() {
                 var r = e.length > 0 && e[0] !== void 0 ? e[0] : !0;
-                if (t.dispose(), t.room.off(be.Update, t.onRoomState), t.client.groupCallEventHandler.groupCalls.delete(t.room.roomId), t.client.emit(dl.Ended, t), t.state = it.Ended, r) {
+                if (t.dispose(), t.room.off(be.Update, t.onRoomState), t.client.groupCallEventHandler.groupCalls.delete(t.room.roomId), t.client.emit(dl.Ended, t), t.state = at.Ended, r) {
                     var n = t.room.currentState.getStateEvents(B.GroupCallPrefix, t.groupCallId);
                     yield t.client.sendStateEvent(t.room.roomId, B.GroupCallPrefix, ja(ja({}, n.getContent()), {}, {
                         "m.terminated": Kg.CallEnded
@@ -16442,7 +16442,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         E === null ? (k.error("GroupCall ".concat(e.groupCallId, " placeOutgoingCalls() failed to create call (userId=").concat(l, ", device=").concat(p, ")")), u.delete(p)) : (e.initCall(E), u.set(p, E), k.debug("GroupCall ".concat(e.groupCallId, " placeOutgoingCalls() placing call (userId=").concat(l, ", deviceId=").concat(p, ", sessionId=").concat(S.sessionId, ")")), E.placeCallWithCallFeeds(e.getLocalFeeds().map((C)=>C.clone()), S.screensharing).then(()=>{
                             e.dataChannelsEnabled && E.createDataChannel("datachannel", e.dataChannelOptions);
                         }).catch((C)=>{
-                            k.warn("GroupCall ".concat(e.groupCallId, " placeOutgoingCalls() failed to place call (userId=").concat(l, ")"), C), C instanceof Rr && C.code === ia.UnknownDevice ? e.emit(We.Error, C) : e.emit(We.Error, new ul(ia.PlaceCallFailed, "Failed to place call to ".concat(l))), E.hangup(Ie.SignallingFailed, !1), u.get(p) === E && u.delete(p);
+                            k.warn("GroupCall ".concat(e.groupCallId, " placeOutgoingCalls() failed to place call (userId=").concat(l, ")"), C), C instanceof Tr && C.code === ia.UnknownDevice ? e.emit(We.Error, C) : e.emit(We.Error, new ul(ia.PlaceCallFailed, "Failed to place call to ".concat(l))), E.hangup(Ie.SignallingFailed, !1), u.get(p) === E && u.delete(p);
                         }));
                     }
                 }, h;
@@ -16515,11 +16515,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 k.warn("GroupCall ".concat(this.groupCallId, " updateParticipants() tried to update participants before local room member is available"));
                 return;
             }
-            if (this.participantsExpirationTimer !== null && (clearTimeout(this.participantsExpirationTimer), this.participantsExpirationTimer = null), this.state === it.Ended) {
+            if (this.participantsExpirationTimer !== null && (clearTimeout(this.participantsExpirationTimer), this.participantsExpirationTimer = null), this.state === at.Ended) {
                 this.participants = new Map;
                 return;
             }
-            var t = new Map, r = Date.now(), n = this.state === it.Entered || this.enteredViaAnotherSession, a = 1 / 0;
+            var t = new Map, r = Date.now(), n = this.state === at.Entered || this.enteredViaAnotherSession, a = 1 / 0;
             for (var s of this.getMemberStateEvents()){
                 var o = this.room.getMember(s.getStateKey()), l = s.getContent(), d = Array.isArray(l["m.calls"]) ? l["m.calls"] : [], u = d.find((S)=>S["m.call_id"] === this.groupCallId), c = Array.isArray(u?.["m.devices"]) ? u["m.devices"] : [], h = c.filter((S)=>typeof S.device_id == "string" && typeof S.session_id == "string" && typeof S.expires_ts == "number" && S.expires_ts > r && Array.isArray(S.feeds));
                 if (!n && o?.userId === this.client.getUserId() && (h = h.filter((S)=>S.device_id !== this.client.getDeviceId())), h.length > 0 && o?.membership === Te.Join) {
@@ -16572,7 +16572,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         {
                             device_id: e.client.getDeviceId(),
                             session_id: e.client.getSessionId(),
-                            expires_ts: Date.now() + ac,
+                            expires_ts: Date.now() + ic,
                             feeds: e.getLocalFeeds().map((r)=>({
                                     purpose: r.purpose
                                 }))
@@ -16583,14 +16583,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         updateMemberState() {
             var e = this;
             return _(function*() {
-                e.resendMemberStateTimer !== null && (clearInterval(e.resendMemberStateTimer), e.resendMemberStateTimer = null), e.state === it.Entered ? (yield e.addDeviceToMemberState(), e.resendMemberStateTimer = setInterval(_(function*() {
+                e.resendMemberStateTimer !== null && (clearInterval(e.resendMemberStateTimer), e.resendMemberStateTimer = null), e.state === at.Entered ? (yield e.addDeviceToMemberState(), e.resendMemberStateTimer = setInterval(_(function*() {
                     k.log("GroupCall ".concat(e.groupCallId, ' updateMemberState() resending call member state"'));
                     try {
                         yield e.addDeviceToMemberState();
                     } catch (t) {
                         k.error("GroupCall ".concat(e.groupCallId, " updateMemberState() failed to resend call member state"), t);
                     }
-                }), ac * 3 / 4)) : yield e.updateDevices((t)=>t.filter((r)=>r.device_id !== e.client.getDeviceId()), !0);
+                }), ic * 3 / 4)) : yield e.updateDevices((t)=>t.filter((r)=>r.device_id !== e.client.getDeviceId()), !0);
             })();
         }
         cleanMemberState() {
@@ -16603,7 +16603,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 yield e.updateDevices((a)=>{
                     var s = a.filter((o)=>{
                         var l = n.get(o.device_id);
-                        return l?.last_seen_ts !== void 0 && !(o.device_id === e.client.getDeviceId() && e.state !== it.Entered && !e.enteredViaAnotherSession);
+                        return l?.last_seen_ts !== void 0 && !(o.device_id === e.client.getDeviceId() && e.state !== at.Entered && !e.enteredViaAnotherSession);
                     });
                     return s.length === a.length ? null : s;
                 });
@@ -16612,7 +16612,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         getGroupCallStats() {
             if (this.stats === void 0) {
                 var e = this.client.getUserId() || "unknown";
-                this.stats = new Wg(this.groupCallId, e, this.statsCollectIntervalTime), this.stats.reports.on(Pr.CONNECTION_STATS, this.onConnectionStats), this.stats.reports.on(Pr.BYTE_SENT_STATS, this.onByteSentStats), this.stats.reports.on(Pr.SUMMARY_STATS, this.onSummaryStats), this.stats.reports.on(Pr.CALL_FEED_REPORT, this.onCallFeedReport);
+                this.stats = new Wg(this.groupCallId, e, this.statsCollectIntervalTime), this.stats.reports.on(Ar.CONNECTION_STATS, this.onConnectionStats), this.stats.reports.on(Ar.BYTE_SENT_STATS, this.onByteSentStats), this.stats.reports.on(Ar.SUMMARY_STATS, this.onSummaryStats), this.stats.reports.on(Ar.CALL_FEED_REPORT, this.onCallFeedReport);
             }
             return this.stats;
         }
@@ -16620,7 +16620,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.statsCollectIntervalTime = e, this.stats !== void 0 && (this.stats.stop(), this.stats.setInterval(e), e > 0 && this.stats.start());
         }
     }
-    function sc(i, e) {
+    function ac(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -16633,9 +16633,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function $a(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? sc(Object(t), !0).forEach(function(r) {
+            e % 2 ? ac(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : sc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : ac(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -16643,18 +16643,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     var Ee = (function(i) {
         return i.Fledgling = "fledgling", i.InviteSent = "invite_sent", i.WaitLocalMedia = "wait_local_media", i.CreateOffer = "create_offer", i.CreateAnswer = "create_answer", i.Connecting = "connecting", i.Connected = "connected", i.Ringing = "ringing", i.Ended = "ended", i;
-    })({}), oc = (function(i) {
+    })({}), sc = (function(i) {
         return i.Voice = "voice", i.Video = "video", i;
     })({}), $r = (function(i) {
         return i.Inbound = "inbound", i.Outbound = "outbound", i;
-    })({}), st = (function(i) {
+    })({}), ot = (function(i) {
         return i.Local = "local", i.Remote = "remote", i;
     })({}), ke = (function(i) {
         return i.Hangup = "hangup", i.State = "state", i.Error = "error", i.Replaced = "replaced", i.LocalHoldUnhold = "local_hold_unhold", i.RemoteHoldUnhold = "remote_hold_unhold", i.HoldUnhold = "hold_unhold", i.FeedsChanged = "feeds_changed", i.AssertedIdentityChanged = "asserted_identity_changed", i.LengthChanged = "length_changed", i.DataChannel = "datachannel", i.SendVoipEvent = "send_voip_event", i.PeerConnectionCreated = "peer_connection_created", i;
     })({}), Ie = (function(i) {
         return i.UserHangup = "user_hangup", i.LocalOfferFailed = "local_offer_failed", i.NoUserMedia = "no_user_media", i.UnknownDevices = "unknown_devices", i.SendInvite = "send_invite", i.CreateAnswer = "create_answer", i.CreateOffer = "create_offer", i.SendAnswer = "send_answer", i.SetRemoteDescription = "set_remote_description", i.SetLocalDescription = "set_local_description", i.AnsweredElsewhere = "answered_elsewhere", i.IceFailed = "ice_failed", i.InviteTimeout = "invite_timeout", i.Replaced = "replaced", i.SignallingFailed = "signalling_timeout", i.UserBusy = "user_busy", i.Transferred = "transferred", i.NewSession = "new_session", i;
     })({}), Vg = "1", qg = "stun:turn.matrix.org", vo = 60 * 1e3, Gg = 1e3, Hg = 30 * 1e3, zg = 2 * 1e3;
-    class Rr extends Error {
+    class Tr extends Error {
         constructor(e, t, r){
             super(t + ": " + r), this.code = e;
         }
@@ -16662,7 +16662,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function mn() {
         return Date.now().toString() + Jr(16);
     }
-    function lc(i) {
+    function oc(i) {
         var e = [
             {
                 mediaType: "audio",
@@ -16676,7 +16676,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Ht(i, e) {
         return i + ":" + e;
     }
-    class Jg extends tt {
+    class Jg extends rt {
         constructor(e){
             var t, r;
             if (super(), t = this, y(this, "toDeviceSeq", 0), y(this, "isPtt", !1), y(this, "_state", Ee.Fledgling), y(this, "candidateSendQueue", []), y(this, "candidateSendTries", 0), y(this, "candidatesEnded", !1), y(this, "feeds", []), y(this, "transceivers", new Map), y(this, "inviteOrAnswerSent", !1), y(this, "waitForLocalAVStream", !1), y(this, "removeTrackListeners", new Map), y(this, "remoteOnHold", !1), y(this, "makingOffer", !1), y(this, "ignoreOffer", !1), y(this, "isSettingRemoteAnswerPending", !1), y(this, "remoteCandidateBuffer", new Map), y(this, "gotLocalIceCandidate", (a)=>{
@@ -16688,19 +16688,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var s;
                 k.debug("Call ".concat(this.callId, " onIceGatheringStateChange() ice gathering state changed to ").concat(this.peerConn.iceGatheringState)), ((s = this.peerConn) === null || s === void 0 ? void 0 : s.iceGatheringState) === "complete" && (this.queueCandidate(null), k.debug("Call ".concat(this.callId, " onIceGatheringStateChange() ice gathering state complete, set candidates have ended")));
             }), y(this, "getLocalOfferFailed", (a)=>{
-                k.error("Call ".concat(this.callId, " getLocalOfferFailed() running"), a), this.emit(ke.Error, new Rr(Ie.LocalOfferFailed, "Failed to get local offer!", a), this), this.terminate(st.Local, Ie.LocalOfferFailed, !1);
+                k.error("Call ".concat(this.callId, " getLocalOfferFailed() running"), a), this.emit(ke.Error, new Tr(Ie.LocalOfferFailed, "Failed to get local offer!", a), this), this.terminate(ot.Local, Ie.LocalOfferFailed, !1);
             }), y(this, "getUserMediaFailed", (a)=>{
                 if (this.successor) {
                     this.successor.getUserMediaFailed(a);
                     return;
                 }
-                k.warn("Call ".concat(this.callId, " getUserMediaFailed() failed to get user media - ending call"), a), this.emit(ke.Error, new Rr(Ie.NoUserMedia, "Couldn't start capturing media! Is your microphone set up and does this app have permission?", a), this), this.terminate(st.Local, Ie.NoUserMedia, !1);
+                k.warn("Call ".concat(this.callId, " getUserMediaFailed() failed to get user media - ending call"), a), this.emit(ke.Error, new Tr(Ie.NoUserMedia, "Couldn't start capturing media! Is your microphone set up and does this app have permission?", a), this), this.terminate(ot.Local, Ie.NoUserMedia, !1);
             }), y(this, "placeCallFailed", (a)=>{
                 if (this.successor) {
                     this.successor.placeCallFailed(a);
                     return;
                 }
-                k.warn("Call ".concat(this.callId, " placeCallWithCallFeeds() failed - ending call"), a), this.emit(ke.Error, new Rr(Ie.IceFailed, "Couldn't start call! Invalid ICE server configuration.", a), this), this.terminate(st.Local, Ie.IceFailed, !1);
+                k.warn("Call ".concat(this.callId, " placeCallWithCallFeeds() failed - ending call"), a), this.emit(ke.Error, new Tr(Ie.IceFailed, "Couldn't start call! Invalid ICE server configuration.", a), this), this.terminate(ot.Local, Ie.IceFailed, !1);
             }), y(this, "onIceConnectionStateChanged", ()=>{
                 var a, s, o, l, d, u;
                 if (!this.callHasEnded()) {
@@ -16751,23 +16751,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }
                 t.queueGotLocalOffer();
             })), y(this, "onHangupReceived", (a)=>{
-                k.debug("Call ".concat(this.callId, " onHangupReceived() running")), this.partyIdMatches(a) || this.state === Ee.Ringing ? this.terminate(st.Remote, a.reason || Ie.UserHangup, !0) : k.info("Call ".concat(this.callId, " onHangupReceived() ignoring message from party ID ").concat(a.party_id, ": our partner is ").concat(this.opponentPartyId));
+                k.debug("Call ".concat(this.callId, " onHangupReceived() running")), this.partyIdMatches(a) || this.state === Ee.Ringing ? this.terminate(ot.Remote, a.reason || Ie.UserHangup, !0) : k.info("Call ".concat(this.callId, " onHangupReceived() ignoring message from party ID ").concat(a.party_id, ": our partner is ").concat(this.opponentPartyId));
             }), y(this, "onRejectReceived", (a)=>{
                 k.debug("Call ".concat(this.callId, " onRejectReceived() running"));
                 var s = [
                     Ee.InviteSent,
                     Ee.Ringing
                 ].includes(this.state) || this.state === Ee.Fledgling && this.direction === $r.Inbound;
-                s ? this.terminate(st.Remote, a.reason || Ie.UserHangup, !0) : k.debug("Call ".concat(this.callId, " onRejectReceived() called in wrong state (state=").concat(this.state, ")"));
+                s ? this.terminate(ot.Remote, a.reason || Ie.UserHangup, !0) : k.debug("Call ".concat(this.callId, " onRejectReceived() called in wrong state (state=").concat(this.state, ")"));
             }), y(this, "onAnsweredElsewhere", (a)=>{
-                k.debug("Call ".concat(this.callId, " onAnsweredElsewhere() running")), this.terminate(st.Remote, Ie.AnsweredElsewhere, !0);
+                k.debug("Call ".concat(this.callId, " onAnsweredElsewhere() running")), this.terminate(ot.Remote, Ie.AnsweredElsewhere, !0);
             }), this.roomId = e.roomId, this.invitee = e.invitee, this.client = e.client, !this.client.deviceId) throw new Error("Client must have a device ID to start calls");
             this.forceTURN = (r = e.forceTURN) !== null && r !== void 0 ? r : !1, this.ourPartyId = this.client.deviceId, this.opponentDeviceId = e.opponentDeviceId, this.opponentSessionId = e.opponentSessionId, this.groupCallId = e.groupCallId, this.turnServers = e.turnServers || [], this.turnServers.length === 0 && this.client.isFallbackICEServerAllowed() && this.turnServers.push({
                 urls: [
                     qg
                 ]
             });
-            for (var n of this.turnServers)Gh(n, [
+            for (var n of this.turnServers)qh(n, [
                 "urls"
             ]);
             this.callId = mn(), this.isOnlyDataChannelAllowed = this.client.isVoipWithNoMediaAllowed;
@@ -16814,7 +16814,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this._state = e, this.emit(ke.State, e, t, this);
         }
         get type() {
-            return this.hasUserMediaVideoSender || this.hasRemoteUserMediaVideoTrack ? oc.Video : oc.Voice;
+            return this.hasUserMediaVideoSender || this.hasRemoteUserMediaVideoTrack ? sc.Video : sc.Voice;
         }
         get hasLocalUserMediaVideoTrack() {
             var e;
@@ -16894,7 +16894,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         return;
                     }
                     var r = e.invitee || ((t = e.getOpponentMember()) === null || t === void 0 ? void 0 : t.userId);
-                    throw r ? (e.hasOpponentDeviceInfo = !1, new Zf(r)) : new Error("Couldn't find opponent user ID to init crypto");
+                    throw r ? (e.hasOpponentDeviceInfo = !1, new Qf(r)) : new Error("Couldn't find opponent user ID to init crypto");
                 }
             })();
         }
@@ -17052,19 +17052,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     yield t.peerConn.setRemoteDescription(n.offer), k.debug("Call ".concat(t.callId, " initWithInvite() set remote description: ").concat(n.offer.type)), yield t.addBufferedIceCandidates();
                 } catch (u) {
-                    k.debug("Call ".concat(t.callId, " initWithInvite() failed to set remote description"), u), t.terminate(st.Local, Ie.SetRemoteDescription, !1);
+                    k.debug("Call ".concat(t.callId, " initWithInvite() failed to set remote description"), u), t.terminate(ot.Local, Ie.SetRemoteDescription, !1);
                     return;
                 }
                 var o = (r = t.feeds.find((u)=>!u.isLocal())) === null || r === void 0 ? void 0 : r.stream;
                 if (!t.isOnlyDataChannelAllowed && (!o || o.getTracks().length === 0)) {
-                    k.error("Call ".concat(t.callId, " initWithInvite() no remote stream or no tracks after setting remote description!")), t.terminate(st.Local, Ie.SetRemoteDescription, !1);
+                    k.error("Call ".concat(t.callId, " initWithInvite() no remote stream or no tracks after setting remote description!")), t.terminate(ot.Local, Ie.SetRemoteDescription, !1);
                     return;
                 }
                 if (t.state = Ee.Ringing, e.getLocalAge()) {
                     var l = setTimeout(()=>{
                         if (t.state == Ee.Ringing) {
                             var u;
-                            k.debug("Call ".concat(t.callId, " initWithInvite() invite has expired. Hanging up.")), t.hangupParty = st.Remote, t.state = Ee.Ended, t.stopAllMedia(), t.peerConn.signalingState != "closed" && t.peerConn.close(), (u = t.stats) === null || u === void 0 || u.removeStatsReportGatherer(t.callId), t.emit(ke.Hangup, t);
+                            k.debug("Call ".concat(t.callId, " initWithInvite() invite has expired. Hanging up.")), t.hangupParty = ot.Remote, t.state = Ee.Ended, t.stopAllMedia(), t.peerConn.signalingState != "closed" && t.peerConn.close(), (u = t.stats) === null || u === void 0 || u.removeStatsReportGatherer(t.callId), t.emit(ke.Hangup, t);
                         }
                     }, n.lifetime - e.getLocalAge()), d = (u)=>{
                         u !== Ee.Ringing && (clearTimeout(l), t.off(ke.State, d));
@@ -17077,7 +17077,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.state = Ee.Ended;
         }
         shouldAnswerWithMediaType(e, t, r) {
-            return e && !t ? (k.warn("Call ".concat(this.callId, " shouldAnswerWithMediaType() unable to answer with ").concat(r, " because the other side isn't sending it either.")), !1) : !Jh(e) && e !== t && !this.opponentSupportsSDPStreamMetadata() ? (k.warn("Call ".concat(this.callId, " shouldAnswerWithMediaType() unable to answer with ").concat(r, "=").concat(e, " because the other side doesn't support it. Answering with ").concat(r, "=").concat(t, ".")), t) : e ?? t;
+            return e && !t ? (k.warn("Call ".concat(this.callId, " shouldAnswerWithMediaType() unable to answer with ").concat(r, " because the other side isn't sending it either.")), !1) : !zh(e) && e !== t && !this.opponentSupportsSDPStreamMetadata() ? (k.warn("Call ".concat(this.callId, " shouldAnswerWithMediaType() unable to answer with ").concat(r, "=").concat(e, " because the other side doesn't support it. Answering with ").concat(r, "=").concat(t, ".")), t) : e ?? t;
         }
         answer(e, t) {
             var r = this;
@@ -17124,7 +17124,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ].includes(this.state) && (e.direction === $r.Outbound ? e.queueGotCallFeedsForAnswer([]) : (k.debug("Call ".concat(this.callId, " replacedBy() handing local stream to new call(newCallId=").concat(e.callId, ")")), e.queueGotCallFeedsForAnswer(this.getLocalFeeds().map((t)=>t.clone())))), this.successor = e, this.emit(ke.Replaced, e, this), this.hangup(Ie.Replaced, !0);
         }
         hangup(e, t) {
-            if (!this.callHasEnded() && (k.debug("Call ".concat(this.callId, " hangup() ending call (reason=").concat(e, ")")), this.terminate(st.Local, e, !t), ![
+            if (!this.callHasEnded() && (k.debug("Call ".concat(this.callId, " hangup() ending call (reason=").concat(e, ")")), this.terminate(ot.Local, e, !t), ![
                 Ee.Fledgling,
                 Ee.WaitLocalMedia
             ].includes(this.state))) {
@@ -17138,7 +17138,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 k.info("Call ".concat(this.callId, " reject() opponent version is less than 1: sending hangup instead of reject (opponentVersion=").concat(this.opponentVersion, ")")), this.hangup(Ie.UserHangup, !0);
                 return;
             }
-            k.debug("Rejecting call: " + this.callId), this.terminate(st.Local, Ie.UserHangup, !0), this.sendVoipEvent(B.CallReject, {});
+            k.debug("Rejecting call: " + this.callId), this.terminate(ot.Local, Ie.UserHangup, !0), this.sendVoipEvent(B.CallReject, {});
         }
         upgradeCall(e, t) {
             var r = this;
@@ -17148,7 +17148,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     var n = e || r.hasLocalUserMediaAudioTrack, a = t || r.hasLocalUserMediaVideoTrack, s = yield r.client.getMediaHandler().getUserMediaStream(n, a, !1);
                     yield r.updateLocalUsermediaStream(s, e, t);
                 } catch (o) {
-                    k.error("Call ".concat(r.callId, " upgradeCall() failed to upgrade the call"), o), r.emit(ke.Error, new Rr(Ie.NoUserMedia, "Failed to get camera access: ", o), r);
+                    k.error("Call ".concat(r.callId, " upgradeCall() failed to upgrade the call"), o), r.emit(ke.Error, new Tr(Ie.NoUserMedia, "Failed to get camera access: ", o), r);
                 }
             })();
         }
@@ -17331,9 +17331,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     yield e.sendVoipEvent(B.CallAnswer, t), e.inviteOrAnswerSent = !0;
                 } catch (s) {
-                    e.state = Ee.Ringing, s instanceof He && s.event && e.client.cancelPendingEvent(s.event);
+                    e.state = Ee.Ringing, s instanceof ze && s.event && e.client.cancelPendingEvent(s.event);
                     var n = Ie.SendAnswer, a = "Failed to send answer";
-                    throw s.name == "UnknownDeviceError" && (n = Ie.UnknownDevices, a = "Unknown devices present in the room"), e.emit(ke.Error, new Rr(n, a, s), e), s;
+                    throw s.name == "UnknownDeviceError" && (n = Ie.UnknownDevices, a = "Unknown devices present in the room"), e.emit(ke.Error, new Tr(n, a, s), e), s;
                 }
                 e.sendCandidateQueue();
             })();
@@ -17366,14 +17366,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var e = this;
             return _(function*() {
                 var t = yield e.peerConn.createOffer();
-                return e.mungeSdp(t, lc(e.isPtt)), t;
+                return e.mungeSdp(t, oc(e.isPtt)), t;
             })();
         }
         createAnswer() {
             var e = this;
             return _(function*() {
                 var t = yield e.peerConn.createAnswer();
-                return e.mungeSdp(t, lc(e.isPtt)), t;
+                return e.mungeSdp(t, oc(e.isPtt)), t;
             })();
         }
         gotCallFeedsForAnswer(e) {
@@ -17387,7 +17387,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     try {
                         t.getRidOfRTXCodecs(), n = yield t.createAnswer();
                     } catch (a) {
-                        k.debug("Call ".concat(t.callId, " gotCallFeedsForAnswer() failed to create answer: "), a), t.terminate(st.Local, Ie.CreateAnswer, !0);
+                        k.debug("Call ".concat(t.callId, " gotCallFeedsForAnswer() failed to create answer: "), a), t.terminate(ot.Local, Ie.CreateAnswer, !0);
                         return;
                     }
                     try {
@@ -17396,7 +17396,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         }), t.callHasEnded())) return;
                         t.sendAnswer();
                     } catch (a) {
-                        k.debug("Call ".concat(t.callId, " gotCallFeedsForAnswer() error setting local description!"), a), t.terminate(st.Local, Ie.SetLocalDescription, !0);
+                        k.debug("Call ".concat(t.callId, " gotCallFeedsForAnswer() error setting local description!"), a), t.terminate(ot.Local, Ie.SetLocalDescription, !0);
                         return;
                     }
                 }
@@ -17446,7 +17446,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     t.isSettingRemoteAnswerPending = !0, yield t.peerConn.setRemoteDescription(r.answer), t.isSettingRemoteAnswerPending = !1, k.debug("Call ".concat(t.callId, " onAnswerReceived() set remote description: ").concat(r.answer.type));
                 } catch (a) {
-                    t.isSettingRemoteAnswerPending = !1, k.debug("Call ".concat(t.callId, " onAnswerReceived() failed to set remote description"), a), t.terminate(st.Local, Ie.SetRemoteDescription, !1);
+                    t.isSettingRemoteAnswerPending = !1, k.debug("Call ".concat(t.callId, " onAnswerReceived() failed to set remote description"), a), t.terminate(ot.Local, Ie.SetRemoteDescription, !1);
                     return;
                 }
                 if (t.opponentPartyId !== null) try {
@@ -17470,7 +17470,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     k.warn("Call ".concat(t.callId, " onSelectAnswerReceived() got nonsensical select_answer with null/undefined selected_party_id: ignoring"));
                     return;
                 }
-                r !== t.ourPartyId && (k.info("Call ".concat(t.callId, " onSelectAnswerReceived() got select_answer for party ID ").concat(r, ": we are party ID ").concat(t.ourPartyId, ".")), yield t.terminate(st.Remote, Ie.AnsweredElsewhere, !0));
+                r !== t.ourPartyId && (k.info("Call ".concat(t.callId, " onSelectAnswerReceived() got select_answer for party ID ").concat(r, ": we are party ID ").concat(t.ourPartyId, ".")), yield t.terminate(ot.Remote, Ie.AnsweredElsewhere, !0));
             })();
         }
         onNegotiateReceived(e) {
@@ -17494,7 +17494,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         try {
                             t.getRidOfRTXCodecs(), c = yield t.createAnswer();
                         } catch (v) {
-                            k.debug("Call ".concat(t.callId, " onNegotiateReceived() failed to create answer: "), v), t.terminate(st.Local, Ie.CreateAnswer, !0);
+                            k.debug("Call ".concat(t.callId, " onNegotiateReceived() failed to create answer: "), v), t.terminate(ot.Local, Ie.CreateAnswer, !0);
                             return;
                         }
                         yield t.peerConn.setLocalDescription(c), k.debug("Call ".concat(t.callId, " onNegotiateReceived() create an answer")), t.sendVoipEvent(B.CallNegotiate, {
@@ -17511,7 +17511,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             })();
         }
         updateRemoteSDPStreamMetadata(e) {
-            this.remoteSDPStreamMetadata = Yh(this.remoteSDPStreamMetadata || {}, e, !0);
+            this.remoteSDPStreamMetadata = Jh(this.remoteSDPStreamMetadata || {}, e, !0);
             for (var t of this.getRemoteFeeds()){
                 var r, n = t.stream.id, a = this.remoteSDPStreamMetadata[n];
                 t.setAudioVideoMuted(a?.audio_muted, a?.video_muted), t.purpose = (r = this.remoteSDPStreamMetadata[n]) === null || r === void 0 ? void 0 : r.purpose;
@@ -17562,13 +17562,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     e.getRidOfRTXCodecs(), t = yield e.createOffer();
                 } catch (u) {
-                    k.debug("Call ".concat(e.callId, " gotLocalOffer() failed to create offer: "), u), e.terminate(st.Local, Ie.CreateOffer, !0);
+                    k.debug("Call ".concat(e.callId, " gotLocalOffer() failed to create offer: "), u), e.terminate(ot.Local, Ie.CreateOffer, !0);
                     return;
                 }
                 try {
                     yield e.peerConn.setLocalDescription(t);
                 } catch (u) {
-                    k.debug("Call ".concat(e.callId, " gotLocalOffer() error setting local description!"), u), e.terminate(st.Local, Ie.SetLocalDescription, !0);
+                    k.debug("Call ".concat(e.callId, " gotLocalOffer() error setting local description!"), u), e.terminate(ot.Local, Ie.SetLocalDescription, !0);
                     return;
                 }
                 if (e.peerConn.iceGatheringState === "gathering" && (yield new Promise((u)=>{
@@ -17593,9 +17593,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     try {
                         yield e.sendVoipEvent(r, n);
                     } catch (u) {
-                        k.error("Call ".concat(e.callId, " gotLocalOffer() failed to send invite"), u), u instanceof He && u.event && e.client.cancelPendingEvent(u.event);
+                        k.error("Call ".concat(e.callId, " gotLocalOffer() failed to send invite"), u), u instanceof ze && u.event && e.client.cancelPendingEvent(u.event);
                         var l = Ie.SignallingFailed, d = "Signalling failed";
-                        e.state === Ee.CreateOffer && (l = Ie.SendInvite, d = "Failed to send invite"), u.name == "UnknownDeviceError" && (l = Ie.UnknownDevices, d = "Unknown devices present in the room"), e.emit(ke.Error, new Rr(l, d, u), e), e.terminate(st.Local, l, !1);
+                        e.state === Ee.CreateOffer && (l = Ie.SendInvite, d = "Failed to send invite"), u.name == "UnknownDeviceError" && (l = Ie.UnknownDevices, d = "Unknown devices present in the room"), e.emit(ke.Error, new Tr(l, d, u), e), e.terminate(ot.Local, l, !1);
                         return;
                     }
                     e.sendCandidateQueue(), e.state === Ee.CreateOffer && (e.inviteOrAnswerSent = !0, e.state = Ee.InviteSent, e.inviteTimeout = setTimeout(()=>{
@@ -17704,7 +17704,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     },
                     create_call: n
                 };
-                yield t.sendVoipEvent(B.CallReplaces, a), yield t.terminate(st.Local, Ie.Transferred, !0);
+                yield t.sendVoipEvent(B.CallReplaces, a), yield t.terminate(ot.Local, Ie.Transferred, !0);
             })();
         }
         transferToCall(e) {
@@ -17729,7 +17729,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     },
                     create_call: d
                 };
-                yield t.sendVoipEvent(B.CallReplaces, c), yield t.terminate(st.Local, Ie.Transferred, !0), yield e.terminate(st.Local, Ie.Transferred, !0);
+                yield t.sendVoipEvent(B.CallReplaces, c), yield t.terminate(ot.Local, Ie.Transferred, !0), yield e.terminate(ot.Local, Ie.Transferred, !0);
             })();
         }
         terminate(e, t, r) {
@@ -17756,7 +17756,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
         }
         checkForErrorListener() {
-            if (this.listeners(Zh.Error).length === 0) throw new Error("You MUST attach an error listener using call.on('error', function() {})");
+            if (this.listeners(Qh.Error).length === 0) throw new Error("You MUST attach an error listener using call.on('error', function() {})");
         }
         sendCandidateQueue() {
             var e = this;
@@ -17773,10 +17773,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     try {
                         yield e.sendVoipEvent(B.CallCandidates, r), e.candidateSendTries = 0, e.sendCandidateQueue();
                     } catch (o) {
-                        if (o instanceof He && o.event && e.client.cancelPendingEvent(o.event), e.candidateSendQueue.push(...t), e.candidateSendTries > 5) {
+                        if (o instanceof ze && o.event && e.client.cancelPendingEvent(o.event), e.candidateSendQueue.push(...t), e.candidateSendTries > 5) {
                             k.debug("Call ".concat(e.callId, " sendCandidateQueue() failed to send candidates on attempt ").concat(e.candidateSendTries, ". Giving up on this call."), o);
                             var n = Ie.SignallingFailed, a = "Signalling failed";
-                            e.emit(ke.Error, new Rr(n, a, o), e), e.hangup(n, !1);
+                            e.emit(ke.Error, new Tr(n, a, o), e), e.hangup(n, !1);
                             return;
                         }
                         var s = 500 * Math.pow(2, e.candidateSendTries);
@@ -17921,7 +17921,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     })({}), gt = (function(i) {
         return i.Master = ".m.rule.master", i.IsUserMention = ".m.rule.is_user_mention", i.IsRoomMention = ".m.rule.is_room_mention", i.ContainsDisplayName = ".m.rule.contains_display_name", i.ContainsUserName = ".m.rule.contains_user_name", i.AtRoomNotification = ".m.rule.roomnotif", i.DM = ".m.rule.room_one_to_one", i.EncryptedDM = ".m.rule.encrypted_room_one_to_one", i.Message = ".m.rule.message", i.EncryptedMessage = ".m.rule.encrypted", i.InviteToSelf = ".m.rule.invite_for_me", i.MemberEvent = ".m.rule.member_event", i.IncomingCall = ".m.rule.call", i.SuppressNotices = ".m.rule.suppress_notices", i.Tombstone = ".m.rule.tombstone", i.PollStart = ".m.rule.poll_start", i.PollStartUnstable = ".org.matrix.msc3930.rule.poll_start", i.PollEnd = ".m.rule.poll_end", i.PollEndUnstable = ".org.matrix.msc3930.rule.poll_end", i.PollStartOneToOne = ".m.rule.poll_start_one_to_one", i.PollStartOneToOneUnstable = ".org.matrix.msc3930.rule.poll_start_one_to_one", i.PollEndOneToOne = ".m.rule.poll_end_one_to_one", i.PollEndOneToOneUnstable = ".org.matrix.msc3930.rule.poll_end_one_to_one", i;
     })({});
-    function dc(i, e) {
+    function lc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -17931,18 +17931,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return t;
     }
-    function uc(i) {
+    function dc(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? dc(Object(t), !0).forEach(function(r) {
+            e % 2 ? lc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : dc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : lc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
         return i;
     }
-    var cc = [
+    var uc = [
         yt.Override,
         yt.ContentSpecific,
         yt.RoomSpecific,
@@ -18051,7 +18051,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         gt.Message,
         gt.EncryptedMessage
     ];
-    function hc(i, e, t, r, n) {
+    function cc(i, e, t, r, n) {
         var a = t.filter((f)=>f.default), s = t.filter((f)=>!f.default);
         function o(f) {
             f === fd ? d.push(...s) : f in r ? (i.warn("Adding default global ".concat(e, " push rule ").concat(f)), d.push(r[f])) : i.warn("Missing default global ".concat(e, " push rule ").concat(f));
@@ -18086,7 +18086,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         static rewriteDefaultRules(e, t) {
             var r = JSON.parse(JSON.stringify(t));
-            return r || (r = {}), r.global || (r.global = {}), r.global.override || (r.global.override = []), r.global.underride || (r.global.underride = []), r.global.override = hc(e, yt.Override, r.global.override, Zg, ey), r.global.underride = hc(e, yt.Underride, r.global.underride, ty, ry), r;
+            return r || (r = {}), r.global || (r.global = {}), r.global.override || (r.global.override = []), r.global.underride || (r.global.underride = []), r.global.override = cc(e, yt.Override, r.global.override, Zg, ey), r.global.underride = cc(e, yt.Underride, r.global.underride, ty, ry), r;
         }
         static getPushRuleGlobRegex(e) {
             var t = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : !1, r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : "i", n = t ? [
@@ -18096,7 +18096,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 "^",
                 "$"
             ], a = ge(n, 2), s = a[0], o = a[1], l = "".concat(t, "-").concat(r, "-").concat(e);
-            return Yt.cachedGlobToRegex[l] || (Yt.cachedGlobToRegex[l] = new RegExp(s + "(" + zh(e) + ")" + o, r)), Yt.cachedGlobToRegex[l];
+            return Yt.cachedGlobToRegex[l] || (Yt.cachedGlobToRegex[l] = new RegExp(s + "(" + Hh(e) + ")" + o, r)), Yt.cachedGlobToRegex[l];
         }
         updateCachedPushRuleKeys(e) {
             e || (e = {}), e.global || (e.global = {}), e.global.override || (e.global.override = []), e.global.room || (e.global.room = []), e.global.sender || (e.global.sender = []), e.global.underride || (e.global.underride = []);
@@ -18110,12 +18110,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             t.forEach((s)=>this.parsedKeys.delete(s));
         }
         matchingRuleFromKindSet(e, t) {
-            for (var r of cc){
+            for (var r of uc){
                 var n = t[r];
                 if (n) {
                     for (var a of n)if (a.enabled) {
                         var s = this.templateRuleToRaw(r, a);
-                        if (s && this.ruleMatchesEvent(s, e)) return uc(uc({}, a), {}, {
+                        if (s && this.ruleMatchesEvent(s, e)) return dc(dc({}, a), {}, {
                             kind: r
                         });
                     }
@@ -18216,7 +18216,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (t.isEncrypted() && t.getClearContent() && (n = t.getClearContent()), !n || !n.body || typeof n.body != "string") return !1;
             var a = this.client.getRoom(t.getRoomId()), s = a == null || (r = a.currentState) === null || r === void 0 ? void 0 : r.getMember(this.client.credentials.userId);
             if (!s) return !1;
-            var o = s.name, l = new RegExp("(^|\\W)" + Hh(o) + "(\\W|$)", "i");
+            var o = s.name, l = new RegExp("(^|\\W)" + Gh(o) + "(\\W|$)", "i");
             return n.body.search(l) > -1;
         }
         eventFulfillsEventMatchCondition(e, t) {
@@ -18258,7 +18258,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             r === void 0 && (r = Yt.partsForDottedKey(e), this.parsedKeys.set(e, r));
             var n, a = r[0], s = 0;
             for(a === "content" ? (n = t.getContent(), ++s) : a === "type" ? (n = t.getType(), ++s) : n = t.event; s < r.length; ++s){
-                if (Jh(n)) return;
+                if (zh(n)) return;
                 var o = r[s];
                 n = n[o];
             }
@@ -18297,7 +18297,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ]){
                 var r;
                 if (((r = this.client.pushRules) === null || r === void 0 ? void 0 : r[t]) !== void 0) {
-                    for (var n of cc)if (this.client.pushRules[t][n] !== void 0) {
+                    for (var n of uc)if (this.client.pushRules[t][n] !== void 0) {
                         for (var a of this.client.pushRules[t][n])if (a.rule_id === e) return {
                             rule: a,
                             kind: n
@@ -18549,7 +18549,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Ts(i) {
         return "parent_delay_id" in i && typeof i.parent_delay_id != "string" ? !1 : "delay" in i && typeof i.delay != "number" ? !0 : "delay" in i || "parent_delay_id" in i;
     }
-    let Rn, sy, vd, ev, oy, Is;
+    let Rn, sy, vd, Zf, oy, Is;
     Rn = (function(i) {
         return i.Cancel = "cancel", i.Restart = "restart", i.Send = "send", i;
     })({});
@@ -18559,7 +18559,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     vd = (function(i) {
         return i.PrivateChat = "private_chat", i.TrustedPrivateChat = "trusted_private_chat", i.PublicChat = "public_chat", i;
     })({});
-    ev = (function(i) {
+    Zf = (function(i) {
         return i.Public = "public", i.Invite = "invite", i.Private = "private", i.Knock = "knock", i.Restricted = "restricted", i;
     })({});
     oy = (function(i) {
@@ -18571,7 +18571,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     Vn = (function(i) {
         return i.Invited = "invited", i.Joined = "joined", i.Shared = "shared", i.WorldReadable = "world_readable", i;
     })({});
-    function fc(i, e) {
+    function hc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -18581,12 +18581,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return t;
     }
-    function vc(i) {
+    function fc(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? fc(Object(t), !0).forEach(function(r) {
+            e % 2 ? hc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : fc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : hc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -18596,7 +18596,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         var t = !!e.preventReEmit, r = e.decrypt !== !1;
         function n(a) {
             var s = i.getRoom(a.room_id), o;
-            s && a.state_key === void 0 && (o = s.findEventById(a.event_id)), !o || o.status ? o = new Et(a) : (o.setUnsigned(vc(vc({}, o.getUnsigned()), a.unsigned)), t = !0);
+            s && a.state_key === void 0 && (o = s.findEventById(a.event_id)), !o || o.status ? o = new Et(a) : (o.setUnsigned(fc(fc({}, o.getUnsigned()), a.unsigned)), t = !0);
             var l = o.getServerAggregatedRelation(Ve.Replace);
             if (l != null && l.content) {
                 var d = n(l);
@@ -18614,7 +18614,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return n;
     }
-    function pc(i, e) {
+    function vc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -18627,15 +18627,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Fr(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? pc(Object(t), !0).forEach(function(r) {
+            e % 2 ? vc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : pc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : vc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
         return i;
     }
-    class mc {
+    class pc {
         constructor(e, t, r){
             this.client = e, this.indexEvent = t, this.directory = r;
         }
@@ -18657,7 +18657,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         delete() {
             var e = this;
             return _(function*() {
-                yield e.client.sendStateEvent(e.roomId, Cr.name, {}, e.id), yield e.client.redactEvent(e.roomId, e.id);
+                yield e.client.sendStateEvent(e.roomId, kr.name, {}, e.id), yield e.client.redactEvent(e.roomId, e.id);
                 var t = (yield e.getVersionHistory())[1];
                 t && (yield t.delete());
             })();
@@ -18668,7 +18668,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         setName(e) {
             var t = this;
             return _(function*() {
-                yield t.client.sendStateEvent(t.roomId, Cr.name, Fr(Fr({}, t.indexEvent.getContent()), {}, {
+                yield t.client.sendStateEvent(t.roomId, kr.name, Fr(Fr({}, t.indexEvent.getContent()), {}, {
                     name: e
                 }), t.id);
             })();
@@ -18679,7 +18679,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         setLocked(e) {
             var t = this;
             return _(function*() {
-                yield t.client.sendStateEvent(t.roomId, Cr.name, Fr(Fr({}, t.indexEvent.getContent()), {}, {
+                yield t.client.sendStateEvent(t.roomId, kr.name, Fr(Fr({}, t.indexEvent.getContent()), {}, {
                     locked: e
                 }), t.id);
             })();
@@ -18715,11 +18715,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         event_id: a.id
                     }
                 }));
-                return yield a.client.sendStateEvent(a.roomId, Cr.name, {
+                return yield a.client.sendStateEvent(a.roomId, kr.name, {
                     active: !0,
                     name: e,
                     version: a.version + 1
-                }, s.event_id), yield a.client.sendStateEvent(a.roomId, Cr.name, Fr(Fr({}, a.indexEvent.getContent()), {}, {
+                }, s.event_id), yield a.client.sendStateEvent(a.roomId, kr.name, Fr(Fr({}, a.indexEvent.getContent()), {}, {
                     active: !1
                 }), a.id), s;
             })();
@@ -18744,7 +18744,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             })();
         }
     }
-    function gc(i, e) {
+    function mc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -18757,9 +18757,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function on(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? gc(Object(t), !0).forEach(function(r) {
+            e % 2 ? mc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : gc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : mc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -18787,7 +18787,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }, Un = (function(i) {
         return i.Viewer = "viewer", i.Editor = "editor", i.Owner = "owner", i;
     })({});
-    class yc {
+    class gc {
         constructor(e, t){
             if (this.client = e, this.roomId = t, this.room = this.client.getRoom(this.roomId), !this.room) throw new Error("Unknown room");
         }
@@ -18821,7 +18821,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         retryInvite(e) {
             var t = this;
             return _(function*() {
-                yield Qp(()=>t.client.invite(t.roomId, e), (r)=>!(r instanceof He && r.errcode === "M_FORBIDDEN"));
+                yield Qp(()=>t.client.invite(t.roomId, e), (r)=>!(r instanceof ze && r.errcode === "M_FORBIDDEN"));
             })();
         }
         setPermissions(e, t) {
@@ -18944,11 +18944,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var o = t.getOrder(), l = o < e;
                 l && e === s.length - 1 ? e-- : !l && e === 0 && e++;
                 var d = s[l ? e : e - 1], u = s[l ? e + 1 : e], c = Xr[0], h = !1;
-                if (!d) u != null && u.order && (c = iu(u.order));
+                if (!d) u != null && u.order && (c = nu(u.order));
                 else if (e === s.length - 1) u != null && u.order && (c = gi(u.order));
                 else {
                     var v = d?.order, f = u?.order;
-                    v && f ? v === f ? c = gi(v) : c = Zp(v, f) : v ? c = gi(v) : f ? c = iu(f) : h = !0;
+                    v && f ? v === f ? c = gi(v) : c = Zp(v, f) : v ? c = gi(v) : f ? c = nu(f) : h = !0;
                 }
                 if (h) {
                     for(var p, S = 0; S <= e; S++){
@@ -18987,39 +18987,39 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }), o = s.content_uri;
                 r.url = o;
                 var l = {
-                    msgtype: fr.File,
+                    msgtype: vr.File,
                     body: e,
                     url: o,
                     file: r
                 };
                 n = n ?? {}, n["m.new_content"] && (n["m.new_content"] = l);
                 var d = yield a.client.sendMessage(a.roomId, on(on(on({}, n), l), {}, {
-                    [ef.name]: {}
+                    [Zh.name]: {}
                 }));
-                return yield a.client.sendStateEvent(a.roomId, Cr.name, {
+                return yield a.client.sendStateEvent(a.roomId, kr.name, {
                     active: !0,
                     name: e
                 }, d.event_id), d;
             })();
         }
         getFile(e) {
-            var t = this.room.currentState.getStateEvents(Cr.name, e);
-            return t ? new mc(this.client, t, this) : null;
+            var t = this.room.currentState.getStateEvents(kr.name, e);
+            return t ? new pc(this.client, t, this) : null;
         }
         listFiles() {
             return this.listAllFiles().filter((e)=>e.isActive);
         }
         listAllFiles() {
-            var e, t = (e = this.room.currentState.getStateEvents(Cr.name)) !== null && e !== void 0 ? e : [];
-            return t.map((r)=>new mc(this.client, r, this));
+            var e, t = (e = this.room.currentState.getStateEvents(kr.name)) !== null && e !== void 0 ? e : [];
+            return t.map((r)=>new pc(this.client, r, this));
         }
     }
-    var tv = (function(i) {
+    var ev = (function(i) {
         return i.Recent = "recent", i.Rank = "rank", i;
     })({}), gn = (function(i) {
         return i.LocalStreamsChanged = "local_streams_changed", i;
     })({});
-    class uy extends tt {
+    class uy extends rt {
         constructor(e){
             super(), y(this, "userMediaStreams", []), y(this, "screensharingStreams", []), this.client = e;
         }
@@ -19073,7 +19073,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     for (var c of e.client.groupCallEventHandler.groupCalls.values())if (c.localCallFeed) {
                         k.log("MediaHandler updateLocalUsermediaStreams() calling getUserMediaStream() (groupCallId=".concat(c.groupCallId, ")"));
                         var h = yield e.getUserMediaStream(!0, c.type === Ws.Video);
-                        c.state !== it.Ended && (yield c.updateLocalUsermediaStream(h));
+                        c.state !== at.Ended && (yield c.updateLocalUsermediaStream(h));
                     }
                     e.emit(gn.LocalStreamsChanged);
                 }
@@ -19222,7 +19222,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
         }
     }
-    var Sc = (function(i) {
+    var yc = (function(i) {
         return i.RequestFinished = "FINISHED", i.Complete = "COMPLETE", i;
     })({}), ka = (function(i) {
         return i.PreProcess = "ExtState.PreProcess", i.PostProcess = "ExtState.PostProcess", i;
@@ -19281,7 +19281,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 t.cryptoCallbacks ? n = yield t.cryptoCallbacks.preprocessToDeviceMessages(r) : n = r.map((a)=>({
                         message: a,
                         encryptionInfo: null
-                    })), Jf(n, t.client), t.nextBatch = e.next_batch;
+                    })), zf(n, t.client), t.nextBatch = e.next_batch;
             })();
         }
     }
@@ -19350,7 +19350,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         onResponse(e) {
             var t = this;
             return _(function*() {
-                if (e != null && e.rooms) for(var r in e.rooms)nv(t.client, r, [
+                if (e != null && e.rooms) for(var r in e.rooms)rv(t.client, r, [
                     e.rooms[r]
                 ]);
             })();
@@ -19376,15 +19376,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         onResponse(e) {
             var t = this;
             return _(function*() {
-                if (e != null && e.rooms) for(var r in e.rooms)nv(t.client, r, [
+                if (e != null && e.rooms) for(var r in e.rooms)rv(t.client, r, [
                     e.rooms[r]
                 ]);
             })();
         }
     }
-    class rv {
+    class tv {
         constructor(e, t, r, n){
-            y(this, "syncState", null), y(this, "lastPos", null), y(this, "failCount", 0), y(this, "notifEvents", []), this.slidingSync = e, this.client = t, this.opts = Gf(r), this.syncOpts = Hf(n), t.getNotifTimelineSet() && t.reEmitter.reEmit(t.getNotifTimelineSet(), [
+            y(this, "syncState", null), y(this, "lastPos", null), y(this, "failCount", 0), y(this, "notifEvents", []), this.slidingSync = e, this.client = t, this.opts = qf(r), this.syncOpts = Gf(n), t.getNotifTimelineSet() && t.reEmitter.reEmit(t.getNotifTimelineSet(), [
                 de.Timeline,
                 de.TimelineReset
             ]), this.slidingSync.on(fl.Lifecycle, this.onLifecycle.bind(this)), this.slidingSync.on(fl.RoomData, this.onRoomData.bind(this));
@@ -19407,14 +19407,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         r.syncOpts.logger.debug("initial flag not set but no stored room exists for room ", e, t);
                         return;
                     }
-                    n = zf(r.client, e, r.opts);
+                    n = Hf(r.client, e, r.opts);
                 }
                 yield r.processRoomData(r.client, n, t);
             })();
         }
         onLifecycle(e, t, r) {
             switch(r && this.syncOpts.logger.debug("onLifecycle", e, r), e){
-                case Sc.Complete:
+                case yc.Complete:
                     if (this.purgeNotifications(), !t) break;
                     this.lastPos || this.updateSyncState(je.Prepared, {
                         oldSyncToken: void 0,
@@ -19428,11 +19428,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         fromCache: !1
                     }), this.lastPos = t.pos;
                     break;
-                case Sc.RequestFinished:
+                case yc.RequestFinished:
                     if (r) {
                         if (this.failCount += 1, this.updateSyncState(this.failCount > cy ? je.Error : je.Reconnecting, {
-                            error: new He(r)
-                        }), this.shouldAbortSync(new He(r))) return;
+                            error: new ze(r)
+                        }), this.shouldAbortSync(new ze(r))) return;
                     } else this.failCount = 0, this.syncOpts.logger.debug("SlidingSyncState.RequestFinished with ".concat(Object.keys(t?.rooms || []).length, " rooms"));
                     break;
             }
@@ -19537,7 +19537,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         return E.apply(this, arguments);
                     };
                 })();
-                yield ru(a, R), yield ru(s, R), o.forEach(function(E) {
+                yield tu(a, R), yield tu(s, R), o.forEach(function(E) {
                     e.emit(ie.Event, E);
                 }), t.decryptCriticalEvents();
             })();
@@ -19644,7 +19644,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return a.room_id = e, n(a);
         });
     }
-    function nv(i, e, t) {
+    function rv(i, e, t) {
         var r = Xn(i, e, t), n = i.getRoom(e);
         if (!n) {
             k.warn("got ephemeral events for room but room doesn't exist on client:", e);
@@ -19657,7 +19657,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     var pd = new ut("m.beacon_info", "org.matrix.msc3672.beacon_info"), vl = new ut("m.beacon", "org.matrix.msc3672.beacon");
     class oi {
         static RETRY_BACKOFF_RATELIMIT(e, t, r) {
-            return Bf(r, t, !1);
+            return jf(r, t, !1);
         }
         static QUEUE_MESSAGES(e) {
             return e.getType() === B.RoomMessage || e.hasAssociation() ? "message" : null;
@@ -19728,7 +19728,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (Array.isArray(t)) return t.shift();
         }
     }
-    var bc = 20;
+    var Sc = 20;
     class yy {
         constructor(e, t){
             var r = this;
@@ -19765,10 +19765,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         queueBatch(e) {
             var t = this;
             return _(function*() {
-                for(var r = [], n = 0; n < e.batch.length; n += bc){
+                for(var r = [], n = 0; n < e.batch.length; n += Sc){
                     var a = {
                         eventType: e.eventType,
-                        batch: e.batch.slice(n, n + bc),
+                        batch: e.batch.slice(n, n + Sc),
                         txnId: t.client.makeTxnId()
                     };
                     r.push(a);
@@ -19787,11 +19787,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             })();
         }
     }
-    var po = new Pt.UnstableValue("m.policies", "org.matrix.msc3847.policies"), Wa = new Pt.UnstableValue("m.ignore.invites", "org.matrix.msc3847.ignore.invites"), _c = (function(i) {
+    var po = new Pt.UnstableValue("m.policies", "org.matrix.msc3847.policies"), Wa = new Pt.UnstableValue("m.ignore.invites", "org.matrix.msc3847.ignore.invites"), bc = (function(i) {
         return i.Ban = "m.ban", i;
     })({}), Qn = (function(i) {
         return i.User = "m.policy.user", i.Room = "m.policy.room", i.Server = "m.policy.server", i;
-    })({}), Ec = {
+    })({}), _c = {
         [Qn.User]: B.PolicyRuleUser,
         [Qn.Room]: B.PolicyRuleRoom,
         [Qn.Server]: B.PolicyRuleServer
@@ -19803,10 +19803,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         addRule(e, t, r) {
             var n = this;
             return _(function*() {
-                var a = yield n.getOrCreateTargetRoom(), s = yield n.client.sendStateEvent(a.roomId, Ec[e], {
+                var a = yield n.getOrCreateTargetRoom(), s = yield n.client.sendStateEvent(a.roomId, _c[e], {
                     entity: t,
                     reason: r,
-                    recommendation: _c.Ban
+                    recommendation: bc.Ban
                 });
                 return s.event_id;
             })();
@@ -19854,15 +19854,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             ]
                         }
                     ]){
-                        var c = u.scope, h = u.entities, v = d.getStateEvents(Ec[c]);
+                        var c = u.scope, h = u.entities, v = d.getStateEvents(_c[c]);
                         for (var f of v){
                             var p = f.getContent();
-                            if (p?.recommendation == _c.Ban) {
+                            if (p?.recommendation == bc.Ban) {
                                 var S = p?.entity;
                                 if (S) {
                                     var R = void 0;
                                     try {
-                                        R = new RegExp(zh(S));
+                                        R = new RegExp(Hh(S));
                                     } catch  {
                                         continue;
                                     }
@@ -20016,26 +20016,26 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         };
     }
     var _y = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-    const iv = by(_y);
+    const nv = by(_y);
     var Vr = [
         139,
         1
-    ], wc = 32;
+    ], Ec = 32;
     jE = function(i) {
         var e, t = new Uint8Array(Vr.length + i.length + 1);
         t.set(Vr, 0), t.set(i, Vr.length);
         for(var r = 0, n = 0; n < t.length - 1; ++n)r ^= t[n];
         t[t.length - 1] = r;
-        var a = iv.encode(t);
+        var a = nv.encode(t);
         return (e = a.match(/.{1,4}/g)) === null || e === void 0 ? void 0 : e.join(" ");
     };
     function Ey(i) {
-        var e = iv.decode(i.replace(/ /g, "")), t = 0;
+        var e = nv.decode(i.replace(/ /g, "")), t = 0;
         for (var r of e)t ^= r;
         if (t !== 0) throw new Error("Incorrect parity");
         for(var n = 0; n < Vr.length; ++n)if (e[n] !== Vr[n]) throw new Error("Incorrect prefix");
-        if (e.length !== Vr.length + wc + 1) throw new Error("Incorrect length");
-        return Uint8Array.from(e.slice(Vr.length, Vr.length + wc));
+        if (e.length !== Vr.length + Ec + 1) throw new Error("Incorrect length");
+        return Uint8Array.from(e.slice(Vr.length, Vr.length + Ec));
     }
     var wy = 256;
     Ry = function(i, e, t) {
@@ -20117,7 +20117,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
     };
     var Cy = new Uint8Array(8);
-    function av(i, e) {
+    function iv(i, e) {
         return ml.apply(this, arguments);
     }
     function ml() {
@@ -20151,14 +20151,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ]);
         }), ml.apply(this, arguments);
     }
-    function sv(i, e, t, r) {
+    function av(i, e, t, r) {
         return gl.apply(this, arguments);
     }
     function gl() {
         return gl = _(function*(i, e, t, r) {
             var n;
             r ? n = Yn(r) : (n = new Uint8Array(16), globalThis.crypto.getRandomValues(n), n[8] &= 127);
-            var a = yield av(e, t), s = ge(a, 2), o = s[0], l = s[1], d = new TextEncoder().encode(i), u = yield globalThis.crypto.subtle.encrypt({
+            var a = yield iv(e, t), s = ge(a, 2), o = s[0], l = s[1], d = new TextEncoder().encode(i), u = yield globalThis.crypto.subtle.encrypt({
                 name: "AES-CTR",
                 counter: n,
                 length: 64
@@ -20177,7 +20177,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     };
     function yl() {
         return yl = _(function*(i, e, t) {
-            var r = yield av(e, t), n = ge(r, 2), a = n[0], s = n[1], o = Yn(i.ciphertext);
+            var r = yield iv(e, t), n = ge(r, 2), a = n[0], s = n[1], o = Yn(i.ciphertext);
             if (!(yield globalThis.crypto.subtle.verify({
                 name: "HMAC"
             }, s, Yn(i.mac), o))) throw new Error("Error decrypting secret ".concat(t, ": bad MAC"));
@@ -20190,7 +20190,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }), yl.apply(this, arguments);
     }
     yn = "m.secret_storage.v1.aes-hmac-sha2";
-    class ov {
+    class sv {
         constructor(e, t){
             this.accountDataAdapter = e, this.callbacks = t;
         }
@@ -20340,7 +20340,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (e[s].algorithm === yn) {
                     var l = {
                         encrypt: function(u) {
-                            return sv(u, o, t);
+                            return av(u, o, t);
                         },
                         decrypt: function(u) {
                             return ky(u, o, t);
@@ -20358,20 +20358,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         for(var e = i.length; e >= 1 && i.charCodeAt(e - 1) == 61;)e--;
         return e < i.length ? i.substring(0, e) : i;
     }
-    var Oy = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    var My = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
     function bl(i, e) {
-        return sv(Oy, i, "", e);
+        return av(My, i, "", e);
     }
-    const My = Object.freeze(Object.defineProperty({
+    const Oy = Object.freeze(Object.defineProperty({
         __proto__: null,
         SECRET_STORAGE_ALGORITHM_V1_AES: yn,
-        ServerSideSecretStorageImpl: ov,
+        ServerSideSecretStorageImpl: sv,
         calculateKeyCheck: bl,
         trimTrailingEquals: Sl
     }, Symbol.toStringTag, {
         value: "Module"
     }));
-    function lv(i) {
+    function ov(i) {
         return "".concat(i.userId, ":").concat(i.deviceId, "(").concat(i.memberId, ")");
     }
     function Py(i, e) {
@@ -20384,13 +20384,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             y(this, "tsBuffer", new Map);
         }
         isOutdated(e, t) {
-            var r, n = lv(e);
+            var r, n = ov(e);
             this.tsBuffer.has(n) || this.tsBuffer.set(n, new Map);
             var a = (r = this.tsBuffer.get(n)) === null || r === void 0 ? void 0 : r.get(t.keyIndex);
             return a && a > t.creationTS ? !0 : (this.tsBuffer.get(n).set(t.keyIndex, t.creationTS), !1);
         }
     }
-    function dv(i) {
+    function lv(i) {
         var e = i.split("#"), t = Ss(e), r = t[0], n = t[1], a = Py(t).slice(2);
         if (a.length) throw Error("MatrixRTC Slot IDs *must* only contain two components seperated by one '#'. Additional '#' characters detected.");
         return {
@@ -20428,7 +20428,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         if (typeof i.slot_id != "string") n.push(a + "slot_id must be string");
         else if (!i.slot_id.startsWith(s)) n.push(a + "slot_id must start with ".concat(s));
         else try {
-            dv(i.slot_id);
+            lv(i.slot_id);
         } catch (d) {
             n.push(a + "slot_id was badly formed".concat(d instanceof Error ? ": ".concat(d.message) : ""));
         }
@@ -20444,7 +20444,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         if (n.length) throw new md("RtcMembership", n);
         return !0;
     };
-    function uv(i, e, t) {
+    function dv(i, e, t) {
         return El.apply(this, arguments);
     }
     function El() {
@@ -20453,11 +20453,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 i,
                 e,
                 t
-            ]), n = yield gd(r), a = Yf(n);
+            ]), n = yield gd(r), a = Jf(n);
             return a;
         }), El.apply(this, arguments);
     }
-    var cv = 1e3 * 60 * 60 * 4, Be = (function(i) {
+    var uv = 1e3 * 60 * 60 * 4, Be = (function(i) {
         return i.RTC = "rtc", i.Session = "session", i;
     })(Be || {});
     class ma {
@@ -20481,7 +20481,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         static parseFromEvent(e) {
             var t = this;
             return _(function*() {
-                var r = t.membershipDataFromMatrixEvent(e), n = r.kind === Be.RTC ? yield uv(r.data.member.user_id, r.data.member.device_id, r.data.member.id) : "".concat(e.getSender(), ":").concat(r.data.device_id);
+                var r = t.membershipDataFromMatrixEvent(e), n = r.kind === Be.RTC ? yield dv(r.data.member.user_id, r.data.member.device_id, r.data.member.id) : "".concat(e.getSender(), ":").concat(r.data.device_id);
                 return new ma(e, r, n);
             })();
         }
@@ -20571,7 +20571,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     id: n
                 };
             }
-            return dv(this.slotId);
+            return lv(this.slotId);
         }
         get application() {
             return this.applicationData.type;
@@ -20630,7 +20630,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     return;
                 case Be.Session:
                 default:
-                    return this.createdTs() + ((e = n.expires) !== null && e !== void 0 ? e : cv);
+                    return this.createdTs() + ((e = n.expires) !== null && e !== void 0 ? e : uv);
             }
         }
         getMsUntilExpiry() {
@@ -20796,7 +20796,7 @@ Date.now: "`.concat(Date.now()));
     var En = (function(i) {
         return i.StatusChanged = "StatusChanged", i.ProbablyLeft = "ProbablyLeft", i.DelayIdChanged = "DelayIdChanged", i;
     })({}), jy = (i)=>i.type === "livekit" && "livekit_service_url" in i;
-    function Rc(i, e) {
+    function wc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -20809,9 +20809,9 @@ Date.now: "`.concat(Date.now()));
     function qn(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? Rc(Object(t), !0).forEach(function(r) {
+            e % 2 ? wc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Rc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : wc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -20840,7 +20840,7 @@ Date.now: "`.concat(Date.now()));
             ]
         };
     }
-    class ga extends tt {
+    class ga extends rt {
         isActivated() {
             return this.activated;
         }
@@ -20917,7 +20917,7 @@ Date.now: "`.concat(Date.now()));
         }
         get membershipEventExpiryMs() {
             var e, t;
-            return (e = (t = this.joinConfig) === null || t === void 0 ? void 0 : t.membershipEventExpiryMs) !== null && e !== void 0 ? e : cv;
+            return (e = (t = this.joinConfig) === null || t === void 0 ? void 0 : t.membershipEventExpiryMs) !== null && e !== void 0 ? e : uv;
         }
         get membershipEventExpiryHeadroomMs() {
             var e, t;
@@ -21007,7 +21007,7 @@ Date.now: "`.concat(Date.now()));
             return _(function*() {
                 var r = t.state.expectedServerDelayLeaveTs ? t.state.expectedServerDelayLeaveTs - Date.now() : void 0, n = new Promise((a, s)=>{
                     setTimeout(()=>{
-                        s(new qh("Restart delayed event timed out before the HS responded"));
+                        s(new Vh("Restart delayed event timed out before the HS responded"));
                     }, r !== void 0 && !t.state.probablyLeft ? Math.min(t.delayedLeaveEventRestartLocalTimeoutMs, r) : t.delayedLeaveEventRestartLocalTimeoutMs);
                 });
                 return yield Promise.race([
@@ -21128,10 +21128,10 @@ Date.now: "`.concat(Date.now()));
             } : void 0);
         }
         isNotFoundError(e) {
-            return e instanceof He && e.errcode === "M_NOT_FOUND";
+            return e instanceof ze && e.errcode === "M_NOT_FOUND";
         }
         manageMaxDelayExceededSituation(e) {
-            if (e instanceof He && e.errcode === "M_UNKNOWN" && e.data["org.matrix.msc4140.errcode"] === "M_MAX_DELAY_EXCEEDED") {
+            if (e instanceof ze && e.errcode === "M_UNKNOWN" && e.data["org.matrix.msc4140.errcode"] === "M_MAX_DELAY_EXCEEDED") {
                 var t = e.data["org.matrix.msc4140.max_delay"];
                 return typeof t == "number" && this.delayedLeaveEventDelayMs > t && (this.delayedLeaveEventDelayMsOverride = t), this.logger.warn("Retry sending delayed disconnection event due to server timeout limitations:", e), !0;
             }
@@ -21145,7 +21145,7 @@ Date.now: "`.concat(Date.now()));
         }
         actionUpdateFromRateLimitError(e, t, r) {
             var n;
-            if ((e instanceof Tn || e instanceof He) && e.isRateLimitError()) {
+            if ((e instanceof Tn || e instanceof ze) && e.isRateLimitError()) {
                 var a = (n = this.state.rateLimitRetries.get(r)) !== null && n !== void 0 ? n : 0;
                 if (a < this.maximumRateLimitRetryCount) {
                     var s, o = 5e3;
@@ -21167,7 +21167,7 @@ Date.now: "`.concat(Date.now()));
             if (e instanceof Error && e.name === "AbortError") o = 0, this.logger.warn("Network local timeout error while sending event, immediate retry (" + s + ")", e);
             else if (e instanceof Error && e.message.includes("updating delayed event")) this.logger.warn("delayed event update timeout error, retrying in " + a + " " + s, e);
             else if (e instanceof kn) this.logger.warn("Network connection error while sending event, retrying in " + a + " " + s, e);
-            else if ((e instanceof Tn || e instanceof He) && typeof e.httpStatus == "number" && e.httpStatus >= 500 && e.httpStatus < 600) this.logger.warn("Server error while sending event, retrying in " + a + " " + s, e);
+            else if ((e instanceof Tn || e instanceof ze) && typeof e.httpStatus == "number" && e.httpStatus >= 500 && e.httpStatus < 600) this.logger.warn("Server error while sending event, retrying in " + a + " " + s, e);
             else return;
             if (n < this.maximumNetworkErrorRetryCount) return this.state.networkErrorRetries.set(t, n + 1), $t(t, o);
             throw Error("Reached maximum (" + this.maximumNetworkErrorRetryCount + ") retries cause by: " + e);
@@ -21285,7 +21285,7 @@ Date.now: "`.concat(Date.now()));
                     var S;
                     (S = this.logger) === null || S === void 0 || S.info("Received an out of order key for ".concat(o.userId, ":").concat(o.deviceId, ", dropping it"));
                 }
-            }), this.ownMembership = e, this.getMemberships = t, this.transport = r, this.onEncryptionKeysChanged = n, this.logger = a?.getChild("[EncryptionManager]"), this.rtcIdentityProvider = s ?? uv;
+            }), this.ownMembership = e, this.getMemberships = t, this.transport = r, this.onEncryptionKeysChanged = n, this.logger = a?.getChild("[EncryptionManager]"), this.rtcIdentityProvider = s ?? dv;
         }
         getOwnRtcBackendIdentity() {
             var e = this;
@@ -21321,7 +21321,7 @@ Date.now: "`.concat(Date.now()));
             this.addKeyToParticipantWithBackendIdentity(e, t, r, a.rtcBackendIdentity);
         }
         addKeyToParticipantWithBackendIdentity(e, t, r, n) {
-            var a = lv(r);
+            var a = ov(r);
             this.participantKeyRings.has(a) || this.participantKeyRings.set(a, []), this.participantKeyRings.get(a).push({
                 key: e,
                 keyIndex: t,
@@ -21427,7 +21427,7 @@ Date.now: "`.concat(Date.now()));
             return "NotSupportedError";
         }
     }
-    class Wy extends tt {
+    class Wy extends rt {
         setParentLogger(e) {
             this.logger = e.getChild("[ToDeviceKeyTransport]");
         }
@@ -21507,7 +21507,7 @@ Date.now: "`.concat(Date.now()));
             return t;
         }
     }
-    function Tc(i, e) {
+    function Rc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -21517,12 +21517,12 @@ Date.now: "`.concat(Date.now()));
         }
         return t;
     }
-    function Ic(i) {
+    function Tc(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? Tc(Object(t), !0).forEach(function(r) {
+            e % 2 ? Rc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Tc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Rc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -21534,7 +21534,7 @@ Date.now: "`.concat(Date.now()));
         listenForStickyEvents: !0,
         listenForMemberStateEvents: !0
     };
-    class ya extends tt {
+    class ya extends rt {
         get membershipStatus() {
             var e;
             return (e = this.membershipManager) === null || e === void 0 ? void 0 : e.status;
@@ -21612,7 +21612,7 @@ Date.now: "`.concat(Date.now()));
                     a.memberships.length > 0 && (a.pendingNotificationToSend = void 0);
                 } else a.logger.debug("No membership changes detected for room ".concat(a.roomSubset.roomId));
                 (s = a.encryptionManager) === null || s === void 0 || s.onMembershipsUpdate(o), a.setExpiryTimer();
-            })), this.client = e, this.roomSubset = t, this.slotDescription = r, this.calculateMembershipsOpts = n, this.logger = k.getChild("[MatrixRTCSession ".concat(t.roomId, " ").concat(r.application, "#").concat(r.id, "]")), this.roomSubset.on(be.Members, this.onRoomMemberUpdate), this.roomSubset.on(kr.Update, this.onStickyEventUpdate), this.initialMembershipCalculated = this.ensureRecalculateSessionMembers(), this.setExpiryTimer();
+            })), this.client = e, this.roomSubset = t, this.slotDescription = r, this.calculateMembershipsOpts = n, this.logger = k.getChild("[MatrixRTCSession ".concat(t.roomId, " ").concat(r.application, "#").concat(r.id, "]")), this.roomSubset.on(be.Members, this.onRoomMemberUpdate), this.roomSubset.on(Mr.Update, this.onStickyEventUpdate), this.initialMembershipCalculated = this.ensureRecalculateSessionMembers(), this.setExpiryTimer();
         }
         isJoined() {
             var e, t;
@@ -21622,7 +21622,7 @@ Date.now: "`.concat(Date.now()));
             var e = this;
             return _(function*() {
                 var t;
-                yield (t = e.membershipManager) === null || t === void 0 ? void 0 : t.leave(1e3), e.expiryTimeout && (clearTimeout(e.expiryTimeout), e.expiryTimeout = void 0), e.roomSubset.off(be.Members, e.onRoomMemberUpdate), e.roomSubset.off(kr.Update, e.onStickyEventUpdate);
+                yield (t = e.membershipManager) === null || t === void 0 ? void 0 : t.leave(1e3), e.expiryTimeout && (clearTimeout(e.expiryTimeout), e.expiryTimeout = void 0), e.roomSubset.off(be.Members, e.onRoomMemberUpdate), e.roomSubset.off(Mr.Update, e.onStickyEventUpdate);
             })();
         }
         joinRTCSession(e, t, r, n) {
@@ -21731,7 +21731,7 @@ Date.now: "`.concat(Date.now()));
                 };
             })();
             a().then((s)=>{
-                var o = Ic(Ic({}, s.response), s.content);
+                var o = Tc(Tc({}, s.response), s.content);
                 this.emit(jr.DidSendCallNotification, o);
             }).catch((s)=>{
                 var o = ge(s, 2), l = o[0], d = o[1];
@@ -21780,10 +21780,10 @@ Date.now: "`.concat(Date.now()));
         }
         return a;
     }
-    var Cc = (function(i) {
+    var Ic = (function(i) {
         return i.SessionStarted = "session_started", i.SessionEnded = "session_ended", i;
     })({});
-    class zy extends tt {
+    class zy extends rt {
         constructor(e, t){
             var r = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {
                 application: "m.call",
@@ -21832,7 +21832,7 @@ Date.now: "`.concat(Date.now()));
                     t.logger.error("Error updating RTC session members for ".concat(e.roomId, ": ").concat(o));
                 });
                 var s = n.memberships.length > 0;
-                a && !s ? (t.logger.trace("Session ended for ".concat(e.roomId, " (").concat(n.memberships.length, " members)")), t.emit(Cc.SessionEnded, e.roomId, t.roomSessions.get(e.roomId))) : !a && s && (t.logger.trace("Session started for ".concat(e.roomId, " (").concat(n.memberships.length, " members)")), t.emit(Cc.SessionStarted, e.roomId, t.roomSessions.get(e.roomId)));
+                a && !s ? (t.logger.trace("Session ended for ".concat(e.roomId, " (").concat(n.memberships.length, " members)")), t.emit(Ic.SessionEnded, e.roomId, t.roomSessions.get(e.roomId))) : !a && s && (t.logger.trace("Session started for ".concat(e.roomId, " (").concat(n.memberships.length, " members)")), t.emit(Ic.SessionStarted, e.roomId, t.roomSessions.get(e.roomId)));
             })();
         }
     }
@@ -21871,7 +21871,7 @@ Date.now: "`.concat(Date.now()));
             return atob(e);
         }
     }
-    function hv(i, e) {
+    function cv(i, e) {
         if (typeof i != "string") throw new Xi("Invalid token specified: must be a string");
         e || (e = {});
         const t = e.header === !0 ? 0 : 1, r = i.split(".")[t];
@@ -21893,37 +21893,37 @@ Date.now: "`.concat(Date.now()));
         info: ()=>{},
         warn: ()=>{},
         error: ()=>{}
-    }, ur, cr, Sa = ((i)=>(i[i.NONE = 0] = "NONE", i[i.ERROR = 1] = "ERROR", i[i.WARN = 2] = "WARN", i[i.INFO = 3] = "INFO", i[i.DEBUG = 4] = "DEBUG", i))(Sa || {});
+    }, cr, hr, Sa = ((i)=>(i[i.NONE = 0] = "NONE", i[i.ERROR = 1] = "ERROR", i[i.WARN = 2] = "WARN", i[i.INFO = 3] = "INFO", i[i.DEBUG = 4] = "DEBUG", i))(Sa || {});
     ((i)=>{
         function e() {
-            ur = 3, cr = Xy;
+            cr = 3, hr = Xy;
         }
         i.reset = e;
         function t(n) {
             if (!(0 <= n && n <= 4)) throw new Error("Invalid log level");
-            ur = n;
+            cr = n;
         }
         i.setLevel = t;
         function r(n) {
-            cr = n;
+            hr = n;
         }
         i.setLogger = r;
     })(Sa || (Sa = {}));
-    var dt = class dr {
+    var dt = class ur {
         constructor(e){
             this._name = e;
         }
         debug(...e) {
-            ur >= 4 && cr.debug(dr._format(this._name, this._method), ...e);
+            cr >= 4 && hr.debug(ur._format(this._name, this._method), ...e);
         }
         info(...e) {
-            ur >= 3 && cr.info(dr._format(this._name, this._method), ...e);
+            cr >= 3 && hr.info(ur._format(this._name, this._method), ...e);
         }
         warn(...e) {
-            ur >= 2 && cr.warn(dr._format(this._name, this._method), ...e);
+            cr >= 2 && hr.warn(ur._format(this._name, this._method), ...e);
         }
         error(...e) {
-            ur >= 1 && cr.error(dr._format(this._name, this._method), ...e);
+            cr >= 1 && hr.error(ur._format(this._name, this._method), ...e);
         }
         throw(e) {
             throw this.error(e), e;
@@ -21933,7 +21933,7 @@ Date.now: "`.concat(Date.now()));
             return t._method = e, t.debug("begin"), t;
         }
         static createStatic(e, t) {
-            const r = new dr(`${e}.${t}`);
+            const r = new ur(`${e}.${t}`);
             return r.debug("begin"), r;
         }
         static _format(e, t) {
@@ -21941,23 +21941,23 @@ Date.now: "`.concat(Date.now()));
             return t ? `${r} ${t}:` : r;
         }
         static debug(e, ...t) {
-            ur >= 4 && cr.debug(dr._format(e), ...t);
+            cr >= 4 && hr.debug(ur._format(e), ...t);
         }
         static info(e, ...t) {
-            ur >= 3 && cr.info(dr._format(e), ...t);
+            cr >= 3 && hr.info(ur._format(e), ...t);
         }
         static warn(e, ...t) {
-            ur >= 2 && cr.warn(dr._format(e), ...t);
+            cr >= 2 && hr.warn(ur._format(e), ...t);
         }
         static error(e, ...t) {
-            ur >= 1 && cr.error(dr._format(e), ...t);
+            cr >= 1 && hr.error(ur._format(e), ...t);
         }
     };
     Sa.reset();
     var ba = class {
         static decode(i) {
             try {
-                return hv(i);
+                return cv(i);
             } catch (e) {
                 throw dt.error("JwtUtils.decode", e), e;
             }
@@ -21977,7 +21977,7 @@ Date.now: "`.concat(Date.now()));
         }
     }, Qy = "10000000-1000-4000-8000-100000000000", Cl = (i)=>btoa([
             ...new Uint8Array(i)
-        ].map((e)=>String.fromCharCode(e)).join("")), fv = class zt {
+        ].map((e)=>String.fromCharCode(e)).join("")), hv = class zt {
         static _randomWord() {
             const e = new Uint32Array(1);
             return crypto.getRandomValues(e), e[0];
@@ -22113,8 +22113,8 @@ Date.now: "`.concat(Date.now()));
             return await ba.generateSignedJwtWithHmac(s, o, c);
         }
     };
-    fv.encodeBase64Url = (i)=>Cl(i).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
-    var _t = fv, Zy = class {
+    hv.encodeBase64Url = (i)=>Cl(i).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+    var _t = hv, Zy = class {
         constructor(e){
             this._name = e, this._callbacks = [], this._logger = new dt(`Event('${this._name}')`);
         }
@@ -22157,7 +22157,7 @@ Date.now: "`.concat(Date.now()));
         cancel() {
             this._logger.create("cancel"), this._timerHandle && (clearInterval(this._timerHandle), this._timerHandle = null);
         }
-    }, kc = class {
+    }, Cc = class {
         static readParams(i, e = "query") {
             if (!i) throw new TypeError("Invalid URL");
             const r = new URL(i, "http://127.0.0.1")[e === "fragment" ? "hash" : "search"];
@@ -22304,7 +22304,7 @@ Date.now: "`.concat(Date.now()));
                 s && s !== "" && (i[a] = s);
             });
         }
-    }, vv = class {
+    }, fv = class {
         constructor(i){
             this._settings = i, this._logger = new dt("MetadataService"), this._signingKeys = null, this._metadata = null, this._metadataUrl = this._settings.metadataUrl, this._jsonService = new bd([
                 "application/jwk-set+json"
@@ -22394,16 +22394,16 @@ Date.now: "`.concat(Date.now()));
             }
             return e;
         }
-    }, rS = "code", nS = "openid", iS = "client_secret_post", aS = 900, Ol = class {
+    }, rS = "code", nS = "openid", iS = "client_secret_post", aS = 900, Ml = class {
         constructor({ authority: i, metadataUrl: e, metadata: t, signingKeys: r, metadataSeed: n, client_id: a, client_secret: s, response_type: o = rS, scope: l = nS, redirect_uri: d, post_logout_redirect_uri: u, client_authentication: c = iS, token_endpoint_auth_signing_alg: h = "HS256", prompt: v, display: f, max_age: p, ui_locales: S, acr_values: R, resource: E, response_mode: C, filterProtocolClaims: w = !0, loadUserInfo: b = !1, requestTimeoutInSeconds: m, staleStateAgeInSeconds: T = aS, mergeClaimsStrategy: g = {
             array: "replace"
         }, disablePKCE: P = !1, stateStore: D, revokeTokenAdditionalContentTypes: j, fetchRequestCredentials: Y, refreshTokenAllowedScope: X, extraQueryParams: ye = {}, extraTokenParams: z = {}, extraHeaders: re = {}, dpop: ce, omitScopeWhenRequesting: ue = !1 }){
             var me;
             if (this.authority = i, e ? this.metadataUrl = e : (this.metadataUrl = i, i && (this.metadataUrl.endsWith("/") || (this.metadataUrl += "/"), this.metadataUrl += ".well-known/openid-configuration")), this.metadata = t, this.metadataSeed = n, this.signingKeys = r, this.client_id = a, this.client_secret = s, this.response_type = o, this.scope = l, this.redirect_uri = d, this.post_logout_redirect_uri = u, this.client_authentication = c, this.token_endpoint_auth_signing_alg = h, this.prompt = v, this.display = f, this.max_age = p, this.ui_locales = S, this.acr_values = R, this.resource = E, this.response_mode = C, this.filterProtocolClaims = w ?? !0, this.loadUserInfo = !!b, this.staleStateAgeInSeconds = T, this.mergeClaimsStrategy = g, this.omitScopeWhenRequesting = ue, this.disablePKCE = !!P, this.revokeTokenAdditionalContentTypes = j, this.fetchRequestCredentials = Y || "same-origin", this.requestTimeoutInSeconds = m, D) this.stateStore = D;
             else {
-                const Ae = typeof window < "u" ? window.localStorage : new tS;
+                const Pe = typeof window < "u" ? window.localStorage : new tS;
                 this.stateStore = new qs({
-                    store: Ae
+                    store: Pe
                 });
             }
             if (this.refreshTokenAllowedScope = X, this.extraQueryParams = ye, this.extraTokenParams = z, this.extraHeaders = re, this.dpop = ce, this.dpop && !((me = this.dpop) != null && me.store)) throw new Error("A DPoPStore is required when dpop is enabled");
@@ -22432,7 +22432,7 @@ Date.now: "`.concat(Date.now()));
             });
             return e.debug("got claims", r), r;
         }
-    }, pv = class {
+    }, vv = class {
         constructor(i, e){
             this._settings = i, this._metadataService = e, this._logger = new dt("TokenClient"), this._jsonService = new bd(this._settings.revokeTokenAdditionalContentTypes, null, this._settings.extraHeaders);
         }
@@ -22554,7 +22554,7 @@ Date.now: "`.concat(Date.now()));
         }
     }, oS = class {
         constructor(i, e, t){
-            this._settings = i, this._metadataService = e, this._claimsService = t, this._logger = new dt("ResponseValidator"), this._userInfoService = new sS(this._settings, this._metadataService), this._tokenClient = new pv(this._settings, this._metadataService);
+            this._settings = i, this._metadataService = e, this._claimsService = t, this._logger = new dt("ResponseValidator"), this._userInfoService = new sS(this._settings, this._metadataService), this._tokenClient = new vv(this._settings, this._metadataService);
         }
         async validateSigninResponse(i, e, t) {
             const r = this._logger.create("validateSigninResponse");
@@ -22618,7 +22618,7 @@ Date.now: "`.concat(Date.now()));
             }
             i.profile = a;
         }
-    }, ks = class Ml {
+    }, ks = class Ol {
         constructor(e){
             this.id = e.id || _t.generateUUIDv4(), this.data = e.data, e.created && e.created > 0 ? this.created = e.created : this.created = Cs.getEpochTime(), this.request_type = e.request_type, this.url_state = e.url_state;
         }
@@ -22632,7 +22632,7 @@ Date.now: "`.concat(Date.now()));
             });
         }
         static fromStorageString(e) {
-            return dt.createStatic("State", "fromStorageString"), Promise.resolve(new Ml(JSON.parse(e)));
+            return dt.createStatic("State", "fromStorageString"), Promise.resolve(new Ol(JSON.parse(e)));
         }
         static async clearStaleState(e, t) {
             const r = dt.createStatic("State", "clearStaleState"), n = Cs.getEpochTime() - t, a = await e.getAllKeys();
@@ -22641,7 +22641,7 @@ Date.now: "`.concat(Date.now()));
                 const o = a[s], l = await e.get(o);
                 let d = !1;
                 if (l) try {
-                    const u = await Ml.fromStorageString(l);
+                    const u = await Ol.fromStorageString(l);
                     r.debug("got item from key:", o, u.created), u.created <= n && (d = !0);
                 } catch (u) {
                     r.error("Error parsing state for key:", o, u), d = !0;
@@ -22686,7 +22686,7 @@ Date.now: "`.concat(Date.now()));
             const t = JSON.parse(e);
             return Pl.create(t);
         }
-    }, mv = class gv {
+    }, pv = class mv {
         constructor(e){
             this.url = e.url, this.state = e.state;
         }
@@ -22722,14 +22722,14 @@ Date.now: "`.concat(Date.now()));
                 ...w,
                 ...p
             }))P != null && m.searchParams.append(g, P.toString());
-            return new gv({
+            return new mv({
                 url: m.href,
                 state: b
             });
         }
     };
-    mv._logger = new dt("SigninRequest");
-    var lS = mv, dS = "openid", ls = class {
+    pv._logger = new dt("SigninRequest");
+    var lS = pv, dS = "openid", ls = class {
         constructor(i){
             if (this.access_token = "", this.token_type = "", this.profile = {}, this.state = i.get("state"), this.session_state = i.get("session_state"), this.state) {
                 const e = decodeURIComponent(this.state).split(li);
@@ -22826,7 +22826,7 @@ Date.now: "`.concat(Date.now()));
         }
     }, Ed = class {
         constructor(i, e){
-            this._logger = new dt("OidcClient"), this.settings = i instanceof Ol ? i : new Ol(i), this.metadataService = e ?? new vv(this.settings), this._claimsService = new vS(this.settings), this._validator = new oS(this.settings, this.metadataService, this._claimsService), this._tokenClient = new pv(this.settings, this.metadataService);
+            this._logger = new dt("OidcClient"), this.settings = i instanceof Ml ? i : new Ml(i), this.metadataService = e ?? new fv(this.settings), this._claimsService = new vS(this.settings), this._validator = new oS(this.settings, this.metadataService, this._claimsService), this._tokenClient = new vv(this.settings, this.metadataService);
         }
         async createSigninRequest({ state: i, request: e, request_uri: t, request_type: r, id_token_hint: n, login_hint: a, skipUserInfo: s, nonce: o, url_state: l, response_type: d = this.settings.response_type, scope: u = this.settings.scope, redirect_uri: c = this.settings.redirect_uri, prompt: h = this.settings.prompt, display: v = this.settings.display, max_age: f = this.settings.max_age, ui_locales: p = this.settings.ui_locales, acr_values: S = this.settings.acr_values, resource: R = this.settings.resource, response_mode: E = this.settings.response_mode, extraQueryParams: C = this.settings.extraQueryParams, extraTokenParams: w = this.settings.extraTokenParams, dpopJkt: b, omitScopeWhenRequesting: m = this.settings.omitScopeWhenRequesting }) {
             const T = this._logger.create("createSigninRequest");
@@ -22868,7 +22868,7 @@ Date.now: "`.concat(Date.now()));
             return await this.settings.stateStore.set(D.id, D.toStorageString()), P;
         }
         async readSigninResponseState(i, e = !1) {
-            const t = this._logger.create("readSigninResponseState"), r = new ls(kc.readParams(i, this.settings.response_mode));
+            const t = this._logger.create("readSigninResponseState"), r = new ls(Cc.readParams(i, this.settings.response_mode));
             if (!r.state) throw t.throw(new Error("No state in response")), null;
             const n = await this.settings.stateStore[e ? "remove" : "get"](r.state);
             if (!n) throw t.throw(new Error("No matching state found in storage")), null;
@@ -22977,7 +22977,7 @@ Date.now: "`.concat(Date.now()));
             return u && (o.debug("Signout request has state to persist"), await this.settings.stateStore.set(u.id, u.toStorageString())), d;
         }
         async readSignoutResponseState(i, e = !1) {
-            const t = this._logger.create("readSignoutResponseState"), r = new cS(kc.readParams(i, this.settings.response_mode));
+            const t = this._logger.create("readSignoutResponseState"), r = new cS(Cc.readParams(i, this.settings.response_mode));
             if (!r.state) {
                 if (t.debug("No state in response"), r.error) throw t.warn("Response was error:", r.error), new di(r);
                 return {
@@ -23007,37 +23007,37 @@ Date.now: "`.concat(Date.now()));
         }
     }, Rt = (function(i) {
         return i.NotSupported = "OIDC authentication not supported", i.Misconfigured = "OIDC is misconfigured", i.General = "Something went wrong with OIDC discovery", i.OpSupport = "Configured OIDC OP does not support required functions", i.DynamicRegistrationNotSupported = "Dynamic registration not supported", i.DynamicRegistrationFailed = "Dynamic registration failed", i.DynamicRegistrationInvalid = "Dynamic registration invalid response", i.CodeExchangeFailed = "Failed to exchange code for token", i.InvalidBearerTokenResponse = "Invalid bearer token response", i.InvalidIdToken = "Invalid ID token", i.MissingOrInvalidStoredState = "State required to finish logging in is not found in storage.", i;
-    })({}), wd = (i)=>!!i && typeof i == "object" && !Array.isArray(i), Ar = (i, e)=>!i[e] || !aa(i, e) ? (k.error("Missing or invalid property: ".concat(e)), !1) : !0, aa = (i, e)=>i[e] && typeof i[e] != "string" ? (k.error("Invalid property: ".concat(e)), !1) : !0, Oc = (i, e)=>i[e] && (!Array.isArray(i[e]) || !i[e].every((t)=>typeof t == "string")) ? (k.error("Invalid property: ".concat(e)), !1) : !0, So = (i, e, t)=>{
+    })({}), wd = (i)=>!!i && typeof i == "object" && !Array.isArray(i), Dr = (i, e)=>!i[e] || !aa(i, e) ? (k.error("Missing or invalid property: ".concat(e)), !1) : !0, aa = (i, e)=>i[e] && typeof i[e] != "string" ? (k.error("Invalid property: ".concat(e)), !1) : !0, kc = (i, e)=>i[e] && (!Array.isArray(i[e]) || !i[e].every((t)=>typeof t == "string")) ? (k.error("Invalid property: ".concat(e)), !1) : !0, So = (i, e, t)=>{
         var r = i[e];
         return !r || !Array.isArray(r) || !r.includes(t) ? (k.error("Invalid property: ".concat(e, ". ").concat(t, " is required.")), !1) : !0;
-    }, yv = (i)=>{
+    }, gv = (i)=>{
         if (!wd(i)) throw k.error("Issuer configuration not found or malformed"), new Error(Rt.OpSupport);
         var e = [
-            Ar(i, "issuer"),
-            Ar(i, "authorization_endpoint"),
-            Ar(i, "token_endpoint"),
-            Ar(i, "revocation_endpoint"),
+            Dr(i, "issuer"),
+            Dr(i, "authorization_endpoint"),
+            Dr(i, "token_endpoint"),
+            Dr(i, "revocation_endpoint"),
             aa(i, "registration_endpoint"),
             aa(i, "account_management_uri"),
             aa(i, "device_authorization_endpoint"),
-            Oc(i, "account_management_actions_supported"),
+            kc(i, "account_management_actions_supported"),
             So(i, "response_types_supported", "code"),
             So(i, "grant_types_supported", zr.AuthorizationCode),
             So(i, "code_challenge_methods_supported", "S256"),
-            Oc(i, "prompt_values_supported")
+            kc(i, "prompt_values_supported")
         ].some((t)=>!t);
         if (!e) return i;
         throw k.error("Issuer configuration not valid"), new Error(Rt.OpSupport);
-    }, Sv = (i)=>{
+    }, yv = (i)=>{
         try {
-            return hv(i);
+            return cv(i);
         } catch (e) {
             throw k.error("Could not decode id_token", e), e;
         }
-    }, bv = (i, e, t, r)=>{
+    }, Sv = (i, e, t, r)=>{
         try {
             if (!i) throw new Error("No ID token");
-            var n = Sv(i);
+            var n = yv(i);
             if (n.iss !== e) throw new Error("Invalid issuer");
             var a = typeof n.aud == "string" ? [
                 n.aud
@@ -23049,17 +23049,17 @@ Date.now: "`.concat(Date.now()));
             throw k.error("Invalid ID token", s), new Error(Rt.InvalidIdToken);
         }
     };
-    function _v(i) {
+    function bv(i) {
         if (!wd(i)) throw k.error("Stored user state not found"), new Error(Rt.MissingOrInvalidStoredState);
         var e = [
-            Ar(i, "homeserverUrl"),
-            Ar(i, "nonce"),
+            Dr(i, "homeserverUrl"),
+            Dr(i, "nonce"),
             aa(i, "identityServerUrl")
         ].some((t)=>!t);
         if (e) throw new Error(Rt.MissingOrInvalidStoredState);
     }
-    var mS = (i)=>wd(i) && Ar(i, "token_type") && i.token_type.toLowerCase() === "bearer" && Ar(i, "access_token") && Ar(i, "refresh_token") && (!("expires_in" in i) || typeof i.expires_in == "number");
-    function Ev(i) {
+    var mS = (i)=>wd(i) && Dr(i, "token_type") && i.token_type.toLowerCase() === "bearer" && Dr(i, "access_token") && Dr(i, "refresh_token") && (!("expires_in" in i) || typeof i.expires_in == "number");
+    function _v(i) {
         if (!mS(i)) throw new Error(Rt.InvalidBearerTokenResponse);
     }
     var zr = (function(i) {
@@ -23124,7 +23124,7 @@ Date.now: "`.concat(Date.now()));
         }
         return t;
     }
-    function Os(i) {
+    function Ms(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
             e % 2 ? Mc(Object(t), !0).forEach(function(r) {
@@ -23166,7 +23166,7 @@ Date.now: "`.concat(Date.now()));
         };
     })(), ES = (function() {
         var i = _(function*(e) {
-            var t = e.metadata, r = e.redirectUri, n = e.clientId, a = e.homeserverUrl, s = e.identityServerUrl, o = e.nonce, l = e.prompt, d = e.urlState, u = e.loginHint, c = e.responseMode, h = c === void 0 ? "query" : c, v = Gs(), f = new Ed(Os(Os({}, t), {}, {
+            var t = e.metadata, r = e.redirectUri, n = e.clientId, a = e.homeserverUrl, s = e.identityServerUrl, o = e.nonce, l = e.prompt, d = e.urlState, u = e.loginHint, c = e.responseMode, h = c === void 0 ? "query" : c, v = Gs(), f = new Ed(Ms(Ms({}, t), {}, {
                 client_id: n,
                 redirect_uri: r,
                 authority: t.issuer,
@@ -23213,10 +23213,10 @@ Date.now: "`.concat(Date.now()));
                     store: window.sessionStorage
                 }), l = yield o.get(s.state);
                 if (!l) throw new Error(Rt.MissingOrInvalidStoredState);
-                var d = yield _d.fromStorageString(l), u = new Ed(Os(Os({}, d), {}, {
+                var d = yield _d.fromStorageString(l), u = new Ed(Ms(Ms({}, d), {}, {
                     stateStore: o
                 })), c = yield u.processSigninResponse(n.href), h = c.userState;
-                _v(h), Ev(c), c.id_token && bv(c.id_token, u.settings.authority, u.settings.client_id, h.nonce);
+                bv(h), _v(c), c.id_token && Sv(c.id_token, u.settings.authority, u.settings.client_id, h.nonce);
                 var v = wS(c);
                 return {
                     oidcClientSettings: {
@@ -23293,7 +23293,7 @@ Date.now: "`.concat(Date.now()));
             return i.apply(this, arguments);
         };
     })();
-    function Pc(i, e) {
+    function Oc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -23303,12 +23303,12 @@ Date.now: "`.concat(Date.now()));
         }
         return t;
     }
-    function Ac(i) {
+    function Pc(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? Pc(Object(t), !0).forEach(function(r) {
+            e % 2 ? Oc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Pc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Oc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -23327,13 +23327,13 @@ Date.now: "`.concat(Date.now()));
         };
     })(), Td = (function() {
         var i = _(function*(e) {
-            var t = yv(e), r = new Ol({
+            var t = gv(e), r = new Ml({
                 authority: t.issuer,
                 metadata: t,
                 redirect_uri: "",
                 client_id: ""
-            }), n = new vv(r);
-            return Ac(Ac({}, t), {}, {
+            }), n = new fv(r);
+            return Pc(Pc({}, t), {}, {
                 signingKeys: t.jwks_uri ? yield n.getSigningKeys() : null
             });
         });
@@ -23424,7 +23424,7 @@ Date.now: "`.concat(Date.now()));
         "limit",
         "since"
     ];
-    function Dc(i, e) {
+    function Ac(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -23434,23 +23434,23 @@ Date.now: "`.concat(Date.now()));
         }
         return t;
     }
-    function Ye(i) {
+    function Xe(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? Dc(Object(t), !0).forEach(function(r) {
+            e % 2 ? Ac(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Dc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Ac(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
         return i;
     }
-    var OS = 3e3, Lc = 600 * 1e3, MS = new ut("last_seen_user_agent", "org.matrix.msc3852.last_seen_user_agent"), ui = (function(i) {
+    var MS = 3e3, Dc = 600 * 1e3, OS = new ut("last_seen_user_agent", "org.matrix.msc3852.last_seen_user_agent"), ui = (function(i) {
         return i.Chronological = "chronological", i.Detached = "detached", i;
-    })({}), PS = new Qr("m.get_login_token", "org.matrix.msc3882.get_login_token"), wv = "uk.half-shot.msc2666", Rv = "uk.half-shot.msc2666.mutual_rooms", Tv = "uk.half-shot.msc2666.query_mutual_rooms", St = "org.matrix.msc4140", Al = "org.matrix.msc4354", Iv = "uk.tcpip.msc4133", Cv = "uk.tcpip.msc4133.stable", ar = "$", ie = (function(i) {
+    })({}), PS = new Qr("m.get_login_token", "org.matrix.msc3882.get_login_token"), Ev = "uk.half-shot.msc2666", wv = "uk.half-shot.msc2666.mutual_rooms", Rv = "uk.half-shot.msc2666.query_mutual_rooms", St = "org.matrix.msc4140", Al = "org.matrix.msc4354", Tv = "uk.tcpip.msc4133", Iv = "uk.tcpip.msc4133.stable", sr = "$", ie = (function(i) {
         return i.Sync = "sync", i.Event = "event", i.ToDeviceEvent = "toDeviceEvent", i.ReceivedToDeviceMessage = "receivedToDeviceMessage", i.AccountData = "accountData", i.Room = "Room", i.DeleteRoom = "deleteRoom", i.SyncUnexpectedError = "sync.unexpectedError", i.ClientWellKnown = "WellKnown.client", i.ReceivedVoipEvent = "received_voip_event", i.TurnServers = "turnServers", i.TurnServersError = "turnServers.error", i.UserProfileUpdate = "userProfileUpdate", i;
-    })({}), Uc = new ut("action", "org.matrix.msc3824.action");
-    class Hs extends tt {
+    })({}), Lc = new ut("action", "org.matrix.msc3824.action");
+    class Hs extends rt {
         constructor(e){
             var t, r, n, a, s, o;
             super(), n = this, y(this, "reEmitter", new mi(this)), y(this, "olmVersion", null), y(this, "usingExternalCrypto", !1), y(this, "clientRunning", !1), y(this, "timelineSupport", !1), y(this, "urlPreviewCache", {}), y(this, "supportsCallTransfer", !1), y(this, "forceTURN", !1), y(this, "iceCandidatePoolSize", 0), y(this, "canSupportVoip", !1), y(this, "peekSync", null), y(this, "isGuestAccount", !1), y(this, "ongoingScrollbacks", {}), y(this, "notifTimelineSet", null), y(this, "fallbackICEServerAllowed", !1), y(this, "syncedLeftRooms", !1), y(this, "canSupport", new Map), y(this, "pushProcessor", new Yt(this)), y(this, "turnServers", []), y(this, "turnServersExpiry", 0), y(this, "txnCtr", 0), y(this, "mediaHandler", new uy(this)), y(this, "eventsBeingEncrypted", new Set), y(this, "useE2eForGroupCall", !0), y(this, "startCallEventHandler", ()=>{
@@ -23470,14 +23470,14 @@ Date.now: "`.concat(Date.now()));
             var l = e.userId || null;
             this.credentials = {
                 userId: l
-            }, this.http = new $f(this, {
+            }, this.http = new Bf(this, {
                 fetchFn: e.fetchFn,
                 baseUrl: e.baseUrl,
                 idBaseUrl: e.idBaseUrl,
                 accessToken: e.accessToken,
                 refreshToken: e.refreshToken,
                 tokenRefreshFunction: e.tokenRefreshFunction,
-                prefix: et.V3,
+                prefix: tt.V3,
                 onlyData: !0,
                 extraParams: e.queryParams,
                 localTimeoutMs: e.localTimeoutMs,
@@ -23493,9 +23493,9 @@ Date.now: "`.concat(Date.now()));
                 return function(u) {
                     return d.apply(this, arguments);
                 };
-            })()), this.disableVoip = (a = e.disableVoip) !== null && a !== void 0 ? a : !1, !this.disableVoip && cl() && (this.callEventHandler = new Pg(this), this.groupCallEventHandler = new Ag(this), this.canSupportVoip = !0, this.on(ie.Sync, this.startCallEventHandler)), this.matrixRTC = new zy(this.logger, this), this.serverCapabilitiesService = new Kf(this.logger, this.http), this.on(ie.Sync, this.fixupRoomNotifications), this.timelineSupport = !!e.timelineSupport, this.legacyCryptoStore = e.cryptoStore, this.verificationMethods = e.verificationMethods, this.cryptoCallbacks = e.cryptoCallbacks || {}, this.enableEncryptedStateEvents = (s = e.enableEncryptedStateEvents) !== null && s !== void 0 ? s : !1, this.forceTURN = e.forceTURN || !1, this.iceCandidatePoolSize = e.iceCandidatePoolSize === void 0 ? 0 : e.iceCandidatePoolSize, this.supportsCallTransfer = e.supportsCallTransfer || !1, this.fallbackICEServerAllowed = e.fallbackICEServerAllowed || !1, this.isVoipWithNoMediaAllowed = e.isVoipWithNoMediaAllowed || !1, e.useE2eForGroupCall !== void 0 && (this.useE2eForGroupCall = e.useE2eForGroupCall), this.livekitServiceURL = e.livekitServiceURL, this.roomNameGenerator = e.roomNameGenerator, this.toDeviceMessageQueue = new yy(this, this.logger), this.on(Fe.Decrypted, (d)=>{
-                kv(this, d);
-            }), this.ignoredInvites = new Sy(this), this._secretStorage = new ov(this, (o = e.cryptoCallbacks) !== null && o !== void 0 ? o : {}), this.setMaxListeners(0);
+            })()), this.disableVoip = (a = e.disableVoip) !== null && a !== void 0 ? a : !1, !this.disableVoip && cl() && (this.callEventHandler = new Pg(this), this.groupCallEventHandler = new Ag(this), this.canSupportVoip = !0, this.on(ie.Sync, this.startCallEventHandler)), this.matrixRTC = new zy(this.logger, this), this.serverCapabilitiesService = new Wf(this.logger, this.http), this.on(ie.Sync, this.fixupRoomNotifications), this.timelineSupport = !!e.timelineSupport, this.legacyCryptoStore = e.cryptoStore, this.verificationMethods = e.verificationMethods, this.cryptoCallbacks = e.cryptoCallbacks || {}, this.enableEncryptedStateEvents = (s = e.enableEncryptedStateEvents) !== null && s !== void 0 ? s : !1, this.forceTURN = e.forceTURN || !1, this.iceCandidatePoolSize = e.iceCandidatePoolSize === void 0 ? 0 : e.iceCandidatePoolSize, this.supportsCallTransfer = e.supportsCallTransfer || !1, this.fallbackICEServerAllowed = e.fallbackICEServerAllowed || !1, this.isVoipWithNoMediaAllowed = e.isVoipWithNoMediaAllowed || !1, e.useE2eForGroupCall !== void 0 && (this.useE2eForGroupCall = e.useE2eForGroupCall), this.livekitServiceURL = e.livekitServiceURL, this.roomNameGenerator = e.roomNameGenerator, this.toDeviceMessageQueue = new yy(this, this.logger), this.on(Fe.Decrypted, (d)=>{
+                Cv(this, d);
+            }), this.ignoredInvites = new Sy(this), this._secretStorage = new sv(this, (o = e.cryptoCallbacks) !== null && o !== void 0 ? o : {}), this.setMaxListeners(0);
         }
         set store(e) {
             this._store = e, this._store.setUserCreator((t)=>Ur.createUser(t, this));
@@ -23511,7 +23511,7 @@ Date.now: "`.concat(Date.now()));
                     var r = t.getUserId();
                     r && t.store.storeUser(new Ur(r)), t.supportsVoip() && (t.checkTurnServersIntervalID = setInterval(()=>{
                         t.checkTurnServers();
-                    }, Lc), t.checkTurnServers()), t.syncApi && (t.logger.error("Still have sync object whilst not running: stopping old one"), t.syncApi.stop());
+                    }, Dc), t.checkTurnServers()), t.syncApi && (t.logger.error("Still have sync object whilst not running: stopping old one"), t.syncApi.stop());
                     try {
                         yield t.getVersions();
                         var n = yield t.doesServerSupportThread(), a = n.threads, s = n.list, o = n.fwdPagination;
@@ -23519,7 +23519,7 @@ Date.now: "`.concat(Date.now()));
                     } catch (l) {
                         t.logger.error("Can't fetch server versions, continuing to initialise sync, this will be retried later", l);
                     }
-                    t.clientOpts = e ?? {}, t.clientOpts.slidingSync ? t.syncApi = new rv(t.clientOpts.slidingSync, t, t.clientOpts, t.buildSyncApiOptions()) : t.syncApi = new Gr(t, t.clientOpts, t.buildSyncApiOptions()), t.syncApi.sync().catch((l)=>t.logger.info("Sync startup aborted with an error:", l)), t.clientOpts.clientWellKnownPollPeriod !== void 0 && (t.clientWellKnownIntervalID = setInterval(()=>{
+                    t.clientOpts = e ?? {}, t.clientOpts.slidingSync ? t.syncApi = new tv(t.clientOpts.slidingSync, t, t.clientOpts, t.buildSyncApiOptions()) : t.syncApi = new Gr(t, t.clientOpts, t.buildSyncApiOptions()), t.syncApi.sync().catch((l)=>t.logger.info("Sync startup aborted with an error:", l)), t.clientOpts.clientWellKnownPollPeriod !== void 0 && (t.clientWellKnownIntervalID = setInterval(()=>{
                         t.fetchClientWellKnown();
                     }, 1e3 * t.clientOpts.clientWellKnownPollPeriod), t.fetchClientWellKnown()), t.toDeviceMessageQueue.start(), t.serverCapabilitiesService.start();
                 }
@@ -23695,7 +23695,7 @@ Date.now: "`.concat(Date.now()));
                 var o = t.getDeviceId();
                 if (o === null) throw new Error("Cannot enable encryption on MatrixClient with unknown deviceId: ensure deviceId is passed in createClient().");
                 t.logger.debug("Downloading Rust crypto library");
-                var l = yield _m(()=>import("./index-DbNyEiY1.js"), [], import.meta.url), d = yield l.initRustCrypto({
+                var l = yield _m(()=>import("./index-IdOCexTA.js"), [], import.meta.url), d = yield l.initRustCrypto({
                     logger: t.logger,
                     http: t.http,
                     userId: s,
@@ -23769,14 +23769,14 @@ Date.now: "`.concat(Date.now()));
             return _(function*() {
                 var a = n.makeKeyBackupPath(e, t, r);
                 yield n.http.authedRequest(K.Delete, a.path, a.queryData, void 0, {
-                    prefix: et.V3
+                    prefix: tt.V3
                 });
             })();
         }
         getMediaConfig() {
             var e = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : !1, t = e ? "/media/config" : "/config";
             return this.http.authedRequest(K.Get, t, void 0, void 0, {
-                prefix: e ? et.V1 : Jn.V3
+                prefix: e ? tt.V1 : Jn.V3
             });
         }
         getRoom(e) {
@@ -23940,7 +23940,7 @@ Date.now: "`.concat(Date.now()));
             });
         }
         setRoomTopic(e, t, r) {
-            var n = If(t, r);
+            var n = Tf(t, r);
             return this.sendStateEvent(e, B.RoomTopic, n);
         }
         getRoomTags(e) {
@@ -23985,7 +23985,7 @@ Date.now: "`.concat(Date.now()));
                 if (!s) try {
                     s = yield n.getStateEvent(e, B.RoomPowerLevels, "");
                 } catch (u) {
-                    if (u instanceof He && u.errcode === "M_NOT_FOUND") s = {};
+                    if (u instanceof ze && u.errcode === "M_NOT_FOUND") s = {};
                     else throw u;
                 }
                 s = Ia(s), (a = s) !== null && a !== void 0 && a.users || (s.users = {});
@@ -24010,7 +24010,7 @@ Date.now: "`.concat(Date.now()));
         }
         sendEvent(e, t, r, n, a) {
             var s, o, l, d;
-            return !(t != null && t.startsWith(ar)) && t !== null ? (d = n, l = r, o = t, s = null) : (d = a, l = n, o = r, s = t), this.addThreadRelationIfNeeded(l, s, e), this.sendCompleteEvent({
+            return !(t != null && t.startsWith(sr)) && t !== null ? (d = n, l = r, o = t, s = null) : (d = a, l = n, o = r, s = t), this.addThreadRelationIfNeeded(l, s, e), this.sendCompleteEvent({
                 roomId: e,
                 threadId: s,
                 eventObject: {
@@ -24024,7 +24024,7 @@ Date.now: "`.concat(Date.now()));
             var n;
             if (t && !((n = e["m.relates_to"]) !== null && n !== void 0 && n.rel_type)) {
                 var a, s, o = !!((a = e["m.relates_to"]) !== null && a !== void 0 && a["m.in_reply_to"]);
-                e["m.relates_to"] = Ye(Ye({}, e["m.relates_to"]), {}, {
+                e["m.relates_to"] = Xe(Xe({}, e["m.relates_to"]), {}, {
                     rel_type: $e.name,
                     event_id: t,
                     is_falling_back: !o
@@ -24089,7 +24089,7 @@ Date.now: "`.concat(Date.now()));
                     } catch (u) {
                         a.logger.error("Exception in error handler!", u);
                     }
-                    throw d instanceof He && (d.event = t), d;
+                    throw d instanceof ze && (d.event = t), d;
                 }
             })();
         }
@@ -24130,16 +24130,16 @@ Date.now: "`.concat(Date.now()));
                 e.getStateKey() && e.getStateKey().length > 0 && (o = "/rooms/$roomId/state/$eventType/$stateKey"), s = ne(o, a);
             } else if (e.isRedaction() && e.event.redacts) {
                 var l = "/rooms/$roomId/redact/$redactsEventId/$txnId";
-                s = ne(l, Ye({
+                s = ne(l, Xe({
                     $redactsEventId: e.event.redacts
                 }, a));
             } else s = ne("/rooms/$roomId/send/$eventType/$txnId", a);
             var d = t && Ts(t) ? t : void 0, u = d ? r : t, c = e.getWireContent();
-            return d ? this.http.authedRequest(K.Put, s, Ye(Ye({}, Nc(d)), u), c) : this.http.authedRequest(K.Put, s, u, c).then((h)=>(this.logger.debug("Event sent to ".concat(e.getRoomId(), " with event id ").concat(h.event_id)), h));
+            return d ? this.http.authedRequest(K.Put, s, Xe(Xe({}, Uc(d)), u), c) : this.http.authedRequest(K.Put, s, u, c).then((h)=>(this.logger.debug("Event sent to ".concat(e.getRoomId(), " with event id ").concat(h.event_id)), h));
         }
         redactEvent(e, t, r, n, a) {
             var s, o, l;
-            (s = r) !== null && s !== void 0 && s.startsWith(ar) || (a = n, n = r, r = t, t = null);
+            (s = r) !== null && s !== void 0 && s.startsWith(sr) || (a = n, n = r, r = t, t = null);
             var d = (o = a) === null || o === void 0 ? void 0 : o.reason, u = {
                 reason: d
             };
@@ -24166,27 +24166,27 @@ Date.now: "`.concat(Date.now()));
         }
         sendTextMessage(e, t, r, n) {
             var a;
-            !((a = t) !== null && a !== void 0 && a.startsWith(ar)) && t !== null && (n = r, r = t, t = null);
-            var s = _f(r);
+            !((a = t) !== null && a !== void 0 && a.startsWith(sr)) && t !== null && (n = r, r = t, t = null);
+            var s = bf(r);
             return this.sendMessage(e, t, s, n);
         }
         sendNotice(e, t, r, n) {
             var a;
-            !((a = t) !== null && a !== void 0 && a.startsWith(ar)) && t !== null && (n = r, r = t, t = null);
-            var s = Ef(r);
+            !((a = t) !== null && a !== void 0 && a.startsWith(sr)) && t !== null && (n = r, r = t, t = null);
+            var s = _f(r);
             return this.sendMessage(e, t, s, n);
         }
         sendEmoteMessage(e, t, r, n) {
             var a;
-            !((a = t) !== null && a !== void 0 && a.startsWith(ar)) && t !== null && (n = r, r = t, t = null);
-            var s = wf(r);
+            !((a = t) !== null && a !== void 0 && a.startsWith(sr)) && t !== null && (n = r, r = t, t = null);
+            var s = Ef(r);
             return this.sendMessage(e, t, s, n);
         }
         sendImageMessage(e, t, r, n) {
             var a, s = arguments.length > 4 && arguments[4] !== void 0 ? arguments[4] : "Image";
-            !((a = t) !== null && a !== void 0 && a.startsWith(ar)) && t !== null && (s = n || "Image", n = r, r = t, t = null);
+            !((a = t) !== null && a !== void 0 && a.startsWith(sr)) && t !== null && (s = n || "Image", n = r, r = t, t = null);
             var o = {
-                msgtype: fr.Image,
+                msgtype: vr.Image,
                 url: r,
                 info: n,
                 body: s
@@ -24195,7 +24195,7 @@ Date.now: "`.concat(Date.now()));
         }
         sendStickerMessage(e, t, r, n) {
             var a, s = arguments.length > 4 && arguments[4] !== void 0 ? arguments[4] : "Sticker";
-            !((a = t) !== null && a !== void 0 && a.startsWith(ar)) && t !== null && (s = n || "Sticker", n = r, r = t, t = null);
+            !((a = t) !== null && a !== void 0 && a.startsWith(sr)) && t !== null && (s = n || "Sticker", n = r, r = t, t = null);
             var o = {
                 url: r,
                 info: n,
@@ -24205,20 +24205,20 @@ Date.now: "`.concat(Date.now()));
         }
         sendHtmlMessage(e, t, r, n) {
             var a;
-            !((a = t) !== null && a !== void 0 && a.startsWith(ar)) && t !== null && (n = r, r = t, t = null);
-            var s = yf(r, n);
+            !((a = t) !== null && a !== void 0 && a.startsWith(sr)) && t !== null && (n = r, r = t, t = null);
+            var s = gf(r, n);
             return this.sendMessage(e, t, s);
         }
         sendHtmlNotice(e, t, r, n) {
             var a;
-            !((a = t) !== null && a !== void 0 && a.startsWith(ar)) && t !== null && (n = r, r = t, t = null);
-            var s = Sf(r, n);
+            !((a = t) !== null && a !== void 0 && a.startsWith(sr)) && t !== null && (n = r, r = t, t = null);
+            var s = yf(r, n);
             return this.sendMessage(e, t, s);
         }
         sendHtmlEmote(e, t, r, n) {
             var a;
-            !((a = t) !== null && a !== void 0 && a.startsWith(ar)) && t !== null && (n = r, r = t, t = null);
-            var s = bf(r, n);
+            !((a = t) !== null && a !== void 0 && a.startsWith(sr)) && t !== null && (n = r, r = t, t = null);
+            var s = Sf(r, n);
             return this.sendMessage(e, t, s);
         }
         _unstable_sendDelayedEvent(e, t, r, n, a, s) {
@@ -24267,7 +24267,7 @@ Date.now: "`.concat(Date.now()));
                     $eventType: r,
                     $stateKey: o
                 }, u = ne("/rooms/$roomId/state/$eventType", d);
-                return o !== void 0 && (u = ne(u + "/$stateKey", d)), s.http.authedRequest(K.Put, u, Nc(t), n, l);
+                return o !== void 0 && (u = ne(u + "/$stateKey", d)), s.http.authedRequest(K.Put, u, Uc(t), n, l);
             })();
         }
         _unstable_sendStickyEvent(e, t, r, n, a, s) {
@@ -24298,7 +24298,7 @@ Date.now: "`.concat(Date.now()));
                     delay_id: t
                 };
                 return yield n.http.authedRequest(K.Get, "/delayed_events", a, void 0, {
-                    prefix: "".concat(et.Unstable, "/").concat(St)
+                    prefix: "".concat(tt.Unstable, "/").concat(St)
                 });
             })();
         }
@@ -24341,11 +24341,11 @@ Date.now: "`.concat(Date.now()));
                         $delayId: e,
                         $action: t
                     });
-                    return yield n.http.request(K.Post, s, void 0, void 0, Ye(Ye({}, a), {}, {
-                        prefix: "".concat(et.Unstable, "/").concat(St)
+                    return yield n.http.request(K.Post, s, void 0, void 0, Xe(Xe({}, a), {}, {
+                        prefix: "".concat(tt.Unstable, "/").concat(St)
                     }));
                 } catch (o) {
-                    if (o instanceof He && o.errcode === "M_UNRECOGNIZED") return yield n.updateScheduledDelayedEventWithActionInBody(e, t, a);
+                    if (o instanceof ze && o.errcode === "M_UNRECOGNIZED") return yield n.updateScheduledDelayedEventWithActionInBody(e, t, a);
                     throw o;
                 }
             })();
@@ -24359,12 +24359,12 @@ Date.now: "`.concat(Date.now()));
                     action: t
                 };
                 try {
-                    return yield n.http.request(K.Post, s, void 0, o, Ye(Ye({}, a), {}, {
-                        prefix: "".concat(et.Unstable, "/").concat(St)
+                    return yield n.http.request(K.Post, s, void 0, o, Xe(Xe({}, a), {}, {
+                        prefix: "".concat(tt.Unstable, "/").concat(St)
                     }));
                 } catch (l) {
-                    if (l instanceof He && l.errcode === "M_MISSING_TOKEN") return yield n.http.authedRequest(K.Post, s, void 0, o, Ye(Ye({}, a), {}, {
-                        prefix: "".concat(et.Unstable, "/").concat(St)
+                    if (l instanceof ze && l.errcode === "M_MISSING_TOKEN") return yield n.http.authedRequest(K.Post, s, void 0, o, Xe(Xe({}, a), {}, {
+                        prefix: "".concat(tt.Unstable, "/").concat(St)
                     }));
                     throw l;
                 }
@@ -24379,7 +24379,7 @@ Date.now: "`.concat(Date.now()));
                     $roomId: e.getRoomId(),
                     $receiptType: t,
                     $eventId: e.getId()
-                }), l = !s && a.supportsThreads(), d = l ? Ye(Ye({}, r), {}, {
+                }), l = !s && a.supportsThreads(), d = l ? Xe(Xe({}, r), {}, {
                     thread_id: ci(e)
                 }) : r, u = a.http.authedRequest(K.Post, o, void 0, d || {}), c = a.getRoom(e.getRoomId());
                 return c && a.credentials.userId && c.addLocalEchoReceipt(a.credentials.userId, e, t, s), u;
@@ -24434,7 +24434,7 @@ Date.now: "`.concat(Date.now()));
                     url: e,
                     ts: t.toString()
                 }, void 0, {
-                    prefix: s ? et.V1 : Jn.V3,
+                    prefix: s ? tt.V1 : Jn.V3,
                     priority: "low"
                 });
                 return r.urlPreviewCache[a] = o, o;
@@ -24522,7 +24522,7 @@ Date.now: "`.concat(Date.now()));
                 var a, s = ne("/rooms/$roomId/invite", {
                     $roomId: e
                 }), o = n.getIdentityServerUrl(!0);
-                if (!o) return Promise.reject(new He({
+                if (!o) return Promise.reject(new ze({
                     error: "No supplied identity server URL",
                     errcode: "ORG.MATRIX.JSSDK_MISSING_PARAM"
                 }));
@@ -24670,7 +24670,7 @@ Date.now: "`.concat(Date.now()));
             if (n.promise) return n.promise;
             if (n.errorTs) {
                 var a = Date.now() - n.errorTs;
-                r = Math.max(OS - a, 0);
+                r = Math.max(MS - a, 0);
             }
             if (e.oldState.paginationToken === null) return Promise.resolve(e);
             var s = this.store.scrollback(e, t).length;
@@ -24874,21 +24874,21 @@ Date.now: "`.concat(Date.now()));
             }), d = {
                 limit: n.toString(),
                 dir: a,
-                include: Ov(s)
+                include: kv(s)
             };
             t && (d.from = t);
             var u = {};
-            if ((r = this.clientOpts) !== null && r !== void 0 && r.lazyLoadMembers && (u = Ye({}, jt.LAZY_LOADING_MESSAGES_FILTER)), o) {
+            if ((r = this.clientOpts) !== null && r !== void 0 && r.lazyLoadMembers && (u = Xe({}, jt.LAZY_LOADING_MESSAGES_FILTER)), o) {
                 var c;
-                u = Ye(Ye({}, u), (c = o.getRoomTimelineFilterComponent()) === null || c === void 0 ? void 0 : c.toJSON());
+                u = Xe(Xe({}, u), (c = o.getRoomTimelineFilterComponent()) === null || c === void 0 ? void 0 : c.toJSON());
             }
             Object.keys(u).length && (d.filter = JSON.stringify(u));
             var h = {
-                prefix: Ge.hasServerSideListSupport === wt.Stable ? et.V1 : "/_matrix/client/unstable/org.matrix.msc3856"
+                prefix: Ge.hasServerSideListSupport === wt.Stable ? tt.V1 : "/_matrix/client/unstable/org.matrix.msc3856"
             };
             return this.http.authedRequest(K.Get, l, d, void 0, h).then((v)=>{
                 var f;
-                return Ye(Ye({}, v), {}, {
+                return Xe(Xe({}, v), {}, {
                     chunk: (f = v.chunk) === null || f === void 0 ? void 0 : f.reverse(),
                     start: v.prev_batch,
                     end: v.next_batch
@@ -25130,7 +25130,7 @@ Date.now: "`.concat(Date.now()));
                     room_events: {
                         search_term: e.term,
                         filter: e.filter,
-                        order_by: tv.Recent,
+                        order_by: ev.Recent,
                         event_context: {
                             before_limit: 1,
                             after_limit: 1,
@@ -25249,7 +25249,7 @@ Date.now: "`.concat(Date.now()));
             return _(function*() {
                 if (e.supportsVoip()) {
                     var t = !1, r = e.turnServersExpiry - Date.now();
-                    if (r > Lc) e.logger.debug("TURN creds are valid for another " + r + " ms: not fetching new ones."), t = !0;
+                    if (r > Dc) e.logger.debug("TURN creds are valid for another " + r + " ms: not fetching new ones."), t = !0;
                     else {
                         e.logger.debug("Fetching new TURN credentials");
                         try {
@@ -25336,7 +25336,7 @@ Date.now: "`.concat(Date.now()));
         _unstable_getSharedRooms(e) {
             var t = this;
             return _(function*() {
-                var r = yield t.doesServerSupportUnstableFeature(wv), n = yield t.doesServerSupportUnstableFeature(Rv), a = yield t.doesServerSupportUnstableFeature(Tv);
+                var r = yield t.doesServerSupportUnstableFeature(Ev), n = yield t.doesServerSupportUnstableFeature(wv), a = yield t.doesServerSupportUnstableFeature(Rv);
                 if (!r && !n && !a) throw Error("Server does not support the Mutual Rooms API");
                 var s, o;
                 a ? (s = "/uk.half-shot.msc2666/user/mutual_rooms", o = {
@@ -25348,8 +25348,8 @@ Date.now: "`.concat(Date.now()));
                 do {
                     var u = {};
                     d != null && a && (u.batch_token = d);
-                    var c = yield t.http.authedRequest(K.Get, s, Ye(Ye({}, o), u), void 0, {
-                        prefix: et.Unstable
+                    var c = yield t.http.authedRequest(K.Get, s, Xe(Xe({}, o), u), void 0, {
+                        prefix: tt.Unstable
                     });
                     l.push(...c.joined), c.next_batch_token !== void 0 ? d = c.next_batch_token : d = null;
                 }while (d != null);
@@ -25360,7 +25360,7 @@ Date.now: "`.concat(Date.now()));
             var e = this;
             return _(function*() {
                 return (yield e.http.authedRequest(K.Get, "/rtc/transports", void 0, void 0, {
-                    prefix: "".concat(et.Unstable, "/org.matrix.msc4143")
+                    prefix: "".concat(tt.Unstable, "/org.matrix.msc4143")
                 })).rtc_transports;
             })();
         }
@@ -25473,7 +25473,7 @@ Date.now: "`.concat(Date.now()));
         termsUrlForService(e, t) {
             switch(e){
                 case hl.IS:
-                    return this.http.getUrl("/terms", void 0, Er.V2, t);
+                    return this.http.getUrl("/terms", void 0, wr.V2, t);
                 case hl.IM:
                     return this.http.getUrl("/terms", void 0, "/_matrix/integrations/v1", t);
                 default:
@@ -25534,8 +25534,8 @@ Date.now: "`.concat(Date.now()));
                     prefix: r,
                     inhibitLogoutEmit: !0
                 });
-            return t(et.V3).catch((r)=>{
-                if (r.errcode === "M_UNRECOGNIZED") return t(et.V1);
+            return t(tt.V3).catch((r)=>{
+                if (r.errcode === "M_UNRECOGNIZED") return t(tt.V1);
                 throw r;
             });
         }
@@ -25543,7 +25543,7 @@ Date.now: "`.concat(Date.now()));
             return this.http.request(K.Get, "/login");
         }
         login(e, t) {
-            return this.loginRequest(Ye(Ye({}, t), {}, {
+            return this.loginRequest(Xe(Xe({}, t), {}, {
                 type: e
             })).then((r)=>(r.access_token && r.user_id && (this.http.opts.accessToken = r.access_token, this.credentials = {
                     userId: r.user_id
@@ -25563,8 +25563,8 @@ Date.now: "`.concat(Date.now()));
             r && (a += "/" + r);
             var s = {
                 redirectUrl: e,
-                [Uc.stable]: n,
-                [Uc.unstable]: n
+                [Lc.stable]: n,
+                [Lc.unstable]: n
             };
             return this.http.getUrl(a, s).href;
         }
@@ -25597,7 +25597,7 @@ Date.now: "`.concat(Date.now()));
                     auth: e
                 };
                 return t.http.authedRequest(K.Post, "/login/get_token", void 0, r, {
-                    prefix: et.V1
+                    prefix: tt.V1
                 });
             })();
         }
@@ -25624,7 +25624,7 @@ Date.now: "`.concat(Date.now()));
             var a = arguments.length > 4 && arguments[4] !== void 0 ? arguments[4] : {
                 dir: Ce.Backward
             }, s = a;
-            Ge.hasServerSideFwdPaginationSupport === wt.Experimental && (s = eu("dir", "org.matrix.msc3715.dir", s)), this.canSupport.get(vt.RelationsRecursion) === ft.Unstable && (s = eu("recurse", "org.matrix.msc3981.recurse", s));
+            Ge.hasServerSideFwdPaginationSupport === wt.Experimental && (s = Zd("dir", "org.matrix.msc3715.dir", s)), this.canSupport.get(vt.RelationsRecursion) === ft.Unstable && (s = Zd("recurse", "org.matrix.msc3981.recurse", s));
             var o = Bo(s), l = "/rooms/$roomId/relations/$eventId";
             r !== null ? (l += "/$relationType", n !== null && (l += "/$eventType")) : n !== null && (this.logger.warn("eventType: ".concat(n, ` ignored when fetching
             relations as relationType is null`)), n = null);
@@ -25635,7 +25635,7 @@ Date.now: "`.concat(Date.now()));
                 $eventType: n
             });
             return this.http.authedRequest(K.Get, d, void 0, void 0, {
-                prefix: et.V1
+                prefix: tt.V1
             });
         }
         roomState(e) {
@@ -25754,7 +25754,7 @@ Date.now: "`.concat(Date.now()));
             } else {
                 var o = {
                     server: t
-                }, l = Ye({
+                }, l = Xe({
                     limit: r,
                     since: n
                 }, a);
@@ -25778,7 +25778,7 @@ Date.now: "`.concat(Date.now()));
         getLocalAliases(e) {
             var t = ne("/rooms/$roomId/aliases", {
                 $roomId: e
-            }), r = et.V3;
+            }), r = tt.V3;
             return this.http.authedRequest(K.Get, t, void 0, void 0, {
                 prefix: r
             });
@@ -25830,13 +25830,13 @@ Date.now: "`.concat(Date.now()));
         doesServerSupportExtendedProfiles() {
             var e = this;
             return _(function*() {
-                return (yield e.isVersionSupported("v1.16")) || (yield e.doesServerSupportUnstableFeature(Iv)) || (yield e.doesServerSupportUnstableFeature(Cv));
+                return (yield e.isVersionSupported("v1.16")) || (yield e.doesServerSupportUnstableFeature(Tv)) || (yield e.doesServerSupportUnstableFeature(Iv));
             })();
         }
         getExtendedProfileRequestPrefix() {
             var e = this;
             return _(function*() {
-                return (yield e.isVersionSupported("v1.16")) || (yield e.doesServerSupportUnstableFeature("uk.tcpip.msc4133.stable")) ? et.V3 : "/_matrix/client/unstable/uk.tcpip.msc4133";
+                return (yield e.isVersionSupported("v1.16")) || (yield e.doesServerSupportUnstableFeature("uk.tcpip.msc4133.stable")) ? tt.V3 : "/_matrix/client/unstable/uk.tcpip.msc4133";
             })();
         }
         getExtendedProfile(e) {
@@ -26014,7 +26014,7 @@ Date.now: "`.concat(Date.now()));
             return this.http.authedRequest(K.Post, r, void 0, n);
         }
         setLocalNotificationSettings(e, t) {
-            var r = "".concat(nf.name, ".").concat(e);
+            var r = "".concat(rf.name, ".").concat(e);
             return this.setAccountData(r, t);
         }
         getPushRules() {
@@ -26101,12 +26101,12 @@ Date.now: "`.concat(Date.now()));
             return e && Object.assign(r, {
                 auth: e
             }), this.http.authedRequest(K.Post, "/keys/device_signing/upload", void 0, r, {
-                prefix: et.Unstable
+                prefix: tt.Unstable
             });
         }
         registerWithIdentityServer(e) {
             if (!this.idBaseUrl) throw new Error("No identity server base URL set");
-            var t = this.http.getUrl("/account/register", void 0, Er.V2, this.idBaseUrl);
+            var t = this.http.getUrl("/account/register", void 0, wr.V2, this.idBaseUrl);
             return this.http.requestOtherUrl(K.Post, t, e);
         }
         requestEmailToken(e, t, r, n, a) {
@@ -26115,7 +26115,7 @@ Date.now: "`.concat(Date.now()));
                 email: e,
                 send_attempt: r?.toString()
             };
-            return n && (s.next_link = n), this.http.idServerRequest(K.Post, "/validate/email/requestToken", s, Er.V2, a);
+            return n && (s.next_link = n), this.http.idServerRequest(K.Post, "/validate/email/requestToken", s, wr.V2, a);
         }
         requestMsisdnToken(e, t, r, n, a, s) {
             var o = {
@@ -26124,7 +26124,7 @@ Date.now: "`.concat(Date.now()));
                 phone_number: t,
                 send_attempt: n?.toString()
             };
-            return a && (o.next_link = a), this.http.idServerRequest(K.Post, "/validate/msisdn/requestToken", o, Er.V2, s);
+            return a && (o.next_link = a), this.http.idServerRequest(K.Post, "/validate/msisdn/requestToken", o, wr.V2, s);
         }
         submitMsisdnToken(e, t, r, n) {
             var a = {
@@ -26132,7 +26132,7 @@ Date.now: "`.concat(Date.now()));
                 client_secret: t,
                 token: r
             };
-            return this.http.idServerRequest(K.Post, "/validate/msisdn/submitToken", a, Er.V2, n ?? void 0);
+            return this.http.idServerRequest(K.Post, "/validate/msisdn/submitToken", a, wr.V2, n ?? void 0);
         }
         submitMsisdnTokenOtherUrl(e, t, r, n) {
             var a = {
@@ -26143,7 +26143,7 @@ Date.now: "`.concat(Date.now()));
             return this.http.requestOtherUrl(K.Post, e, a);
         }
         getIdentityHashDetails(e) {
-            return this.http.idServerRequest(K.Get, "/hash_details", void 0, Er.V2, e);
+            return this.http.idServerRequest(K.Get, "/hash_details", void 0, wr.V2, e);
         }
         identityHashedLookup(e, t) {
             var r = this;
@@ -26166,7 +26166,7 @@ Date.now: "`.concat(Date.now()));
                     return s[p] = h[0], p;
                 }), n.algorithm = "none";
                 else throw new Error("Unsupported identity server: unknown hash algorithm");
-                var o = yield r.http.idServerRequest(K.Post, "/lookup", n, Er.V2, t);
+                var o = yield r.http.idServerRequest(K.Post, "/lookup", n, wr.V2, t);
                 if (!(o != null && o.mappings)) return [];
                 var l = [];
                 for (var d of Object.keys(o.mappings)){
@@ -26220,7 +26220,7 @@ Date.now: "`.concat(Date.now()));
             })();
         }
         getIdentityAccount(e) {
-            return this.http.idServerRequest(K.Get, "/account", void 0, Er.V2, e);
+            return this.http.idServerRequest(K.Get, "/account", void 0, wr.V2, e);
         }
         sendToDevice(e, t, r) {
             var n = ne("/sendToDevice/$eventType/$txnId", {
@@ -26306,7 +26306,7 @@ Date.now: "`.concat(Date.now()));
                 limit: t?.toString()
             };
             return this.http.authedRequest(K.Get, s, o, void 0, {
-                prefix: et.V1
+                prefix: tt.V1
             }).catch((l)=>{
                 if (l.errcode === "M_UNRECOGNIZED") return this.http.authedRequest(K.Get, s, o, void 0, {
                     prefix: "/_matrix/client/unstable/org.matrix.msc2946"
@@ -26320,7 +26320,7 @@ Date.now: "`.concat(Date.now()));
                 var r = yield t.createRoom({
                     name: e,
                     preset: vd.PrivateChat,
-                    power_level_content_override: Ye(Ye({}, dy), {}, {
+                    power_level_content_override: Xe(Xe({}, dy), {}, {
                         users: {
                             [t.getUserId()]: 100
                         }
@@ -26345,7 +26345,7 @@ Date.now: "`.concat(Date.now()));
                         }
                     ]
                 }), n = r.room_id;
-                return new yc(t, n);
+                return new gc(t, n);
             })();
         }
         unstableGetFileTreeSpace(e) {
@@ -26353,7 +26353,7 @@ Date.now: "`.concat(Date.now()));
             if (n?.getMyMembership() !== Te.Join) return null;
             var a = n.currentState.getStateEvents(B.RoomCreate, ""), s = n.currentState.getStateEvents(Ho.name, Jo.name);
             if (!a) throw new Error("Expected single room create event");
-            return !(s != null && (t = s.getContent()) !== null && t !== void 0 && t[zo.name]) || ((r = a.getContent()) === null || r === void 0 ? void 0 : r[bs]) !== zn.Space ? null : new yc(this, e);
+            return !(s != null && (t = s.getContent()) !== null && t !== void 0 && t[zo.name]) || ((r = a.getContent()) === null || r === void 0 ? void 0 : r[bs]) !== zn.Space ? null : new gc(this, e);
         }
         slidingSync(e, t, r) {
             var n = {};
@@ -26387,7 +26387,7 @@ Date.now: "`.concat(Date.now()));
                         via: t
                     }, void 0, n);
                 } catch (o) {
-                    if (o instanceof He && o.errcode === "M_UNRECOGNIZED") {
+                    if (o instanceof ze && o.errcode === "M_UNRECOGNIZED") {
                         var s = ne("/rooms/$roomid/summary", {
                             $roomid: e
                         });
@@ -26427,7 +26427,7 @@ Date.now: "`.concat(Date.now()));
                 };
                 try {
                     return yield n.http.authedRequest(K.Get, a, s, void 0, {
-                        prefix: et.V1
+                        prefix: tt.V1
                     });
                 } catch (o) {
                     if (o.errcode === "M_UNRECOGNIZED" && (o.httpStatus === 400 || o.httpStatus === 404 || o.httpStatus === 405)) return yield n.http.authedRequest(K.Get, a, s, void 0, {
@@ -26444,12 +26444,12 @@ Date.now: "`.concat(Date.now()));
                 try {
                     var r = yield e.isVersionSupported("v1.15");
                     t = yield e.http.request(K.Get, "/auth_metadata", void 0, void 0, {
-                        prefix: r ? et.V1 : et.Unstable + "/org.matrix.msc2965"
+                        prefix: r ? tt.V1 : tt.Unstable + "/org.matrix.msc2965"
                     });
                 } catch (s) {
-                    if (s instanceof He && s.errcode === "M_UNRECOGNIZED") {
+                    if (s instanceof ze && s.errcode === "M_UNRECOGNIZED") {
                         var n = yield e.http.request(K.Get, "/auth_issuer", void 0, void 0, {
-                            prefix: et.Unstable + "/org.matrix.msc2965"
+                            prefix: tt.Unstable + "/org.matrix.msc2965"
                         }), a = n.issuer;
                         return Rd(a);
                     }
@@ -26460,7 +26460,7 @@ Date.now: "`.concat(Date.now()));
         }
     }
     y(Hs, "RESTORE_BACKUP_ERROR_BAD_KEY", "RESTORE_BACKUP_ERROR_BAD_KEY");
-    function Nc(i) {
+    function Uc(i) {
         return Object.fromEntries(Object.entries(i).map((e)=>{
             var t = ge(e, 2), r = t[0], n = t[1];
             return [
@@ -26469,7 +26469,7 @@ Date.now: "`.concat(Date.now()));
             ];
         }));
     }
-    function kv(i, e) {
+    function Cv(i, e) {
         var t, r = i.getUserId(), n = e.getId(), a = i.getRoom(e.getRoomId());
         if (!(!a || !r || !n)) {
             if (!a.findEventById(n)) {
@@ -26505,7 +26505,7 @@ Date.now: "`.concat(Date.now()));
         var e = i.relationEventId === i.threadRootId;
         return e;
     }
-    function xc(i, e) {
+    function Nc(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -26515,12 +26515,12 @@ Date.now: "`.concat(Date.now()));
         }
         return t;
     }
-    function Fc(i) {
+    function xc(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? xc(Object(t), !0).forEach(function(r) {
+            e % 2 ? Nc(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : xc(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : Nc(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -26675,7 +26675,7 @@ Date.now: "`.concat(Date.now()));
                 if (Ge.hasServerSideSupport && t) {
                     e.replyCount = t.count, e._currentUserParticipated = !!t.current_user_participated;
                     var r = e.client.getEventMapper();
-                    e.lastEvent = r(Fc(Fc({}, t.latest_event), {}, {
+                    e.lastEvent = r(xc(xc({}, t.latest_event), {}, {
                         room_id: e.roomId
                     })), e.updatePendingReplyCount(), yield e.processEvent(e.lastEvent);
                 }
@@ -26847,7 +26847,7 @@ Date.now: "`.concat(Date.now()));
     var Zn = new Us("related_by_senders", "io.element.relation_senders"), ei = new Us("related_by_rel_types", "io.element.relation_types"), $e = new Us("m.thread", "io.element.thread"), Jt = (function(i) {
         return i[i.My = 0] = "My", i[i.All = 1] = "All", i;
     })({});
-    function Ov(i) {
+    function kv(i) {
         switch(i){
             case Jt.My:
                 return "participated";
@@ -26855,7 +26855,7 @@ Date.now: "`.concat(Date.now()));
                 return "all";
         }
     }
-    jc = class extends Error {
+    Fc = class extends Error {
         constructor(e, t, r){
             super(t), this.code = e, this.name = "DecryptionError", this.detailedString = DS(this, r);
         }
@@ -26864,15 +26864,15 @@ Date.now: "`.concat(Date.now()));
         var t = i.name + "[msg: " + i.message;
         return e && (t += ", " + Object.keys(e).map((r)=>r + ": " + e[r]).join(", ")), t += "]", t;
     }
-    let Bc, Id;
-    Bc = Object.freeze({
+    let jc, Id;
+    jc = Object.freeze({
         visible: !0
     });
     Id = 36e5;
     Fe = (function(i) {
         return i.Decrypted = "Event.decrypted", i.BeforeRedaction = "Event.beforeRedaction", i.VisibilityChange = "Event.visibilityChange", i.LocalEventIdReplaced = "Event.localEventIdReplaced", i.Status = "Event.status", i.Replaced = "Event.replaced", i.RelationsCreated = "Event.relationsCreated", i.SentinelUpdated = "Event.sentinelUpdated", i;
     })({});
-    class Et extends tt {
+    class Et extends rt {
         setMetadata(e, t) {
             var r, n, a = this.isState() && this.getType() === B.RoomMember && this.getSender() === this.getStateKey(), s = !1;
             if (a || !((r = this.sender) !== null && r !== void 0 && (r = r.events) !== null && r !== void 0 && r.member)) {
@@ -26887,7 +26887,7 @@ Date.now: "`.concat(Date.now()));
         }
         constructor(){
             var e, t = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
-            super(), y(this, "pushDetails", {}), y(this, "_replacingEvent", null), y(this, "_localRedactionEvent", null), y(this, "_isCancelled", !1), y(this, "visibility", Bc), y(this, "_hasCachedExtEv", !1), y(this, "_cachedExtEv", void 0), y(this, "_decryptionFailureReason", null), y(this, "senderCurve25519Key", null), y(this, "claimedEd25519Key", null), y(this, "decryptionPromise", null), y(this, "retryDecryption", !1), y(this, "sender", null), y(this, "target", null), y(this, "status", null), y(this, "error", null), y(this, "forwardLooking", !0), this.event = t, [
+            super(), y(this, "pushDetails", {}), y(this, "_replacingEvent", null), y(this, "_localRedactionEvent", null), y(this, "_isCancelled", !1), y(this, "visibility", jc), y(this, "_hasCachedExtEv", !1), y(this, "_cachedExtEv", void 0), y(this, "_decryptionFailureReason", null), y(this, "senderCurve25519Key", null), y(this, "claimedEd25519Key", null), y(this, "decryptionPromise", null), y(this, "retryDecryption", !1), y(this, "sender", null), y(this, "target", null), y(this, "status", null), y(this, "error", null), y(this, "forwardLooking", !0), this.event = t, [
                 "state_key",
                 "type",
                 "sender",
@@ -27034,7 +27034,7 @@ Date.now: "`.concat(Date.now()));
         }
         getMembershipAtEvent() {
             var e = this.getUnsigned();
-            return af.findIn(e);
+            return nf.findIn(e);
         }
         makeEncrypted(e, t, r, n) {
             this.clearEvent = {
@@ -27088,12 +27088,12 @@ Date.now: "`.concat(Date.now()));
                         var s = yield e.decryptEvent(r);
                         n.isRetry === !0 && k.info("Decrypted event on retry (".concat(r.getDetails(), ")")), r.setClearData(s), r._decryptionFailureReason = null;
                     } catch (l) {
-                        var o = l instanceof jc ? l.detailedString : String(l);
+                        var o = l instanceof Fc ? l.detailedString : String(l);
                         if (a = l, r.retryDecryption) {
                             k.log("Error decrypting event (".concat(r.getDetails(), "), but retrying: ").concat(o));
                             continue;
                         }
-                        k.warn("Error decrypting event (".concat(r.getDetails(), "): ").concat(o)), r.setClearDataForDecryptionFailure(String(l)), r._decryptionFailureReason = l instanceof jc ? l.code : Ty.UNKNOWN_ERROR;
+                        k.warn("Error decrypting event (".concat(r.getDetails(), "): ").concat(o)), r.setClearDataForDecryptionFailure(String(l)), r._decryptionFailureReason = l instanceof Fc ? l.code : Ty.UNKNOWN_ERROR;
                     }
                     r.decryptionPromise = null, r.retryDecryption = !1, r.setPushDetails(), n.emit !== !1 && r.emit(Fe.Decrypted, r, a);
                     return;
@@ -27154,7 +27154,7 @@ Date.now: "`.concat(Date.now()));
         }
         applyVisibilityEvent(e) {
             var t, r, n = (t = e?.visible) !== null && t !== void 0 ? t : !0, a = (r = e?.reason) !== null && r !== void 0 ? r : null, s = !1;
-            (this.visibility.visible !== n || !this.visibility.visible && this.visibility.reason !== a) && (s = !0), s && (n ? this.visibility = Bc : this.visibility = Object.freeze({
+            (this.visibility.visible !== n || !this.visibility.visible && this.visibility.reason !== a) && (s = !0), s && (n ? this.visibility = jc : this.visibility = Object.freeze({
                 visible: !1,
                 reason: a
             }), this.emit(Fe.VisibilityChange, this, n));
@@ -27167,7 +27167,7 @@ Date.now: "`.concat(Date.now()));
             this._localRedactionEvent = null, this.emit(Fe.BeforeRedaction, this, e), this._replacingEvent = null, this.event.unsigned || (this.event.unsigned = {}), this.event.unsigned.redacted_because = e.event;
             for(var r in this.event)this.event.hasOwnProperty(r) && !LS.has(r) && delete this.event[r];
             this.isEncrypted() && (this.clearEvent = void 0);
-            var n = this.getType() in $c ? $c[this.getType()] : {}, a = this.getContent();
+            var n = this.getType() in Bc ? Bc[this.getType()] : {}, a = this.getContent();
             for(var s in a)a.hasOwnProperty(s) && !n[s] && delete a[s];
             !this.isThreadRoot && this.threadRootId && this.threadRootId !== this.getId() && (this.moveAllRelatedToMainTimeline(t), e.moveToMainTimeline(t)), this.invalidateExtensibleEvent();
         }
@@ -27360,7 +27360,7 @@ Date.now: "`.concat(Date.now()));
         "content",
         "unsigned",
         "origin_server_ts"
-    ]), $c = {
+    ]), Bc = {
         [B.RoomMember]: {
             membership: 1
         },
@@ -27398,7 +27398,7 @@ Date.now: "`.concat(Date.now()));
     })(Ut || {}), be = (function(i) {
         return i.Events = "RoomState.events", i.Members = "RoomState.members", i.NewMember = "RoomState.newMember", i.Update = "RoomState.update", i.BeaconLiveness = "RoomState.BeaconLiveness", i.Marker = "RoomState.Marker", i;
     })({});
-    class Ea extends tt {
+    class Ea extends rt {
         constructor(e){
             var t = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {
                 status: Ut.NotStarted
@@ -27480,11 +27480,11 @@ Date.now: "`.concat(Date.now()));
                         n.add(p);
                         var S = (f = h.getContent().displayname) !== null && f !== void 0 ? f : "", R = this.userIdsToDisplayNames[p];
                         if (R) {
-                            var E = Ir(R);
+                            var E = Cr(R);
                             E && r.add(E);
                         }
                         if (S) {
-                            var C = Ir(S);
+                            var C = Cr(S);
                             C && r.add(C);
                         }
                         this.updateDisplayNameCache(p, S), this.updateThirdPartyTokenCache(h);
@@ -27499,16 +27499,16 @@ Date.now: "`.concat(Date.now()));
                     f.setMembershipEvent(h, this), this.updateMember(f), this.emit(be.Members, h, this, f);
                 } else if (h.getType() === B.RoomPowerLevels) {
                     if (h.getStateKey() !== "") return;
-                    var p = Object.values(this.members), S = this.getStateEvents(B.RoomCreate, ""), R = Wc(this.getRoomVersion(), S);
+                    var p = Object.values(this.members), S = this.getStateEvents(B.RoomCreate, ""), R = $c(this.getRoomVersion(), S);
                     p.forEach((E)=>{
                         var C = E.getLastModifiedTime();
                         if (S) {
-                            var w = Kc(E.userId, h, R);
+                            var w = Wc(E.userId, h, R);
                             E.setPowerLevel(w, h);
                         }
                         C !== E.getLastModifiedTime() && this.emit(be.Members, h, this, E);
                     }), this.sentinels = {};
-                } else tf.matches(h.getType()) && this.emit(be.Marker, h, t);
+                } else ef.matches(h.getType()) && this.emit(be.Marker, h, t);
             }), r.size > 0) {
                 var a = new Set;
                 for (var s of r){
@@ -27577,13 +27577,13 @@ Date.now: "`.concat(Date.now()));
                 return r.update(e);
             }
             if (!e.isRedacted()) {
-                var a = new kf(e);
+                var a = new Cf(e);
                 this.reEmitter.reEmit(a, [
-                    Qe.New,
-                    Qe.Update,
-                    Qe.Destroy,
-                    Qe.LivenessChange
-                ]), this.emit(Qe.New, e, a), a.on(Qe.LivenessChange, this.onBeaconLivenessChange.bind(this)), a.on(Qe.Destroy, this.onBeaconLivenessChange.bind(this)), this.beacons.set(a.identifier, a);
+                    Ze.New,
+                    Ze.Update,
+                    Ze.Destroy,
+                    Ze.LivenessChange
+                ]), this.emit(Ze.New, e, a), a.on(Ze.LivenessChange, this.onBeaconLivenessChange.bind(this)), a.on(Ze.Destroy, this.onBeaconLivenessChange.bind(this)), this.beacons.set(a.identifier, a);
             }
         }
         onBeaconLivenessChange() {
@@ -27596,7 +27596,7 @@ Date.now: "`.concat(Date.now()));
         updateMember(e) {
             var t = this.getStateEvents(B.RoomCreate, ""), r = this.getStateEvents(B.RoomPowerLevels, "");
             if (r && t) {
-                var n = Kc(e.userId, r, Wc(this.getRoomVersion(), t));
+                var n = Wc(e.userId, r, $c(this.getRoomVersion(), t));
                 e.setPowerLevel(n, r);
             }
             delete this.sentinels[e.userId], this.members[e.userId] = e, this.joinedMemberCount = null, this.invitedMemberCount = null;
@@ -27648,7 +27648,7 @@ Date.now: "`.concat(Date.now()));
         }
         getUserIdsWithDisplayName(e) {
             var t;
-            return (t = this.displayNameToUserIds.get(Ir(e))) !== null && t !== void 0 ? t : [];
+            return (t = this.displayNameToUserIds.get(Cr(e))) !== null && t !== void 0 ? t : [];
         }
         maySendRedactionForEvent(e, t) {
             var r = this.getMember(t);
@@ -27660,7 +27660,7 @@ Date.now: "`.concat(Date.now()));
             var r = this.getStateEvents(B.RoomPowerLevels, ""), n = {};
             r && (n = r.getContent());
             var a = 50;
-            return tu(n[e]) && (a = n[e]), t >= a;
+            return eu(n[e]) && (a = n[e]), t >= a;
         }
         maySendMessage(e) {
             return this.maySendEventOfType(B.RoomMessage, e, !1);
@@ -27686,11 +27686,11 @@ Date.now: "`.concat(Date.now()));
             var r = this.getMember(t);
             if (!r) return !1;
             var n = this.getStateEvents(B.RoomPowerLevels, ""), a = 50;
-            return n && n.getContent() && n.getContent().notifications && tu(n.getContent().notifications[e]) && (a = n.getContent().notifications[e]), r.powerLevel >= a;
+            return n && n.getContent() && n.getContent().notifications && eu(n.getContent().notifications[e]) && (a = n.getContent().notifications[e]), r.powerLevel >= a;
         }
         getJoinRule() {
             var e, t = this.getStateEvents(B.RoomJoinRules, ""), r = (e = t?.getContent()) !== null && e !== void 0 ? e : {};
-            return r.join_rule || ev.Invite;
+            return r.join_rule || Zf.Invite;
         }
         getHistoryVisibility() {
             var e, t = this.getStateEvents(B.RoomHistoryVisibility, ""), r = (e = t?.getContent()) !== null && e !== void 0 ? e : {};
@@ -27743,21 +27743,21 @@ Date.now: "`.concat(Date.now()));
         updateDisplayNameCache(e, t) {
             var r = this.userIdsToDisplayNames[e];
             if (delete this.userIdsToDisplayNames[e], r) {
-                var n = Ir(r), a = this.displayNameToUserIds.get(n);
+                var n = Cr(r), a = this.displayNameToUserIds.get(n);
                 if (a) {
                     var s = a.filter((u)=>u !== e);
                     this.displayNameToUserIds.set(n, s);
                 }
             }
             this.userIdsToDisplayNames[e] = t;
-            var o = t && Ir(t);
+            var o = t && Cr(t);
             if (o) {
                 var l, d = (l = this.displayNameToUserIds.get(o)) !== null && l !== void 0 ? l : [];
                 d.push(e), this.displayNameToUserIds.set(o, d);
             }
         }
     }
-    function Wc(i, e) {
+    function $c(i, e) {
         var t = new Set;
         if (NS(i) && e) {
             var r = e.getSender();
@@ -27767,12 +27767,12 @@ Date.now: "`.concat(Date.now()));
         }
         return t;
     }
-    function Kc(i, e, t) {
+    function Wc(i, e, t) {
         if (t.has(i)) return 1 / 0;
         var r = e.getDirectionalContent(), n = r.users || {};
         return n[i] !== void 0 && Number.isInteger(n[i]) ? n[i] : r.users_default !== void 0 ? r.users_default : 0;
     }
-    function Vc(i) {
+    function Kc(i) {
         var e = typeof i == "string" && !!i && i !== "undefined" && i !== "null";
         return e || typeof i == "number";
     }
@@ -27843,7 +27843,7 @@ Date.now: "`.concat(Date.now()));
             var t = "mxjssdk_memory_filter_" + e;
             try {
                 var r = this.localStorage.getItem(t);
-                if (Vc(r)) return r;
+                if (Kc(r)) return r;
             } catch  {}
             return null;
         }
@@ -27851,7 +27851,7 @@ Date.now: "`.concat(Date.now()));
             if (this.localStorage) {
                 var r = "mxjssdk_memory_filter_" + e;
                 try {
-                    Vc(t) ? this.localStorage.setItem(r, t) : this.localStorage.removeItem(r);
+                    Kc(t) ? this.localStorage.setItem(r, t) : this.localStorage.removeItem(r);
                 } catch  {}
             }
         }
@@ -27953,10 +27953,10 @@ Date.now: "`.concat(Date.now()));
             return _(function*() {})();
         }
     }
-    var _o = {}, dn = {}, Nn = {}, qc;
+    var _o = {}, dn = {}, Nn = {}, Vc;
     function kd() {
-        if (qc) return Nn;
-        qc = 1, Object.defineProperty(Nn, "__esModule", {
+        if (Vc) return Nn;
+        Vc = 1, Object.defineProperty(Nn, "__esModule", {
             value: !0
         }), Nn.WidgetApiDirection = void 0, Nn.invertedDirection = e;
         var i = (function(t) {
@@ -27970,20 +27970,20 @@ Date.now: "`.concat(Date.now()));
         }
         return Nn;
     }
-    var yr = {}, Gc;
-    function Od() {
-        if (Gc) return yr;
-        Gc = 1, Object.defineProperty(yr, "__esModule", {
+    var Sr = {}, qc;
+    function Md() {
+        if (qc) return Sr;
+        qc = 1, Object.defineProperty(Sr, "__esModule", {
             value: !0
-        }), yr.UnstableApiVersion = yr.MatrixApiVersion = yr.CurrentApiVersions = void 0;
+        }), Sr.UnstableApiVersion = Sr.MatrixApiVersion = Sr.CurrentApiVersions = void 0;
         var i = (function(r) {
             return r.Prerelease1 = "0.0.1", r.Prerelease2 = "0.0.2", r;
         })({});
-        yr.MatrixApiVersion = i;
+        Sr.MatrixApiVersion = i;
         var e = (function(r) {
             return r.MSC2762 = "org.matrix.msc2762", r.MSC2762_UPDATE_STATE = "org.matrix.msc2762_update_state", r.MSC2871 = "org.matrix.msc2871", r.MSC2873 = "org.matrix.msc2873", r.MSC2931 = "org.matrix.msc2931", r.MSC2974 = "org.matrix.msc2974", r.MSC2876 = "org.matrix.msc2876", r.MSC3819 = "org.matrix.msc3819", r.MSC3846 = "town.robin.msc3846", r.MSC3869 = "org.matrix.msc3869", r.MSC3973 = "org.matrix.msc3973", r.MSC4039 = "org.matrix.msc4039", r;
         })({});
-        yr.UnstableApiVersion = e;
+        Sr.UnstableApiVersion = e;
         var t = [
             i.Prerelease1,
             i.Prerelease2,
@@ -28000,12 +28000,12 @@ Date.now: "`.concat(Date.now()));
             e.MSC3973,
             e.MSC4039
         ];
-        return yr.CurrentApiVersions = t, yr;
+        return Sr.CurrentApiVersions = t, Sr;
     }
-    var Pi = {}, Hc;
-    function Md() {
-        if (Hc) return Pi;
-        Hc = 1, Object.defineProperty(Pi, "__esModule", {
+    var Pi = {}, Gc;
+    function Od() {
+        if (Gc) return Pi;
+        Gc = 1, Object.defineProperty(Pi, "__esModule", {
             value: !0
         }), Pi.PostmessageTransport = void 0;
         var i = Fs(), e = zs(), t = [
@@ -28216,17 +28216,17 @@ Date.now: "`.concat(Date.now()));
                             data: j
                         };
                         return D === e.WidgetApiToWidgetAction.UpdateVisibility && (X.visible = j.visible), new Promise(function(ye, z) {
-                            var re = function(Je) {
-                                Ae(), ye(Je);
-                            }, ce = function(Je) {
-                                Ae(), z(Je);
+                            var re = function(Ye) {
+                                Pe(), ye(Ye);
+                            }, ce = function(Ye) {
+                                Pe(), z(Ye);
                             }, ue = setTimeout(function() {
                                 return ce(new Error("Request timed out"));
                             }, (Y.timeoutSeconds || 1) * 1e3), me = function() {
                                 return ce(new Error("Transport stopped"));
                             };
                             Y.stopController.signal.addEventListener("abort", me);
-                            var Ae = function() {
+                            var Pe = function() {
                                 Y.outboundRequests.delete(X.requestId), clearTimeout(ue), Y.stopController.signal.removeEventListener("abort", me);
                             };
                             Y.outboundRequests.set(X.requestId, {
@@ -28276,10 +28276,10 @@ Date.now: "`.concat(Date.now()));
         })(i.EventEmitter);
         return Pi.PostmessageTransport = b, Pi;
     }
-    var un = {}, zc;
+    var un = {}, Hc;
     function Pd() {
-        if (zc) return un;
-        zc = 1, Object.defineProperty(un, "__esModule", {
+        if (Hc) return un;
+        Hc = 1, Object.defineProperty(un, "__esModule", {
             value: !0
         }), un.WidgetApiToWidgetAction = un.WidgetApiFromWidgetAction = void 0;
         var i = (function(t) {
@@ -28291,10 +28291,10 @@ Date.now: "`.concat(Date.now()));
         })({});
         return un.WidgetApiFromWidgetAction = e, un;
     }
-    var Ai = {}, Jc;
+    var Ai = {}, zc;
     function Ad() {
-        if (Jc) return Ai;
-        Jc = 1, Object.defineProperty(Ai, "__esModule", {
+        if (zc) return Ai;
+        zc = 1, Object.defineProperty(Ai, "__esModule", {
             value: !0
         }), Ai.OpenIDRequestState = void 0;
         var i = (function(e) {
@@ -28302,10 +28302,10 @@ Date.now: "`.concat(Date.now()));
         })({});
         return Ai.OpenIDRequestState = i, Ai;
     }
-    var Di = {}, Yc;
+    var Di = {}, Jc;
     function Mv() {
-        if (Yc) return Di;
-        Yc = 1, Object.defineProperty(Di, "__esModule", {
+        if (Jc) return Di;
+        Jc = 1, Object.defineProperty(Di, "__esModule", {
             value: !0
         }), Di.MatrixWidgetType = void 0;
         var i = (function(e) {
@@ -28313,10 +28313,10 @@ Date.now: "`.concat(Date.now()));
         })({});
         return Di.MatrixWidgetType = i, Di;
     }
-    var Li = {}, Xc;
-    function Pv() {
-        if (Xc) return Li;
-        Xc = 1, Object.defineProperty(Li, "__esModule", {
+    var Li = {}, Yc;
+    function Ov() {
+        if (Yc) return Li;
+        Yc = 1, Object.defineProperty(Li, "__esModule", {
             value: !0
         }), Li.BuiltInModalButtonID = void 0;
         var i = (function(e) {
@@ -28324,12 +28324,12 @@ Date.now: "`.concat(Date.now()));
         })({});
         return Li.BuiltInModalButtonID = i, Li;
     }
-    var Sr = {}, Qc;
+    var br = {}, Xc;
     function Dd() {
-        if (Qc) return Sr;
-        Qc = 1, Object.defineProperty(Sr, "__esModule", {
+        if (Xc) return br;
+        Xc = 1, Object.defineProperty(br, "__esModule", {
             value: !0
-        }), Sr.WidgetEventCapability = Sr.EventKind = Sr.EventDirection = void 0;
+        }), br.WidgetEventCapability = br.EventKind = br.EventDirection = void 0;
         function i(h) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(v) {
@@ -28428,11 +28428,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         var d = (function(h) {
             return h.Event = "event", h.State = "state_event", h.ToDevice = "to_device", h.RoomAccount = "room_account", h;
         })({});
-        Sr.EventKind = d;
+        br.EventKind = d;
         var u = (function(h) {
             return h.Send = "send", h.Receive = "receive", h;
         })({});
-        Sr.EventDirection = u;
+        br.EventDirection = u;
         var c = (function() {
             function h(v, f, p, S, R) {
                 n(this, h), this.direction = v, this.eventType = f, this.kind = p, this.keyStr = S, this.raw = R;
@@ -28545,12 +28545,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }
             ]), h;
         })();
-        return Sr.WidgetEventCapability = c, Sr;
+        return br.WidgetEventCapability = c, br;
     }
-    var Ui = {}, Zc;
+    var Ui = {}, Qc;
     function Ld() {
-        if (Zc) return Ui;
-        Zc = 1, Object.defineProperty(Ui, "__esModule", {
+        if (Qc) return Ui;
+        Qc = 1, Object.defineProperty(Ui, "__esModule", {
             value: !0
         }), Ui.Symbols = void 0;
         var i = (function(e) {
@@ -28558,10 +28558,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })({});
         return Ui.Symbols = i, Ui;
     }
-    var Ni = {}, eh;
+    var Ni = {}, Zc;
     function Ud() {
-        if (eh) return Ni;
-        eh = 1, Object.defineProperty(Ni, "__esModule", {
+        if (Zc) return Ni;
+        Zc = 1, Object.defineProperty(Ni, "__esModule", {
             value: !0
         }), Ni.UpdateDelayedEventAction = void 0;
         var i = (function(e) {
@@ -28569,10 +28569,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })({});
         return Ni.UpdateDelayedEventAction = i, Ni;
     }
-    var th;
+    var eh;
     function xS() {
-        if (th) return dn;
-        th = 1;
+        if (eh) return dn;
+        eh = 1;
         function i(F) {
             "@babel/helpers - typeof";
             return i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(A) {
@@ -28584,12 +28584,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         Object.defineProperty(dn, "__esModule", {
             value: !0
         }), dn.WidgetApiResponseError = dn.WidgetApi = void 0;
-        var e = Fs(), t = kd(), r = Od(), n = Md(), a = Pd(), s = Ad(), o = Mv(), l = Pv(), d = Dd(), u = Ld(), c = Ud();
+        var e = Fs(), t = kd(), r = Md(), n = Od(), a = Pd(), s = Ad(), o = Mv(), l = Ov(), d = Dd(), u = Ld(), c = Ud();
         function h() {
             h = function() {
                 return F;
             };
-            var F = {}, A = Object.prototype, O = A.hasOwnProperty, M = Object.defineProperty || function(W, q, H) {
+            var F = {}, A = Object.prototype, M = A.hasOwnProperty, O = Object.defineProperty || function(W, q, H) {
                 W[q] = H.value;
             }, I = typeof Symbol == "function" ? Symbol : {}, N = I.iterator || "@@iterator", U = I.asyncIterator || "@@asyncIterator", x = I.toStringTag || "@@toStringTag";
             function $(W, q, H) {
@@ -28608,9 +28608,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 };
             }
             function V(W, q, H, ee) {
-                var fe = q && q.prototype instanceof he ? q : he, ve = Object.create(fe.prototype), De = new On(ee || []);
-                return M(ve, "_invoke", {
-                    value: lt(W, H, De)
+                var fe = q && q.prototype instanceof he ? q : he, ve = Object.create(fe.prototype), Ae = new Mn(ee || []);
+                return O(ve, "_invoke", {
+                    value: lt(W, H, Ae)
                 }), ve;
             }
             function Q(W, q, H) {
@@ -28635,10 +28635,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             $(Ue, N, function() {
                 return this;
             });
-            var Ze = Object.getPrototypeOf, ae = Ze && Ze(Ze(le([])));
-            ae && ae !== A && O.call(ae, N) && (Ue = ae);
-            var Me = Re.prototype = he.prototype = Object.create(Ue);
-            function pr(W) {
+            var et = Object.getPrototypeOf, ae = et && et(et(le([])));
+            ae && ae !== A && M.call(ae, N) && (Ue = ae);
+            var Oe = Re.prototype = he.prototype = Object.create(Ue);
+            function mr(W) {
                 [
                     "next",
                     "throw",
@@ -28649,32 +28649,32 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     });
                 });
             }
-            function mr(W, q) {
-                function H(fe, ve, De, rt) {
-                    var nt = Q(W[fe], W, ve);
-                    if (nt.type !== "throw") {
-                        var Tt = nt.arg, Nr = Tt.value;
-                        return Nr && i(Nr) == "object" && O.call(Nr, "__await") ? q.resolve(Nr.__await).then(function(rn) {
-                            H("next", rn, De, rt);
+            function gr(W, q) {
+                function H(fe, ve, Ae, nt) {
+                    var it = Q(W[fe], W, ve);
+                    if (it.type !== "throw") {
+                        var Tt = it.arg, Nr = Tt.value;
+                        return Nr && i(Nr) == "object" && M.call(Nr, "__await") ? q.resolve(Nr.__await).then(function(rn) {
+                            H("next", rn, Ae, nt);
                         }, function(rn) {
-                            H("throw", rn, De, rt);
+                            H("throw", rn, Ae, nt);
                         }) : q.resolve(Nr).then(function(rn) {
-                            Tt.value = rn, De(Tt);
+                            Tt.value = rn, Ae(Tt);
                         }, function(rn) {
-                            return H("throw", rn, De, rt);
+                            return H("throw", rn, Ae, nt);
                         });
                     }
-                    rt(nt.arg);
+                    nt(it.arg);
                 }
                 var ee;
-                M(this, "_invoke", {
-                    value: function(ve, De) {
-                        function rt() {
-                            return new q(function(nt, Tt) {
-                                H(ve, De, nt, Tt);
+                O(this, "_invoke", {
+                    value: function(ve, Ae) {
+                        function nt() {
+                            return new q(function(it, Tt) {
+                                H(ve, Ae, it, Tt);
                             });
                         }
-                        return ee = ee ? ee.then(rt, rt) : rt();
+                        return ee = ee ? ee.then(nt, nt) : nt();
                     }
                 });
             }
@@ -28687,12 +28687,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         return Z();
                     }
                     for(H.method = fe, H.arg = ve;;){
-                        var De = H.delegate;
-                        if (De) {
-                            var rt = gr(De, H);
-                            if (rt) {
-                                if (rt === pe) continue;
-                                return rt;
+                        var Ae = H.delegate;
+                        if (Ae) {
+                            var nt = yr(Ae, H);
+                            if (nt) {
+                                if (nt === pe) continue;
+                                return nt;
                             }
                         }
                         if (H.method === "next") H.sent = H._sent = H.arg;
@@ -28701,21 +28701,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             H.dispatchException(H.arg);
                         } else H.method === "return" && H.abrupt("return", H.arg);
                         ee = "executing";
-                        var nt = Q(W, q, H);
-                        if (nt.type === "normal") {
-                            if (ee = H.done ? "completed" : "suspendedYield", nt.arg === pe) continue;
+                        var it = Q(W, q, H);
+                        if (it.type === "normal") {
+                            if (ee = H.done ? "completed" : "suspendedYield", it.arg === pe) continue;
                             return {
-                                value: nt.arg,
+                                value: it.arg,
                                 done: H.done
                             };
                         }
-                        nt.type === "throw" && (ee = "completed", H.method = "throw", H.arg = nt.arg);
+                        it.type === "throw" && (ee = "completed", H.method = "throw", H.arg = it.arg);
                     }
                 };
             }
-            function gr(W, q) {
+            function yr(W, q) {
                 var H = q.method, ee = W.iterator[H];
-                if (ee === void 0) return q.delegate = null, H === "throw" && W.iterator.return && (q.method = "return", q.arg = void 0, gr(W, q), q.method === "throw") || H !== "return" && (q.method = "throw", q.arg = new TypeError("The iterator does not provide a '" + H + "' method")), pe;
+                if (ee === void 0) return q.delegate = null, H === "throw" && W.iterator.return && (q.method = "return", q.arg = void 0, yr(W, q), q.method === "throw") || H !== "return" && (q.method = "throw", q.arg = new TypeError("The iterator does not provide a '" + H + "' method")), pe;
                 var fe = Q(ee, W.iterator, q.arg);
                 if (fe.type === "throw") return q.method = "throw", q.arg = fe.arg, q.delegate = null, pe;
                 var ve = fe.arg;
@@ -28731,7 +28731,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var q = W.completion || {};
                 q.type = "normal", delete q.arg, W.completion = q;
             }
-            function On(W) {
+            function Mn(W) {
                 this.tryEntries = [
                     {
                         tryLoc: "root"
@@ -28745,7 +28745,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     if (typeof W.next == "function") return W;
                     if (!isNaN(W.length)) {
                         var H = -1, ee = function fe() {
-                            for(; ++H < W.length;)if (O.call(W, H)) return fe.value = W[H], fe.done = !1, fe;
+                            for(; ++H < W.length;)if (M.call(W, H)) return fe.value = W[H], fe.done = !1, fe;
                             return fe.value = void 0, fe.done = !0, fe;
                         };
                         return ee.next = ee;
@@ -28761,32 +28761,32 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     done: !0
                 };
             }
-            return oe.prototype = Re, M(Me, "constructor", {
+            return oe.prototype = Re, O(Oe, "constructor", {
                 value: Re,
                 configurable: !0
-            }), M(Re, "constructor", {
+            }), O(Re, "constructor", {
                 value: oe,
                 configurable: !0
             }), oe.displayName = $(Re, x, "GeneratorFunction"), F.isGeneratorFunction = function(W) {
                 var q = typeof W == "function" && W.constructor;
                 return !!q && (q === oe || (q.displayName || q.name) === "GeneratorFunction");
             }, F.mark = function(W) {
-                return Object.setPrototypeOf ? Object.setPrototypeOf(W, Re) : (W.__proto__ = Re, $(W, x, "GeneratorFunction")), W.prototype = Object.create(Me), W;
+                return Object.setPrototypeOf ? Object.setPrototypeOf(W, Re) : (W.__proto__ = Re, $(W, x, "GeneratorFunction")), W.prototype = Object.create(Oe), W;
             }, F.awrap = function(W) {
                 return {
                     __await: W
                 };
-            }, pr(mr.prototype), $(mr.prototype, U, function() {
+            }, mr(gr.prototype), $(gr.prototype, U, function() {
                 return this;
-            }), F.AsyncIterator = mr, F.async = function(W, q, H, ee, fe) {
+            }), F.AsyncIterator = gr, F.async = function(W, q, H, ee, fe) {
                 fe === void 0 && (fe = Promise);
-                var ve = new mr(V(W, q, H, ee), fe);
-                return F.isGeneratorFunction(q) ? ve : ve.next().then(function(De) {
-                    return De.done ? De.value : ve.next();
+                var ve = new gr(V(W, q, H, ee), fe);
+                return F.isGeneratorFunction(q) ? ve : ve.next().then(function(Ae) {
+                    return Ae.done ? Ae.value : ve.next();
                 });
-            }, pr(Me), $(Me, x, "Generator"), $(Me, N, function() {
+            }, mr(Oe), $(Oe, x, "Generator"), $(Oe, N, function() {
                 return this;
-            }), $(Me, "toString", function() {
+            }), $(Oe, "toString", function() {
                 return "[object Generator]";
             }), F.keys = function(W) {
                 var q = Object(W), H = [];
@@ -28798,10 +28798,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                     return fe.done = !0, fe;
                 };
-            }, F.values = le, On.prototype = {
-                constructor: On,
+            }, F.values = le, Mn.prototype = {
+                constructor: Mn,
                 reset: function(q) {
-                    if (this.prev = 0, this.next = 0, this.sent = this._sent = void 0, this.done = !1, this.delegate = null, this.method = "next", this.arg = void 0, this.tryEntries.forEach(tn), !q) for(var H in this)H.charAt(0) === "t" && O.call(this, H) && !isNaN(+H.slice(1)) && (this[H] = void 0);
+                    if (this.prev = 0, this.next = 0, this.sent = this._sent = void 0, this.done = !1, this.delegate = null, this.method = "next", this.arg = void 0, this.tryEntries.forEach(tn), !q) for(var H in this)H.charAt(0) === "t" && M.call(this, H) && !isNaN(+H.slice(1)) && (this[H] = void 0);
                 },
                 stop: function() {
                     this.done = !0;
@@ -28813,20 +28813,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     if (this.done) throw q;
                     var H = this;
                     function ee(Tt, Nr) {
-                        return De.type = "throw", De.arg = q, H.next = Tt, Nr && (H.method = "next", H.arg = void 0), !!Nr;
+                        return Ae.type = "throw", Ae.arg = q, H.next = Tt, Nr && (H.method = "next", H.arg = void 0), !!Nr;
                     }
                     for(var fe = this.tryEntries.length - 1; fe >= 0; --fe){
-                        var ve = this.tryEntries[fe], De = ve.completion;
+                        var ve = this.tryEntries[fe], Ae = ve.completion;
                         if (ve.tryLoc === "root") return ee("end");
                         if (ve.tryLoc <= this.prev) {
-                            var rt = O.call(ve, "catchLoc"), nt = O.call(ve, "finallyLoc");
-                            if (rt && nt) {
+                            var nt = M.call(ve, "catchLoc"), it = M.call(ve, "finallyLoc");
+                            if (nt && it) {
                                 if (this.prev < ve.catchLoc) return ee(ve.catchLoc, !0);
                                 if (this.prev < ve.finallyLoc) return ee(ve.finallyLoc);
-                            } else if (rt) {
+                            } else if (nt) {
                                 if (this.prev < ve.catchLoc) return ee(ve.catchLoc, !0);
                             } else {
-                                if (!nt) throw new Error("try statement without catch or finally");
+                                if (!it) throw new Error("try statement without catch or finally");
                                 if (this.prev < ve.finallyLoc) return ee(ve.finallyLoc);
                             }
                         }
@@ -28835,14 +28835,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 abrupt: function(q, H) {
                     for(var ee = this.tryEntries.length - 1; ee >= 0; --ee){
                         var fe = this.tryEntries[ee];
-                        if (fe.tryLoc <= this.prev && O.call(fe, "finallyLoc") && this.prev < fe.finallyLoc) {
+                        if (fe.tryLoc <= this.prev && M.call(fe, "finallyLoc") && this.prev < fe.finallyLoc) {
                             var ve = fe;
                             break;
                         }
                     }
                     ve && (q === "break" || q === "continue") && ve.tryLoc <= H && H <= ve.finallyLoc && (ve = null);
-                    var De = ve ? ve.completion : {};
-                    return De.type = q, De.arg = H, ve ? (this.method = "next", this.next = ve.finallyLoc, pe) : this.complete(De);
+                    var Ae = ve ? ve.completion : {};
+                    return Ae.type = q, Ae.arg = H, ve ? (this.method = "next", this.next = ve.finallyLoc, pe) : this.complete(Ae);
                 },
                 complete: function(q, H) {
                     if (q.type === "throw") throw q.arg;
@@ -28877,65 +28877,65 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }
             }, F;
         }
-        function v(F, A, O, M, I, N, U) {
+        function v(F, A, M, O, I, N, U) {
             try {
                 var x = F[N](U), $ = x.value;
             } catch (V) {
-                O(V);
+                M(V);
                 return;
             }
-            x.done ? A($) : Promise.resolve($).then(M, I);
+            x.done ? A($) : Promise.resolve($).then(O, I);
         }
         function f(F) {
             return function() {
-                var A = this, O = arguments;
-                return new Promise(function(M, I) {
-                    var N = F.apply(A, O);
+                var A = this, M = arguments;
+                return new Promise(function(O, I) {
+                    var N = F.apply(A, M);
                     function U($) {
-                        v(N, M, I, U, x, "next", $);
+                        v(N, O, I, U, x, "next", $);
                     }
                     function x($) {
-                        v(N, M, I, U, x, "throw", $);
+                        v(N, O, I, U, x, "throw", $);
                     }
                     U(void 0);
                 });
             };
         }
         function p(F, A) {
-            var O = Object.keys(F);
+            var M = Object.keys(F);
             if (Object.getOwnPropertySymbols) {
-                var M = Object.getOwnPropertySymbols(F);
-                A && (M = M.filter(function(I) {
+                var O = Object.getOwnPropertySymbols(F);
+                A && (O = O.filter(function(I) {
                     return Object.getOwnPropertyDescriptor(F, I).enumerable;
-                })), O.push.apply(O, M);
+                })), M.push.apply(M, O);
             }
-            return O;
+            return M;
         }
         function S(F) {
             for(var A = 1; A < arguments.length; A++){
-                var O = arguments[A] != null ? arguments[A] : {};
-                A % 2 ? p(Object(O), !0).forEach(function(M) {
-                    w(F, M, O[M]);
-                }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(F, Object.getOwnPropertyDescriptors(O)) : p(Object(O)).forEach(function(M) {
-                    Object.defineProperty(F, M, Object.getOwnPropertyDescriptor(O, M));
+                var M = arguments[A] != null ? arguments[A] : {};
+                A % 2 ? p(Object(M), !0).forEach(function(O) {
+                    w(F, O, M[O]);
+                }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(F, Object.getOwnPropertyDescriptors(M)) : p(Object(M)).forEach(function(O) {
+                    Object.defineProperty(F, O, Object.getOwnPropertyDescriptor(M, O));
                 });
             }
             return F;
         }
         function R(F, A) {
-            var O = typeof Symbol < "u" && F[Symbol.iterator] || F["@@iterator"];
-            if (!O) {
-                if (Array.isArray(F) || (O = E(F)) || A) {
-                    O && (F = O);
-                    var M = 0, I = function() {};
+            var M = typeof Symbol < "u" && F[Symbol.iterator] || F["@@iterator"];
+            if (!M) {
+                if (Array.isArray(F) || (M = E(F)) || A) {
+                    M && (F = M);
+                    var O = 0, I = function() {};
                     return {
                         s: I,
                         n: function() {
-                            return M >= F.length ? {
+                            return O >= F.length ? {
                                 done: !0
                             } : {
                                 done: !1,
-                                value: F[M++]
+                                value: F[O++]
                             };
                         },
                         e: function(V) {
@@ -28950,10 +28950,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var N = !0, U = !1, x;
             return {
                 s: function() {
-                    O = O.call(F);
+                    M = M.call(F);
                 },
                 n: function() {
-                    var V = O.next();
+                    var V = M.next();
                     return N = V.done, V;
                 },
                 e: function(V) {
@@ -28961,7 +28961,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 },
                 f: function() {
                     try {
-                        !N && O.return != null && O.return();
+                        !N && M.return != null && M.return();
                     } finally{
                         if (U) throw x;
                     }
@@ -28971,31 +28971,31 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         function E(F, A) {
             if (F) {
                 if (typeof F == "string") return C(F, A);
-                var O = Object.prototype.toString.call(F).slice(8, -1);
-                if (O === "Object" && F.constructor && (O = F.constructor.name), O === "Map" || O === "Set") return Array.from(F);
-                if (O === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(O)) return C(F, A);
+                var M = Object.prototype.toString.call(F).slice(8, -1);
+                if (M === "Object" && F.constructor && (M = F.constructor.name), M === "Map" || M === "Set") return Array.from(F);
+                if (M === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(M)) return C(F, A);
             }
         }
         function C(F, A) {
             (A == null || A > F.length) && (A = F.length);
-            for(var O = 0, M = new Array(A); O < A; O++)M[O] = F[O];
-            return M;
+            for(var M = 0, O = new Array(A); M < A; M++)O[M] = F[M];
+            return O;
         }
-        function w(F, A, O) {
+        function w(F, A, M) {
             return A = T(A), A in F ? Object.defineProperty(F, A, {
-                value: O,
+                value: M,
                 enumerable: !0,
                 configurable: !0,
                 writable: !0
-            }) : F[A] = O, F;
+            }) : F[A] = M, F;
         }
         function b(F, A) {
-            for(var O = 0; O < A.length; O++){
-                var M = A[O];
-                M.enumerable = M.enumerable || !1, M.configurable = !0, "value" in M && (M.writable = !0), Object.defineProperty(F, T(M.key), M);
+            for(var M = 0; M < A.length; M++){
+                var O = A[M];
+                O.enumerable = O.enumerable || !1, O.configurable = !0, "value" in O && (O.writable = !0), Object.defineProperty(F, T(O.key), O);
             }
         }
-        function m(F, A, O) {
+        function m(F, A, M) {
             return A && b(F.prototype, A), Object.defineProperty(F, "prototype", {
                 writable: !1
             }), F;
@@ -29006,10 +29006,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         function g(F, A) {
             if (i(F) !== "object" || F === null) return F;
-            var O = F[Symbol.toPrimitive];
-            if (O !== void 0) {
-                var M = O.call(F, A);
-                if (i(M) !== "object") return M;
+            var M = F[Symbol.toPrimitive];
+            if (M !== void 0) {
+                var O = M.call(F, A);
+                if (i(O) !== "object") return O;
                 throw new TypeError("@@toPrimitive must return a primitive value.");
             }
             return (A === "string" ? String : Number)(F);
@@ -29032,11 +29032,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         function j(F) {
             var A = re();
             return function() {
-                var M = me(F), I;
+                var O = me(F), I;
                 if (A) {
                     var N = me(this).constructor;
-                    I = Reflect.construct(M, arguments, N);
-                } else I = M.apply(this, arguments);
+                    I = Reflect.construct(O, arguments, N);
+                } else I = O.apply(this, arguments);
                 return Y(this, I);
             };
         }
@@ -29051,27 +29051,27 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         function ye(F) {
             var A = typeof Map == "function" ? new Map : void 0;
-            return ye = function(M) {
-                if (M === null || !ce(M)) return M;
-                if (typeof M != "function") throw new TypeError("Super expression must either be null or a function");
+            return ye = function(O) {
+                if (O === null || !ce(O)) return O;
+                if (typeof O != "function") throw new TypeError("Super expression must either be null or a function");
                 if (typeof A < "u") {
-                    if (A.has(M)) return A.get(M);
-                    A.set(M, I);
+                    if (A.has(O)) return A.get(O);
+                    A.set(O, I);
                 }
                 function I() {
-                    return z(M, arguments, me(this).constructor);
+                    return z(O, arguments, me(this).constructor);
                 }
-                return I.prototype = Object.create(M.prototype, {
+                return I.prototype = Object.create(O.prototype, {
                     constructor: {
                         value: I,
                         enumerable: !1,
                         writable: !0,
                         configurable: !0
                     }
-                }), ue(I, M);
+                }), ue(I, O);
             }, ye(F);
         }
-        function z(F, A, O) {
+        function z(F, A, M) {
             return re() ? z = Reflect.construct.bind() : z = function(I, N, U) {
                 var x = [
                     null
@@ -29094,37 +29094,37 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return Function.toString.call(F).indexOf("[native code]") !== -1;
         }
         function ue(F, A) {
-            return ue = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function(M, I) {
-                return M.__proto__ = I, M;
+            return ue = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function(O, I) {
+                return O.__proto__ = I, O;
             }, ue(F, A);
         }
         function me(F) {
-            return me = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function(O) {
-                return O.__proto__ || Object.getPrototypeOf(O);
+            return me = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function(M) {
+                return M.__proto__ || Object.getPrototypeOf(M);
             }, me(F);
         }
-        function Ae(F) {
-            return new ir(F, 0);
+        function Pe(F) {
+            return new ar(F, 0);
         }
-        function at(F) {
+        function st(F) {
             return function() {
-                return new Je(F.apply(this, arguments));
+                return new Ye(F.apply(this, arguments));
             };
         }
-        function Je(F) {
-            var A, O;
-            function M(N, U) {
+        function Ye(F) {
+            var A, M;
+            function O(N, U) {
                 try {
-                    var x = F[N](U), $ = x.value, V = $ instanceof ir;
+                    var x = F[N](U), $ = x.value, V = $ instanceof ar;
                     Promise.resolve(V ? $.v : $).then(function(Q) {
                         if (V) {
                             var pe = N === "return" ? "return" : "next";
-                            if (!$.k || Q.done) return M(pe, Q);
+                            if (!$.k || Q.done) return O(pe, Q);
                             Q = F[pe](Q).value;
                         }
                         I(x.done ? "return" : "normal", Q);
                     }, function(Q) {
-                        M("throw", Q);
+                        O("throw", Q);
                     });
                 } catch (Q) {
                     I("throw", Q);
@@ -29147,7 +29147,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             done: !1
                         });
                 }
-                (A = A.next) ? M(A.key, A.arg) : O = null;
+                (A = A.next) ? O(A.key, A.arg) : M = null;
             }
             this._invoke = function(N, U) {
                 return new Promise(function(x, $) {
@@ -29158,41 +29158,41 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         reject: $,
                         next: null
                     };
-                    O ? O = O.next = V : (A = O = V, M(N, U));
+                    M ? M = M.next = V : (A = M = V, O(N, U));
                 });
             }, typeof F.return != "function" && (this.return = void 0);
         }
-        Je.prototype[typeof Symbol == "function" && Symbol.asyncIterator || "@@asyncIterator"] = function() {
+        Ye.prototype[typeof Symbol == "function" && Symbol.asyncIterator || "@@asyncIterator"] = function() {
             return this;
-        }, Je.prototype.next = function(F) {
+        }, Ye.prototype.next = function(F) {
             return this._invoke("next", F);
-        }, Je.prototype.throw = function(F) {
+        }, Ye.prototype.throw = function(F) {
             return this._invoke("throw", F);
-        }, Je.prototype.return = function(F) {
+        }, Ye.prototype.return = function(F) {
             return this._invoke("return", F);
         };
-        function ir(F, A) {
+        function ar(F, A) {
             this.v = F, this.k = A;
         }
         var J = (function(F) {
-            D(O, F);
-            var A = j(O);
-            function O(M, I) {
+            D(M, F);
+            var A = j(M);
+            function M(O, I) {
                 var N;
-                return P(this, O), N = A.call(this, M), N.data = I, N;
+                return P(this, M), N = A.call(this, O), N.data = I, N;
             }
-            return m(O);
+            return m(M);
         })(ye(Error));
         dn.WidgetApiResponseError = J, J.prototype.name = J.name;
         var te = (function(F) {
-            D(O, F);
-            var A = j(O);
-            function O() {
-                var M, I = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null, N = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : null;
-                if (P(this, O), M = A.call(this), w(X(M), "transport", void 0), w(X(M), "capabilitiesFinished", !1), w(X(M), "supportsMSC2974Renegotiate", !1), w(X(M), "requestedCapabilities", []), w(X(M), "approvedCapabilities", void 0), w(X(M), "cachedClientVersions", void 0), w(X(M), "turnServerWatchers", 0), !globalThis.parent) throw new Error("No parent window. This widget doesn't appear to be embedded properly.");
-                return M.transport = new n.PostmessageTransport(t.WidgetApiDirection.FromWidget, I, globalThis.parent, globalThis), M.transport.targetOrigin = N, M.transport.on("message", M.handleMessage.bind(X(M))), M;
+            D(M, F);
+            var A = j(M);
+            function M() {
+                var O, I = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : null, N = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : null;
+                if (P(this, M), O = A.call(this), w(X(O), "transport", void 0), w(X(O), "capabilitiesFinished", !1), w(X(O), "supportsMSC2974Renegotiate", !1), w(X(O), "requestedCapabilities", []), w(X(O), "approvedCapabilities", void 0), w(X(O), "cachedClientVersions", void 0), w(X(O), "turnServerWatchers", 0), !globalThis.parent) throw new Error("No parent window. This widget doesn't appear to be embedded properly.");
+                return O.transport = new n.PostmessageTransport(t.WidgetApiDirection.FromWidget, I, globalThis.parent, globalThis), O.transport.targetOrigin = N, O.transport.on("message", O.handleMessage.bind(X(O))), O;
             }
-            return m(O, [
+            return m(M, [
                 {
                     key: "hasCapability",
                     value: function(I) {
@@ -29451,7 +29451,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                     key: "readEventRelations",
                     value: (function() {
-                        var M = f(h().mark(function N(U, x, $, V, Q, pe, he, oe) {
+                        var O = f(h().mark(function N(U, x, $, V, Q, pe, he, oe) {
                             var Re, Ue;
                             return h().wrap(function(ae) {
                                 for(;;)switch(ae.prev = ae.next){
@@ -29481,7 +29481,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             }, N, this);
                         }));
                         function I(N, U, x, $, V, Q, pe, he) {
-                            return M.apply(this, arguments);
+                            return O.apply(this, arguments);
                         }
                         return I;
                     })()
@@ -29521,7 +29521,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     key: "getTurnServers",
                     value: function() {
                         var I = this;
-                        return at(h().mark(function N() {
+                        return st(h().mark(function N() {
                             var U, x;
                             return h().wrap(function(V) {
                                 for(;;)switch(V.prev = V.next){
@@ -29545,7 +29545,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                             V.next = 12;
                                             break;
                                         }
-                                        return V.prev = 3, V.next = 6, Ae(I.transport.send(a.WidgetApiFromWidgetAction.WatchTurnServers, {}));
+                                        return V.prev = 3, V.next = 6, Pe(I.transport.send(a.WidgetApiFromWidgetAction.WatchTurnServers, {}));
                                     case 6:
                                         V.next = 12;
                                         break;
@@ -29554,7 +29554,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case 12:
                                         I.turnServerWatchers++, V.prev = 13;
                                     case 14:
-                                        return V.next = 17, Ae(new Promise(function(Q) {
+                                        return V.next = 17, Pe(new Promise(function(Q) {
                                             return U = Q;
                                         }));
                                     case 17:
@@ -29567,7 +29567,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                             V.next = 27;
                                             break;
                                         }
-                                        return V.next = 27, Ae(I.transport.send(a.WidgetApiFromWidgetAction.UnwatchTurnServers, {}));
+                                        return V.next = 27, Pe(I.transport.send(a.WidgetApiFromWidgetAction.UnwatchTurnServers, {}));
                                     case 27:
                                         return V.finish(21);
                                     case 28:
@@ -29592,7 +29592,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                     key: "searchUserDirectory",
                     value: (function() {
-                        var M = f(h().mark(function N(U, x) {
+                        var O = f(h().mark(function N(U, x) {
                             var $, V;
                             return h().wrap(function(pe) {
                                 for(;;)switch(pe.prev = pe.next){
@@ -29616,7 +29616,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             }, N, this);
                         }));
                         function I(N, U) {
-                            return M.apply(this, arguments);
+                            return O.apply(this, arguments);
                         }
                         return I;
                     })()
@@ -29624,7 +29624,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                     key: "getMediaConfig",
                     value: (function() {
-                        var M = f(h().mark(function N() {
+                        var O = f(h().mark(function N() {
                             var U, x;
                             return h().wrap(function(V) {
                                 for(;;)switch(V.prev = V.next){
@@ -29645,7 +29645,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             }, N, this);
                         }));
                         function I() {
-                            return M.apply(this, arguments);
+                            return O.apply(this, arguments);
                         }
                         return I;
                     })()
@@ -29653,7 +29653,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                     key: "uploadFile",
                     value: (function() {
-                        var M = f(h().mark(function N(U) {
+                        var O = f(h().mark(function N(U) {
                             var x, $;
                             return h().wrap(function(Q) {
                                 for(;;)switch(Q.prev = Q.next){
@@ -29676,7 +29676,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             }, N, this);
                         }));
                         function I(N) {
-                            return M.apply(this, arguments);
+                            return O.apply(this, arguments);
                         }
                         return I;
                     })()
@@ -29684,7 +29684,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                     key: "downloadFile",
                     value: (function() {
-                        var M = f(h().mark(function N(U) {
+                        var O = f(h().mark(function N(U) {
                             var x, $;
                             return h().wrap(function(Q) {
                                 for(;;)switch(Q.prev = Q.next){
@@ -29707,7 +29707,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             }, N, this);
                         }));
                         function I(N) {
-                            return M.apply(this, arguments);
+                            return O.apply(this, arguments);
                         }
                         return I;
                     })()
@@ -29782,14 +29782,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         });
                     }
                 }
-            ]), O;
+            ]), M;
         })(e.EventEmitter);
         return dn.WidgetApi = te, dn;
     }
-    var xi = {}, Wt = {}, rh;
-    function Av() {
-        if (rh) return Wt;
-        rh = 1, Object.defineProperty(Wt, "__esModule", {
+    var xi = {}, Wt = {}, th;
+    function Pv() {
+        if (th) return Wt;
+        th = 1, Object.defineProperty(Wt, "__esModule", {
             value: !0
         }), Wt.VideoConferenceCapabilities = Wt.StickerpickerCapabilities = Wt.MatrixCapabilities = void 0, Wt.getTimelineRoomIDFromCapability = a, Wt.isTimelineCapability = r, Wt.isTimelineCapabilityFor = n;
         var i = (function(s) {
@@ -29815,10 +29815,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return Wt;
     }
-    var Fi = {}, nh;
-    function Dv() {
-        if (nh) return Fi;
-        nh = 1, Object.defineProperty(Fi, "__esModule", {
+    var Fi = {}, rh;
+    function Av() {
+        if (rh) return Fi;
+        rh = 1, Object.defineProperty(Fi, "__esModule", {
             value: !0
         }), Fi.SimpleObservable = void 0;
         function i(c) {
@@ -29961,13 +29961,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })();
         return Fi.SimpleObservable = u, Fi;
     }
-    var ih;
+    var nh;
     function FS() {
-        if (ih) return xi;
-        ih = 1, Object.defineProperty(xi, "__esModule", {
+        if (nh) return xi;
+        nh = 1, Object.defineProperty(xi, "__esModule", {
             value: !0
         }), xi.ClientWidgetApi = void 0;
-        var i = Fs(), e = Md(), t = kd(), r = Pd(), n = Av(), a = Od(), s = Dd(), o = Ad(), l = Dv(), d = Ld(), u = Ud();
+        var i = Fs(), e = Od(), t = kd(), r = Pd(), n = Pv(), a = Md(), s = Dd(), o = Ad(), l = Av(), d = Ld(), u = Ud();
         function c(J) {
             "@babel/helpers - typeof";
             return c = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(te) {
@@ -29980,8 +29980,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var F = Object.keys(J);
             if (Object.getOwnPropertySymbols) {
                 var A = Object.getOwnPropertySymbols(J);
-                te && (A = A.filter(function(O) {
-                    return Object.getOwnPropertyDescriptor(J, O).enumerable;
+                te && (A = A.filter(function(M) {
+                    return Object.getOwnPropertyDescriptor(J, M).enumerable;
                 })), F.push.apply(F, A);
             }
             return F;
@@ -30002,9 +30002,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (!F) {
                 if (Array.isArray(J) || (F = R(J)) || te) {
                     F && (J = F);
-                    var A = 0, O = function() {};
+                    var A = 0, M = function() {};
                     return {
-                        s: O,
+                        s: M,
                         n: function() {
                             return A >= J.length ? {
                                 done: !0
@@ -30016,27 +30016,27 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         e: function(x) {
                             throw x;
                         },
-                        f: O
+                        f: M
                     };
                 }
                 throw new TypeError(`Invalid attempt to iterate non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
             }
-            var M = !0, I = !1, N;
+            var O = !0, I = !1, N;
             return {
                 s: function() {
                     F = F.call(J);
                 },
                 n: function() {
                     var x = F.next();
-                    return M = x.done, x;
+                    return O = x.done, x;
                 },
                 e: function(x) {
                     I = !0, N = x;
                 },
                 f: function() {
                     try {
-                        !M && F.return != null && F.return();
+                        !O && F.return != null && F.return();
                     } finally{
                         if (I) throw N;
                     }
@@ -30075,7 +30075,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
             var J = {}, te = Object.prototype, F = te.hasOwnProperty, A = Object.defineProperty || function(le, Z, W) {
                 le[Z] = W.value;
-            }, O = typeof Symbol == "function" ? Symbol : {}, M = O.iterator || "@@iterator", I = O.asyncIterator || "@@asyncIterator", N = O.toStringTag || "@@toStringTag";
+            }, M = typeof Symbol == "function" ? Symbol : {}, O = M.iterator || "@@iterator", I = M.asyncIterator || "@@asyncIterator", N = M.toStringTag || "@@toStringTag";
             function U(le, Z, W) {
                 return Object.defineProperty(le, Z, {
                     value: W,
@@ -30094,7 +30094,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             function x(le, Z, W, q) {
                 var H = Z && Z.prototype instanceof Q ? Z : Q, ee = Object.create(H.prototype), fe = new en(q || []);
                 return A(ee, "_invoke", {
-                    value: pr(le, W, fe)
+                    value: mr(le, W, fe)
                 }), ee;
             }
             function $(le, Z, W) {
@@ -30116,12 +30116,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             function pe() {}
             function he() {}
             var oe = {};
-            U(oe, M, function() {
+            U(oe, O, function() {
                 return this;
             });
             var Re = Object.getPrototypeOf, Ue = Re && Re(Re(tn([])));
-            Ue && Ue !== te && F.call(Ue, M) && (oe = Ue);
-            var Ze = he.prototype = Q.prototype = Object.create(oe);
+            Ue && Ue !== te && F.call(Ue, O) && (oe = Ue);
+            var et = he.prototype = Q.prototype = Object.create(oe);
             function ae(le) {
                 [
                     "next",
@@ -30133,47 +30133,47 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     });
                 });
             }
-            function Me(le, Z) {
+            function Oe(le, Z) {
                 function W(H, ee, fe, ve) {
-                    var De = $(le[H], le, ee);
-                    if (De.type !== "throw") {
-                        var rt = De.arg, nt = rt.value;
-                        return nt && c(nt) == "object" && F.call(nt, "__await") ? Z.resolve(nt.__await).then(function(Tt) {
+                    var Ae = $(le[H], le, ee);
+                    if (Ae.type !== "throw") {
+                        var nt = Ae.arg, it = nt.value;
+                        return it && c(it) == "object" && F.call(it, "__await") ? Z.resolve(it.__await).then(function(Tt) {
                             W("next", Tt, fe, ve);
                         }, function(Tt) {
                             W("throw", Tt, fe, ve);
-                        }) : Z.resolve(nt).then(function(Tt) {
-                            rt.value = Tt, fe(rt);
+                        }) : Z.resolve(it).then(function(Tt) {
+                            nt.value = Tt, fe(nt);
                         }, function(Tt) {
                             return W("throw", Tt, fe, ve);
                         });
                     }
-                    ve(De.arg);
+                    ve(Ae.arg);
                 }
                 var q;
                 A(this, "_invoke", {
                     value: function(ee, fe) {
                         function ve() {
-                            return new Z(function(De, rt) {
-                                W(ee, fe, De, rt);
+                            return new Z(function(Ae, nt) {
+                                W(ee, fe, Ae, nt);
                             });
                         }
                         return q = q ? q.then(ve, ve) : ve();
                     }
                 });
             }
-            function pr(le, Z, W) {
+            function mr(le, Z, W) {
                 var q = "suspendedStart";
                 return function(H, ee) {
                     if (q === "executing") throw new Error("Generator is already running");
                     if (q === "completed") {
                         if (H === "throw") throw ee;
-                        return On();
+                        return Mn();
                     }
                     for(W.method = H, W.arg = ee;;){
                         var fe = W.delegate;
                         if (fe) {
-                            var ve = mr(fe, W);
+                            var ve = gr(fe, W);
                             if (ve) {
                                 if (ve === V) continue;
                                 return ve;
@@ -30185,21 +30185,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             W.dispatchException(W.arg);
                         } else W.method === "return" && W.abrupt("return", W.arg);
                         q = "executing";
-                        var De = $(le, Z, W);
-                        if (De.type === "normal") {
-                            if (q = W.done ? "completed" : "suspendedYield", De.arg === V) continue;
+                        var Ae = $(le, Z, W);
+                        if (Ae.type === "normal") {
+                            if (q = W.done ? "completed" : "suspendedYield", Ae.arg === V) continue;
                             return {
-                                value: De.arg,
+                                value: Ae.arg,
                                 done: W.done
                             };
                         }
-                        De.type === "throw" && (q = "completed", W.method = "throw", W.arg = De.arg);
+                        Ae.type === "throw" && (q = "completed", W.method = "throw", W.arg = Ae.arg);
                     }
                 };
             }
-            function mr(le, Z) {
+            function gr(le, Z) {
                 var W = Z.method, q = le.iterator[W];
-                if (q === void 0) return Z.delegate = null, W === "throw" && le.iterator.return && (Z.method = "return", Z.arg = void 0, mr(le, Z), Z.method === "throw") || W !== "return" && (Z.method = "throw", Z.arg = new TypeError("The iterator does not provide a '" + W + "' method")), V;
+                if (q === void 0) return Z.delegate = null, W === "throw" && le.iterator.return && (Z.method = "return", Z.arg = void 0, gr(le, Z), Z.method === "throw") || W !== "return" && (Z.method = "throw", Z.arg = new TypeError("The iterator does not provide a '" + W + "' method")), V;
                 var H = $(q, le.iterator, Z.arg);
                 if (H.type === "throw") return Z.method = "throw", Z.arg = H.arg, Z.delegate = null, V;
                 var ee = H.arg;
@@ -30211,7 +30211,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 };
                 1 in le && (Z.catchLoc = le[1]), 2 in le && (Z.finallyLoc = le[2], Z.afterLoc = le[3]), this.tryEntries.push(Z);
             }
-            function gr(le) {
+            function yr(le) {
                 var Z = le.completion || {};
                 Z.type = "normal", delete Z.arg, le.completion = Z;
             }
@@ -30224,7 +30224,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             function tn(le) {
                 if (le) {
-                    var Z = le[M];
+                    var Z = le[O];
                     if (Z) return Z.call(le);
                     if (typeof le.next == "function") return le;
                     if (!isNaN(le.length)) {
@@ -30236,16 +30236,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 }
                 return {
-                    next: On
+                    next: Mn
                 };
             }
-            function On() {
+            function Mn() {
                 return {
                     value: void 0,
                     done: !0
                 };
             }
-            return pe.prototype = he, A(Ze, "constructor", {
+            return pe.prototype = he, A(et, "constructor", {
                 value: he,
                 configurable: !0
             }), A(he, "constructor", {
@@ -30255,22 +30255,22 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var Z = typeof le == "function" && le.constructor;
                 return !!Z && (Z === pe || (Z.displayName || Z.name) === "GeneratorFunction");
             }, J.mark = function(le) {
-                return Object.setPrototypeOf ? Object.setPrototypeOf(le, he) : (le.__proto__ = he, U(le, N, "GeneratorFunction")), le.prototype = Object.create(Ze), le;
+                return Object.setPrototypeOf ? Object.setPrototypeOf(le, he) : (le.__proto__ = he, U(le, N, "GeneratorFunction")), le.prototype = Object.create(et), le;
             }, J.awrap = function(le) {
                 return {
                     __await: le
                 };
-            }, ae(Me.prototype), U(Me.prototype, I, function() {
+            }, ae(Oe.prototype), U(Oe.prototype, I, function() {
                 return this;
-            }), J.AsyncIterator = Me, J.async = function(le, Z, W, q, H) {
+            }), J.AsyncIterator = Oe, J.async = function(le, Z, W, q, H) {
                 H === void 0 && (H = Promise);
-                var ee = new Me(x(le, Z, W, q), H);
+                var ee = new Oe(x(le, Z, W, q), H);
                 return J.isGeneratorFunction(Z) ? ee : ee.next().then(function(fe) {
                     return fe.done ? fe.value : ee.next();
                 });
-            }, ae(Ze), U(Ze, N, "Generator"), U(Ze, M, function() {
+            }, ae(et), U(et, N, "Generator"), U(et, O, function() {
                 return this;
-            }), U(Ze, "toString", function() {
+            }), U(et, "toString", function() {
                 return "[object Generator]";
             }), J.keys = function(le) {
                 var Z = Object(le), W = [];
@@ -30285,7 +30285,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }, J.values = tn, en.prototype = {
                 constructor: en,
                 reset: function(Z) {
-                    if (this.prev = 0, this.next = 0, this.sent = this._sent = void 0, this.done = !1, this.delegate = null, this.method = "next", this.arg = void 0, this.tryEntries.forEach(gr), !Z) for(var W in this)W.charAt(0) === "t" && F.call(this, W) && !isNaN(+W.slice(1)) && (this[W] = void 0);
+                    if (this.prev = 0, this.next = 0, this.sent = this._sent = void 0, this.done = !1, this.delegate = null, this.method = "next", this.arg = void 0, this.tryEntries.forEach(yr), !Z) for(var W in this)W.charAt(0) === "t" && F.call(this, W) && !isNaN(+W.slice(1)) && (this[W] = void 0);
                 },
                 stop: function() {
                     this.done = !0;
@@ -30296,21 +30296,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 dispatchException: function(Z) {
                     if (this.done) throw Z;
                     var W = this;
-                    function q(rt, nt) {
-                        return fe.type = "throw", fe.arg = Z, W.next = rt, nt && (W.method = "next", W.arg = void 0), !!nt;
+                    function q(nt, it) {
+                        return fe.type = "throw", fe.arg = Z, W.next = nt, it && (W.method = "next", W.arg = void 0), !!it;
                     }
                     for(var H = this.tryEntries.length - 1; H >= 0; --H){
                         var ee = this.tryEntries[H], fe = ee.completion;
                         if (ee.tryLoc === "root") return q("end");
                         if (ee.tryLoc <= this.prev) {
-                            var ve = F.call(ee, "catchLoc"), De = F.call(ee, "finallyLoc");
-                            if (ve && De) {
+                            var ve = F.call(ee, "catchLoc"), Ae = F.call(ee, "finallyLoc");
+                            if (ve && Ae) {
                                 if (this.prev < ee.catchLoc) return q(ee.catchLoc, !0);
                                 if (this.prev < ee.finallyLoc) return q(ee.finallyLoc);
                             } else if (ve) {
                                 if (this.prev < ee.catchLoc) return q(ee.catchLoc, !0);
                             } else {
-                                if (!De) throw new Error("try statement without catch or finally");
+                                if (!Ae) throw new Error("try statement without catch or finally");
                                 if (this.prev < ee.finallyLoc) return q(ee.finallyLoc);
                             }
                         }
@@ -30335,7 +30335,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 finish: function(Z) {
                     for(var W = this.tryEntries.length - 1; W >= 0; --W){
                         var q = this.tryEntries[W];
-                        if (q.finallyLoc === Z) return this.complete(q.completion, q.afterLoc), gr(q), V;
+                        if (q.finallyLoc === Z) return this.complete(q.completion, q.afterLoc), yr(q), V;
                     }
                 },
                 catch: function(Z) {
@@ -30345,7 +30345,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             var H = q.completion;
                             if (H.type === "throw") {
                                 var ee = H.arg;
-                                gr(q);
+                                yr(q);
                             }
                             return ee;
                         }
@@ -30361,25 +30361,25 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }
             }, J;
         }
-        function m(J, te, F, A, O, M, I) {
+        function m(J, te, F, A, M, O, I) {
             try {
-                var N = J[M](I), U = N.value;
+                var N = J[O](I), U = N.value;
             } catch (x) {
                 F(x);
                 return;
             }
-            N.done ? te(U) : Promise.resolve(U).then(A, O);
+            N.done ? te(U) : Promise.resolve(U).then(A, M);
         }
         function T(J) {
             return function() {
                 var te = this, F = arguments;
-                return new Promise(function(A, O) {
-                    var M = J.apply(te, F);
+                return new Promise(function(A, M) {
+                    var O = J.apply(te, F);
                     function I(U) {
-                        m(M, A, O, I, N, "next", U);
+                        m(O, A, M, I, N, "next", U);
                     }
                     function N(U) {
-                        m(M, A, O, I, N, "throw", U);
+                        m(O, A, M, I, N, "throw", U);
                     }
                     I(void 0);
                 });
@@ -30412,19 +30412,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }), te && Y(J, te);
         }
         function Y(J, te) {
-            return Y = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function(A, O) {
-                return A.__proto__ = O, A;
+            return Y = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function(A, M) {
+                return A.__proto__ = M, A;
             }, Y(J, te);
         }
         function X(J) {
             var te = re();
             return function() {
-                var A = ce(J), O;
+                var A = ce(J), M;
                 if (te) {
-                    var M = ce(this).constructor;
-                    O = Reflect.construct(A, arguments, M);
-                } else O = A.apply(this, arguments);
-                return ye(this, O);
+                    var O = ce(this).constructor;
+                    M = Reflect.construct(A, arguments, O);
+                } else M = A.apply(this, arguments);
+                return ye(this, M);
             };
         }
         function ye(J, te) {
@@ -30459,10 +30459,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }) : J[te] = F, J;
         }
         function me(J) {
-            var te = Ae(J, "string");
+            var te = Pe(J, "string");
             return c(te) === "symbol" ? te : String(te);
         }
-        function Ae(J, te) {
+        function Pe(J, te) {
             if (c(J) !== "object" || J === null) return J;
             var F = J[Symbol.toPrimitive];
             if (F !== void 0) {
@@ -30472,125 +30472,125 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             return (te === "string" ? String : Number)(J);
         }
-        function at(J) {
-            var te, F, A, O = 2;
-            for(typeof Symbol < "u" && (F = Symbol.asyncIterator, A = Symbol.iterator); O--;){
+        function st(J) {
+            var te, F, A, M = 2;
+            for(typeof Symbol < "u" && (F = Symbol.asyncIterator, A = Symbol.iterator); M--;){
                 if (F && (te = J[F]) != null) return te.call(J);
-                if (A && (te = J[A]) != null) return new Je(te.call(J));
+                if (A && (te = J[A]) != null) return new Ye(te.call(J));
                 F = "@@asyncIterator", A = "@@iterator";
             }
             throw new TypeError("Object is not async iterable");
         }
-        function Je(J) {
+        function Ye(J) {
             function te(F) {
                 if (Object(F) !== F) return Promise.reject(new TypeError(F + " is not an object."));
                 var A = F.done;
-                return Promise.resolve(F.value).then(function(O) {
+                return Promise.resolve(F.value).then(function(M) {
                     return {
-                        value: O,
+                        value: M,
                         done: A
                     };
                 });
             }
-            return Je = function(A) {
+            return Ye = function(A) {
                 this.s = A, this.n = A.next;
-            }, Je.prototype = {
+            }, Ye.prototype = {
                 s: null,
                 n: null,
                 next: function() {
                     return te(this.n.apply(this.s, arguments));
                 },
                 return: function(A) {
-                    var O = this.s.return;
-                    return O === void 0 ? Promise.resolve({
+                    var M = this.s.return;
+                    return M === void 0 ? Promise.resolve({
                         value: A,
                         done: !0
-                    }) : te(O.apply(this.s, arguments));
+                    }) : te(M.apply(this.s, arguments));
                 },
                 throw: function(A) {
-                    var O = this.s.return;
-                    return O === void 0 ? Promise.reject(A) : te(O.apply(this.s, arguments));
+                    var M = this.s.return;
+                    return M === void 0 ? Promise.reject(A) : te(M.apply(this.s, arguments));
                 }
-            }, new Je(J);
+            }, new Ye(J);
         }
-        var ir = (function(J) {
+        var ar = (function(J) {
             j(F, J);
             var te = X(F);
-            function F(A, O, M) {
+            function F(A, M, O) {
                 var I;
-                if (g(this, F), I = te.call(this), I.widget = A, I.driver = M, ue(z(I), "transport", void 0), ue(z(I), "cachedWidgetVersions", null), ue(z(I), "contentLoadedActionSent", !1), ue(z(I), "allowedCapabilities", new Set), ue(z(I), "allowedEvents", []), ue(z(I), "isStopped", !1), ue(z(I), "turnServers", null), ue(z(I), "contentLoadedWaitTimer", void 0), ue(z(I), "pushRoomStateTasks", new Set), ue(z(I), "pushRoomStateResult", new Map), ue(z(I), "flushRoomStateTask", null), ue(z(I), "viewedRoomId", null), !(O != null && O.contentWindow)) throw new Error("No iframe supplied");
+                if (g(this, F), I = te.call(this), I.widget = A, I.driver = O, ue(z(I), "transport", void 0), ue(z(I), "cachedWidgetVersions", null), ue(z(I), "contentLoadedActionSent", !1), ue(z(I), "allowedCapabilities", new Set), ue(z(I), "allowedEvents", []), ue(z(I), "isStopped", !1), ue(z(I), "turnServers", null), ue(z(I), "contentLoadedWaitTimer", void 0), ue(z(I), "pushRoomStateTasks", new Set), ue(z(I), "pushRoomStateResult", new Map), ue(z(I), "flushRoomStateTask", null), ue(z(I), "viewedRoomId", null), !(M != null && M.contentWindow)) throw new Error("No iframe supplied");
                 if (!A) throw new Error("Invalid widget");
-                if (!M) throw new Error("Invalid driver");
-                return I.transport = new e.PostmessageTransport(t.WidgetApiDirection.ToWidget, A.id, O.contentWindow, globalThis), I.transport.targetOrigin = A.origin, I.transport.on("message", I.handleMessage.bind(z(I))), O.addEventListener("load", I.onIframeLoad.bind(z(I))), I.transport.start(), I;
+                if (!O) throw new Error("Invalid driver");
+                return I.transport = new e.PostmessageTransport(t.WidgetApiDirection.ToWidget, A.id, M.contentWindow, globalThis), I.transport.targetOrigin = A.origin, I.transport.on("message", I.handleMessage.bind(z(I))), M.addEventListener("load", I.onIframeLoad.bind(z(I))), I.transport.start(), I;
             }
             return D(F, [
                 {
                     key: "hasCapability",
-                    value: function(O) {
-                        return this.allowedCapabilities.has(O);
+                    value: function(M) {
+                        return this.allowedCapabilities.has(M);
                     }
                 },
                 {
                     key: "canUseRoomTimeline",
-                    value: function(O) {
-                        return this.hasCapability("org.matrix.msc2762.timeline:".concat(d.Symbols.AnyRoom)) || this.hasCapability("org.matrix.msc2762.timeline:".concat(O));
+                    value: function(M) {
+                        return this.hasCapability("org.matrix.msc2762.timeline:".concat(d.Symbols.AnyRoom)) || this.hasCapability("org.matrix.msc2762.timeline:".concat(M));
                     }
                 },
                 {
                     key: "canSendRoomEvent",
-                    value: function(O) {
-                        var M = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : null;
+                    value: function(M) {
+                        var O = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : null;
                         return this.allowedEvents.some(function(I) {
-                            return I.matchesAsRoomEvent(s.EventDirection.Send, O, M);
+                            return I.matchesAsRoomEvent(s.EventDirection.Send, M, O);
                         });
                     }
                 },
                 {
                     key: "canSendStateEvent",
-                    value: function(O, M) {
+                    value: function(M, O) {
                         return this.allowedEvents.some(function(I) {
-                            return I.matchesAsStateEvent(s.EventDirection.Send, O, M);
+                            return I.matchesAsStateEvent(s.EventDirection.Send, M, O);
                         });
                     }
                 },
                 {
                     key: "canSendToDeviceEvent",
-                    value: function(O) {
-                        return this.allowedEvents.some(function(M) {
-                            return M.matchesAsToDeviceEvent(s.EventDirection.Send, O);
+                    value: function(M) {
+                        return this.allowedEvents.some(function(O) {
+                            return O.matchesAsToDeviceEvent(s.EventDirection.Send, M);
                         });
                     }
                 },
                 {
                     key: "canReceiveRoomEvent",
-                    value: function(O) {
-                        var M = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : null;
+                    value: function(M) {
+                        var O = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : null;
                         return this.allowedEvents.some(function(I) {
-                            return I.matchesAsRoomEvent(s.EventDirection.Receive, O, M);
+                            return I.matchesAsRoomEvent(s.EventDirection.Receive, M, O);
                         });
                     }
                 },
                 {
                     key: "canReceiveStateEvent",
-                    value: function(O, M) {
+                    value: function(M, O) {
                         return this.allowedEvents.some(function(I) {
-                            return I.matchesAsStateEvent(s.EventDirection.Receive, O, M);
+                            return I.matchesAsStateEvent(s.EventDirection.Receive, M, O);
                         });
                     }
                 },
                 {
                     key: "canReceiveToDeviceEvent",
-                    value: function(O) {
-                        return this.allowedEvents.some(function(M) {
-                            return M.matchesAsToDeviceEvent(s.EventDirection.Receive, O);
+                    value: function(M) {
+                        return this.allowedEvents.some(function(O) {
+                            return O.matchesAsToDeviceEvent(s.EventDirection.Receive, M);
                         });
                     }
                 },
                 {
                     key: "canReceiveRoomAccountData",
-                    value: function(O) {
-                        return this.allowedEvents.some(function(M) {
-                            return M.matchesAsRoomAccountData(s.EventDirection.Receive, O);
+                    value: function(M) {
+                        return this.allowedEvents.some(function(O) {
+                            return O.matchesAsRoomAccountData(s.EventDirection.Receive, M);
                         });
                     }
                 },
@@ -30603,7 +30603,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                     key: "getWidgetVersions",
                     value: (function() {
-                        var A = T(b().mark(function M() {
+                        var A = T(b().mark(function O() {
                             var I;
                             return b().wrap(function(U) {
                                 for(;;)switch(U.prev = U.next){
@@ -30623,40 +30623,40 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return U.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     2,
                                     10
                                 ]
                             ]);
                         }));
-                        function O() {
+                        function M() {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "beginCapabilities",
                     value: function() {
-                        var O = this;
+                        var M = this;
                         this.emit("preparing");
-                        var M;
+                        var O;
                         this.transport.send(r.WidgetApiToWidgetAction.Capabilities, {}).then(function(I) {
-                            return M = I.capabilities, O.driver.validateCapabilities(new Set(I.capabilities));
+                            return O = I.capabilities, M.driver.validateCapabilities(new Set(I.capabilities));
                         }).then(function(I) {
-                            O.allowCapabilities(p(I), M), O.emit("ready");
+                            M.allowCapabilities(p(I), O), M.emit("ready");
                         }).catch(function(I) {
-                            O.emit("error:preparing", I);
+                            M.emit("error:preparing", I);
                         });
                     }
                 },
                 {
                     key: "allowCapabilities",
-                    value: function(O, M) {
+                    value: function(M, O) {
                         var I, N = this;
-                        console.log("Widget ".concat(this.widget.id, " is allowed capabilities:"), O);
-                        var U = f(O), x;
+                        console.log("Widget ".concat(this.widget.id, " is allowed capabilities:"), M);
+                        var U = f(M), x;
                         try {
                             for(U.s(); !(x = U.n()).done;){
                                 var $ = x.value;
@@ -30667,16 +30667,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         } finally{
                             U.f();
                         }
-                        var V = s.WidgetEventCapability.findEventCapabilities(O);
+                        var V = s.WidgetEventCapability.findEventCapabilities(M);
                         (I = this.allowedEvents).push.apply(I, p(V)), this.transport.send(r.WidgetApiToWidgetAction.NotifyCapabilities, {
-                            requested: M,
+                            requested: O,
                             approved: Array.from(this.allowedCapabilities)
                         }).catch(function(lt) {
                             console.warn("non-fatal error notifying widget of approved capabilities:", lt);
                         }).then(function() {
                             N.emit("capabilitiesNotified");
                         });
-                        var Q = f(O), pe;
+                        var Q = f(M), pe;
                         try {
                             for(Q.s(); !(pe = Q.n()).done;){
                                 var he = pe.value;
@@ -30686,8 +30686,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                         var Re = f(this.driver.getKnownRooms()), Ue;
                                         try {
                                             for(Re.s(); !(Ue = Re.n()).done;){
-                                                var Ze = Ue.value;
-                                                this.pushRoomState(Ze);
+                                                var et = Ue.value;
+                                                this.pushRoomState(et);
                                             }
                                         } catch (lt) {
                                             Re.e(lt);
@@ -30702,9 +30702,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         } finally{
                             Q.f();
                         }
-                        if (O.includes(n.MatrixCapabilities.MSC4407ReceiveStickyEvent)) {
+                        if (M.includes(n.MatrixCapabilities.MSC4407ReceiveStickyEvent)) {
                             console.debug("Widget ".concat(this.widget.id, " is allowed to receive sticky events, check current sticky state."));
-                            var ae = O.filter(function(lt) {
+                            var ae = M.filter(function(lt) {
                                 return (0, n.isTimelineCapability)(lt);
                             }).map(function(lt) {
                                 return (0, n.getTimelineRoomIDFromCapability)(lt);
@@ -30712,19 +30712,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                 return lt === d.Symbols.AnyRoom ? N.driver.getKnownRooms() : lt;
                             });
                             console.debug("Widget ".concat(this.widget.id, " is allowed to receive sticky events in rooms:"), ae);
-                            var Me = f(ae), pr;
+                            var Oe = f(ae), mr;
                             try {
-                                var mr = function() {
-                                    var gr = pr.value;
-                                    N.pushStickyState(gr).catch(function(en) {
-                                        console.error("Failed to push sticky events to widget ".concat(N.widget.id, " for room ").concat(gr, ":"), en);
+                                var gr = function() {
+                                    var yr = mr.value;
+                                    N.pushStickyState(yr).catch(function(en) {
+                                        console.error("Failed to push sticky events to widget ".concat(N.widget.id, " for room ").concat(yr, ":"), en);
                                     });
                                 };
-                                for(Me.s(); !(pr = Me.n()).done;)mr();
+                                for(Oe.s(); !(mr = Oe.n()).done;)gr();
                             } catch (lt) {
-                                Me.e(lt);
+                                Oe.e(lt);
                             } finally{
-                                Me.f();
+                                Oe.f();
                             }
                         }
                         V.length > 0 && this.viewedRoomId !== null && !this.canUseRoomTimeline(this.viewedRoomId) && this.pushRoomState(this.viewedRoomId);
@@ -30732,7 +30732,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 },
                 {
                     key: "onIframeLoad",
-                    value: function(O) {
+                    value: function(M) {
                         this.widget.waitForIframeLoad ? this.beginCapabilities() : (console.log("waitForIframeLoad is false: waiting for widget to send contentLoaded"), this.contentLoadedWaitTimer = setTimeout(function() {
                             console.error("Widget specified waitForIframeLoad=false but timed out waiting for contentLoaded event!");
                         }, 1e4), this.contentLoadedActionSent = !1);
@@ -30740,19 +30740,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 },
                 {
                     key: "handleContentLoadedAction",
-                    value: function(O) {
+                    value: function(M) {
                         if (this.contentLoadedWaitTimer !== void 0 && (clearTimeout(this.contentLoadedWaitTimer), this.contentLoadedWaitTimer = void 0), this.contentLoadedActionSent) throw new Error("Improper sequence: ContentLoaded Action can only be sent once after the widget loaded and should only be used if waitForIframeLoad is false (default=true)");
-                        this.widget.waitForIframeLoad ? this.transport.reply(O, {
+                        this.widget.waitForIframeLoad ? this.transport.reply(M, {
                             error: {
                                 message: "Improper sequence: not expecting ContentLoaded event if waitForIframeLoad is true (default=true)"
                             }
-                        }) : (this.transport.reply(O, {}), this.beginCapabilities()), this.contentLoadedActionSent = !0;
+                        }) : (this.transport.reply(M, {}), this.beginCapabilities()), this.contentLoadedActionSent = !0;
                     }
                 },
                 {
                     key: "replyVersions",
-                    value: function(O) {
-                        this.transport.reply(O, {
+                    value: function(M) {
+                        this.transport.reply(M, {
                             supported_versions: a.CurrentApiVersions
                         });
                     }
@@ -30760,7 +30760,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                     key: "supportsUpdateState",
                     value: (function() {
-                        var A = T(b().mark(function M() {
+                        var A = T(b().mark(function O() {
                             return b().wrap(function(N) {
                                 for(;;)switch(N.prev = N.next){
                                     case 0:
@@ -30771,20 +30771,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return N.stop();
                                 }
-                            }, M, this);
+                            }, O, this);
                         }));
-                        function O() {
+                        function M() {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleCapabilitiesRenegotiate",
-                    value: function(O) {
-                        var M, I = this;
-                        this.transport.reply(O, {});
-                        var N = ((M = O.data) === null || M === void 0 ? void 0 : M.capabilities) || [], U = new Set(N.filter(function(x) {
+                    value: function(M) {
+                        var O, I = this;
+                        this.transport.reply(M, {});
+                        var N = ((O = M.data) === null || O === void 0 ? void 0 : O.capabilities) || [], U = new Set(N.filter(function(x) {
                             return !I.hasCapability(x);
                         }));
                         U.size === 0 && this.allowCapabilities([], []), this.driver.validateCapabilities(U).then(function(x) {
@@ -30794,26 +30794,26 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 },
                 {
                     key: "handleNavigate",
-                    value: function(O) {
-                        var M, I = this;
-                        if (!this.hasCapability(n.MatrixCapabilities.MSC2931Navigate)) return this.transport.reply(O, {
+                    value: function(M) {
+                        var O, I = this;
+                        if (!this.hasCapability(n.MatrixCapabilities.MSC2931Navigate)) return this.transport.reply(M, {
                             error: {
                                 message: "Missing capability"
                             }
                         });
-                        if (!((M = O.data) !== null && M !== void 0 && M.uri.startsWith("https://matrix.to/#"))) return this.transport.reply(O, {
+                        if (!((O = M.data) !== null && O !== void 0 && O.uri.startsWith("https://matrix.to/#"))) return this.transport.reply(M, {
                             error: {
                                 message: "Invalid matrix.to URI"
                             }
                         });
                         var N = function(x) {
-                            console.error("[ClientWidgetApi] Failed to handle navigation: ", x), I.handleDriverError(x, O, "Error handling navigation");
+                            console.error("[ClientWidgetApi] Failed to handle navigation: ", x), I.handleDriverError(x, M, "Error handling navigation");
                         };
                         try {
-                            this.driver.navigate(O.data.uri.toString()).catch(function(U) {
+                            this.driver.navigate(M.data.uri.toString()).catch(function(U) {
                                 return N(U);
                             }).then(function() {
-                                return I.transport.reply(O, {});
+                                return I.transport.reply(M, {});
                             });
                         } catch (U) {
                             return N(U);
@@ -30822,16 +30822,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 },
                 {
                     key: "handleOIDC",
-                    value: function(O) {
-                        var M = this, I = 1, N = function(V, Q) {
-                            return Q = Q || {}, I > 1 ? M.transport.send(r.WidgetApiToWidgetAction.OpenIDCredentials, v({
+                    value: function(M) {
+                        var O = this, I = 1, N = function(V, Q) {
+                            return Q = Q || {}, I > 1 ? O.transport.send(r.WidgetApiToWidgetAction.OpenIDCredentials, v({
                                 state: V,
-                                original_request_id: O.requestId
-                            }, Q)) : M.transport.reply(O, v({
+                                original_request_id: M.requestId
+                            }, Q)) : O.transport.reply(M, v({
                                 state: V
                             }, Q));
                         }, U = function(V) {
-                            return console.error("[ClientWidgetApi] Failed to handle OIDC: ", V), I > 1 ? N(o.OpenIDRequestState.Blocked) : M.transport.reply(O, {
+                            return console.error("[ClientWidgetApi] Failed to handle OIDC: ", V), I > 1 ? N(o.OpenIDRequestState.Blocked) : O.transport.reply(M, {
                                 error: {
                                     message: V
                                 }
@@ -30849,13 +30849,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 },
                 {
                     key: "handleReadRoomAccountData",
-                    value: function(O) {
-                        var M = this, I = this.driver.readRoomAccountData(O.data.type);
-                        return this.canReceiveRoomAccountData(O.data.type) ? I.then(function(N) {
-                            M.transport.reply(O, {
+                    value: function(M) {
+                        var O = this, I = this.driver.readRoomAccountData(M.data.type);
+                        return this.canReceiveRoomAccountData(M.data.type) ? I.then(function(N) {
+                            O.transport.reply(M, {
                                 events: N
                             });
-                        }) : this.transport.reply(O, {
+                        }) : this.transport.reply(M, {
                             error: {
                                 message: "Cannot read room account data of this type"
                             }
@@ -30865,7 +30865,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                     key: "handleReadEvents",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             var N = this, U, x, $, V, Q, pe, he, oe, Re, Ue;
                             return b().wrap(function(ae) {
                                 for(;;)switch(ae.prev = ae.next){
@@ -30903,8 +30903,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                             ae.next = 12;
                                             break;
                                         }
-                                        U = this.driver.getKnownRooms().filter(function(Me) {
-                                            return N.canUseRoomTimeline(Me);
+                                        U = this.driver.getKnownRooms().filter(function(Oe) {
+                                            return N.canUseRoomTimeline(Oe);
                                         }), ae.next = 30;
                                         break;
                                     case 12:
@@ -30976,8 +30976,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                             ae.next = 58;
                                             break;
                                         }
-                                        return ae.next = 55, Promise.all(U.map(function(Me) {
-                                            return N.driver.readRoomTimeline(Me, I.data.type, oe, he, Q, pe);
+                                        return ae.next = 55, Promise.all(U.map(function(Oe) {
+                                            return N.driver.readRoomTimeline(Oe, I.data.type, oe, he, Q, pe);
                                         }));
                                     case 55:
                                         Ue = ae.sent.flat(1), ae.next = 68;
@@ -30987,15 +30987,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                             ae.next = 64;
                                             break;
                                         }
-                                        return ae.next = 61, Promise.all(U.map(function(Me) {
-                                            return N.driver.readRoomTimeline(Me, I.data.type, oe, he, Q, pe);
+                                        return ae.next = 61, Promise.all(U.map(function(Oe) {
+                                            return N.driver.readRoomTimeline(Oe, I.data.type, oe, he, Q, pe);
                                         }));
                                     case 61:
                                         ae.t1 = ae.sent, ae.next = 67;
                                         break;
                                     case 64:
-                                        return ae.next = 66, Promise.all(U.map(function(Me) {
-                                            return N.driver.readRoomState(Me, I.data.type, he);
+                                        return ae.next = 66, Promise.all(U.map(function(Oe) {
+                                            return N.driver.readRoomState(Oe, I.data.type, he);
                                         }));
                                     case 66:
                                         ae.t1 = ae.sent;
@@ -31009,7 +31009,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return ae.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     14,
                                     24,
@@ -31018,111 +31018,111 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                 ]
                             ]);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleSendEvent",
-                    value: function(O) {
-                        var M = this;
-                        if (!O.data.type) return this.transport.reply(O, {
+                    value: function(M) {
+                        var O = this;
+                        if (!M.data.type) return this.transport.reply(M, {
                             error: {
                                 message: "Invalid request - missing event type"
                             }
                         });
-                        if (O.data.room_id && !this.canUseRoomTimeline(O.data.room_id)) return this.transport.reply(O, {
+                        if (M.data.room_id && !this.canUseRoomTimeline(M.data.room_id)) return this.transport.reply(M, {
                             error: {
-                                message: "Unable to access room timeline: ".concat(O.data.room_id)
+                                message: "Unable to access room timeline: ".concat(M.data.room_id)
                             }
                         });
-                        var I = O.data.delay !== void 0 || O.data.parent_delay_id !== void 0;
-                        if (I && !this.hasCapability(n.MatrixCapabilities.MSC4157SendDelayedEvent)) return this.transport.reply(O, {
+                        var I = M.data.delay !== void 0 || M.data.parent_delay_id !== void 0;
+                        if (I && !this.hasCapability(n.MatrixCapabilities.MSC4157SendDelayedEvent)) return this.transport.reply(M, {
                             error: {
                                 message: "Missing capability for ".concat(n.MatrixCapabilities.MSC4157SendDelayedEvent)
                             }
                         });
-                        var N = O.data.sticky_duration_ms !== void 0;
-                        if (N && !this.hasCapability(n.MatrixCapabilities.MSC4407SendStickyEvent)) return this.transport.reply(O, {
+                        var N = M.data.sticky_duration_ms !== void 0;
+                        if (N && !this.hasCapability(n.MatrixCapabilities.MSC4407SendStickyEvent)) return this.transport.reply(M, {
                             error: {
                                 message: "Missing capability for ".concat(n.MatrixCapabilities.MSC4407SendStickyEvent)
                             }
                         });
                         var U;
-                        if (O.data.state_key !== void 0) {
-                            if (!this.canSendStateEvent(O.data.type, O.data.state_key)) return this.transport.reply(O, {
+                        if (M.data.state_key !== void 0) {
+                            if (!this.canSendStateEvent(M.data.type, M.data.state_key)) return this.transport.reply(M, {
                                 error: {
                                     message: "Cannot send state events of this type"
                                 }
                             });
-                            if (N) return this.transport.reply(O, {
+                            if (N) return this.transport.reply(M, {
                                 error: {
                                     message: "Cannot send a state event with a sticky duration"
                                 }
                             });
                             if (I) {
                                 var x, $;
-                                U = this.driver.sendDelayedEvent((x = O.data.delay) !== null && x !== void 0 ? x : null, ($ = O.data.parent_delay_id) !== null && $ !== void 0 ? $ : null, O.data.type, O.data.content || {}, O.data.state_key, O.data.room_id);
-                            } else U = this.driver.sendEvent(O.data.type, O.data.content || {}, O.data.state_key, O.data.room_id);
+                                U = this.driver.sendDelayedEvent((x = M.data.delay) !== null && x !== void 0 ? x : null, ($ = M.data.parent_delay_id) !== null && $ !== void 0 ? $ : null, M.data.type, M.data.content || {}, M.data.state_key, M.data.room_id);
+                            } else U = this.driver.sendEvent(M.data.type, M.data.content || {}, M.data.state_key, M.data.room_id);
                         } else {
-                            var V = O.data.content || {}, Q = V.msgtype;
-                            if (!this.canSendRoomEvent(O.data.type, Q)) return this.transport.reply(O, {
+                            var V = M.data.content || {}, Q = V.msgtype;
+                            if (!this.canSendRoomEvent(M.data.type, Q)) return this.transport.reply(M, {
                                 error: {
                                     message: "Cannot send room events of this type"
                                 }
                             });
                             var pe = [
-                                O.data.type,
+                                M.data.type,
                                 V,
                                 null,
-                                O.data.room_id
+                                M.data.room_id
                             ];
-                            if (I && O.data.sticky_duration_ms) {
+                            if (I && M.data.sticky_duration_ms) {
                                 var he, oe;
-                                U = this.driver.sendDelayedStickyEvent((he = O.data.delay) !== null && he !== void 0 ? he : null, (oe = O.data.parent_delay_id) !== null && oe !== void 0 ? oe : null, O.data.sticky_duration_ms, O.data.type, V, O.data.room_id);
+                                U = this.driver.sendDelayedStickyEvent((he = M.data.delay) !== null && he !== void 0 ? he : null, (oe = M.data.parent_delay_id) !== null && oe !== void 0 ? oe : null, M.data.sticky_duration_ms, M.data.type, V, M.data.room_id);
                             } else if (I) {
-                                var Re, Ue, Ze;
+                                var Re, Ue, et;
                                 U = (Re = this.driver).sendDelayedEvent.apply(Re, [
-                                    (Ue = O.data.delay) !== null && Ue !== void 0 ? Ue : null,
-                                    (Ze = O.data.parent_delay_id) !== null && Ze !== void 0 ? Ze : null
+                                    (Ue = M.data.delay) !== null && Ue !== void 0 ? Ue : null,
+                                    (et = M.data.parent_delay_id) !== null && et !== void 0 ? et : null
                                 ].concat(pe));
-                            } else if (O.data.sticky_duration_ms) U = this.driver.sendStickyEvent(O.data.sticky_duration_ms, O.data.type, V, O.data.room_id);
+                            } else if (M.data.sticky_duration_ms) U = this.driver.sendStickyEvent(M.data.sticky_duration_ms, M.data.type, V, M.data.room_id);
                             else {
                                 var ae;
                                 U = (ae = this.driver).sendEvent.apply(ae, pe);
                             }
                         }
-                        U.then(function(Me) {
-                            return M.transport.reply(O, v({
-                                room_id: Me.roomId
-                            }, "eventId" in Me ? {
-                                event_id: Me.eventId
+                        U.then(function(Oe) {
+                            return O.transport.reply(M, v({
+                                room_id: Oe.roomId
+                            }, "eventId" in Oe ? {
+                                event_id: Oe.eventId
                             } : {
-                                delay_id: Me.delayId
+                                delay_id: Oe.delayId
                             }));
-                        }).catch(function(Me) {
-                            console.error("error sending event: ", Me), M.handleDriverError(Me, O, "Error sending event");
+                        }).catch(function(Oe) {
+                            console.error("error sending event: ", Oe), O.handleDriverError(Oe, M, "Error sending event");
                         });
                     }
                 },
                 {
                     key: "handleUpdateDelayedEvent",
-                    value: function(O) {
-                        var M = this;
-                        if (!O.data.delay_id) return this.transport.reply(O, {
+                    value: function(M) {
+                        var O = this;
+                        if (!M.data.delay_id) return this.transport.reply(M, {
                             error: {
                                 message: "Invalid request - missing delay_id"
                             }
                         });
-                        if (!this.hasCapability(n.MatrixCapabilities.MSC4157UpdateDelayedEvent)) return this.transport.reply(O, {
+                        if (!this.hasCapability(n.MatrixCapabilities.MSC4157UpdateDelayedEvent)) return this.transport.reply(M, {
                             error: {
                                 message: "Missing capability"
                             }
                         });
                         var I;
-                        switch(O.data.action){
+                        switch(M.data.action){
                             case u.UpdateDelayedEventAction.Cancel:
                                 I = this.driver.cancelScheduledDelayedEvent;
                                 break;
@@ -31133,23 +31133,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                 I = this.driver.sendScheduledDelayedEvent;
                                 break;
                             default:
-                                return this.transport.reply(O, {
+                                return this.transport.reply(M, {
                                     error: {
                                         message: "Invalid request - unsupported action"
                                     }
                                 });
                         }
-                        I.call(this.driver, O.data.delay_id).then(function() {
-                            return M.transport.reply(O, {});
+                        I.call(this.driver, M.data.delay_id).then(function() {
+                            return O.transport.reply(M, {});
                         }).catch(function(N) {
-                            console.error("error updating delayed event: ", N), M.handleDriverError(N, O, "Error updating delayed event");
+                            console.error("error updating delayed event: ", N), O.handleDriverError(N, M, "Error updating delayed event");
                         });
                     }
                 },
                 {
                     key: "handleSendToDevice",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             return b().wrap(function(U) {
                                 for(;;)switch(U.prev = U.next){
                                     case 0:
@@ -31207,30 +31207,30 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return U.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     16,
                                     22
                                 ]
                             ]);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "pollTurnServers",
                     value: (function() {
-                        var A = T(b().mark(function M(I, N) {
+                        var A = T(b().mark(function O(I, N) {
                             var U, x, $, V, Q, pe;
                             return b().wrap(function(oe) {
                                 for(;;)switch(oe.prev = oe.next){
                                     case 0:
                                         return oe.prev = 0, oe.next = 3, this.transport.send(r.WidgetApiToWidgetAction.UpdateTurnServers, N);
                                     case 3:
-                                        U = !1, x = !1, oe.prev = 5, V = at(I);
+                                        U = !1, x = !1, oe.prev = 5, V = st(I);
                                     case 7:
                                         return oe.next = 9, V.next();
                                     case 9:
@@ -31272,7 +31272,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return oe.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     0,
                                     34
@@ -31291,16 +31291,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                 ]
                             ]);
                         }));
-                        function O(M, I) {
+                        function M(O, I) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleWatchTurnServers",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             var N, U, x, $;
                             return b().wrap(function(Q) {
                                 for(;;)switch(Q.prev = Q.next){
@@ -31343,23 +31343,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return Q.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     8,
                                     22
                                 ]
                             ]);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleUnwatchTurnServers",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             return b().wrap(function(U) {
                                 for(;;)switch(U.prev = U.next){
                                     case 0:
@@ -31388,18 +31388,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return U.stop();
                                 }
-                            }, M, this);
+                            }, O, this);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleReadRelations",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             var N = this, U, x;
                             return b().wrap(function(V) {
                                 for(;;)switch(V.prev = V.next){
@@ -31449,23 +31449,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return V.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     6,
                                     14
                                 ]
                             ]);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleUserDirectorySearch",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             var N;
                             return b().wrap(function(x) {
                                 for(;;)switch(x.prev = x.next){
@@ -31518,23 +31518,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return x.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     6,
                                     13
                                 ]
                             ]);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleGetMediaConfig",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             var N;
                             return b().wrap(function(x) {
                                 for(;;)switch(x.prev = x.next){
@@ -31558,23 +31558,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return x.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     2,
                                     9
                                 ]
                             ]);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleUploadFile",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             var N;
                             return b().wrap(function(x) {
                                 for(;;)switch(x.prev = x.next){
@@ -31600,23 +31600,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return x.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     2,
                                     9
                                 ]
                             ]);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleDownloadFile",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             var N;
                             return b().wrap(function(x) {
                                 for(;;)switch(x.prev = x.next){
@@ -31642,24 +31642,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return x.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     2,
                                     9
                                 ]
                             ]);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "handleDriverError",
-                    value: function(O, M, I) {
-                        var N = this.driver.processError(O);
-                        this.transport.reply(M, {
+                    value: function(M, O, I) {
+                        var N = this.driver.processError(M);
+                        this.transport.reply(O, {
                             error: v({
                                 message: I
                             }, N)
@@ -31668,51 +31668,51 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 },
                 {
                     key: "handleMessage",
-                    value: function(O) {
+                    value: function(M) {
                         if (!this.isStopped) {
-                            var M = new CustomEvent("action:".concat(O.detail.action), {
-                                detail: O.detail,
+                            var O = new CustomEvent("action:".concat(M.detail.action), {
+                                detail: M.detail,
                                 cancelable: !0
                             });
-                            if (this.emit("action:".concat(O.detail.action), M), !M.defaultPrevented) switch(O.detail.action){
+                            if (this.emit("action:".concat(M.detail.action), O), !O.defaultPrevented) switch(M.detail.action){
                                 case r.WidgetApiFromWidgetAction.ContentLoaded:
-                                    return this.handleContentLoadedAction(O.detail);
+                                    return this.handleContentLoadedAction(M.detail);
                                 case r.WidgetApiFromWidgetAction.SupportedApiVersions:
-                                    return this.replyVersions(O.detail);
+                                    return this.replyVersions(M.detail);
                                 case r.WidgetApiFromWidgetAction.SendEvent:
-                                    return this.handleSendEvent(O.detail);
+                                    return this.handleSendEvent(M.detail);
                                 case r.WidgetApiFromWidgetAction.SendToDevice:
-                                    return this.handleSendToDevice(O.detail);
+                                    return this.handleSendToDevice(M.detail);
                                 case r.WidgetApiFromWidgetAction.GetOpenIDCredentials:
-                                    return this.handleOIDC(O.detail);
+                                    return this.handleOIDC(M.detail);
                                 case r.WidgetApiFromWidgetAction.MSC2931Navigate:
-                                    return this.handleNavigate(O.detail);
+                                    return this.handleNavigate(M.detail);
                                 case r.WidgetApiFromWidgetAction.MSC2974RenegotiateCapabilities:
-                                    return this.handleCapabilitiesRenegotiate(O.detail);
+                                    return this.handleCapabilitiesRenegotiate(M.detail);
                                 case r.WidgetApiFromWidgetAction.MSC2876ReadEvents:
-                                    return this.handleReadEvents(O.detail);
+                                    return this.handleReadEvents(M.detail);
                                 case r.WidgetApiFromWidgetAction.WatchTurnServers:
-                                    return this.handleWatchTurnServers(O.detail);
+                                    return this.handleWatchTurnServers(M.detail);
                                 case r.WidgetApiFromWidgetAction.UnwatchTurnServers:
-                                    return this.handleUnwatchTurnServers(O.detail);
+                                    return this.handleUnwatchTurnServers(M.detail);
                                 case r.WidgetApiFromWidgetAction.MSC3869ReadRelations:
-                                    return this.handleReadRelations(O.detail);
+                                    return this.handleReadRelations(M.detail);
                                 case r.WidgetApiFromWidgetAction.MSC3973UserDirectorySearch:
-                                    return this.handleUserDirectorySearch(O.detail);
+                                    return this.handleUserDirectorySearch(M.detail);
                                 case r.WidgetApiFromWidgetAction.BeeperReadRoomAccountData:
-                                    return this.handleReadRoomAccountData(O.detail);
+                                    return this.handleReadRoomAccountData(M.detail);
                                 case r.WidgetApiFromWidgetAction.MSC4039GetMediaConfigAction:
-                                    return this.handleGetMediaConfig(O.detail);
+                                    return this.handleGetMediaConfig(M.detail);
                                 case r.WidgetApiFromWidgetAction.MSC4039UploadFileAction:
-                                    return this.handleUploadFile(O.detail);
+                                    return this.handleUploadFile(M.detail);
                                 case r.WidgetApiFromWidgetAction.MSC4039DownloadFileAction:
-                                    return this.handleDownloadFile(O.detail);
+                                    return this.handleDownloadFile(M.detail);
                                 case r.WidgetApiFromWidgetAction.MSC4157UpdateDelayedEvent:
-                                    return this.handleUpdateDelayedEvent(O.detail);
+                                    return this.handleUpdateDelayedEvent(M.detail);
                                 default:
-                                    return this.transport.reply(O.detail, {
+                                    return this.transport.reply(M.detail, {
                                         error: {
-                                            message: "Unknown or unsupported from-widget action: " + O.detail.action
+                                            message: "Unknown or unsupported from-widget action: " + M.detail.action
                                         }
                                     });
                             }
@@ -31721,15 +31721,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 },
                 {
                     key: "updateTheme",
-                    value: function(O) {
-                        return this.transport.send(r.WidgetApiToWidgetAction.ThemeChange, O);
+                    value: function(M) {
+                        return this.transport.send(r.WidgetApiToWidgetAction.ThemeChange, M);
                     }
                 },
                 {
                     key: "updateLanguage",
-                    value: function(O) {
+                    value: function(M) {
                         return this.transport.send(r.WidgetApiToWidgetAction.LanguageChange, {
-                            lang: O
+                            lang: M
                         });
                     }
                 },
@@ -31741,36 +31741,36 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 },
                 {
                     key: "updateVisibility",
-                    value: function(O) {
+                    value: function(M) {
                         return this.transport.send(r.WidgetApiToWidgetAction.UpdateVisibility, {
-                            visible: O
+                            visible: M
                         });
                     }
                 },
                 {
                     key: "sendWidgetConfig",
-                    value: function(O) {
-                        return this.transport.send(r.WidgetApiToWidgetAction.WidgetConfig, O).then();
+                    value: function(M) {
+                        return this.transport.send(r.WidgetApiToWidgetAction.WidgetConfig, M).then();
                     }
                 },
                 {
                     key: "notifyModalWidgetButtonClicked",
-                    value: function(O) {
+                    value: function(M) {
                         return this.transport.send(r.WidgetApiToWidgetAction.ButtonClicked, {
-                            id: O
+                            id: M
                         }).then();
                     }
                 },
                 {
                     key: "notifyModalWidgetClose",
-                    value: function(O) {
-                        return this.transport.send(r.WidgetApiToWidgetAction.CloseModalWidget, O).then();
+                    value: function(M) {
+                        return this.transport.send(r.WidgetApiToWidgetAction.CloseModalWidget, M).then();
                     }
                 },
                 {
                     key: "feedEvent",
                     value: (function() {
-                        var A = T(b().mark(function M(I, N) {
+                        var A = T(b().mark(function O(I, N) {
                             var U;
                             return b().wrap(function($) {
                                 for(;;)switch($.prev = $.next){
@@ -31805,18 +31805,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return $.stop();
                                 }
-                            }, M, this);
+                            }, O, this);
                         }));
-                        function O(M, I) {
+                        function M(O, I) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "feedToDevice",
                     value: (function() {
-                        var A = T(b().mark(function M(I, N) {
+                        var A = T(b().mark(function O(I, N) {
                             return b().wrap(function(x) {
                                 for(;;)switch(x.prev = x.next){
                                     case 0:
@@ -31831,24 +31831,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return x.stop();
                                 }
-                            }, M, this);
+                            }, O, this);
                         }));
-                        function O(M, I) {
+                        function M(O, I) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "setViewedRoomId",
-                    value: function(O) {
-                        this.viewedRoomId = O, O !== null && !this.canUseRoomTimeline(O) && this.pushRoomState(O);
+                    value: function(M) {
+                        this.viewedRoomId = M, M !== null && !this.canUseRoomTimeline(M) && this.pushRoomState(M);
                     }
                 },
                 {
                     key: "flushRoomState",
                     value: (function() {
-                        var A = T(b().mark(function M() {
+                        var A = T(b().mark(function O() {
                             var I, N, U, x, $, V, Q;
                             return b().wrap(function(he) {
                                 for(;;)switch(he.prev = he.next){
@@ -31894,7 +31894,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return he.stop();
                                 }
-                            }, M, this, [
+                            }, O, this, [
                                 [
                                     0,
                                     ,
@@ -31903,16 +31903,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                 ]
                             ]);
                         }));
-                        function O() {
+                        function M() {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "pushStickyState",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             var N = this;
                             return b().wrap(function(x) {
                                 for(;;)switch(x.prev = x.next){
@@ -31932,8 +31932,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                                 return b().wrap(function(Ue) {
                                                     for(;;)switch(Ue.prev = Ue.next){
                                                         case 0:
-                                                            return pe = Q.roomId, he = Q.stickyEvents, console.debug("Pushing", he.length, "sticky events to widget for room", pe), oe = he.map(function(Ze) {
-                                                                return N.transport.send(r.WidgetApiToWidgetAction.SendEvent, Ze);
+                                                            return pe = Q.roomId, he = Q.stickyEvents, console.debug("Pushing", he.length, "sticky events to widget for room", pe), oe = he.map(function(et) {
+                                                                return N.transport.send(r.WidgetApiToWidgetAction.SendEvent, et);
                                                             }), Ue.next = 5, Promise.all(oe);
                                                         case 5:
                                                         case "end":
@@ -31949,42 +31949,42 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return x.stop();
                                 }
-                            }, M, this);
+                            }, O, this);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 },
                 {
                     key: "pushRoomState",
-                    value: function(O) {
-                        var M = this, I = f(this.allowedEvents), N;
+                    value: function(M) {
+                        var O = this, I = f(this.allowedEvents), N;
                         try {
                             var U = function() {
                                 var $ = N.value;
                                 if ($.kind === s.EventKind.State && $.direction === s.EventDirection.Receive) {
-                                    var V, Q, pe = M.driver.readRoomState(O, $.eventType, (V = $.keyStr) !== null && V !== void 0 ? V : void 0), he = pe.then(function(oe) {
+                                    var V, Q, pe = O.driver.readRoomState(M, $.eventType, (V = $.keyStr) !== null && V !== void 0 ? V : void 0), he = pe.then(function(oe) {
                                         var Re = f(oe), Ue;
                                         try {
                                             for(Re.s(); !(Ue = Re.n()).done;){
-                                                var Ze = Ue.value, ae = M.pushRoomStateResult.get(O);
-                                                ae === void 0 && (ae = new Map, M.pushRoomStateResult.set(O, ae));
-                                                var Me = ae.get($.eventType);
-                                                Me === void 0 && (Me = new Map, ae.set($.eventType, Me)), Me.has(Ze.state_key) || Me.set(Ze.state_key, Ze);
+                                                var et = Ue.value, ae = O.pushRoomStateResult.get(M);
+                                                ae === void 0 && (ae = new Map, O.pushRoomStateResult.set(M, ae));
+                                                var Oe = ae.get($.eventType);
+                                                Oe === void 0 && (Oe = new Map, ae.set($.eventType, Oe)), Oe.has(et.state_key) || Oe.set(et.state_key, et);
                                             }
-                                        } catch (pr) {
-                                            Re.e(pr);
+                                        } catch (mr) {
+                                            Re.e(mr);
                                         } finally{
                                             Re.f();
                                         }
                                     }, function(oe) {
-                                        return console.error("Failed to read room state for ".concat(O, " (").concat($.eventType, ", ").concat($.keyStr, ")"), oe);
+                                        return console.error("Failed to read room state for ".concat(M, " (").concat($.eventType, ", ").concat($.keyStr, ")"), oe);
                                     }).then(function() {
-                                        M.pushRoomStateTasks.delete(he);
+                                        O.pushRoomStateTasks.delete(he);
                                     });
-                                    M.pushRoomStateTasks.add(he), (Q = M.flushRoomStateTask) !== null && Q !== void 0 || (M.flushRoomStateTask = M.flushRoomState()), M.flushRoomStateTask.catch(function(oe) {
+                                    O.pushRoomStateTasks.add(he), (Q = O.flushRoomStateTask) !== null && Q !== void 0 || (O.flushRoomStateTask = O.flushRoomState()), O.flushRoomStateTask.catch(function(oe) {
                                         return console.error("Failed to push room state", oe);
                                     });
                                 }
@@ -32000,7 +32000,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 {
                     key: "feedStateUpdate",
                     value: (function() {
-                        var A = T(b().mark(function M(I) {
+                        var A = T(b().mark(function O(I) {
                             var N, U;
                             return b().wrap(function($) {
                                 for(;;)switch($.prev = $.next){
@@ -32048,22 +32048,22 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                     case "end":
                                         return $.stop();
                                 }
-                            }, M, this);
+                            }, O, this);
                         }));
-                        function O(M) {
+                        function M(O) {
                             return A.apply(this, arguments);
                         }
-                        return O;
+                        return M;
                     })()
                 }
             ]), F;
         })(i.EventEmitter);
-        return xi.ClientWidgetApi = ir, xi;
+        return xi.ClientWidgetApi = ar, xi;
     }
-    var Ka = {}, ah;
+    var Ka = {}, ih;
     function jS() {
-        if (ah) return Ka;
-        ah = 1, Object.defineProperty(Ka, "__esModule", {
+        if (ih) return Ka;
+        ih = 1, Object.defineProperty(Ka, "__esModule", {
             value: !0
         }), Ka.isErrorResponse = e;
         function i(t) {
@@ -32080,10 +32080,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return Ka;
     }
-    var ji = {}, sh;
+    var ji = {}, ah;
     function BS() {
-        if (sh) return ji;
-        sh = 1, Object.defineProperty(ji, "__esModule", {
+        if (ah) return ji;
+        ah = 1, Object.defineProperty(ji, "__esModule", {
             value: !0
         }), ji.WidgetKind = void 0;
         var i = (function(e) {
@@ -32091,10 +32091,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })({});
         return ji.WidgetKind = i, ji;
     }
-    var Bi = {}, oh;
+    var Bi = {}, sh;
     function $S() {
-        if (oh) return Bi;
-        oh = 1, Object.defineProperty(Bi, "__esModule", {
+        if (sh) return Bi;
+        sh = 1, Object.defineProperty(Bi, "__esModule", {
             value: !0
         }), Bi.ModalButtonKind = void 0;
         var i = (function(e) {
@@ -32102,10 +32102,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })({});
         return Bi.ModalButtonKind = i, Bi;
     }
-    var Va = {}, lh;
-    function Lv() {
-        if (lh) return Va;
-        lh = 1, Object.defineProperty(Va, "__esModule", {
+    var Va = {}, oh;
+    function Dv() {
+        if (oh) return Va;
+        oh = 1, Object.defineProperty(Va, "__esModule", {
             value: !0
         }), Va.isValidUrl = i;
         function i(e) {
@@ -32120,10 +32120,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return Va;
     }
-    var qa = {}, dh;
-    function Uv() {
-        if (dh) return qa;
-        dh = 1, Object.defineProperty(qa, "__esModule", {
+    var qa = {}, lh;
+    function Lv() {
+        if (lh) return qa;
+        lh = 1, Object.defineProperty(qa, "__esModule", {
             value: !0
         }), qa.assertPresent = i;
         function i(e, t) {
@@ -32131,13 +32131,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return qa;
     }
-    var $i = {}, uh;
-    function Nv() {
-        if (uh) return $i;
-        uh = 1, Object.defineProperty($i, "__esModule", {
+    var $i = {}, dh;
+    function Uv() {
+        if (dh) return $i;
+        dh = 1, Object.defineProperty($i, "__esModule", {
             value: !0
         }), $i.Widget = void 0;
-        var i = zs(), e = Uv();
+        var i = zs(), e = Lv();
         function t(d) {
             "@babel/helpers - typeof";
             return t = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(u) {
@@ -32244,13 +32244,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })();
         return $i.Widget = l, $i;
     }
-    var Wi = {}, ch;
+    var Wi = {}, uh;
     function WS() {
-        if (ch) return Wi;
-        ch = 1, Object.defineProperty(Wi, "__esModule", {
+        if (uh) return Wi;
+        uh = 1, Object.defineProperty(Wi, "__esModule", {
             value: !0
         }), Wi.WidgetParser = void 0;
-        var i = Nv(), e = Lv();
+        var i = Uv(), e = Dv();
         function t(h) {
             "@babel/helpers - typeof";
             return t = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(v) {
@@ -32420,10 +32420,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })();
         return Wi.WidgetParser = c, Wi;
     }
-    var Ki = {}, hh;
+    var Ki = {}, ch;
     function KS() {
-        if (hh) return Ki;
-        hh = 1, Object.defineProperty(Ki, "__esModule", {
+        if (ch) return Ki;
+        ch = 1, Object.defineProperty(Ki, "__esModule", {
             value: !0
         }), Ki.runTemplate = i, Ki.toString = e;
         function i(t, r, n) {
@@ -32449,10 +32449,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return Ki;
     }
-    var Vi = {}, fh;
+    var Vi = {}, hh;
     function VS() {
-        if (fh) return Vi;
-        fh = 1, Object.defineProperty(Vi, "__esModule", {
+        if (hh) return Vi;
+        hh = 1, Object.defineProperty(Vi, "__esModule", {
             value: !0
         }), Vi.WidgetDriver = void 0;
         var i = zs();
@@ -32662,9 +32662,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })();
         return Vi.WidgetDriver = o, Vi;
     }
-    var vh;
+    var fh;
     function zs() {
-        return vh || (vh = 1, (function(i) {
+        return fh || (fh = 1, (function(i) {
             Object.defineProperty(i, "__esModule", {
                 value: !0
             });
@@ -32695,7 +32695,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var n = Md();
+            var n = Od();
             Object.keys(n).forEach(function(g) {
                 g === "default" || g === "__esModule" || g in i && i[g] === n[g] || Object.defineProperty(i, g, {
                     enumerable: !0,
@@ -32740,7 +32740,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var d = Od();
+            var d = Md();
             Object.keys(d).forEach(function(g) {
                 g === "default" || g === "__esModule" || g in i && i[g] === d[g] || Object.defineProperty(i, g, {
                     enumerable: !0,
@@ -32749,7 +32749,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var u = Av();
+            var u = Pv();
             Object.keys(u).forEach(function(g) {
                 g === "default" || g === "__esModule" || g in i && i[g] === u[g] || Object.defineProperty(i, g, {
                     enumerable: !0,
@@ -32785,7 +32785,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var f = Pv();
+            var f = Ov();
             Object.keys(f).forEach(function(g) {
                 g === "default" || g === "__esModule" || g in i && i[g] === f[g] || Object.defineProperty(i, g, {
                     enumerable: !0,
@@ -32812,7 +32812,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var R = Lv();
+            var R = Dv();
             Object.keys(R).forEach(function(g) {
                 g === "default" || g === "__esModule" || g in i && i[g] === R[g] || Object.defineProperty(i, g, {
                     enumerable: !0,
@@ -32821,7 +32821,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var E = Uv();
+            var E = Lv();
             Object.keys(E).forEach(function(g) {
                 g === "default" || g === "__esModule" || g in i && i[g] === E[g] || Object.defineProperty(i, g, {
                     enumerable: !0,
@@ -32830,7 +32830,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var C = Nv();
+            var C = Uv();
             Object.keys(C).forEach(function(g) {
                 g === "default" || g === "__esModule" || g in i && i[g] === C[g] || Object.defineProperty(i, g, {
                     enumerable: !0,
@@ -32857,7 +32857,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     }
                 });
             });
-            var m = Dv();
+            var m = Av();
             Object.keys(m).forEach(function(g) {
                 g === "default" || g === "__esModule" || g in i && i[g] === m[g] || Object.defineProperty(i, g, {
                     enumerable: !0,
@@ -32877,8 +32877,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
         })(_o)), _o;
     }
-    var Mt = zs();
-    function ph(i, e) {
+    var Ot = zs();
+    function vh(i, e) {
         var t = Object.keys(i);
         if (Object.getOwnPropertySymbols) {
             var r = Object.getOwnPropertySymbols(i);
@@ -32891,9 +32891,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Ga(i) {
         for(var e = 1; e < arguments.length; e++){
             var t = arguments[e] != null ? arguments[e] : {};
-            e % 2 ? ph(Object(t), !0).forEach(function(r) {
+            e % 2 ? vh(Object(t), !0).forEach(function(r) {
                 y(i, r, t[r]);
-            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : ph(Object(t)).forEach(function(r) {
+            }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(i, Object.getOwnPropertyDescriptors(t)) : vh(Object(t)).forEach(function(r) {
                 Object.defineProperty(i, r, Object.getOwnPropertyDescriptor(t, r));
             });
         }
@@ -32943,10 +32943,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     var cs = (function(i) {
         return i.PendingEventsChanged = "PendingEvent.pendingEventsChanged", i;
     })({});
-    class xv extends Hs {
+    class Nv extends Hs {
         constructor(e, t, r, n, a){
             var s, o;
-            super(n), s = this, y(this, "syncState", null), y(this, "pendingSendingEventsTxId", []), y(this, "eventEmitter", new tt), y(this, "syncApiResolver", Promise.withResolvers()), y(this, "updateTxId", (function() {
+            super(n), s = this, y(this, "syncState", null), y(this, "pendingSendingEventsTxId", []), y(this, "eventEmitter", new rt), y(this, "syncApiResolver", Promise.withResolvers()), y(this, "updateTxId", (function() {
                 var u = _(function*(c) {
                     if (c.getSender() === s.getUserId() && s.pendingSendingEventsTxId.some((p)=>c.getType() === p.type)) {
                         for(var h, v = (h = s.pendingSendingEventsTxId.find((p)=>p.id === c.getId())) === null || h === void 0 ? void 0 : h.txId; !v && s.pendingSendingEventsTxId.length > 0;){
@@ -33022,7 +33022,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     try {
                         return yield l(c, h);
                     } catch (v) {
-                        mh(v);
+                        ph(v);
                     }
                 });
                 return function(c, h) {
@@ -33035,13 +33035,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     try {
                         return yield d(c, h);
                     } catch (v) {
-                        mh(v);
+                        ph(v);
                     }
                 });
                 return function(c, h) {
                     return u.apply(this, arguments);
                 };
-            })(), this.widgetApiReady = new Promise((u)=>this.widgetApi.once("ready", u)), this.roomStateSynced = (o = t.receiveState) !== null && o !== void 0 && o.length ? new Promise((u)=>this.widgetApi.once("action:".concat(Mt.WidgetApiToWidgetAction.UpdateState), u)) : Promise.resolve(), this.requestInitialCapabilities(t, r), e.on("action:".concat(Mt.WidgetApiToWidgetAction.SendEvent), this.onEvent), e.on("action:".concat(Mt.WidgetApiToWidgetAction.SendToDevice), this.onToDevice), e.on("action:".concat(Mt.WidgetApiToWidgetAction.UpdateState), this.onStateUpdate), e.start(), a && e.sendContentLoaded();
+            })(), this.widgetApiReady = new Promise((u)=>this.widgetApi.once("ready", u)), this.roomStateSynced = (o = t.receiveState) !== null && o !== void 0 && o.length ? new Promise((u)=>this.widgetApi.once("action:".concat(Ot.WidgetApiToWidgetAction.UpdateState), u)) : Promise.resolve(), this.requestInitialCapabilities(t, r), e.on("action:".concat(Ot.WidgetApiToWidgetAction.SendEvent), this.onEvent), e.on("action:".concat(Ot.WidgetApiToWidgetAction.SendToDevice), this.onToDevice), e.on("action:".concat(Ot.WidgetApiToWidgetAction.UpdateState), this.onStateUpdate), e.start(), a && e.sendContentLoaded();
         }
         requestInitialCapabilities(e, t) {
             var r, n, a, s, o, l, d, u, c, h, v, f;
@@ -33051,12 +33051,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }), (u = e.receiveState) === null || u === void 0 || u.forEach((p)=>{
                 var S = p.eventType, R = p.stateKey;
                 return this.widgetApi.requestCapabilityToReceiveState(S, R);
-            }), (c = e.sendToDevice) === null || c === void 0 || c.forEach((p)=>this.widgetApi.requestCapabilityToSendToDevice(p)), (h = e.receiveToDevice) === null || h === void 0 || h.forEach((p)=>this.widgetApi.requestCapabilityToReceiveToDevice(p)), e.sendDelayedEvents && ((v = e.sendEvent) !== null && v !== void 0 && v.length || e.sendMessage === !0 || Array.isArray(e.sendMessage) && e.sendMessage.length || (f = e.sendState) !== null && f !== void 0 && f.length) && this.widgetApi.requestCapability(Mt.MatrixCapabilities.MSC4157SendDelayedEvent), e.updateDelayedEvents && this.widgetApi.requestCapability(Mt.MatrixCapabilities.MSC4157UpdateDelayedEvent), e.sendSticky && this.widgetApi.requestCapability(Mt.MatrixCapabilities.MSC4407SendStickyEvent), e.receiveSticky && this.widgetApi.requestCapability(Mt.MatrixCapabilities.MSC4407ReceiveStickyEvent), e.turnServers && this.widgetApi.requestCapability(Mt.MatrixCapabilities.MSC3846TurnServers);
+            }), (c = e.sendToDevice) === null || c === void 0 || c.forEach((p)=>this.widgetApi.requestCapabilityToSendToDevice(p)), (h = e.receiveToDevice) === null || h === void 0 || h.forEach((p)=>this.widgetApi.requestCapabilityToReceiveToDevice(p)), e.sendDelayedEvents && ((v = e.sendEvent) !== null && v !== void 0 && v.length || e.sendMessage === !0 || Array.isArray(e.sendMessage) && e.sendMessage.length || (f = e.sendState) !== null && f !== void 0 && f.length) && this.widgetApi.requestCapability(Ot.MatrixCapabilities.MSC4157SendDelayedEvent), e.updateDelayedEvents && this.widgetApi.requestCapability(Ot.MatrixCapabilities.MSC4157UpdateDelayedEvent), e.sendSticky && this.widgetApi.requestCapability(Ot.MatrixCapabilities.MSC4407SendStickyEvent), e.receiveSticky && this.widgetApi.requestCapability(Ot.MatrixCapabilities.MSC4407ReceiveStickyEvent), e.turnServers && this.widgetApi.requestCapability(Ot.MatrixCapabilities.MSC3846TurnServers);
         }
         supportUpdateState() {
             var e = this;
             return _(function*() {
-                return (yield e.widgetApi.getClientVersions()).includes(Mt.UnstableApiVersion.MSC2762_UPDATE_STATE);
+                return (yield e.widgetApi.getClientVersions()).includes(Ot.UnstableApiVersion.MSC2762_UPDATE_STATE);
             })();
         }
         startClient() {
@@ -33065,7 +33065,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var r = e.length > 0 && e[0] !== void 0 ? e[0] : {};
                 t.lifecycle = new AbortController;
                 var n = t.getUserId();
-                if (n && t.store.storeUser(new Ur(n)), r.slidingSync ? t.syncApi = new rv(r.slidingSync, t, r, t.buildSyncApiOptions()) : t.syncApi = new Gr(t, r, t.buildSyncApiOptions()), t.syncApiResolver.resolve(), t.room = t.syncApi.createRoom(t.roomId), t.store.storeRoom(t.room), yield t.widgetApiReady, yield t.supportUpdateState()) yield t.roomStateSynced;
+                if (n && t.store.storeUser(new Ur(n)), r.slidingSync ? t.syncApi = new tv(r.slidingSync, t, r, t.buildSyncApiOptions()) : t.syncApi = new Gr(t, r, t.buildSyncApiOptions()), t.syncApiResolver.resolve(), t.room = t.syncApi.createRoom(t.roomId), t.store.storeRoom(t.room), yield t.widgetApiReady, yield t.supportUpdateState()) yield t.roomStateSynced;
                 else {
                     var a, s;
                     yield Promise.all((a = (s = t.capabilities.receiveState) === null || s === void 0 ? void 0 : s.map((function() {
@@ -33088,7 +33088,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             })();
         }
         stopClient() {
-            this.widgetApi.off("action:".concat(Mt.WidgetApiToWidgetAction.SendEvent), this.onEvent), this.widgetApi.off("action:".concat(Mt.WidgetApiToWidgetAction.SendToDevice), this.onToDevice), this.widgetApi.off("action:".concat(Mt.WidgetApiToWidgetAction.UpdateState), this.onStateUpdate), super.stopClient(), this.lifecycle.abort();
+            this.widgetApi.off("action:".concat(Ot.WidgetApiToWidgetAction.SendEvent), this.onEvent), this.widgetApi.off("action:".concat(Ot.WidgetApiToWidgetAction.SendToDevice), this.onToDevice), this.widgetApi.off("action:".concat(Ot.WidgetApiToWidgetAction.UpdateState), this.onStateUpdate), super.stopClient(), this.lifecycle.abort();
         }
         joinRoom(e) {
             var t = this;
@@ -33297,8 +33297,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             })();
         }
     }
-    function mh(i) {
-        throw i instanceof Mt.WidgetApiResponseError && i.data.matrix_api_error ? He.fromWidgetApiErrorData(i.data.matrix_api_error) : i;
+    function ph(i) {
+        throw i instanceof Ot.WidgetApiResponseError && i.data.matrix_api_error ? ze.fromWidgetApiErrorData(i.data.matrix_api_error) : i;
     }
     function Lt(i) {
         throw i instanceof Error && i.message === "Request timed out" ? new kn("widget api timeout") : i;
@@ -33353,13 +33353,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return t.content = bn(r), r.size > 0 ? t : null;
         }
     }
-    var wr = (function(i) {
+    var Rr = (function(i) {
         return i.Invite = "invite", i.Leave = "leave", i.Join = "join", i.Knock = "knock", i;
     })({});
     function HS(i) {
         return "_localTs" in i && i._localTs !== void 0;
     }
-    class Fv {
+    class xv {
         constructor(){
             var e = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
             y(this, "accountData", {}), y(this, "inviteRooms", {}), y(this, "knockRooms", {}), y(this, "joinRooms", {}), y(this, "nextBatch", null), this.opts = e, this.opts.maxTimelineEntries = this.opts.maxTimelineEntries || 50;
@@ -33376,28 +33376,28 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         accumulateRooms(e) {
             var t = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : !1;
             e.rooms && (e.rooms.invite && Object.keys(e.rooms.invite).forEach((r)=>{
-                this.accumulateRoom(r, wr.Invite, e.rooms.invite[r], t);
+                this.accumulateRoom(r, Rr.Invite, e.rooms.invite[r], t);
             }), e.rooms.join && Object.keys(e.rooms.join).forEach((r)=>{
-                this.accumulateRoom(r, wr.Join, e.rooms.join[r], t);
+                this.accumulateRoom(r, Rr.Join, e.rooms.join[r], t);
             }), e.rooms.leave && Object.keys(e.rooms.leave).forEach((r)=>{
-                this.accumulateRoom(r, wr.Leave, e.rooms.leave[r], t);
+                this.accumulateRoom(r, Rr.Leave, e.rooms.leave[r], t);
             }), e.rooms.knock && Object.keys(e.rooms.knock).forEach((r)=>{
-                this.accumulateRoom(r, wr.Knock, e.rooms.knock[r], t);
+                this.accumulateRoom(r, Rr.Knock, e.rooms.knock[r], t);
             }));
         }
         accumulateRoom(e, t, r) {
             var n = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : !1;
             switch(t){
-                case wr.Invite:
+                case Rr.Invite:
                     this.knockRooms[e] && delete this.knockRooms[e], this.accumulateInviteState(e, r);
                     break;
-                case wr.Knock:
+                case Rr.Knock:
                     this.accumulateKnockState(e, r);
                     break;
-                case wr.Join:
+                case Rr.Join:
                     this.knockRooms[e] ? delete this.knockRooms[e] : this.inviteRooms[e] && delete this.inviteRooms[e], this.accumulateJoinState(e, r, n);
                     break;
-                case wr.Leave:
+                case Rr.Leave:
                     this.knockRooms[e] ? delete this.knockRooms[e] : this.inviteRooms[e] ? delete this.inviteRooms[e] : delete this.joinRooms[e];
                     break;
                 default:
@@ -33572,12 +33572,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Ha(i, e) {
         e.state_key === null || e.state_key === void 0 || !e.type || (i[e.type] || (i[e.type] = Object.create(null)), i[e.type][e.state_key] = e);
     }
-    jv = (function(i) {
+    Fv = (function(i) {
         return i[i.Blocked = -1] = "Blocked", i[i.Unverified = 0] = "Unverified", i[i.Verified = 1] = "Verified", i;
     })({});
     zS = class {
         constructor(e){
-            y(this, "dehydrated", !1), this.deviceId = e.deviceId, this.userId = e.userId, this.algorithms = e.algorithms, this.keys = e.keys, this.verified = e.verified || jv.Unverified, this.signatures = e.signatures || new Map, this.displayName = e.displayName, this.dehydrated = !!e.dehydrated;
+            y(this, "dehydrated", !1), this.deviceId = e.deviceId, this.userId = e.userId, this.algorithms = e.algorithms, this.keys = e.keys, this.verified = e.verified || Fv.Unverified, this.signatures = e.signatures || new Map, this.displayName = e.displayName, this.dehydrated = !!e.dehydrated;
         }
         getFingerprint() {
             return this.keys.get("ed25519:".concat(this.deviceId));
@@ -33586,7 +33586,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return this.keys.get("curve25519:".concat(this.deviceId));
         }
     };
-    var gh = function() {}, JS = 10;
+    var mh = function() {}, JS = 10;
     class YS {
         constructor(e, t){
             var r, n = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {};
@@ -33617,7 +33617,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (!r) return !1;
             var n = e == se.BACKWARDS ? r.retreat(t) : r.advance(t);
             if (n) {
-                this.eventCount += n, gh("TimelineWindow: increased cap by " + n + " (now " + this.eventCount + ")");
+                this.eventCount += n, mh("TimelineWindow: increased cap by " + n + " (now " + this.eventCount + ")");
                 var a = this.eventCount - this.windowLimit;
                 return a > 0 && this.unpaginate(a, e != se.BACKWARDS), !0;
             }
@@ -33665,7 +33665,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             for(; e > 0;){
                 var n = t ? r.advance(e) : r.retreat(e);
                 if (n <= 0) throw new Error("Unable to unpaginate any further, but still have " + this.eventCount + " events");
-                e -= n, this.eventCount -= n, gh("TimelineWindow.unpaginate: dropped " + n + " (now " + this.eventCount + ")");
+                e -= n, this.eventCount -= n, mh("TimelineWindow.unpaginate: dropped " + n + " (now " + this.eventCount + ")");
             }
         }
         getEvents() {
@@ -33703,10 +33703,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return this.advance(e * -1) * -1;
         }
     }
-    var qi = "m.login.email.identity", yh = "m.login.msisdn", Ll = (function(i) {
+    var qi = "m.login.email.identity", gh = "m.login.msisdn", Ll = (function(i) {
         return i.Password = "m.login.password", i.Recaptcha = "m.login.recaptcha", i.Terms = "m.login.terms", i.Email = "m.login.email.identity", i.Msisdn = "m.login.msisdn", i.Sso = "m.login.sso", i.SsoUnstable = "org.matrix.login.sso", i.Dummy = "m.login.dummy", i.RegistrationToken = "m.login.registration_token", i.UnstableRegistrationToken = "org.matrix.msc3231.login.registration_token", i.OAuth = "m.oauth", i;
     })({});
-    class Bv extends Error {
+    class jv extends Error {
         constructor(e, t, r){
             super(e), y(this, "name", "NoAuthFlowFoundError"), this.required_stages = t, this.flows = r;
         }
@@ -33823,7 +33823,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     var a = yield r.requestCallback(e, n);
                     r.attemptAuthDeferred.resolve(a), r.attemptAuthDeferred = null;
                 } catch (f) {
-                    var s, o, l, d, u = f instanceof He ? f : null, c = (s = u == null || (o = u.data) === null || o === void 0 ? void 0 : o.flows) !== null && s !== void 0 ? s : null, h = ((l = r.data) === null || l === void 0 ? void 0 : l.flows) || !!c;
+                    var s, o, l, d, u = f instanceof ze ? f : null, c = (s = u == null || (o = u.data) === null || o === void 0 ? void 0 : o.flows) !== null && s !== void 0 ? s : null, h = ((l = r.data) === null || l === void 0 ? void 0 : l.flows) || !!c;
                     if (!u || u.httpStatus !== 401 || !u.data || !h) if (n) k.log("Background poll request failed doing UI auth: ignoring", f);
                     else {
                         var v;
@@ -33879,18 +33879,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             t.sort((u, c)=>this.scoreFlow(u) - this.scoreFlow(c));
             for (var a of t){
                 var s = !1, o = !1;
-                for (var l of a.stages)l === qi ? s = !0 : l == yh && (o = !0);
+                for (var l of a.stages)l === qi ? s = !0 : l == gh && (o = !0);
                 if (s == r && o == n) return a;
             }
             var d = [];
-            throw r && d.push(qi), n && d.push(yh), new Bv("No appropriate authentication flow found", d, t);
+            throw r && d.push(qi), n && d.push(gh), new jv("No appropriate authentication flow found", d, t);
         }
         firstUncompletedStage(e) {
             var t, r = ((t = this.data) === null || t === void 0 ? void 0 : t.completed) || [];
             return e.stages.find((n)=>!r.includes(n));
         }
     }
-    function $v(i, e) {
+    function Bv(i, e) {
         return new Promise((t, r)=>{
             var n = !0, a = i.open(e);
             a.onupgradeneeded = ()=>{
@@ -33901,7 +33901,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }, a.onerror = ()=>r(a.error);
         });
     }
-    var Wv = [
+    var $v = [
         (i)=>{
             i.createObjectStore("users", {
                 keyPath: [
@@ -33945,7 +33945,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ]
             });
         }
-    ], QS = Wv.length;
+    ], QS = $v.length;
     function Gi(i, e, t) {
         var r = i.openCursor(e);
         return new Promise((n, a)=>{
@@ -33964,7 +33964,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
         });
     }
-    function br(i) {
+    function _r(i) {
         return new Promise((e, t)=>{
             i.oncomplete = function(r) {
                 e(r);
@@ -33973,7 +33973,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
         });
     }
-    function Kv(i) {
+    function Wv(i) {
         return new Promise((e, t)=>{
             i.onsuccess = function(r) {
                 e(r);
@@ -33988,15 +33988,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         });
     }
     function Eo(i) {
-        return Kv(i).then((e)=>i.result);
+        return Wv(i).then((e)=>i.result);
     }
-    class Sh {
+    class yh {
         static exists(e, t) {
-            return t = "matrix-js-sdk:" + (t || "default"), $v(e, t);
+            return t = "matrix-js-sdk:" + (t || "default"), Bv(e, t);
         }
         constructor(e){
             var t = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "default";
-            y(this, "disconnected", !0), y(this, "_isNewlyCreated", !1), y(this, "pendingUserPresenceData", []), this.indexedDB = e, this.dbName = "matrix-js-sdk:" + t, this.syncAccumulator = new Fv;
+            y(this, "disconnected", !0), y(this, "_isNewlyCreated", !1), y(this, "pendingUserPresenceData", []), this.indexedDB = e, this.dbName = "matrix-js-sdk:" + t, this.syncAccumulator = new xv;
         }
         connect(e) {
             var t = this;
@@ -34005,12 +34005,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var r = this.indexedDB.open(this.dbName, QS);
             return r.onupgradeneeded = (n)=>{
                 var a = r.result, s = n.oldVersion;
-                k.log("LocalIndexedDBStoreBackend.connect: upgrading from ".concat(s)), s < 1 && (this._isNewlyCreated = !0), Wv.forEach((o, l)=>{
+                k.log("LocalIndexedDBStoreBackend.connect: upgrading from ".concat(s)), s < 1 && (this._isNewlyCreated = !0), $v.forEach((o, l)=>{
                     s <= l && o(a);
                 });
             }, r.onblocked = ()=>{
                 k.log("can't yet open LocalIndexedDBStoreBackend because it is open elsewhere");
-            }, k.log("LocalIndexedDBStoreBackend.connect: awaiting connection..."), Kv(r).then(_(function*() {
+            }, k.log("LocalIndexedDBStoreBackend.connect: awaiting connection..."), Wv(r).then(_(function*() {
                 k.log("LocalIndexedDBStoreBackend.connect: connected"), t.db = r.result, t.db.onversionchange = ()=>{
                     var n;
                     (n = t.db) === null || n === void 0 || n.close(), t.disconnected = !0, t.db = void 0;
@@ -34067,7 +34067,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     oob_written: !0,
                     state_key: 0
                 };
-                a.put(s), yield br(n), k.log("LL: backend done storing for ".concat(e, "!"));
+                a.put(s), yield _r(n), k.log("LL: backend done storing for ".concat(e, "!"));
             })();
         }
         clearOutOfBandMembers(e) {
@@ -34145,7 +34145,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             })();
         }
         persistSyncData(e, t) {
-            return k.log("Persisting sync data up to", e), Mn(()=>{
+            return k.log("Persisting sync data up to", e), On(()=>{
                 var r = this.db.transaction([
                     "sync"
                 ], "readwrite"), n = r.objectStore("sync");
@@ -34153,22 +34153,22 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     clobber: "-",
                     nextBatch: e,
                     roomsData: t
-                }), br(r).then(()=>{
+                }), _r(r).then(()=>{
                     k.log("Persisted sync data up to", e);
                 });
             });
         }
         persistAccountData(e) {
-            return Mn(()=>{
+            return On(()=>{
                 var t = this.db.transaction([
                     "accountData"
                 ], "readwrite"), r = t.objectStore("accountData");
                 for (var n of e)r.put(n);
-                return br(t).then();
+                return _r(t).then();
             });
         }
         persistUserPresenceEvents(e) {
-            return Mn(()=>{
+            return On(()=>{
                 var t = this.db.transaction([
                     "users"
                 ], "readwrite"), r = t.objectStore("users");
@@ -34176,11 +34176,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     userId: n[0],
                     event: n[1]
                 });
-                return br(t).then();
+                return _r(t).then();
             });
         }
         getUserPresenceEvents() {
-            return Mn(()=>{
+            return On(()=>{
                 var e = this.db.transaction([
                     "users"
                 ], "readonly"), t = e.objectStore("users");
@@ -34191,7 +34191,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
         }
         loadAccountData() {
-            return k.log("LocalIndexedDBStoreBackend: loading account data..."), Mn(()=>{
+            return k.log("LocalIndexedDBStoreBackend: loading account data..."), On(()=>{
                 var e = this.db.transaction([
                     "accountData"
                 ], "readonly"), t = e.objectStore("accountData");
@@ -34199,7 +34199,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
         }
         loadSyncData() {
-            return k.log("LocalIndexedDBStoreBackend: loading sync data..."), Mn(()=>{
+            return k.log("LocalIndexedDBStoreBackend: loading sync data..."), On(()=>{
                 var e = this.db.transaction([
                     "sync"
                 ], "readonly"), t = e.objectStore("sync");
@@ -34226,7 +34226,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 n.put({
                     clobber: "-",
                     options: e
-                }), yield br(r);
+                }), yield _r(r);
             })();
         }
         saveToDeviceBatches(e) {
@@ -34236,7 +34236,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     "to_device_queue"
                 ], "readwrite"), n = r.objectStore("to_device_queue");
                 for (var a of e)n.add(a);
-                yield br(r);
+                yield _r(r);
             })();
         }
         getOldestToDeviceBatch() {
@@ -34261,7 +34261,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var r = t.db.transaction([
                     "to_device_queue"
                 ], "readwrite"), n = r.objectStore("to_device_queue");
-                n.delete(e), yield br(r);
+                n.delete(e), yield _r(r);
             })();
         }
         getUserProfile(e) {
@@ -34293,7 +34293,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         userId: o
                     });
                 }
-                yield br(r);
+                yield _r(r);
             })();
         }
         removeUserProfiles(e) {
@@ -34305,7 +34305,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 for (var a of e)n.delete([
                     a
                 ]);
-                yield br(r);
+                yield _r(r);
             })();
         }
         destroy() {
@@ -34467,10 +34467,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     var tb = 1e3 * 60 * 5;
     class rb extends Cd {
         static exists(e, t) {
-            return Sh.exists(e, t);
+            return yh.exists(e, t);
         }
         constructor(e){
-            if (super(e), y(this, "startedUp", !1), y(this, "syncTs", 0), y(this, "userModifiedMap", {}), y(this, "emitter", new tt), y(this, "onClose", ()=>{
+            if (super(e), y(this, "startedUp", !1), y(this, "syncTs", 0), y(this, "userModifiedMap", {}), y(this, "emitter", new rt), y(this, "onClose", ()=>{
                 this.emitter.emit("closed");
             }), y(this, "getSavedSync", this.degradable(()=>this.backend.getSavedSync(), "getSavedSync")), y(this, "isNewlyCreated", this.degradable(()=>this.backend.isNewlyCreated(), "isNewlyCreated")), y(this, "getSavedSyncToken", this.degradable(()=>this.backend.getNextBatchToken(), "getSavedSyncToken")), y(this, "deleteAllData", this.degradable(()=>(super.deleteAllData(), this.backend.clearDatabase().then(()=>{
                     k.log("Deleted indexeddb data.");
@@ -34485,7 +34485,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ]), this.userModifiedMap[r.userId] = r.getLastModifiedTime());
                 return this.backend.syncToDatabase(t);
             }, null)), y(this, "setSyncData", this.degradable((t)=>this.backend.setSyncData(t), "setSyncData")), y(this, "getOutOfBandMembers", this.degradable((t)=>this.backend.getOutOfBandMembers(t), "getOutOfBandMembers")), y(this, "setOutOfBandMembers", this.degradable((t, r)=>(super.setOutOfBandMembers(t, r), this.backend.setOutOfBandMembers(t, r)), "setOutOfBandMembers")), y(this, "clearOutOfBandMembers", this.degradable((t)=>(super.clearOutOfBandMembers(t), this.backend.clearOutOfBandMembers(t)), "clearOutOfBandMembers")), y(this, "getClientOptions", this.degradable(()=>this.backend.getClientOptions(), "getClientOptions")), y(this, "storeClientOptions", this.degradable((t)=>(super.storeClientOptions(t), this.backend.storeClientOptions(t)), "storeClientOptions")), !e.indexedDB) throw new Error("Missing required option: indexedDB");
-            e.workerFactory ? this.backend = new eb(e.workerFactory, e.dbName) : this.backend = new Sh(e.indexedDB, e.dbName);
+            e.workerFactory ? this.backend = new eb(e.workerFactory, e.dbName) : this.backend = new yh(e.indexedDB, e.dbName);
         }
         on(e, t) {
             this.emitter.on(e, t);
@@ -34579,9 +34579,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function wo(i) {
         return "mx_pending_events_".concat(i);
     }
-    var rr = "crypto.", bh = rr + "migration", Ro = rr + "account", nb = rr + "cross_signing_keys", hs = rr + "inboundgroupsessions/", ib = rr + "inboundgroupsessions.withheld/", ab = rr + "rooms/", To = rr + "sessionsneedingbackup";
+    var nr = "crypto.", Sh = nr + "migration", Ro = nr + "account", nb = nr + "cross_signing_keys", hs = nr + "inboundgroupsessions/", ib = nr + "inboundgroupsessions.withheld/", ab = nr + "rooms/", To = nr + "sessionsneedingbackup";
     function xn(i) {
-        return rr + "sessions/" + i;
+        return nr + "sessions/" + i;
     }
     function Io(i, e) {
         return hs + i + "/" + e;
@@ -34596,7 +34596,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         static exists(e) {
             for(var t = e.length, r = 0; r < t; r++){
                 var n;
-                if ((n = e.key(r)) !== null && n !== void 0 && n.startsWith(rr)) return !0;
+                if ((n = e.key(r)) !== null && n !== void 0 && n.startsWith(nr)) return !0;
             }
             return !1;
         }
@@ -34613,13 +34613,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var e = this;
             return _(function*() {
                 var t;
-                return (t = Kt(e.store, bh)) !== null && t !== void 0 ? t : ai.NOT_STARTED;
+                return (t = Kt(e.store, Sh)) !== null && t !== void 0 ? t : ai.NOT_STARTED;
             })();
         }
         setMigrationState(e) {
             var t = this;
             return _(function*() {
-                cn(t.store, bh, e);
+                cn(t.store, Sh, e);
             })();
         }
         countEndToEndSessions(e, t) {
@@ -34749,11 +34749,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             t(r);
         }
         getSecretStorePrivateKey(e, t, r) {
-            var n = Kt(this.store, rr + "ssss_cache.".concat(r));
+            var n = Kt(this.store, nr + "ssss_cache.".concat(r));
             t(n);
         }
         storeSecretStorePrivateKey(e, t, r) {
-            cn(this.store, rr + "ssss_cache.".concat(t), r);
+            cn(this.store, nr + "ssss_cache.".concat(t), r);
         }
         doTxn(e, t, r) {
             return Promise.resolve(r(null));
@@ -34824,7 +34824,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     t(n.result || null);
                 } catch (a) {
-                    Ot(e, a);
+                    Mt(e, a);
                 }
             };
         }
@@ -34838,7 +34838,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     t(n.result || null);
                 } catch (a) {
-                    Ot(e, a);
+                    Mt(e, a);
                 }
             };
         }
@@ -34848,7 +34848,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     t(a.result || null);
                 } catch (s) {
-                    Ot(e, s);
+                    Mt(e, s);
                 }
             };
         }
@@ -34862,7 +34862,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     t(n.result);
                 } catch (a) {
-                    Ot(e, a);
+                    Mt(e, a);
                 }
             };
         }
@@ -34877,7 +34877,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 else try {
                     r(o);
                 } catch (d) {
-                    Ot(t, d);
+                    Mt(t, d);
                 }
             };
         }
@@ -34893,7 +34893,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         lastReceivedMessageTs: s.result.lastReceivedMessageTs
                     }) : n(null);
                 } catch (o) {
-                    Ot(r, o);
+                    Mt(r, o);
                 }
             };
         }
@@ -34919,7 +34919,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             var s = a.result;
                             s && (t.push(s.value), t.length < si && s.continue());
                         } catch (o) {
-                            Ot(r, o);
+                            Mt(r, o);
                         }
                     };
                 }), t.length === 0 ? null : t;
@@ -34944,7 +34944,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             };
                             for (var o of e)yield* s();
                         } catch (l) {
-                            Ot(n, l);
+                            Mt(n, l);
                         }
                     });
                     return function(n) {
@@ -34962,7 +34962,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     l.result ? a = l.result.session : a = null, s !== !1 && n(a, s);
                 } catch (c) {
-                    Ot(r, c);
+                    Mt(r, c);
                 }
             };
             var d = r.objectStore("inbound_group_sessions_withheld"), u = d.get([
@@ -34973,7 +34973,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     u.result ? s = u.result.session : s = null, a !== !1 && n(a, s);
                 } catch (c) {
-                    Ot(r, c);
+                    Mt(r, c);
                 }
             };
         }
@@ -35023,7 +35023,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                                 };
                             }
                         } catch (d) {
-                            Ot(r, d);
+                            Mt(r, d);
                         }
                     };
                 }), t.length === 0 ? null : t;
@@ -35048,7 +35048,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                             };
                             for (var o of e)yield* s();
                         } catch (l) {
-                            Ot(n, l);
+                            Mt(n, l);
                         }
                     });
                     return function(n) {
@@ -35063,7 +35063,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 try {
                     t(n.result || null);
                 } catch (a) {
-                    Ot(e, a);
+                    Mt(e, a);
                 }
             };
         }
@@ -35075,7 +35075,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 else try {
                     t(r);
                 } catch (o) {
-                    Ot(e, o);
+                    Mt(e, o);
                 }
             };
         }
@@ -35098,7 +35098,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return a.then(()=>s);
         }
     }
-    var Vv = [
+    var Kv = [
         (i)=>{
             ub(i);
         },
@@ -35172,9 +35172,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 ]
             });
         }
-    ], qv = Vv.length;
+    ], Vv = Kv.length;
     function db(i, e) {
-        k.log("Upgrading IndexedDBCryptoStore from version ".concat(e) + " to ".concat(qv)), Vv.forEach((t, r)=>{
+        k.log("Upgrading IndexedDBCryptoStore from version ".concat(e) + " to ".concat(Vv)), Kv.forEach((t, r)=>{
             e <= r && t(i);
         });
     }
@@ -35187,7 +35187,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             "requestBody.session_id"
         ]), e.createIndex("state", "state");
     }
-    function Ot(i, e) {
+    function Mt(i, e) {
         i._mx_abortexception = e;
         try {
             i.abort();
@@ -35206,7 +35206,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     Ne = class {
         static exists(e, t) {
-            return $v(e, t);
+            return Bv(e, t);
         }
         static existsAndIsNotMigrated(e, t) {
             return new Promise((r, n)=>{
@@ -35246,7 +35246,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     return;
                 }
                 k.log("connecting to indexeddb ".concat(this.dbName));
-                var r = this.indexedDB.open(this.dbName, qv);
+                var r = this.indexedDB.open(this.dbName, Vv);
                 r.onupgradeneeded = (n)=>{
                     var a = r.result, s = n.oldVersion;
                     db(a, s);
@@ -35368,7 +35368,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     y(Ne, "STORE_BACKUP", "sessions_needing_backup");
     var hb = (function(i) {
         return i.Email = "email", i.Phone = "msisdn", i;
-    })({}), Gv = new ut("oauth_aware_preferred", "org.matrix.msc3824.delegated_oidc_compatibility"), fb = Gv, vb = (function(i) {
+    })({}), qv = new ut("oauth_aware_preferred", "org.matrix.msc3824.delegated_oidc_compatibility"), fb = qv, vb = (function(i) {
         return i.Gitlab = "gitlab", i.Github = "github", i.Apple = "apple", i.Google = "google", i.Facebook = "facebook", i.Twitter = "twitter", i;
     })({}), pb = (function(i) {
         return i.LOGIN = "login", i.REGISTER = "register", i;
@@ -35393,24 +35393,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     var Sb = (function(i) {
         return i.Global = "Global", i.SetItemError = "setItem", i.GetItemError = "getItem", i.RemoveItemError = "removeItem", i.ClearError = "clear", i.QuotaExceededError = "QuotaExceededError", i;
     })({});
-    class bb extends tt {
+    class bb extends rt {
     }
-    var _b = new bb, Hv = ()=>new Ns;
+    var _b = new bb, Gv = ()=>new Ns;
+    function Hv(i) {
+        Gv = i;
+    }
     function zv(i) {
-        Hv = i;
-    }
-    function Jv(i) {
         var e, t, r;
         return i.store = (e = i.store) !== null && e !== void 0 ? e : new Cd({
             localStorage: globalThis.localStorage
-        }), i.scheduler = (t = i.scheduler) !== null && t !== void 0 ? t : new oi, i.cryptoStore = (r = i.cryptoStore) !== null && r !== void 0 ? r : Hv(), i;
+        }), i.scheduler = (t = i.scheduler) !== null && t !== void 0 ? t : new oi, i.cryptoStore = (r = i.cryptoStore) !== null && r !== void 0 ? r : Gv(), i;
     }
-    function Ms(i) {
-        return new Hs(Jv(i));
+    function Os(i) {
+        return new Hs(zv(i));
     }
     function Eb(i, e, t, r) {
         var n = arguments.length > 4 && arguments[4] !== void 0 ? arguments[4] : !0;
-        return new xv(i, e, t, Jv(r), n);
+        return new Nv(i, e, t, zv(r), n);
     }
     const wb = Object.freeze(Object.defineProperty({
         __proto__: null,
@@ -35418,13 +35418,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         AutoDiscovery: we,
         AutoDiscoveryAction: Ft,
         AutoDiscoveryError: qt,
-        Beacon: kf,
-        BeaconEvent: Qe,
+        Beacon: Cf,
+        BeaconEvent: Ze,
         CallEvent: ke,
-        CallFeedEvent: lr,
-        Category: wr,
+        CallFeedEvent: dr,
+        Category: Rr,
         ClientEvent: ie,
-        ClientPrefix: et,
+        ClientPrefix: tt,
         ClientStoppedError: Fy,
         ConditionKind: ht,
         ConditionOperator: Yg,
@@ -35435,11 +35435,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         DMMemberCountCondition: Xg,
         DebugLogger: Yl,
         Device: zS,
-        DeviceVerification: jv,
+        DeviceVerification: Fv,
         Direction: Ce,
         DuplicateStrategy: ea,
         EVENT_VISIBILITY_CHANGE_TYPE: _n,
-        EventEmitterEvents: Zh,
+        EventEmitterEvents: Qh,
         EventStatus: Se,
         EventTimeline: se,
         EventTimelineSet: Wn,
@@ -35451,26 +35451,26 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         GET_LOGIN_TOKEN_CAPABILITY: PS,
         GroupCall: cd,
         GroupCallEvent: We,
-        GroupCallIntent: Qf,
-        GroupCallState: it,
+        GroupCallIntent: Xf,
+        GroupCallState: at,
         GroupCallStatsReportEvent: Yi,
         GroupCallType: Ws,
         GuestAccess: Is,
         HTTPError: Tn,
         HistoryVisibility: Vn,
         HttpApiEvent: tl,
-        IdentityPrefix: Er,
+        IdentityPrefix: wr,
         IdentityProviderBrand: vb,
         IndexedDBCryptoStore: Ne,
         IndexedDBStore: rb,
         InteractiveAuth: XS,
         InvalidCryptoStoreError: Sd,
         InvalidCryptoStoreState: yd,
-        JoinRule: ev,
-        KNOWN_SAFE_ROOM_VERSION: Vf,
+        JoinRule: Zf,
+        KNOWN_SAFE_ROOM_VERSION: Kf,
         KeySignatureUploadError: xy,
         KnownMembership: Te,
-        LOCAL_NOTIFICATION_SETTINGS_PREFIX: nf,
+        LOCAL_NOTIFICATION_SETTINGS_PREFIX: rf,
         LocalStorageCryptoStore: Js,
         LocalStorageErrors: Sb,
         LocationAssetType: ni,
@@ -35495,36 +35495,36 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         M_TIMESTAMP: Zr,
         M_TOPIC: nd,
         MatrixClient: Hs,
-        MatrixError: He,
+        MatrixError: ze,
         MatrixEvent: Et,
         MatrixEventEvent: Fe,
-        MatrixHttpApi: $f,
-        MatrixSafetyError: Ff,
-        MatrixSafetyErrorCode: xf,
+        MatrixHttpApi: Bf,
+        MatrixSafetyError: xf,
+        MatrixSafetyErrorCode: Nf,
         MatrixScheduler: oi,
         MediaHandlerEvent: gn,
         MediaPrefix: Jn,
         MemoryCryptoStore: Ns,
         MemoryStore: Cd,
         Method: K,
-        MsgType: fr,
-        NoAuthFlowFoundError: Bv,
+        MsgType: vr,
+        NoAuthFlowFoundError: jv,
         NotificationCountType: xe,
-        OAUTH_AWARE_PREFERRED_FLOW_FIELD: Gv,
+        OAUTH_AWARE_PREFERRED_FLOW_FIELD: qv,
         OAuthGrantType: zr,
         OidcError: Rt,
         OidcTokenRefresher: CS,
         PUSHER_DEVICE_ID: fm,
         PUSHER_ENABLED: Xo,
         PendingEventOrdering: ui,
-        Poll: Pf,
+        Poll: Of,
         PollEvent: Wr,
         Preset: vd,
         ProfileKeyMSC4175Timezone: gb,
         ProfileKeyTimezone: mb,
         PushRuleActionName: Yr,
         PushRuleKind: yt,
-        REFERENCE_RELATION: gf,
+        REFERENCE_RELATION: mf,
         ReceiptType: It,
         RelatedRelations: yb,
         RelationType: Ve,
@@ -35536,28 +35536,28 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         RoomEvent: de,
         RoomMember: ua,
         RoomMemberEvent: kt,
-        RoomNameType: or,
+        RoomNameType: lr,
         RoomState: Ea,
         RoomStateEvent: be,
-        RoomStickyEventsEvent: kr,
-        RoomSummary: pf,
+        RoomStickyEventsEvent: Mr,
+        RoomSummary: vf,
         RoomType: zn,
-        RoomVersionStability: Wf,
-        RoomWidgetClient: xv,
+        RoomVersionStability: $f,
+        RoomWidgetClient: Nv,
         RoomWidgetClientEvent: cs,
         RuleId: gt,
         SERVICE_TYPES: hl,
         SSOAction: pb,
-        STABLE_MSC4133_EXTENDED_PROFILES: Cv,
+        STABLE_MSC4133_EXTENDED_PROFILES: Iv,
         SUPPORTED_MATRIX_VERSIONS: va,
-        SearchOrderBy: tv,
+        SearchOrderBy: ev,
         SearchResult: Ks,
-        SecretStorage: My,
-        ServerCapabilities: Kf,
-        SetPresence: qf,
+        SecretStorage: Oy,
+        ServerCapabilities: Wf,
+        SetPresence: Vf,
         SlidingSyncEvent: fl,
-        StatsReport: Pr,
-        SyncAccumulator: Fv,
+        StatsReport: Ar,
+        SyncAccumulator: xv,
         SyncState: je,
         THREAD_RELATION_TYPE: $e,
         Thread: Ge,
@@ -35567,24 +35567,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         TimelineIndex: Dl,
         TimelineWindow: YS,
         ToDeviceMessageId: js,
-        TokenRefreshError: Nf,
+        TokenRefreshError: Uf,
         TokenRefreshLogoutError: ad,
         TweakName: hd,
-        TypedEventEmitter: tt,
-        UNSIGNED_MEMBERSHIP_FIELD: af,
+        TypedEventEmitter: rt,
+        UNSIGNED_MEMBERSHIP_FIELD: nf,
         UNSIGNED_THREAD_ID_FIELD: _s,
-        UNSTABLE_ELEMENT_FUNCTIONAL_USERS: rf,
-        UNSTABLE_MSC2666_MUTUAL_ROOMS: Rv,
-        UNSTABLE_MSC2666_QUERY_MUTUAL_ROOMS: Tv,
-        UNSTABLE_MSC2666_SHARED_ROOMS: wv,
-        UNSTABLE_MSC2716_MARKER: tf,
+        UNSTABLE_ELEMENT_FUNCTIONAL_USERS: tf,
+        UNSTABLE_MSC2666_MUTUAL_ROOMS: wv,
+        UNSTABLE_MSC2666_QUERY_MUTUAL_ROOMS: Rv,
+        UNSTABLE_MSC2666_SHARED_ROOMS: Ev,
+        UNSTABLE_MSC2716_MARKER: ef,
         UNSTABLE_MSC3088_ENABLED: zo,
         UNSTABLE_MSC3088_PURPOSE: Ho,
-        UNSTABLE_MSC3089_BRANCH: Cr,
-        UNSTABLE_MSC3089_LEAF: ef,
+        UNSTABLE_MSC3089_BRANCH: kr,
+        UNSTABLE_MSC3089_LEAF: Zh,
         UNSTABLE_MSC3089_TREE_SUBTYPE: Jo,
-        UNSTABLE_MSC3852_LAST_SEEN_UA: MS,
-        UNSTABLE_MSC4133_EXTENDED_PROFILES: Iv,
+        UNSTABLE_MSC3852_LAST_SEEN_UA: OS,
+        UNSTABLE_MSC4133_EXTENDED_PROFILES: Tv,
         UNSTABLE_MSC4140_DELAYED_EVENTS: St,
         UNSTABLE_MSC4354_STICKY_EVENTS: Al,
         UnsupportedDelayedEventsEndpointError: Bt,
@@ -35593,20 +35593,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         User: Ur,
         UserEvent: xt,
         Visibility: sy,
-        anySignal: jf,
-        calculateRetryBackoff: Bf,
+        anySignal: Ff,
+        calculateRetryBackoff: jf,
         completeAuthorizationCodeGrant: RS,
-        createClient: Ms,
+        createClient: Os,
         createNewMatrixCall: fa,
         createRoomWidgetClient: Eb,
         decodeBase64: Yn,
-        decodeIdToken: Sv,
+        decodeIdToken: yv,
         determineFeatureSupport: ds,
         discoverAndValidateOIDCIssuerWellKnown: Rd,
         encodeBase64: ta,
-        encodeUnpaddedBase64: Yf,
+        encodeUnpaddedBase64: Jf,
         encodeUnpaddedBase64Url: ud,
-        fixNotificationCountOnDecryption: kv,
+        fixNotificationCountOnDecryption: Cv,
         generateAuthorizationParams: bS,
         generateAuthorizationUrl: _S,
         generateOidcAuthorizationUrl: ES,
@@ -35616,24 +35616,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         inMainTimelineForReceipt: _a,
         isDmMemberCountCondition: Qg,
         isEventTypeSame: km,
-        isPollEvent: Af,
+        isPollEvent: Pf,
         isSendDelayedEventRequestOpts: Ts,
         isTimestampInDuration: Zo,
         localStorageErrorsEventsEmitter: _b,
         parseErrorResponse: sd,
         registerOidcClient: yS,
         retryNetworkOperation: rl,
-        safeGetRetryAfterMs: Uf,
-        setCryptoStoreFactory: zv,
+        safeGetRetryAfterMs: Lf,
+        setCryptoStoreFactory: Hv,
         startDeviceAuthorization: TS,
-        threadFilterTypeToFilter: Ov,
+        threadFilterTypeToFilter: kv,
         threadIdForReceipt: ci,
         timeoutSignal: Bs,
-        validateAuthMetadata: yv,
+        validateAuthMetadata: gv,
         validateAuthMetadataAndKeys: Td,
-        validateBearerTokenResponse: Ev,
-        validateIdToken: bv,
-        validateStoredUserState: _v,
+        validateBearerTokenResponse: _v,
+        validateIdToken: Sv,
+        validateStoredUserState: bv,
         waitForDeviceAuthorization: IS
     }, Symbol.toStringTag, {
         value: "Module"
@@ -35644,9 +35644,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     try {
         Ul = globalThis.indexedDB;
     } catch  {}
-    Ul && zv(()=>new Ne(Ul, "matrix-js-sdk:crypto"));
+    Ul && Hv(()=>new Ne(Ul, "matrix-js-sdk:crypto"));
     globalThis.matrixcs = wb;
-    const Rb = 25e4, Tb = 16, za = 12, Ib = 256, Yv = 1, fs = new TextEncoder, Ja = new TextDecoder;
+    const Rb = 25e4, Tb = 16, za = 12, Ib = 256, Jv = 1, fs = new TextEncoder, Ja = new TextDecoder;
     function Nd(i) {
         return `vault:${i}`;
     }
@@ -35660,7 +35660,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         for(let r = 0; r < e.length; r++)t[r] = e.charCodeAt(r);
         return t;
     }
-    async function _h(i, e) {
+    async function bh(i, e) {
         const t = await crypto.subtle.importKey("raw", fs.encode(i), "PBKDF2", !1, [
             "deriveKey"
         ]);
@@ -35683,7 +35683,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         if (!e) return null;
         try {
             const t = JSON.parse(e);
-            return t.v !== Yv ? null : {
+            return t.v !== Jv ? null : {
                 salt: oa(t.salt),
                 verifierIv: oa(t.verifierIv),
                 verifierCt: oa(t.verifierCt)
@@ -35694,7 +35694,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     function Cb(i, e, t, r) {
         localStorage.setItem(Nd(i), JSON.stringify({
-            v: Yv,
+            v: Jv,
             salt: sa(e),
             verifierIv: sa(t),
             verifierCt: sa(r)
@@ -35730,7 +35730,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
         }
         async initialize(e, t, { persist: r = !1 } = {}) {
-            const n = crypto.getRandomValues(new Uint8Array(Tb)), a = await _h(t, n), s = crypto.getRandomValues(new Uint8Array(za)), o = fs.encode(`verify:${e}`), l = new Uint8Array(await crypto.subtle.encrypt({
+            const n = crypto.getRandomValues(new Uint8Array(Tb)), a = await bh(t, n), s = crypto.getRandomValues(new Uint8Array(za)), o = fs.encode(`verify:${e}`), l = new Uint8Array(await crypto.subtle.encrypt({
                 name: "AES-GCM",
                 iv: s
             }, a, o));
@@ -35739,7 +35739,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         async unlock(e, t, { persist: r = !1 } = {}) {
             const n = Co(e);
             if (!n) return !1;
-            const a = await _h(t, n.salt);
+            const a = await bh(t, n.salt);
             try {
                 const s = await crypto.subtle.decrypt({
                     name: "AES-GCM",
@@ -35863,41 +35863,41 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
     }
     const Le = new kb;
-    async function Ob(i) {
+    async function Mb(i) {
         const e = await Le.encryptString(i);
         return sa(e);
     }
-    async function Mb(i) {
+    async function Ob(i) {
         return Le.decryptString(oa(i));
     }
     function Ys(i) {
         return `mx_session_enc:${i}`;
     }
-    function Xv(i, e) {
+    function Yv(i, e) {
         return `vault_secret:${i}:${e}`;
     }
     async function Ps(i, e, t) {
         if (!Le.isUnlocked() || Le.getUserId() !== i) throw new Error("Vault locked");
-        localStorage.setItem(Xv(i, e), await Ob(t));
+        localStorage.setItem(Yv(i, e), await Mb(t));
     }
     async function Pb(i, e) {
         if (!Le.isUnlocked() || Le.getUserId() !== i) return null;
-        const t = localStorage.getItem(Xv(i, e));
+        const t = localStorage.getItem(Yv(i, e));
         if (!t) return null;
         try {
-            return await Mb(t);
+            return await Ob(t);
         } catch  {
             return null;
         }
     }
-    const Qv = "vault:last_user";
-    function Zv(i) {
-        localStorage.setItem(Qv, i);
+    const Xv = "vault:last_user";
+    function Qv(i) {
+        localStorage.setItem(Xv, i);
     }
     function Ab() {
-        return localStorage.getItem(Qv) || null;
+        return localStorage.getItem(Xv) || null;
     }
-    function ep(i) {
+    function Zv(i) {
         let e = 2166136261;
         for(let t = 0; t < i.length; t++)e ^= i.charCodeAt(t), e = Math.imul(e, 16777619);
         return e >>> 0;
@@ -35916,12 +35916,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         for(let n = 0; n < t.length; n++)r[n] = t.charCodeAt(n);
         return r;
     }
-    function Eh(i) {
+    function _h(i) {
         let e = "";
         for(let t = 0; t < i.length; t++)e += String.fromCharCode(i[t]);
         return btoa(e).replace(/=+$/, "");
     }
-    function wh(i) {
+    function Eh(i) {
         const e = i.length % 4 === 0 ? "" : "=".repeat(4 - i.length % 4), t = atob(i + e), r = new Uint8Array(t.length);
         for(let n = 0; n < t.length; n++)r[n] = t.charCodeAt(n);
         return r;
@@ -35971,40 +35971,40 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         "decrypt"
                     ]
                 },
-                iv: Eh(t),
+                iv: _h(t),
                 hashes: {
-                    sha256: Eh(n)
+                    sha256: _h(n)
                 }
             }
         };
     }
     async function Kb(i, e) {
         if (!e || !e.key || !e.key.k || !e.iv || !e.hashes?.sha256) throw new Error("Missing attachment envelope fields");
-        const t = jb(e.key.k), r = wh(e.iv), n = wh(e.hashes.sha256), a = await xd(i);
+        const t = jb(e.key.k), r = Eh(e.iv), n = Eh(e.hashes.sha256), a = await xd(i);
         if (n.length !== a.length) throw new Error("Hash length mismatch");
         let s = 0;
         for(let o = 0; o < n.length; o++)s |= n[o] ^ a[o];
         if (s !== 0) throw new Error("Hash mismatch — corrupt or tampered attachment");
         return $b(t, r, i);
     }
-    async function tp() {
+    async function ep() {
         try {
             return await navigator.storage.getDirectory();
         } catch  {
             return null;
         }
     }
-    async function rp(i) {
+    async function tp(i) {
         const e = await xd(xb.encode(i));
         let t = "";
         for(let r = 0; r < 16; r++)t += e[r].toString(16).padStart(2, "0");
         return `${Ub}${t}${Nb}`;
     }
-    async function np(i, e) {
+    async function rp(i, e) {
         if (!i || !e || !Le.isUnlocked()) return;
-        const t = await tp();
+        const t = await ep();
         if (t) try {
-            const r = await rp(i), n = await t.getFileHandle(r, {
+            const r = await tp(i), n = await t.getFileHandle(r, {
                 create: !0
             }), a = await Le.encryptBytes(e), s = await n.createWritable();
             await s.write(a), await s.close();
@@ -36014,17 +36014,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     async function Vb(i) {
         if (!i || !Le.isUnlocked()) return null;
-        const e = await tp();
+        const e = await ep();
         if (!e) return null;
         try {
-            const t = await rp(i), n = await (await e.getFileHandle(t)).getFile(), a = new Uint8Array(await n.arrayBuffer());
+            const t = await tp(i), n = await (await e.getFileHandle(t)).getFile(), a = new Uint8Array(await n.arrayBuffer());
             return await Le.decryptBytes(a);
         } catch  {
             return null;
         }
     }
     async function hn(i, { mime: e = "application/octet-stream", name: t = "file" } = {}) {
-        const r = ze();
+        const r = Je();
         if (!r) throw new Error("Not connected — cannot upload media");
         const n = i instanceof Uint8Array ? i : new Uint8Array(i), { data: a, info: s } = await Wb(n), o = new Blob([
             a
@@ -36035,7 +36035,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             name: t
         }), d = l && l.content_uri;
         if (!d) throw new Error("Upload returned no content_uri");
-        return await np(d, n), {
+        return await rp(d, n), {
             __media: 2,
             mxc: d,
             mime: e,
@@ -36074,7 +36074,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         if (!i || !i.mxc) return null;
         const e = await Vb(i.mxc);
         if (e) return e;
-        const t = ze();
+        const t = Je();
         if (!t) return null;
         const r = qb(t, i.mxc);
         if (!r.length) return null;
@@ -36086,27 +36086,27 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             const o = new Uint8Array(await s.arrayBuffer());
             let l;
-            return i.__media === 2 && i.file ? l = await Kb(o, i.file) : l = o, await np(i.mxc, l), l;
+            return i.__media === 2 && i.file ? l = await Kb(o, i.file) : l = o, await rp(i.mxc, l), l;
         } catch (s) {
             console.warn("[media] download failed:", s?.message || s);
         }
         return null;
     }
-    let ip = "io.matrix-events";
+    let np = "io.matrix-events";
     function Gb(i) {
-        ip = i;
+        np = i;
     }
-    function Oa() {
-        return ip;
+    function Ma() {
+        return np;
     }
     new TextEncoder;
     new TextDecoder;
     const Hb = new Set;
-    let Rh = navigator.onLine ? "online" : "offline", Nl = null;
+    let wh = navigator.onLine ? "online" : "offline", Nl = null;
     function Fd() {
         const i = zb();
-        if (i !== Rh) {
-            Rh = i;
+        if (i !== wh) {
+            wh = i;
             for (const e of Hb)try {
                 e(i);
             } catch (t) {
@@ -36119,7 +36119,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     window.addEventListener("online", Fd);
     window.addEventListener("offline", Fd);
-    function ap(i) {
+    function ip(i) {
         if (!i) return ()=>{};
         const e = (t)=>{
             Nl = t, Fd();
@@ -36130,7 +36130,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Yb(i) {
         i && localStorage.removeItem(Jb(i));
     }
-    let Xe = null, Vt = null;
+    let Qe = null, Vt = null;
     const Xb = [
         "does not have an m.room.create event",
         "No membership changes detected",
@@ -36156,26 +36156,26 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         };
         return t;
     }
-    const sp = Qb(), op = {
+    const ap = Qb(), sp = {
         initialSyncLimit: 1,
         lazyLoadMembers: !0,
         disablePresence: !0
     };
-    function lp(i) {
+    function op(i) {
         try {
             i.matrixRTC?.stop?.();
         } catch (e) {
-            Oe(`RTC disable skipped: ${e.message}`);
+            Me(`RTC disable skipped: ${e.message}`);
         }
         try {
             i.groupCallEventHandler?.stop?.();
         } catch (e) {
-            Oe(`GroupCall disable skipped: ${e.message}`);
+            Me(`GroupCall disable skipped: ${e.message}`);
         }
     }
-    let Oe = (i)=>console.log("[matrix]", i);
+    let Me = (i)=>console.log("[matrix]", i);
     function Zb(i) {
-        Oe = (e)=>{
+        Me = (e)=>{
             console.log("[matrix]", e), i(e);
         };
     }
@@ -36185,45 +36185,45 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     let As = null;
     const vs = "ssss_private_key_b64", t_ = "recovery_key_encoded";
-    function ze() {
-        return Xe;
+    function Je() {
+        return Qe;
     }
-    const r_ = "matrix-js-sdk::matrix-sdk-crypto", Th = "eomx:crypto-owner";
-    function dp() {
+    const r_ = "matrix-js-sdk::matrix-sdk-crypto", Rh = "eomx:crypto-owner";
+    function lp() {
         return new Promise((i)=>{
-            Oe("Clearing stale crypto store…");
+            Me("Clearing stale crypto store…");
             const e = indexedDB.deleteDatabase(r_);
             let t = null;
             const r = ()=>{
                 t && (clearTimeout(t), t = null), i();
             };
             e.onsuccess = ()=>{
-                Oe("Crypto store cleared"), r();
+                Me("Crypto store cleared"), r();
             }, e.onerror = ()=>{
-                Oe("Crypto store clear failed: " + (e.error?.message || "unknown")), r();
+                Me("Crypto store clear failed: " + (e.error?.message || "unknown")), r();
             }, e.onblocked = ()=>{
-                Oe("Crypto store delete blocked — waiting for connections to close"), t = setTimeout(()=>{
-                    Oe("Crypto store delete still blocked — proceeding anyway"), r();
+                Me("Crypto store delete blocked — waiting for connections to close"), t = setTimeout(()=>{
+                    Me("Crypto store delete still blocked — proceeding anyway"), r();
                 }, 3e3);
             };
         });
     }
-    async function up(i) {
-        const e = localStorage.getItem(Th);
-        e && e !== i && (Oe(`Crypto store belonged to ${e}; resetting for ${i}`), await dp()), localStorage.setItem(Th, i);
+    async function dp(i) {
+        const e = localStorage.getItem(Rh);
+        e && e !== i && (Me(`Crypto store belonged to ${e}; resetting for ${i}`), await lp()), localStorage.setItem(Rh, i);
     }
-    async function cp(i, e = 3e4) {
+    async function up(i, e = 3e4) {
         try {
             await Ds(i.initRustCrypto(), e, "Crypto init");
         } catch (t) {
-            Oe("Crypto init failed — clearing crypto store and retrying: " + t.message);
+            Me("Crypto init failed — clearing crypto store and retrying: " + t.message);
             try {
-                await dp();
+                await lp();
             } catch  {}
             await Ds(i.initRustCrypto(), e, "Crypto init (retry)");
         }
     }
-    function hp(i, e = 6e4) {
+    function cp(i, e = 6e4) {
         return new Promise((t, r)=>{
             const n = i.getSyncState && i.getSyncState();
             if (n === "PREPARED" || n === "SYNCING") {
@@ -36231,7 +36231,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 return;
             }
             const a = (l, d, u)=>{
-                if (Oe(`sync state: ${l}`), l === "PREPARED" || l === "SYNCING") o(), t();
+                if (Me(`sync state: ${l}`), l === "PREPARED" || l === "SYNCING") o(), t();
                 else if (l === "ERROR" && u && u.error) {
                     const c = u.error;
                     (c.httpStatus === 401 || c.httpStatus === 403 || c.errcode === "M_UNKNOWN_TOKEN") && (o(), r(new Error("Session expired — please log in again")));
@@ -36264,7 +36264,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         for(let t = 0; t < i.length; t++)e += String.fromCharCode(i[t]);
         return btoa(e);
     }
-    async function fp({ keys: i }) {
+    async function hp({ keys: i }) {
         const e = Object.keys(i)[0];
         if (!e) return null;
         const t = i[e], r = Le.getUserId();
@@ -36287,9 +36287,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 a
             ];
         } catch (a) {
-            Oe(`Passphrase-derived secret-storage key failed: ${a.message}`);
+            Me(`Passphrase-derived secret-storage key failed: ${a.message}`);
         }
-        if (!xl) return Oe("Recovery key required but no UI provider registered"), null;
+        if (!xl) return Me("Recovery key required but no UI provider registered"), null;
         const n = await xl();
         if (!n) return null;
         try {
@@ -36302,27 +36302,27 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 a
             ];
         } catch (a) {
-            return Oe(`Recovery key invalid: ${a.message}`), null;
+            return Me(`Recovery key invalid: ${a.message}`), null;
         }
     }
     async function i_(i, e) {
         const t = e && e.includes(":") ? e.split(":").slice(1).join(":") : new URL(i).hostname;
         try {
             const r = await Ds(we.findClientConfig(t), 1e4, "Homeserver discovery"), n = r["m.homeserver"] && r["m.homeserver"].state, a = r["m.homeserver"] && r["m.homeserver"].base_url;
-            if (n === "SUCCESS" && a) return Oe(`Discovered homeserver: ${a}`), a.replace(/\/+$/, "");
+            if (n === "SUCCESS" && a) return Me(`Discovered homeserver: ${a}`), a.replace(/\/+$/, "");
         } catch (r) {
-            Oe(`Discovery skipped: ${r.message}`);
+            Me(`Discovery skipped: ${r.message}`);
         }
         return i.replace(/\/+$/, "");
     }
-    async function vp(i, e) {
-        if (!Xe) return;
-        const t = Xe.getCrypto?.();
+    async function fp(i, e) {
+        if (!Qe) return;
+        const t = Qe.getCrypto?.();
         if (t) {
             As = i;
             try {
-                const r = await Xe.secretStorage.hasKey();
-                Oe(r ? "Linking secure backup…" : "Initializing secure backup…"), await t.bootstrapCrossSigning({
+                const r = await Qe.secretStorage.hasKey();
+                Me(r ? "Linking secure backup…" : "Initializing secure backup…"), await t.bootstrapCrossSigning({
                     authUploadDeviceSigningKeys: async (s)=>{
                         const o = e.startsWith("@") ? e.slice(1).split(":")[0] : e;
                         await s({
@@ -36343,29 +36343,29 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }), n?.encodedPrivateKey) try {
                     await Ps(e, t_, n.encodedPrivateKey), n.privateKey && await Ps(e, vs, Fl(n.privateKey));
                 } catch (s) {
-                    Oe(`Could not stash recovery key locally: ${s.message}`);
+                    Me(`Could not stash recovery key locally: ${s.message}`);
                 }
                 if (r) try {
                     await t.loadSessionBackupPrivateKeyFromSecretStorage();
                 } catch (s) {
-                    Oe(`Loading session backup key: ${s.message}`);
+                    Me(`Loading session backup key: ${s.message}`);
                 }
                 if (await t.getKeyBackupInfo()) try {
-                    await t.restoreKeyBackup(), Oe("Historical message keys restored");
+                    await t.restoreKeyBackup(), Me("Historical message keys restored");
                 } catch (s) {
-                    Oe(`Key backup restore: ${s.message}`);
+                    Me(`Key backup restore: ${s.message}`);
                 }
                 try {
                     await t.checkKeyBackupAndEnable();
                 } catch  {}
                 try {
-                    const s = Xe.getDeviceId();
+                    const s = Qe.getDeviceId();
                     s && await t.crossSignDevice(s);
                 } catch (s) {
-                    Oe(`Cross-signing this device: ${s.message}`);
+                    Me(`Cross-signing this device: ${s.message}`);
                 }
             } catch (r) {
-                Oe(`Secure backup setup failed (continuing): ${r.message}`);
+                Me(`Secure backup setup failed (continuing): ${r.message}`);
             } finally{
                 As = null;
             }
@@ -36386,15 +36386,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         for(let n = 0; n < t.length; n++)r[n] = t.charCodeAt(n);
         return Le.decryptJSON(r);
     }
-    function pp(i) {
+    function vp(i) {
         localStorage.removeItem(Ys(i));
     }
-    async function Ih(i, e, t, { persist: r = !1 } = {}) {
+    async function Th(i, e, t, { persist: r = !1 } = {}) {
         const n = e.replace(/^@/, "").split(":")[0];
-        Oe("Resolving homeserver…");
+        Me("Resolving homeserver…");
         const a = await i_(i, e);
-        Oe(`Using ${a}`), Oe("Authenticating…");
-        const s = Ms({
+        Me(`Using ${a}`), Me("Authenticating…");
+        const s = Os({
             baseUrl: a
         }), o = await Ds(s.login("m.login.password", {
             identifier: {
@@ -36404,33 +36404,33 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             password: t,
             initial_device_display_name: "Matrix Events"
         }), 3e4, "Login request");
-        return Oe(`Authenticated as ${o.user_id}`), Le.hasMeta(o.user_id) ? (!Le.isUnlocked() || Le.getUserId() !== o.user_id) && (Oe("Unlocking local vault…"), await Le.unlock(o.user_id, t, {
+        return Me(`Authenticated as ${o.user_id}`), Le.hasMeta(o.user_id) ? (!Le.isUnlocked() || Le.getUserId() !== o.user_id) && (Me("Unlocking local vault…"), await Le.unlock(o.user_id, t, {
             persist: r
-        }) || (Oe("Vault password mismatch — rotating to current password (prior local data is no longer readable)"), Le.wipe(o.user_id), Yb(o.user_id), await Le.initialize(o.user_id, t, {
+        }) || (Me("Vault password mismatch — rotating to current password (prior local data is no longer readable)"), Le.wipe(o.user_id), Yb(o.user_id), await Le.initialize(o.user_id, t, {
             persist: r
-        }))) : (Oe("Initializing local vault…"), await Le.initialize(o.user_id, t, {
+        }))) : (Me("Initializing local vault…"), await Le.initialize(o.user_id, t, {
             persist: r
-        })), Zv(o.user_id), await a_(o.user_id, {
+        })), Qv(o.user_id), await a_(o.user_id, {
             baseUrl: a,
             accessToken: o.access_token,
             userId: o.user_id,
             deviceId: o.device_id
-        }), Xe = Ms({
+        }), Qe = Os({
             baseUrl: a,
             accessToken: o.access_token,
             userId: o.user_id,
             deviceId: o.device_id,
             cryptoCallbacks: {
-                getSecretStorageKey: fp
+                getSecretStorageKey: hp
             },
-            logger: sp
-        }), await up(o.user_id), Oe("Initializing encryption…"), await cp(Xe), Oe("Starting sync…"), await Xe.startClient(op), lp(Xe), Vt && Vt(), Vt = ap(Xe), await hp(Xe), Oe("Sync ready"), await vp(t, o.user_id), {
-            client: Xe,
+            logger: ap
+        }), await dp(o.user_id), Me("Initializing encryption…"), await up(Qe), Me("Starting sync…"), await Qe.startClient(sp), op(Qe), Vt && Vt(), Vt = ip(Qe), await cp(Qe), Me("Sync ready"), await fp(t, o.user_id), {
+            client: Qe,
             userId: o.user_id,
             deviceId: o.device_id
         };
     }
-    async function mp(i) {
+    async function pp(i) {
         if (!Le.isUnlocked() || Le.getUserId() !== i) return null;
         let e;
         try {
@@ -36440,50 +36440,50 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         if (!e) return null;
         const { baseUrl: t, accessToken: r, userId: n, deviceId: a } = e;
-        Xe = Ms({
+        Qe = Os({
             baseUrl: t,
             accessToken: r,
             userId: n,
             deviceId: a,
             cryptoCallbacks: {
-                getSecretStorageKey: fp
+                getSecretStorageKey: hp
             },
-            logger: sp
-        }), await up(n), Oe("Restoring session…");
+            logger: ap
+        }), await dp(n), Me("Restoring session…");
         try {
-            await cp(Xe);
+            await up(Qe);
         } catch (o) {
-            Oe(`Crypto init failed (continuing offline): ${o.message}`);
+            Me(`Crypto init failed (continuing offline): ${o.message}`);
         }
         let s = !1;
         try {
-            await Xe.startClient(op), lp(Xe), Vt && Vt(), Vt = ap(Xe);
+            await Qe.startClient(sp), op(Qe), Vt && Vt(), Vt = ip(Qe);
             try {
-                await hp(Xe, 12e3);
+                await cp(Qe, 12e3);
             } catch (o) {
-                /Session expired/i.test(o.message) && (s = !0), Oe(`Sync deferred (${o.message}); local data available`);
+                /Session expired/i.test(o.message) && (s = !0), Me(`Sync deferred (${o.message}); local data available`);
             }
         } catch (o) {
-            Oe(`Sync start failed (continuing offline): ${o.message}`);
+            Me(`Sync start failed (continuing offline): ${o.message}`);
         }
         if (s) {
             try {
-                Xe.stopClient();
+                Qe.stopClient();
             } catch  {}
-            return Vt && (Vt(), Vt = null), Xe = null, pp(i), Oe("Saved session was rejected by the server — log in again to refresh credentials."), null;
+            return Vt && (Vt(), Vt = null), Qe = null, vp(i), Me("Saved session was rejected by the server — log in again to refresh credentials."), null;
         }
-        return Xe;
+        return Qe;
     }
     async function o_(i, e, { persist: t = !1 } = {}) {
         if (!await Le.unlock(i, e, {
             persist: t
         })) throw new Error("Invalid password");
-        if (Zv(i), !localStorage.getItem(Ys(i))) return {
+        if (Qv(i), !localStorage.getItem(Ys(i))) return {
             userId: i,
             online: !1,
             needsLogin: !0
         };
-        const n = await mp(i);
+        const n = await pp(i);
         if (!n) return {
             userId: i,
             online: !1,
@@ -36491,9 +36491,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         };
         const a = n.getSyncState && n.getSyncState(), s = a === "PREPARED" || a === "SYNCING";
         if (s) try {
-            await vp(e, i);
+            await fp(e, i);
         } catch (o) {
-            Oe(`Secure backup link skipped: ${o.message}`);
+            Me(`Secure backup link skipped: ${o.message}`);
         }
         return {
             userId: i,
@@ -36504,16 +36504,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     async function l_() {
         const i = Ab();
         if (!i || !Le.hasMeta(i) || !await Le.tryAdoptStashedKey(i)) return null;
-        Oe("Resuming session…");
+        Me("Resuming session…");
         let t = !1;
         try {
-            const r = await mp(i);
+            const r = await pp(i);
             if (r) {
                 const n = r.getSyncState && r.getSyncState();
                 t = n === "PREPARED" || n === "SYNCING";
             }
         } catch (r) {
-            Oe(`Auto-restore: ${r.message}`);
+            Me(`Auto-restore: ${r.message}`);
         }
         return {
             userId: i,
@@ -36522,23 +36522,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     async function d_() {
         const i = Le.getUserId();
-        if (Vt && (Vt(), Vt = null), Xe) {
+        if (Vt && (Vt(), Vt = null), Qe) {
             try {
-                Xe.stopClient();
+                Qe.stopClient();
             } catch  {}
             try {
-                await Xe.logout(!0);
+                await Qe.logout(!0);
             } catch  {}
-            Xe = null;
+            Qe = null;
         }
-        i && pp(i), Le.lock();
+        i && vp(i), Le.lock();
     }
     function u_(i) {
         return Le.hasMeta(i);
     }
-    const gp = ()=>`${Oa()}.meta`;
+    const mp = ()=>`${Ma()}.meta`;
     async function c_(i, e, t = {}) {
-        const r = ze();
+        const r = Je();
         if (!r) throw new Error("Not connected");
         return (await r.createRoom({
             name: i,
@@ -36546,10 +36546,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             preset: "private_chat",
             initial_state: [
                 {
-                    type: gp(),
+                    type: mp(),
                     state_key: "",
                     content: {
-                        app: Oa(),
+                        app: Ma(),
                         room_type: e,
                         created_at: new Date().toISOString(),
                         ...t
@@ -36559,9 +36559,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         })).room_id;
     }
     function h_(i = null) {
-        const e = ze();
+        const e = Je();
         if (!e) return [];
-        const t = Oa(), r = gp(), n = e.getRooms(), a = [];
+        const t = Ma(), r = mp(), n = e.getRooms(), a = [];
         for (const s of n){
             const o = s.getMyMembership();
             if (o !== "join" && o !== "invite") continue;
@@ -36586,7 +36586,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return a;
     }
     function f_(i) {
-        const e = ze();
+        const e = Je();
         if (!e) throw new Error("Not connected");
         const t = ()=>i(), r = ()=>i(), n = ()=>i();
         return e.on(ie.Room, t), e.on(de.MyMembership, r), e.on(be.Events, n), ()=>{
@@ -36594,12 +36594,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         };
     }
     async function v_(i, e) {
-        const t = ze();
+        const t = Je();
         if (!t) throw new Error("Not connected");
         await t.invite(i, e);
     }
     async function p_(i) {
-        const e = ze();
+        const e = Je();
         if (!e) return;
         const t = e.getRoom(i);
         if (t) try {
@@ -36609,7 +36609,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
     }
     function m_(i) {
-        const e = ze();
+        const e = Je();
         if (!e) return [];
         const t = e.getRoom(i);
         if (!t) return [];
@@ -36622,7 +36622,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }));
     }
     function g_(i, e) {
-        const t = ze();
+        const t = Je();
         if (!t) throw new Error("Not connected");
         const r = (n, a)=>{
             if (a.roomId !== i) return;
@@ -36631,7 +36631,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         };
         return t.on(be.Events, r), ()=>t.removeListener(be.Events, r);
     }
-    const y_ = "org.dfr.explorer", yp = "dfr.dataset", S_ = "mnhQTdIYDA7UoY2l", jd = `https://services7.arcgis.com/${S_}/arcgis/rest/services`, b_ = `${jd}?f=json`, __ = `${jd}/678dee26-6aa8-4d60-bf1c-30c7b0f6b517-production/FeatureServer/0`;
+    const y_ = "org.dfr.explorer", gp = "dfr.dataset", S_ = "mnhQTdIYDA7UoY2l", jd = `https://services7.arcgis.com/${S_}/arcgis/rest/services`, b_ = `${jd}?f=json`, __ = `${jd}/678dee26-6aa8-4d60-bf1c-30c7b0f6b517-production/FeatureServer/0`;
     function E_(i, e = !1) {
         const t = {};
         for (const r of i && i.services || []){
@@ -36665,7 +36665,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         };
         return `${i}/0/query?${new URLSearchParams(r).toString()}`;
     }
-    function Ch(i, e) {
+    function Ih(i, e) {
         const t = {
             where: "1=1",
             outFields: "*",
@@ -36765,7 +36765,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             geometry: t
         };
     }
-    function O_(i) {
+    function M_(i) {
         if (!i || typeof i != "object" || !Array.isArray(i.g) || i.id == null) return null;
         const e = i.g;
         if (!(e.length === 0 || Array.isArray(e[0]) && Array.isArray(e[0][0]) && typeof e[0][0][0] == "number")) return null;
@@ -36790,7 +36790,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         };
     }
     function Qi(i) {
-        const e = O_(i), t = e || (i && i.type === "Feature" ? i : {
+        const e = M_(i), t = e || (i && i.type === "Feature" ? i : {
             properties: i && i.properties || i,
             geometry: i && i.geometry || null
         }), { meta: r, geometry: n } = k_(t);
@@ -36799,7 +36799,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             geometry: n || null
         };
     }
-    function M_(i) {
+    function O_(i) {
         const e = i || {};
         let t = fn(e.lat ?? e.latitude), r = fn(e.lng ?? e.lon ?? e.longitude);
         const n = e.centroid ?? e.center ?? e.centre ?? e.centr ?? e.geo ?? null;
@@ -36845,22 +36845,22 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function U_(i) {
         return i && i.length >= 2 && i[0] === 31 && i[1] === 139;
     }
-    async function Sp(i, e) {
+    async function yp(i, e) {
         const t = new Response(new Blob([
             i
         ])).body.pipeThrough(e);
         return new Uint8Array(await new Response(t).arrayBuffer());
     }
     function N_(i) {
-        return typeof CompressionStream > "u" ? Promise.resolve(i) : Sp(i, new CompressionStream("gzip"));
+        return typeof CompressionStream > "u" ? Promise.resolve(i) : yp(i, new CompressionStream("gzip"));
     }
     function x_(i) {
-        return typeof DecompressionStream > "u" ? Promise.resolve(i) : Sp(i, new DecompressionStream("gzip"));
+        return typeof DecompressionStream > "u" ? Promise.resolve(i) : yp(i, new DecompressionStream("gzip"));
     }
-    function kh(i) {
+    function Ch(i) {
         return i.flight_id || (i.object_id != null ? "oid_" + i.object_id : null);
     }
-    async function _r(i) {
+    async function Er(i) {
         const e = i.map((t)=>JSON.stringify(t)).join(`
 `);
         return N_(D_.encode(e));
@@ -36880,12 +36880,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     function Za(i, e) {
         const t = new Map;
         for (const a of i){
-            const s = kh(a);
+            const s = Ch(a);
             s && t.set(s, a);
         }
         let r = 0;
         for (const a of e){
-            const s = kh(a);
+            const s = Ch(a);
             s && (t.has(s) || r++, t.set(s, a));
         }
         return {
@@ -36899,13 +36899,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         let e = "len:" + i.length + ";";
         const t = Math.max(1, Math.floor(i.length / 4096));
         for(let r = 0; r < i.length; r += t)e += i[r] + ",";
-        return ep(e);
+        return Zv(e);
     }
     const j_ = "dfrset_", B_ = ".bin";
-    function bp(i) {
-        return `${j_}${ep(i).toString(16)}${B_}`;
+    function Sp(i) {
+        return `${j_}${Zv(i).toString(16)}${B_}`;
     }
-    async function _p() {
+    async function bp() {
         try {
             return await navigator.storage.getDirectory();
         } catch  {
@@ -36914,10 +36914,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     async function vn(i, e) {
         if (!Le.isUnlocked()) return !1;
-        const t = await _p();
+        const t = await bp();
         if (!t) return !1;
         try {
-            const r = await t.getFileHandle(bp(i), {
+            const r = await t.getFileHandle(Sp(i), {
                 create: !0
             }), n = await Le.encryptBytes(e), a = await r.createWritable();
             return await a.write(n), await a.close(), !0;
@@ -36927,18 +36927,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     async function $_(i) {
         if (!Le.isUnlocked()) return null;
-        const e = await _p();
+        const e = await bp();
         if (!e) return null;
         try {
-            const r = await (await e.getFileHandle(bp(i))).getFile(), n = new Uint8Array(await r.arrayBuffer());
+            const r = await (await e.getFileHandle(Sp(i))).getFile(), n = new Uint8Array(await r.arrayBuffer());
             return await Le.decryptBytes(n);
         } catch  {
             return null;
         }
     }
-    const Bd = ()=>`${Oa()}.dataset`;
+    const Bd = ()=>`${Ma()}.dataset`;
     function Br(i) {
-        const e = ze();
+        const e = Je();
         if (!e) return null;
         const t = e.getRoom(i);
         if (!t) return null;
@@ -36946,12 +36946,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         return r ? r.getContent() : null;
     }
     async function es(i, e) {
-        const t = ze();
+        const t = Je();
         if (!t) throw new Error("Not connected");
         await t.sendStateEvent(i, Bd(), e, "");
     }
     function W_(i, e) {
-        const t = ze();
+        const t = Je();
         if (!t) return ()=>{};
         const r = Bd(), n = (a, s)=>{
             s.roomId === i && a.getType() === r && e(a.getContent());
@@ -36986,7 +36986,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         });
         return n && typeof DecompressionStream < "u" && (s = s.pipeThrough(new DecompressionStream("gzip"))), s.pipeThrough(new TextDecoderStream);
     }
-    async function* Oh(i, e) {
+    async function* kh(i, e) {
         const t = i.getReader();
         try {
             for(;;){
@@ -37065,7 +37065,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         e.trim() && (yield JSON.parse(e.trim()));
     }
-    const Ep = 1145459267, V_ = 1, Gn = 22;
+    const _p = 1145459267, V_ = 1, Gn = 22;
     function $d(i) {
         let e = 2166136261, t = 3421674724;
         for(let r = 0; r < i.length; r++){
@@ -37077,10 +37077,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             t >>> 0
         ];
     }
-    const wp = (i, e)=>i[0] === e[0] && i[1] === e[1];
-    function Rp(i, e, t, r, n = 0) {
+    const Ep = (i, e)=>i[0] === e[0] && i[1] === e[1];
+    function wp(i, e, t, r, n = 0) {
         const a = new ArrayBuffer(Gn + r.length), s = new DataView(a), o = new Uint8Array(a);
-        return s.setUint32(0, Ep), s.setUint8(4, 1), s.setUint8(5, n), s.setUint16(6, i), s.setUint16(8, e & 65535), s.setUint32(10, t[0]), s.setUint32(14, t[1]), s.setUint32(18, r.length), o.set(r, Gn), o;
+        return s.setUint32(0, _p), s.setUint8(4, 1), s.setUint8(5, n), s.setUint16(6, i), s.setUint16(8, e & 65535), s.setUint32(10, t[0]), s.setUint32(14, t[1]), s.setUint32(18, r.length), o.set(r, Gn), o;
     }
     function q_(i, e) {
         const t = Math.max(1, e | 0), r = Math.max(1, Math.ceil(i.length / t)), n = [], a = [];
@@ -37090,7 +37090,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         ];
         for(let o = 0; o < r; o++){
             const l = i.subarray(o * t, Math.min((o + 1) * t, i.length)), d = $d(l);
-            n.push(Rp(o, r, s, l, o === r - 1 ? V_ : 0)), a.push({
+            n.push(wp(o, r, s, l, o === r - 1 ? V_ : 0)), a.push({
                 i: o,
                 size: l.length,
                 self: d,
@@ -37104,10 +37104,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             head: s
         };
     }
-    function Tp(i) {
+    function Rp(i) {
         if (i.length < Gn) throw new Error("block too short");
         const e = new DataView(i.buffer, i.byteOffset, i.byteLength);
-        if (e.getUint32(0) !== Ep) throw new Error("bad block magic");
+        if (e.getUint32(0) !== _p) throw new Error("bad block magic");
         const t = e.getUint8(5), r = e.getUint16(6), n = e.getUint16(8), a = [
             e.getUint32(10),
             e.getUint32(14)
@@ -37149,12 +37149,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     c.error(new Error(`block ${n[l].i} unavailable`));
                     return;
                 }
-                const v = Tp(h);
+                const v = Rp(h);
                 if (v.index !== l) {
                     c.error(new Error(`chain gap at index ${l}`));
                     return;
                 }
-                if (!wp(v.prev, d)) {
+                if (!Ep(v.prev, d)) {
                     c.error(new Error(`broken chain link at block ${l}`));
                     return;
                 }
@@ -37163,7 +37163,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         });
     }
     function H_(i) {
-        const e = i.map(Tp).sort((o, l)=>o.index - l.index), t = e.length;
+        const e = i.map(Rp).sort((o, l)=>o.index - l.index), t = e.length;
         if (!t) return new Uint8Array(0);
         let r = [
             0,
@@ -37173,7 +37173,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             const l = e[o];
             if (l.index !== o) throw new Error(`chain gap at index ${o}`);
             if (l.total && l.total !== t) throw new Error(`block count mismatch (${l.total} vs ${t})`);
-            if (!wp(l.prev, r)) throw new Error(`broken chain link at block ${o}`);
+            if (!Ep(l.prev, r)) throw new Error(`broken chain link at block ${o}`);
             r = l.self, n += l.payload.length;
         }
         const a = new Uint8Array(n);
@@ -37223,17 +37223,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         const e = String(i).toLowerCase();
         return e.endsWith(".gz") || e.endsWith(".gzip") ? "gzip" : e.endsWith(".ndjson") || e.endsWith(".jsonl") ? "ndjson" : e.endsWith(".geojson") ? "geojson" : e.endsWith(".json") ? "json" : "binary";
     }
-    const Oo = 40;
-    function Ph(i) {
-        if (!Array.isArray(i) || i.length <= Oo) return i;
-        const e = (i.length - 1) / (Oo - 1), t = [];
-        for(let r = 0; r < Oo; r++)t.push(i[Math.round(r * e)]);
+    const Mo = 40;
+    function Oh(i) {
+        if (!Array.isArray(i) || i.length <= Mo) return i;
+        const e = (i.length - 1) / (Mo - 1), t = [];
+        for(let r = 0; r < Mo; r++)t.push(i[Math.round(r * e)]);
         return t;
     }
     function X_(i) {
         if (!i || !i.coordinates) return null;
         if (i.type === "MultiLineString") {
-            const e = i.coordinates.filter((t)=>Array.isArray(t) && t.length > 1).sort((t, r)=>r.length - t.length).slice(0, 6).map(Ph);
+            const e = i.coordinates.filter((t)=>Array.isArray(t) && t.length > 1).sort((t, r)=>r.length - t.length).slice(0, 6).map(Oh);
             return e.length ? {
                 type: "MultiLineString",
                 coordinates: e
@@ -37241,7 +37241,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         return i.type === "LineString" ? {
             type: "LineString",
-            coordinates: Ph(i.coordinates)
+            coordinates: Oh(i.coordinates)
         } : null;
     }
     function Q_(i) {
@@ -37301,7 +37301,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             done: !0
         }), v;
     }
-    const Ah = 300, Xt = {
+    const Ph = 300, Xt = {
         events: [],
         _subs: new Set,
         _seq: 0,
@@ -37313,7 +37313,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 data: t,
                 ts: Date.now()
             };
-            this.events.push(r), this.events.length > Ah && this.events.splice(0, this.events.length - Ah);
+            this.events.push(r), this.events.length > Ph && this.events.splice(0, this.events.length - Ph);
             for (const n of this._subs)try {
                 n(r);
             } catch  {}
@@ -37340,11 +37340,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             for (const e of this.events)i[e.kind] != null && i[e.kind]++;
             return i;
         }
-    }, Dh = 1e3, Ls = {
+    }, Ah = 1e3, Ls = {
         lines: [],
         _subs: new Set,
         write (i) {
-            this.lines.push(i), this.lines.length > Dh && this.lines.splice(0, this.lines.length - Dh);
+            this.lines.push(i), this.lines.length > Ah && this.lines.splice(0, this.lines.length - Ah);
             for (const e of this._subs)try {
                 e(i);
             } catch  {}
@@ -37366,7 +37366,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         swarm: (i, e)=>Xt.push("swarm", i, e),
         info: (i, e)=>Xt.push("info", i, e),
         err: (i, e)=>Xt.push("err", i, e)
-    }, Mo = "gzip-ndjson", eE = 50 * 1024 * 1024, tE = 24 * 1024 * 1024, rE = 25, nE = 30 * 6e4, Lh = (i)=>`dfr.localver.${i}`, iE = new TextEncoder, aE = new TextDecoder;
+    }, Oo = "gzip-ndjson", eE = 50 * 1024 * 1024, tE = 24 * 1024 * 1024, rE = 25, nE = 30 * 6e4, Dh = (i)=>`dfr.localver.${i}`, iE = new TextEncoder, aE = new TextDecoder;
     class sE {
         constructor({ log: e } = {}){
             this.log = e || (()=>{}), this.roomId = null, this.flights = [], this.agencies = [], this.meta = null, this.localVersion = 0, this.dirty = 0, this.lastPublish = 0, this._mediaLimit = eE, this.onChange = null, this.onBusy = null;
@@ -37383,7 +37383,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         async _mediaSizeLimit() {
             try {
-                const t = (ze()?.getMediaConfig ? await ze().getMediaConfig() : null)?.["m.upload.size"];
+                const t = (Je()?.getMediaConfig ? await Je().getMediaConfig() : null)?.["m.upload.size"];
                 typeof t == "number" && t > 0 && (this._mediaLimit = t);
             } catch  {}
             return this._mediaLimit;
@@ -37393,7 +37393,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return Math.max(256 * 1024, Math.min(e - (1 << 20), tE));
         }
         async open(e) {
-            this.roomId = e, this.flights = [], this.dirty = 0, this.localVersion = +localStorage.getItem(Lh(e)) || 0;
+            this.roomId = e, this.flights = [], this.dirty = 0, this.localVersion = +localStorage.getItem(Dh(e)) || 0;
             const t = await $_(e);
             return t && (this.flights = await Qa(t), this.log(`Loaded ${this.flights.length} flights from local store.`, "mut"), this._notify()), this.meta = Br(e), this.meta && this.meta.version > this.localVersion && await this.sync(), await this._loadAgencies(), {
                 hydrated: !!this.meta?.hydrated,
@@ -37411,11 +37411,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
         }
         async hydrateAgencies(e, { format: t = "auto", signal: r, onProgress: n } = {}) {
-            const a = await jl(e.body || e.stream()), s = Oh(a, r), o = e.name || e.url || "", d = t === "jsonl" || t === "ndjson" || /\.(ndjson|jsonl)$/i.test(o) ? $l(s) : Bl(s), u = new Set, c = [];
+            const a = await jl(e.body || e.stream()), s = kh(a, r), o = e.name || e.url || "", d = t === "jsonl" || t === "ndjson" || /\.(ndjson|jsonl)$/i.test(o) ? $l(s) : Bl(s), u = new Set, c = [];
             let h = 0;
             for await (const R of d){
                 if (r?.aborted) break;
-                const E = M_(R.properties || R), C = A_(E);
+                const E = O_(R.properties || R), C = A_(E);
                 C && !u.has(C) && (u.add(C), c.push(E)), n && ++h % 500 === 0 && n({
                     seen: h,
                     kept: c.length
@@ -37423,7 +37423,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             if (!c.length) throw new Error("No agency records found (check the data shape).");
             this.agencies = c;
-            const v = await _r(c), f = await hn(v, {
+            const v = await Er(c), f = await hn(v, {
                 mime: "application/gzip",
                 name: "dfr-agencies.ndjson.gz"
             }), p = Br(this.roomId) || {}, S = (p.version || this.localVersion || 0) + 1;
@@ -37433,7 +37433,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 agencies_count: c.length,
                 version: S,
                 updated_at: Date.now(),
-                updated_by: ze()?.getUserId() || null
+                updated_by: Je()?.getUserId() || null
             }), this._adoptVersion(S), this.log(`Loaded ${c.length} agencies.`, "ok"), this._notify(), {
                 agencies: c.length
             };
@@ -37480,7 +37480,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             const r = await this._indexFromManifest(t);
             if (!r.length) throw new Error("No flight records found in the archive (check the data shape).");
             this.flights = r;
-            const n = await _r(r);
+            const n = await Er(r);
             await vn(this.roomId, n);
             const a = await hn(n, {
                 mime: "application/gzip",
@@ -37491,7 +37491,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 count: r.length,
                 version: s,
                 updated_at: Date.now(),
-                updated_by: ze()?.getUserId() || null
+                updated_by: Je()?.getUserId() || null
             };
             return await es(this.roomId, o), this.meta = o, this._adoptVersion(s), this.log(`Index ready: ${r.length} flights (v${s}).`, "ok"), this._notify(), {
                 flights: r.length,
@@ -37516,7 +37516,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (e.mode === "chunked-raw") {
                     this.log(`Indexing ${s.chunk_count} chained blocks (${(s.total_bytes / 1073741824).toFixed(2)} GB)…`, "mut");
                     const o = await this._indexFromManifest(s);
-                    return this._adopt(o, e.version), await vn(this.roomId, await _r(this.flights)), this.log(`Indexed ${o.length} flights from chained dataset.`, "ok"), bt.sync(`Loaded ${o.length.toLocaleString()} flights from ${s.chunk_count} blocks`, {
+                    return this._adopt(o, e.version), await vn(this.roomId, await Er(this.flights)), this.log(`Indexed ${o.length} flights from chained dataset.`, "ok"), bt.sync(`Loaded ${o.length.toLocaleString()} flights from ${s.chunk_count} blocks`, {
                         flights: o.length,
                         blocks: s.chunk_count
                     }), this._notify(), {
@@ -37535,7 +37535,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 reason: "no-bytes"
             };
             const r = await Qa(t), { merged: n, added: a } = Za(this.flights, r);
-            return this.flights = n, this._adoptVersion(e.version), await vn(this.roomId, await _r(this.flights)), this.log(`Synced snapshot v${e.version}: ${r.length} records (${a} new).`, "ok"), bt.sync(`Synced snapshot v${e.version} — ${a.toLocaleString()} new of ${r.length.toLocaleString()}`, {
+            return this.flights = n, this._adoptVersion(e.version), await vn(this.roomId, await Er(this.flights)), this.log(`Synced snapshot v${e.version}: ${r.length} records (${a} new).`, "ok"), bt.sync(`Synced snapshot v${e.version} — ${a.toLocaleString()} new of ${r.length.toLocaleString()}`, {
                 version: e.version,
                 added: a
             }), this._notify(), {
@@ -37544,7 +37544,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
         }
         _adoptVersion(e) {
-            this.localVersion = e, localStorage.setItem(Lh(this.roomId), String(e));
+            this.localVersion = e, localStorage.setItem(Dh(this.roomId), String(e));
         }
         _adopt(e, t) {
             this.flights = e, this._adoptVersion(t);
@@ -37556,7 +37556,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 const c = e.arrayBuffer ? await e.arrayBuffer() : await new Response(e.body).arrayBuffer();
                 for (const h of await Qa(new Uint8Array(c)))if (o.push(Qi(h)), o.length >= n) break;
             } else {
-                const c = await jl(e.body || e.stream()), h = Oh(c, a), f = t === "jsonl" || /\.(ndjson|jsonl)$/i.test(e.name || e.url || "") ? $l(h) : Bl(h);
+                const c = await jl(e.body || e.stream()), h = kh(c, a), f = t === "jsonl" || /\.(ndjson|jsonl)$/i.test(e.name || e.url || "") ? $l(h) : Bl(h);
                 let p = 0;
                 for await (const S of f)if (a?.aborted || (o.push(Qi(S)), p++, s && p % 50 === 0 && s({
                     seen: p,
@@ -37565,7 +37565,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             if (!o.length) throw new Error("No flight records found in the source.");
             const { merged: d, added: u } = Za(this.flights, o);
-            return this.flights = d, await vn(this.roomId, await _r(this.flights)), this._notify(), await this.publish({
+            return this.flights = d, await vn(this.roomId, await Er(this.flights)), this._notify(), await this.publish({
                 markHydrated: !0,
                 sourceUrl: r
             }), {
@@ -37583,7 +37583,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             const v = [];
             for await (const b of d){
                 if (r?.aborted) throw new DOMException("aborted", "AbortError");
-                const m = $d(b), T = Rp(c, 0, u, b, 0), g = await hn(T, {
+                const m = $d(b), T = wp(c, 0, u, b, 0), g = await hn(T, {
                     mime: "application/octet-stream",
                     name: `${s}.blk${c}.bin`
                 });
@@ -37626,7 +37626,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 const b = await this._indexFromManifest(f);
                 if (b.length) {
                     this.flights = b;
-                    const m = await _r(b);
+                    const m = await Er(b);
                     await vn(this.roomId, m), E = await hn(m, {
                         mime: "application/gzip",
                         name: `${s}.lean.ndjson.gz`
@@ -37650,7 +37650,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 hash: u[0],
                 source_url: e.url || S?.source_url || null,
                 updated_at: Date.now(),
-                updated_by: ze()?.getUserId() || null
+                updated_by: Je()?.getUserId() || null
             };
             return await es(this.roomId, w), this.meta = w, this._adoptVersion(R), this.dirty = 0, this.lastPublish = Date.now(), this.log(`Uploaded ${c} chained blocks (${(h / 1048576).toFixed(1)} MB) + manifest; ${C} flights indexed; pointer v${R}.`, "ok"), this._notify(), {
                 chunkCount: c,
@@ -37680,7 +37680,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 fetched: 0
             };
             const d = l.map(Qi), { merged: u, added: c } = Za(this.flights, d);
-            return this.flights = u, c && (this.dirty += c, await vn(this.roomId, await _r(this.flights))), this._notify(), this.log(`Focus fetch: ${l.length} flights here, ${c} new.`, c ? "ok" : "mut"), c && bt.add(`Added ${c} flight(s) from live focus`, {
+            return this.flights = u, c && (this.dirty += c, await vn(this.roomId, await Er(this.flights))), this._notify(), this.log(`Focus fetch: ${l.length} flights here, ${c} new.`, c ? "ok" : "mut"), c && bt.add(`Added ${c} flight(s) from live focus`, {
                 added: c,
                 source: "focus"
             }), {
@@ -37695,7 +37695,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
             this.flights = r, this.dirty += n;
             const a = this._discoverAgencies(t);
-            return await vn(this.roomId, await _r(this.flights)), this._notify(), bt.add(`Added ${n} flight(s) to the dataset`, {
+            return await vn(this.roomId, await Er(this.flights)), this._notify(), bt.add(`Added ${n} flight(s) to the dataset`, {
                 added: n,
                 source: "scraper"
             }), a && bt.add(`Discovered ${a} new department(s)`, {
@@ -37769,7 +37769,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }), this.log(`Uploaded block ${l + 1}/${n.length}…`, "mut");
             }
             return this._uploadManifest({
-                payload_format: Mo,
+                payload_format: Oo,
                 name: `dfr-v${t}`,
                 total_bytes: e.length,
                 chunks: o,
@@ -37780,7 +37780,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (!this.roomId) return {
                 published: !1
             };
-            const r = await _r(this.flights), n = await this._mediaSizeLimit(), a = Br(this.roomId), s = (a?.version || this.localVersion || 0) + 1;
+            const r = await Er(this.flights), n = await this._mediaSizeLimit(), a = Br(this.roomId), s = (a?.version || this.localVersion || 0) + 1;
             let o = null, l = null, d = "empty", u = 0;
             this.flights.length === 0 ? d = "empty" : r.length <= n ? (this.log(`Uploading snapshot (${(r.length / 1048576).toFixed(2)} MB) as one block…`, "mut"), o = await hn(r, {
                 mime: "application/gzip",
@@ -37792,8 +37792,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             const c = {
                 hydrated: e || !!a?.hydrated,
                 mode: d,
-                format: Mo,
-                payload_format: Mo,
+                format: Oo,
+                payload_format: Oo,
                 version: s,
                 count: this.flights.length,
                 hash: F_(r),
@@ -37802,7 +37802,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 chunk_count: u,
                 source_url: t ?? a?.source_url ?? null,
                 updated_at: Date.now(),
-                updated_by: ze()?.getUserId() || null
+                updated_by: Je()?.getUserId() || null
             };
             return await es(this.roomId, c), this.meta = c, this._adoptVersion(s), this.dirty = 0, this.lastPublish = Date.now(), this.log(`Published v${s} (${c.count} flights, ${d}).`, "ok"), this._notify(), {
                 published: !0,
@@ -37831,7 +37831,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             latest: n || null
         };
     }
-    const Uh = "dfr.scraper.settings", Po = "dfr.scraper.counts", Nh = (i, e)=>{
+    const Lh = "dfr.scraper.settings", Po = "dfr.scraper.counts", Uh = (i, e)=>{
         try {
             return JSON.parse(localStorage.getItem(i)) ?? e;
         } catch  {
@@ -37845,8 +37845,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     class lE {
         constructor({ store: e, log: t, term: r }){
             this.store = e, this.log = t || (()=>{}), this.term = r || ((a)=>{});
-            const n = Nh(Uh, {});
-            this.intervalMin = n.intervalMin || 15, this.proxy = n.proxy != null ? n.proxy : "https://n8n.intelechia.com/webhook/feed?url=", this.includeStaging = !!n.includeStaging, this.autoStart = n.autoStart !== !1, this.lastRun = n.lastRun || null, this.counts = Nh(Po, {}), this.timer = null, this.running = !1, this.busy = !1, this.cycleN = 0, this.onChange = null;
+            const n = Uh(Lh, {});
+            this.intervalMin = n.intervalMin || 15, this.proxy = n.proxy != null ? n.proxy : "https://n8n.intelechia.com/webhook/feed?url=", this.includeStaging = !!n.includeStaging, this.autoStart = n.autoStart !== !1, this.lastRun = n.lastRun || null, this.counts = Uh(Po, {}), this.timer = null, this.running = !1, this.busy = !1, this.cycleN = 0, this.onChange = null;
         }
         get state() {
             return {
@@ -37862,7 +37862,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.onChange && this.onChange(this.state);
         }
         _persist() {
-            Ao(Uh, {
+            Ao(Lh, {
                 intervalMin: this.intervalMin,
                 proxy: this.proxy,
                 includeStaging: this.includeStaging,
@@ -37964,12 +37964,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         async _fetchTail(e, t) {
             if (t <= 2e3) {
-                const s = await $n(Ch(e, t), this.proxy);
+                const s = await $n(Ih(e, t), this.proxy);
                 return s && s.features || [];
             }
             let n = [], a = 0;
             for(; n.length < t;){
-                const s = await $n(`${Ch(e, Math.min(2e3, t - n.length))}&resultOffset=${a}`, this.proxy), o = s && s.features || [];
+                const s = await $n(`${Ih(e, Math.min(2e3, t - n.length))}&resultOffset=${a}`, this.proxy), o = s && s.features || [];
                 if (n = n.concat(o), o.length < 2e3) break;
                 a += o.length;
             }
@@ -38008,7 +38008,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 subdomains: "abcd"
             }).addTo(this.map), this._canvas = L.canvas({
                 padding: .5
-            }), this.flightLayer = L.layerGroup().addTo(this.map), this.pathLayer = L.layerGroup().addTo(this.map), this.agencyLayer = L.layerGroup().addTo(this.map), this._flights = [], this._fitDone = !1, this.map.on("moveend", ()=>this._renderViewport()), this.onCount = null, this.onFlight = null;
+            }), this.flightLayer = L.layerGroup().addTo(this.map), this.pathLayer = L.layerGroup().addTo(this.map), this.agencyLayer = L.layerGroup().addTo(this.map), this._flights = [], this._fitDone = !1, this.map.on("moveend", ()=>{
+                this.onMove && this.onMove(), this._renderViewport();
+            }), this.onCount = null, this.onFlight = null, this.onMove = null, this.timeFilter = null;
         }
         renderAgencies(e, t) {
             this.agencyLayer.clearLayers();
@@ -38075,6 +38077,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             this._renderViewport();
         }
+        refresh() {
+            this._renderViewport();
+        }
         _renderViewport() {
             if (this.flightLayer.clearLayers(), this.pathLayer.clearLayers(), !this._flights.length) {
                 this.onCount && this.onCount(0, 0);
@@ -38087,7 +38092,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (!o || o.length < 2 || !e.contains([
                     o[1],
                     o[0]
-                ]) || (n++, r >= Do)) continue;
+                ]) || this.timeFilter && !this.timeFilter(s) || (n++, r >= Do)) continue;
                 const l = L.circleMarker([
                     o[1],
                     o[0]
@@ -38140,8 +38145,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 '"': "&quot;"
             })[e]);
     }
-    const hE = "(unspecified)", ts = 100, sr = (i)=>("" + (i ?? "")).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"), rs = (i)=>i ? new Date(i).toISOString().slice(0, 16).replace("T", " ") : "";
-    function xh(i) {
+    const hE = "(unspecified)", ts = 100, or = (i)=>("" + (i ?? "")).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"), rs = (i)=>i ? new Date(i).toISOString().slice(0, 16).replace("T", " ") : "";
+    function Nh(i) {
         if (!i) return "";
         const e = Math.round(i * 60), t = Math.floor(e / 3600), r = Math.floor(e % 3600 / 60), n = e % 60;
         return t ? t + "h " + String(r).padStart(2, "0") + "m" : r ? r + "m " + String(n).padStart(2, "0") + "s" : n + "s";
@@ -38241,8 +38246,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     s.county,
                     s.state
                 ].filter(Boolean).join(", ") : (n || "").slice(0, 12);
-                r += `<div class="dept ${this.selected === n ? "sel" : ""}" data-u="${sr(n)}">
-        <span class="name">${sr(a)}<div class="sub">${sr(o)}</div></span>
+                r += `<div class="dept ${this.selected === n ? "sel" : ""}" data-u="${or(n)}">
+        <span class="name">${or(a)}<div class="sub">${or(o)}</div></span>
         <span class="count">${this._depts.get(n).count.toLocaleString()}</span></div>`;
             }
             this.sidebar.innerHTML = r, this.sidebar.querySelectorAll(".dept").forEach((n)=>{
@@ -38272,14 +38277,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.main.innerHTML = this.selected === null ? this._overviewHTML(e) : this._deptHTML(this.selected), this._wire();
         }
         _stat(e, t) {
-            return `<div class="stat"><div class="n">${typeof e == "number" ? e.toLocaleString() : sr(e)}</div><div class="l">${t}</div></div>`;
+            return `<div class="stat"><div class="n">${typeof e == "number" ? e.toLocaleString() : or(e)}</div><div class="l">${t}</div></div>`;
         }
         _barList(e, t) {
             if (!e.length) return '<div class="empty">No data.</div>';
             const r = e[0][1];
             return '<div class="bars">' + e.map(([n, a])=>{
                 const s = t ? Math.round(a / t * 100) : 0, o = r ? a / r * 100 : 0;
-                return `<div class="barrow"><div class="lab" title="${sr(n)}">${sr(n)}</div>
+                return `<div class="barrow"><div class="lab" title="${or(n)}">${or(n)}</div>
         <div class="track"><div class="fill" style="width:${o}%"></div></div>
         <div class="val">${a.toLocaleString()} · ${s}%</div></div>`;
             }).join("") + "</div>";
@@ -38300,17 +38305,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
       <div class="card"><h2>Top departments by flight count</h2>${this._barList(n, e)}</div>`;
         }
         _row(e, t, r) {
-            return t == null || t === "" ? "" : `<dt>${e}</dt><dd>${r ? t : sr(t)}</dd>`;
+            return t == null || t === "" ? "" : `<dt>${e}</dt><dd>${r ? t : or(t)}</dd>`;
         }
         _deptHTML(e) {
             const t = this._depts.get(e), r = this._agencies.get(e) || {}, n = [
                 ...t.purposes.entries()
             ].sort((o, l)=>l[1] - o[1]), a = t.count ? t.totMin / t.count : 0, s = '<dl class="meta">' + this._row("City", r.city) + this._row("County", r.county) + this._row("State", r.state) + this._row("Address", r.address) + this._row("UUID", e) + "</dl>";
-            return `<div class="title">${sr(this.deptName(e))}</div>
-      <p class="title-sub">${sr(e)}</p>
+            return `<div class="title">${or(this.deptName(e))}</div>
+      <p class="title-sub">${or(e)}</p>
       <div class="card"><div class="stats">
         ${this._stat(t.count, "flights observed")}${this._stat(n.length, "purposes")}
-        ${this._stat(a ? xh(a) : "—", "avg duration")}
+        ${this._stat(a ? Nh(a) : "—", "avg duration")}
         <div class="stat"><div class="n" style="font-size:14px">${t.tmin ? rs(t.tmin) : "—"} → ${t.tmax ? rs(t.tmax) : "—"}</div><div class="l">first → last takeoff (UTC)</div></div>
       </div></div>
       <div class="card"><h2>Metadata</h2>${s}</div>
@@ -38348,7 +38353,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     "Duration",
                     !0,
                     (e)=>e.duration_min || 0,
-                    (e)=>xh(e.duration_min)
+                    (e)=>Nh(e.duration_min)
                 ],
                 [
                     "pts",
@@ -38370,7 +38375,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 return `<th class="${d[2] ? "num" : ""}" data-key="${d[0]}">${d[1]}${u}</th>`;
             }).join("") + "</tr>", o = a.map((d)=>"<tr>" + this._cols.map((u)=>{
                     const c = u[4] ? u[4](d) : u[3](d);
-                    return `<td class="${u[2] ? "num" : ""}">${sr(c)}</td>`;
+                    return `<td class="${u[2] ? "num" : ""}">${or(c)}</td>`;
                 }).join("") + "</tr>").join("");
             return `<div class="toolbar"><span></span>${`<div class="pager">Page ${this.page + 1} of ${n} · ${r.length.toLocaleString()} rows
       <button data-nav="prev" ${this.page <= 0 ? "disabled" : ""}>Prev</button>
@@ -38425,7 +38430,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             s.href = URL.createObjectURL(a), s.download = (this.selected ? this.deptName(this.selected).replace(/[^a-z0-9]+/gi, "_") : "all") + "_flights.csv", s.click(), URL.revokeObjectURL(s.href);
         }
     }
-    const ns = ()=>`${Oa()}.focus`, vE = 90 * 1e3, pE = 5 * 6e4;
+    const ns = ()=>`${Ma()}.focus`, vE = 90 * 1e3, pE = 5 * 6e4;
     function mE(i, e) {
         if (!i || i.length < 4) return !1;
         const t = (e[0] + e[2]) / 2, r = (e[1] + e[3]) / 2, n = (i[2] - i[0]) * .15, a = (i[3] - i[1]) * .15;
@@ -38436,7 +38441,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this.getRoomId = e, this.log = t || (()=>{}), this.onPeersChange = r || (()=>{}), this._unsub = null, this._lastHand = 0;
         }
         start() {
-            const e = ze();
+            const e = Je();
             if (!e || this._unsub) return;
             const t = ns(), r = (n, a)=>{
                 a.roomId === this.getRoomId() && n.getType() === t && this.onPeersChange();
@@ -38447,11 +38452,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             this._unsub && (this._unsub(), this._unsub = null);
         }
         _deviceId() {
-            const e = ze();
+            const e = Je();
             return e ? e.getDeviceId() || e.getUserId() : "anon";
         }
         peers() {
-            const e = ze(), t = this.getRoomId();
+            const e = Je(), t = this.getRoomId();
             if (!e || !t) return [];
             const r = e.getRoom(t);
             if (!r) return [];
@@ -38473,7 +38478,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return o;
         }
         async raiseHand(e, { label: t = "", fetchedTs: r = null } = {}) {
-            const n = ze(), a = this.getRoomId();
+            const n = Je(), a = this.getRoomId();
             if (!n || !a || !e) return;
             const s = Date.now();
             if (!(s - this._lastHand < 4e3)) {
@@ -38506,14 +38511,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             };
         }
         async lowerHand() {
-            const e = ze(), t = this.getRoomId();
+            const e = Je(), t = this.getRoomId();
             if (!(!e || !t)) try {
                 await e.sendStateEvent(t, ns(), {}, this._deviceId());
             } catch  {}
         }
     }
     const G = (i)=>document.getElementById(i);
-    let Hi = null, tr = null, Pe = null, pt = null, ot = null, nr = null, Uo = null, No = null, qr = null;
+    let Hi = null, rr = null, De = null, pt = null, He = null, ir = null, Uo = null, No = null, qr = null;
     function qe(i, e = "mut") {
         const t = G("log");
         if (t) {
@@ -38527,7 +38532,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         i && (i.textContent = Ls.lines.join(`
 `), G("termFollow")?.checked && (i.scrollTop = i.scrollHeight));
     }
-    const Ip = [
+    const Tp = [
         "sync",
         "api",
         "add",
@@ -38535,18 +38540,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         "swarm",
         "err"
     ];
-    let zi = new Set(Ip);
+    let zi = new Set(Tp);
     function Xs() {
         const i = G("actList");
         if (!i) return;
         const e = Xt.counts();
-        G("actFilters").innerHTML = Ip.map((r)=>`<span class="act-chip ${zi.has(r) ? "on" : ""}" data-k="${r}">${r}<span class="c">${e[r] || 0}</span></span>`).join(""), G("actFilters").querySelectorAll(".act-chip").forEach((r)=>r.onclick = ()=>{
+        G("actFilters").innerHTML = Tp.map((r)=>`<span class="act-chip ${zi.has(r) ? "on" : ""}" data-k="${r}">${r}<span class="c">${e[r] || 0}</span></span>`).join(""), G("actFilters").querySelectorAll(".act-chip").forEach((r)=>r.onclick = ()=>{
                 const n = r.getAttribute("data-k");
                 zi.has(n) ? zi.delete(n) : zi.add(n), Xs();
             });
         const t = Xt.events.filter((r)=>zi.has(r.kind)).slice(-400).reverse().map((r)=>{
-            const n = new Date(r.ts).toLocaleTimeString(), a = r.data && Object.keys(r.data).length ? `<span class="d">${Tr(Object.entries(r.data).map(([s, o])=>`${s}: ${Array.isArray(o) ? o.join(",") : o}`).join(" · "))}</span>` : "";
-            return `<div class="act-row"><span class="t">${n}</span><span class="k ${r.kind}">${r.kind}</span><span class="m">${Tr(r.message)}${a}</span></div>`;
+            const n = new Date(r.ts).toLocaleTimeString(), a = r.data && Object.keys(r.data).length ? `<span class="d">${Ir(Object.entries(r.data).map(([s, o])=>`${s}: ${Array.isArray(o) ? o.join(",") : o}`).join(" · "))}</span>` : "";
+            return `<div class="act-row"><span class="t">${n}</span><span class="k ${r.kind}">${r.kind}</span><span class="m">${Ir(r.message)}${a}</span></div>`;
         }).join("");
         i.innerHTML = t || '<div class="act-empty">No activity yet. Sync, scraping, and block creation will appear here.</div>';
     }
@@ -38561,7 +38566,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         const t = G("loginStatus");
         t.textContent = i || "", t.classList.toggle("err", !!e);
     }
-    async function Fh() {
+    async function xh() {
         const i = G("hs").value.trim(), e = G("user").value.trim(), t = G("pw").value, r = G("persist").checked;
         if (!e || !t) {
             ti("Enter a user ID and password.", !0);
@@ -38572,19 +38577,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         try {
             u_(n) ? (await o_(n, t, {
                 persist: r
-            })).needsLogin && await Ih(i, n, t, {
+            })).needsLogin && await Th(i, n, t, {
                 persist: r
-            }) : await Ih(i, n, t, {
+            }) : await Th(i, n, t, {
                 persist: r
-            }), await Cp();
+            }), await Ip();
         } catch (a) {
             ti(a.message || String(a), !0);
         } finally{
             G("signin").disabled = !1;
         }
     }
-    async function Cp() {
-        const i = ze();
+    async function Ip() {
+        const i = Je();
         if (!i) {
             ti("Connected but no client — try again.", !0);
             return;
@@ -38593,14 +38598,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         try {
             localStorage.getItem("dfr.sideHidden") === "1" && G("mainGrid").classList.add("side-hidden");
         } catch  {}
-        Pe = new sE({
+        De = new sE({
             log: qe
-        }), Pe.onChange = _E, Pe.onBusy = ME, pt = new lE({
-            store: Pe,
+        }), De.onChange = _E, De.onBusy = OE, pt = new lE({
+            store: De,
             log: qe,
             term: (e)=>Ls.write(e)
-        }), pt.onChange = PE, tr = new gE({
-            getRoomId: ()=>nr,
+        }), pt.onChange = PE, rr = new gE({
+            getRoomId: ()=>ir,
             log: qe,
             onPeersChange: ()=>{}
         }), G("interval").value = pt.intervalMin, G("proxy").value = pt.proxy, f_(()=>Kl()), await Kl();
@@ -38612,7 +38617,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         await d_(), location.reload();
     }
     async function Kl() {
-        const i = h_(yp), e = G("roomSel");
+        const i = h_(gp), e = G("roomSel");
         e.innerHTML = "";
         for (const t of i){
             const r = document.createElement("option");
@@ -38623,14 +38628,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             t.textContent = "— no dataset yet —", t.disabled = !0, e.appendChild(t), qe('No DFR dataset room found. Click "+ Dataset" to create one.', "warn");
             return;
         }
-        !nr || !i.some((t)=>t.roomId === nr) ? await Wd(i[0].roomId) : e.value = nr;
+        !ir || !i.some((t)=>t.roomId === ir) ? await Wd(i[0].roomId) : e.value = ir;
     }
     async function bE() {
         const i = prompt("Name this DFR dataset room:", "Nashville DFR");
         if (i) {
             G("newRoom").disabled = !0;
             try {
-                const e = await c_(i, yp);
+                const e = await c_(i, gp);
                 qe(`Created dataset "${i}".`, "ok"), await Kl(), await Wd(e);
             } catch (e) {
                 qe(`Create failed: ${e.message}`, "err");
@@ -38640,35 +38645,35 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
     }
     async function Wd(i) {
-        Uo && Uo(), No && No(), tr && (tr.lowerHand(), tr.stop()), nr = i, G("roomSel").value = i, ot && (ot._fitDone = !1), Hl = !1, qe("Opening dataset…");
-        const { hydrated: e } = await Pe.open(i);
-        hr(), Uo = W_(i, async ()=>{
-            qe("Dataset pointer changed — syncing…", "mut"), await Pe.sync(), hr();
-        }), No = g_(i, ()=>Vl()), Vl(), tr && tr.start(), e ? (qe("Dataset ready.", "ok"), pt && !pt.running && pt.autoStart !== !1 && (pt.configure({
+        Uo && Uo(), No && No(), rr && (rr.lowerHand(), rr.stop()), ir = i, G("roomSel").value = i, He && (He._fitDone = !1), Hl = !1, qe("Opening dataset…");
+        const { hydrated: e } = await De.open(i);
+        fr(), Uo = W_(i, async ()=>{
+            qe("Dataset pointer changed — syncing…", "mut"), await De.sync(), fr();
+        }), No = g_(i, ()=>Vl()), Vl(), rr && rr.start(), e ? (qe("Dataset ready.", "ok"), pt && !pt.running && pt.autoStart !== !1 && (pt.configure({
             intervalMin: G("interval").value,
             proxy: G("proxy").value
-        }), pt.start())) : Mp("hydrate");
+        }), pt.start())) : Op("hydrate");
     }
     async function Vl() {
         const i = G("memberList");
-        if (!i || !nr) return;
-        const e = nr;
+        if (!i || !ir) return;
+        const e = ir;
         try {
             await p_(e);
         } catch  {}
-        if (e !== nr) return;
-        const t = ze()?.getUserId(), r = m_(e);
+        if (e !== ir) return;
+        const t = Je()?.getUserId(), r = m_(e);
         i.innerHTML = r.map((n)=>{
             const a = n.membership === "invite" ? "invited" : n.powerLevel >= 100 ? "admin" : n.powerLevel >= 50 ? "mod" : "member";
             return `<div class="member${n.membership === "invite" ? " invited" : ""}">
-      <span class="mid">${Tr(n.displayName || n.userId)}${n.userId === t ? " (you)" : ""}</span>
+      <span class="mid">${Ir(n.displayName || n.userId)}${n.userId === t ? " (you)" : ""}</span>
       <span class="role">${a}</span>
     </div>`;
         }).join("") || '<div class="hint">No members loaded.</div>';
     }
-    async function jh() {
+    async function Fh() {
         const i = G("inviteId").value.trim();
-        if (!nr) {
+        if (!ir) {
             qe("Open or create a dataset first.", "warn");
             return;
         }
@@ -38678,7 +38683,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }
         G("inviteBtn").disabled = !0;
         try {
-            await v_(nr, i), qe(`Invited ${i}.`, "ok"), G("inviteId").value = "", Vl();
+            await v_(ir, i), qe(`Invited ${i}.`, "ok"), G("inviteId").value = "", Vl();
         } catch (e) {
             qe(`Invite failed: ${e.message}`, "err");
         } finally{
@@ -38688,7 +38693,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     let ri = "depts", xo = !1;
     function _E() {
         xo || (xo = !0, requestAnimationFrame(()=>{
-            xo = !1, hr();
+            xo = !1, fr();
         }));
     }
     let Fo = !1;
@@ -38697,23 +38702,29 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             Fo = !1, Xs();
         }));
     }
-    function hr() {
-        const i = Pe?.flights || [], e = oE(i);
-        G("sFlights").textContent = e.flights, G("sSites").textContent = Pe?.dirty ?? 0, G("sGeom").textContent = e.withGeometry, G("sSnap").textContent = Pe?.meta?.version ?? 0;
+    function fr() {
+        const i = De?.flights || [], e = oE(i);
+        G("sFlights").textContent = e.flights, G("sSites").textContent = De?.dirty ?? 0, G("sGeom").textContent = e.withGeometry, G("sSnap").textContent = De?.meta?.version ?? 0;
         const t = e.earliest && e.latest ? `${new Date(e.earliest).toLocaleDateString()} – ${new Date(e.latest).toLocaleDateString()}` : "—";
         G("span").textContent = `span ${t}`;
-        const r = Pe?.meta, n = Pe?.agencies?.length ? ` · ${Pe.agencies.length} agencies` : "";
-        r && r.mode === "chunked-raw" && !r.lean_index && !Pe.flights.length ? G("syncStatus").textContent = `v${r.version} · raw archive (${((r.total_bytes || 0) / 1073741824).toFixed(2)} GB) — click "Build index" to view flights${n}` : G("syncStatus").textContent = (r ? `v${r.version} · ${r.count} flights · ${r.lean_index ? "indexed" : r.blob ? "in media" : r.source_url ? "external host" : "OPFS only"}${Pe.dirty ? ` · ${Pe.dirty} unpublished` : ""}` : Pe?.flights?.length ? `${Pe.flights.length} local · not published` : "not hydrated") + n, ri === "depts" && Gd().refresh(), ri === "map" && kp(i);
-        const a = (Pe?.flights?.length || 0) > 0, s = G("setupPanel");
+        const r = De?.meta, n = De?.agencies?.length ? ` · ${De.agencies.length} agencies` : "";
+        r && r.mode === "chunked-raw" && !r.lean_index && !De.flights.length ? G("syncStatus").textContent = `v${r.version} · raw archive (${((r.total_bytes || 0) / 1073741824).toFixed(2)} GB) — click "Build index" to view flights${n}` : G("syncStatus").textContent = (r ? `v${r.version} · ${r.count} flights · ${r.lean_index ? "indexed" : r.blob ? "in media" : r.source_url ? "external host" : "OPFS only"}${De.dirty ? ` · ${De.dirty} unpublished` : ""}` : De?.flights?.length ? `${De.flights.length} local · not published` : "not hydrated") + n, ri === "depts" && qd().refresh(), ri === "map" && kp(i);
+        const a = (De?.flights?.length || 0) > 0, s = G("setupPanel");
         s && a && !s.dataset.autoclosed && (s.open = !1, s.dataset.autoclosed = "1");
     }
     const ql = 12, wE = 700;
-    let ps = !0, Bh = null, Ji = null, Gl = "";
+    let ps = !0, jh = null, Ji = null, Gl = "";
     function RE() {
-        return ot || (typeof L > "u" ? (qe("Leaflet failed to load (offline?).", "warn"), null) : (ot = new cE("map"), ot.onFocusChange((i, e)=>Op(i, e)), ot.onCount = (i, e, t)=>wn(e ? `Showing ${i.toLocaleString()} of ${e.toLocaleString()} flights in view${t ? " (capped — zoom in for more)" : ""}` : ""), ot.onFlight = (i)=>IE(i), ot));
+        return He || (typeof L > "u" ? (qe("Leaflet failed to load (offline?).", "warn"), null) : (He = new cE("map"), He.onFocusChange((i, e)=>Mp(i, e)), He.onCount = (i, e, t)=>wn(e ? `Showing ${i.toLocaleString()} of ${e.toLocaleString()} flights in view${t ? " (capped — zoom in for more)" : ""}` : ""), He.onFlight = (i)=>IE(i), He.timeFilter = (i)=>{
+            if (tr >= 1 || !er) return !0;
+            const e = er.min + (er.max - er.min) * tr;
+            return !i.takeoff || i.takeoff <= e;
+        }, He.onMove = ()=>{
+            Cp(De?.flights || []);
+        }, He));
     }
     function TE(i) {
-        const e = (Pe?.agencies || []).find((t)=>t.id === i);
+        const e = (De?.agencies || []).find((t)=>t.id === i);
         return e ? e.name || [
             e.city,
             e.county,
@@ -38726,21 +38737,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         const t = (s)=>s ? new Date(s).toISOString().slice(0, 16).replace("T", " ") + " UTC" : "—", r = TE(i.organization_id), n = [
             [
                 "Purpose",
-                `<span class="fp-purpose">${Tr(i.flight_purpose || "unspecified")}</span>`,
+                `<span class="fp-purpose">${Ir(i.flight_purpose || "unspecified")}</span>`,
                 !0
             ],
             [
                 "Department",
-                `<a class="fp-dept" id="fpDept">${Tr(r)}</a>`,
+                `<a class="fp-dept" id="fpDept">${Ir(r)}</a>`,
                 !0
             ],
             [
                 "Flight ID",
-                Tr(i.flight_id || "—")
+                Ir(i.flight_id || "—")
             ],
             [
                 "Case / ext",
-                Tr(i.external_id || "—")
+                Ir(i.external_id || "—")
             ],
             [
                 "Takeoff",
@@ -38768,64 +38779,73 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             ],
             [
                 "Org UUID",
-                Tr(i.organization_id || "—")
+                Ir(i.organization_id || "—")
             ]
         ];
-        G("fpBody").innerHTML = n.map(([s, o, l])=>`<dl class="fp-row"><dt>${s}</dt><dd>${l ? o : Tr(o)}</dd></dl>`).join("") + (i.geometry ? "" : '<div class="hint">No path geometry in the index for this flight.</div>'), e.classList.remove("hidden");
+        G("fpBody").innerHTML = n.map(([s, o, l])=>`<dl class="fp-row"><dt>${s}</dt><dd>${l ? o : Ir(o)}</dd></dl>`).join("") + (i.geometry ? "" : '<div class="hint">No path geometry in the index for this flight.</div>'), e.classList.remove("hidden");
         const a = G("fpDept");
         a && i.organization_id && (a.onclick = ()=>{
             Hn("depts");
-            const s = Gd();
+            const s = qd();
             s.selected = i.organization_id, s.page = 0, s.renderSidebar(), s.renderMain();
         });
     }
     function CE() {
         G("flightPanel").classList.add("hidden");
     }
-    let Hl = !1, Dr = null, er = 1;
-    function Kd(i) {
-        if (er >= 1 || !Dr) return i;
-        const e = Dr.min + (Dr.max - Dr.min) * er;
-        return i.filter((t)=>!t.takeoff || t.takeoff <= e);
-    }
+    let Hl = !1, er = null, tr = 1;
     function kE(i) {
-        let e = 1 / 0, t = 0;
-        for (const r of i)r.takeoff && (r.takeoff < e && (e = r.takeoff), r.takeoff > t && (t = r.takeoff));
-        Dr = e === 1 / 0 ? null : {
-            min: e,
-            max: t
-        }, Vd();
+        if (!He) return i;
+        const e = He.bbox();
+        return i.filter((t)=>{
+            const r = t.start_coords;
+            return r && r.length >= 2 && r[0] >= e[0] && r[0] <= e[2] && r[1] >= e[1] && r[1] <= e[3];
+        });
     }
-    function Vd() {
+    function Cp(i) {
+        const e = kE(i);
+        let t = 1 / 0, r = 0;
+        for (const n of e)n.takeoff && (n.takeoff < t && (t = n.takeoff), n.takeoff > r && (r = n.takeoff));
+        er = t === 1 / 0 ? null : {
+            min: t,
+            max: r
+        }, Kd();
+    }
+    function Kd() {
         const i = G("timeLabel");
         if (!i) return;
-        if (er >= 1 || !Dr) {
-            i.textContent = "all time";
+        if (!er) {
+            i.textContent = "no flights in view";
             return;
         }
-        const e = Dr.min + (Dr.max - Dr.min) * er;
-        i.textContent = "≤ " + new Date(e).toISOString().slice(0, 16).replace("T", " ") + " UTC";
+        const e = (r)=>new Date(r).toISOString().slice(0, 10);
+        if (tr >= 1) {
+            i.textContent = `${e(er.min)} → ${e(er.max)}`;
+            return;
+        }
+        const t = er.min + (er.max - er.min) * tr;
+        i.textContent = "≤ " + new Date(t).toISOString().slice(0, 16).replace("T", " ") + " UTC";
     }
     let jn = null;
-    function OE() {
+    function ME() {
         const i = G("playBtn");
         if (jn) {
             clearInterval(jn), jn = null, i.textContent = "▶";
             return;
         }
-        i.textContent = "⏸", er >= 1 && (er = 0), jn = setInterval(()=>{
-            er = Math.min(1, er + .02), G("timeSlider").value = String(Math.round(er * 1e3)), Vd(), ot && ot.render(Kd(Pe?.flights || [])), er >= 1 && (clearInterval(jn), jn = null, i.textContent = "▶");
+        i.textContent = "⏸", tr >= 1 && (tr = 0), jn = setInterval(()=>{
+            tr = Math.min(1, tr + .02), G("timeSlider").value = String(Math.round(tr * 1e3)), Kd(), He && He.refresh(), tr >= 1 && (clearInterval(jn), jn = null, i.textContent = "▶");
         }, 240);
     }
     function kp(i) {
         const e = RE();
-        e && (kE(i), e.render(Kd(i)), !Hl && Pe?.agencies?.length && (e.renderAgencies(Pe.agencies, (t)=>{
-            e.focusOn(t), qd(e.bbox(), {
+        e && (e.render(i), Cp(i), !Hl && De?.agencies?.length && (e.renderAgencies(De.agencies, (t)=>{
+            e.focusOn(t), Vd(e.bbox(), {
                 agency: t.name
             });
         }), Hl = !0));
     }
-    function ME(i) {
+    function OE(i) {
         const e = G("loading");
         if (!i) {
             e.classList.add("hidden");
@@ -38835,24 +38855,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         const t = G("loadingBar");
         i.frac == null ? (t.style.width = "100%", t.style.opacity = ".35") : (t.style.opacity = "1", t.style.width = Math.round(Math.max(0, Math.min(1, i.frac)) * 100) + "%");
     }
-    function Op(i, e) {
-        if (!ps || !Pe?.roomId) return;
+    function Mp(i, e) {
+        if (!ps || !De?.roomId) return;
         if (e < ql) {
             wn(`Zoom in to level ${ql}+ to pull recent flights here.`);
             return;
         }
         const t = i.map((r)=>r.toFixed(3)).join(",");
-        t !== Gl && (clearTimeout(Bh), Bh = setTimeout(()=>{
-            Gl = t, qd(i);
+        t !== Gl && (clearTimeout(jh), jh = setTimeout(()=>{
+            Gl = t, Vd(i);
         }, wE));
     }
-    async function qd(i, { agency: e } = {}) {
-        if (Pe?.roomId) {
-            if (tr) {
-                tr.raiseHand(i, {
+    async function Vd(i, { agency: e } = {}) {
+        if (De?.roomId) {
+            if (rr) {
+                rr.raiseHand(i, {
                     label: e || ""
                 });
-                const t = tr.shouldFetch(i);
+                const t = rr.shouldFetch(i);
                 if (!t.fetch) {
                     wn("Covered by a peer device — their results sync here."), bt.swarm("Yielded this area to a peer device", {
                         by: t.by?.device?.slice(0, 8)
@@ -38862,14 +38882,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             Ji && Ji.abort(), Ji = new AbortController, wn(e ? `Pulling recent flights near ${e}…` : "Pulling recent flights in view…");
             try {
-                const t = G("proxy").value.trim(), r = await Pe.focusFetch(i, {
+                const t = G("proxy").value.trim(), r = await De.focusFetch(i, {
                     proxy: t,
                     signal: Ji.signal
                 });
-                tr && tr.raiseHand(i, {
+                rr && rr.raiseHand(i, {
                     label: e || "",
                     fetchedTs: Date.now()
-                }), wn(r.fetched ? `${r.fetched} recent flights here (${r.added} new).` : "No recent flights in this area."), hr();
+                }), wn(r.fetched ? `${r.fetched} recent flights here (${r.added} new).` : "No recent flights in this area."), fr();
             } catch (t) {
                 t.name !== "AbortError" && wn(`Live pull failed: ${t.message}`);
             } finally{
@@ -38886,7 +38906,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         const e = G("scrapeState");
         e.textContent = i.busy ? "polling…" : i.running ? "on" : "off", e.classList.toggle("on", i.running), G("scrapeToggle").textContent = i.running ? "Stop" : "Start";
     }
-    function Mp(i) {
+    function Op(i) {
         G("gateTitle").textContent = i === "import" ? "Import more flights" : "Hydrate this dataset", G("gateStatus").textContent = "", G("gateStatus").className = "status", G("gateBar").style.width = "0", G("gateSkip").classList.toggle("hidden", i === "import"), G("hydrateGate").classList.remove("hidden");
     }
     function zl() {
@@ -38902,16 +38922,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         qr = qr || new AbortController, G("gateLoad").disabled = !0, G("gateStop").disabled = !1, Qt(r ? "Uploading as chained blocks…" : "Loading…");
         try {
             if (r) {
-                const n = await Pe.hydrateRawChunked(i, {
+                const n = await De.hydrateRawChunked(i, {
                     format: "auto",
                     signal: qr.signal,
                     onProgress: (a)=>{
                         Qt(`Uploaded ${a.block} block(s) · ${(a.bytes / 1048576).toFixed(1)} MB…`), G("gateBar").style.width = "50%";
                     }
                 });
-                G("gateBar").style.width = "100%", Qt(`Uploaded ${n.chunkCount} blocks (${(n.totalBytes / 1048576).toFixed(1)} MB). Syncing…`, "ok"), qe(`Chained upload done: ${n.chunkCount} blocks, v${n.version}.`, "ok"), await Pe.sync(), hr(), setTimeout(zl, 900);
+                G("gateBar").style.width = "100%", Qt(`Uploaded ${n.chunkCount} blocks (${(n.totalBytes / 1048576).toFixed(1)} MB). Syncing…`, "ok"), qe(`Chained upload done: ${n.chunkCount} blocks, v${n.version}.`, "ok"), await De.sync(), fr(), setTimeout(zl, 900);
             } else {
-                const n = await Pe.hydrateFrom(i, {
+                const n = await De.hydrateFrom(i, {
                     format: e,
                     signal: qr.signal,
                     sourceUrl: i.url || null,
@@ -38919,7 +38939,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         Qt(`Read ${a.seen}, recorded ${a.recorded}…`), G("gateBar").style.width = "60%";
                     }
                 });
-                G("gateBar").style.width = "100%", Qt(`Hydrated: ${n.total} flights (${n.added} new).`, "ok"), qe(`Hydration complete: ${n.total} flights.`, "ok"), hr(), setTimeout(zl, 700);
+                G("gateBar").style.width = "100%", Qt(`Hydrated: ${n.total} flights (${n.added} new).`, "ok"), qe(`Hydration complete: ${n.total} flights.`, "ok"), fr(), setTimeout(zl, 700);
             }
         } catch (n) {
             n.name === "AbortError" ? Qt("Stopped.", "") : Qt(`Failed: ${n.message}. Try again.`, "err"), qe(`Hydration failed: ${n.message}`, "err");
@@ -38930,16 +38950,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     async function DE() {
         G("gateSkip").disabled = !0;
         try {
-            await Pe.publish({
+            await De.publish({
                 markHydrated: !0
-            }), hr(), zl(), qe("Started empty — scraper will fill the dataset.", "mut");
+            }), fr(), zl(), qe("Started empty — scraper will fill the dataset.", "mut");
         } catch (i) {
             Qt(`Could not save status: ${i.message}`, "err");
         } finally{
             G("gateSkip").disabled = !1;
         }
     }
-    function Tr(i) {
+    function Ir(i) {
         return String(i ?? "").replace(/[&<>"]/g, (e)=>({
                 "&": "&amp;",
                 "<": "&lt;",
@@ -38967,34 +38987,34 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 "term"
             ]
         ])G(e).setAttribute("aria-selected", i === t);
-        G("deptsView").classList.toggle("hidden", i !== "depts"), G("mapView").classList.toggle("hidden", i !== "map"), G("activityView").classList.toggle("hidden", i !== "activity"), G("termView").classList.toggle("hidden", i !== "term"), i === "map" ? (kp(Pe?.flights || []), ot?.invalidate()) : i === "depts" ? Gd().refresh() : i === "activity" ? Xs() : i === "term" && Wl();
+        G("deptsView").classList.toggle("hidden", i !== "depts"), G("mapView").classList.toggle("hidden", i !== "map"), G("activityView").classList.toggle("hidden", i !== "activity"), G("termView").classList.toggle("hidden", i !== "term"), i === "map" ? (kp(De?.flights || []), He?.invalidate()) : i === "depts" ? qd().refresh() : i === "activity" ? Xs() : i === "term" && Wl();
     }
-    function Gd() {
+    function qd() {
         return Hi || (Hi = new fE({
             sidebar: G("deptList"),
             main: G("deptMain"),
             getData: ()=>({
-                    flights: Pe?.flights || [],
-                    agencies: Pe?.agencies || []
+                    flights: De?.flights || [],
+                    agencies: De?.agencies || []
                 }),
             onPickAgency: (i)=>{
-                ot && i.lat != null && (Hn("map"), ot.focusOn(i), qd(ot.bbox(), {
+                He && i.lat != null && (Hn("map"), He.focusOn(i), Vd(He.bbox(), {
                     agency: i.name
                 }));
             }
         }), G("deptSearch").addEventListener("input", (i)=>Hi.setFilter(i.target.value)), Hi);
     }
     function LE() {
-        G("signin").addEventListener("click", Fh), G("pw").addEventListener("keydown", (i)=>{
-            i.key === "Enter" && Fh();
+        G("signin").addEventListener("click", xh), G("pw").addEventListener("keydown", (i)=>{
+            i.key === "Enter" && xh();
         }), G("logout").addEventListener("click", SE), G("sideToggle").addEventListener("click", ()=>{
             const i = G("mainGrid").classList.toggle("side-hidden");
             try {
                 localStorage.setItem("dfr.sideHidden", i ? "1" : "0");
             } catch  {}
-            ri === "map" && ot?.invalidate();
-        }), G("newRoom").addEventListener("click", bE), G("inviteBtn").addEventListener("click", jh), G("inviteId").addEventListener("keydown", (i)=>{
-            i.key === "Enter" && jh();
+            ri === "map" && He?.invalidate();
+        }), G("newRoom").addEventListener("click", bE), G("inviteBtn").addEventListener("click", Fh), G("inviteId").addEventListener("keydown", (i)=>{
+            i.key === "Enter" && Fh();
         }), G("roomSel").addEventListener("change", (i)=>Wd(i.target.value)), G("tabDepts").addEventListener("click", ()=>Hn("depts")), G("tabMap").addEventListener("click", ()=>Hn("map")), G("tabActivity").addEventListener("click", ()=>Hn("activity")), G("tabTerm").addEventListener("click", ()=>Hn("term")), G("fpClose").addEventListener("click", CE), G("actClear").addEventListener("click", ()=>{
             Xt.clear(), Xs();
         }), G("termClear").addEventListener("click", ()=>{
@@ -39004,9 +39024,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }), Ls.subscribe(()=>{
             ri === "term" && Wl();
         }), G("timeSlider").addEventListener("input", (i)=>{
-            er = +i.target.value / 1e3, Vd(), ot && ot.render(Kd(Pe?.flights || []));
-        }), G("playBtn").addEventListener("click", OE), G("focusToggle").addEventListener("change", (i)=>{
-            ps = i.target.checked, wn(ps ? "Live focus on — zoom in to pull recent flights." : "Live focus off."), ps && ot && ot.zoom() >= ql && (Gl = "", Op(ot.bbox(), ot.zoom()));
+            tr = +i.target.value / 1e3, Kd(), He && He.refresh();
+        }), G("playBtn").addEventListener("click", ME), G("focusToggle").addEventListener("change", (i)=>{
+            ps = i.target.checked, wn(ps ? "Live focus on — zoom in to pull recent flights." : "Live focus off."), ps && He && He.zoom() >= ql && (Gl = "", Mp(He.bbox(), He.zoom()));
         }), G("scrapeToggle").addEventListener("click", ()=>{
             pt.configure({
                 intervalMin: G("interval").value,
@@ -39023,18 +39043,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 proxy: G("proxy").value
             })), G("publishNow").addEventListener("click", async ()=>{
             try {
-                const i = await Pe.publish({});
+                const i = await De.publish({});
                 qe(i.published ? `Published v${i.version}.` : "Nothing to publish.", "ok");
             } catch (i) {
                 qe(`Publish failed: ${i.message}`, "err");
             }
         }), G("syncNow").addEventListener("click", async ()=>{
-            await Pe.sync(), hr();
-        }), G("rehydrateBtn").addEventListener("click", ()=>Mp("import")), G("buildIndexBtn").addEventListener("click", async ()=>{
+            await De.sync(), fr();
+        }), G("rehydrateBtn").addEventListener("click", ()=>Op("import")), G("buildIndexBtn").addEventListener("click", async ()=>{
             G("buildIndexBtn").disabled = !0;
             try {
-                const i = await Pe.buildIndexFromArchive();
-                qe(`Built index: ${i.flights} flights.`, "ok"), hr();
+                const i = await De.buildIndexFromArchive();
+                qe(`Built index: ${i.flights} flights.`, "ok"), fr();
             } catch (i) {
                 qe(`Build index failed: ${i.message}`, "err");
             } finally{
@@ -39043,16 +39063,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }), G("agenciesBtn").addEventListener("click", ()=>G("agenciesFile").click()), G("agenciesFile").addEventListener("change", async (i)=>{
             const e = i.target.files?.[0];
             if (e) {
-                if (!nr) {
+                if (!ir) {
                     qe("Open or create a dataset first.", "warn");
                     return;
                 }
                 qe(`Loading agencies from ${e.name}…`);
                 try {
-                    const t = await Pe.hydrateAgencies(e, {
+                    const t = await De.hydrateAgencies(e, {
                         onProgress: (r)=>qe(`…${r.kept} agencies`, "mut")
                     });
-                    qe(`Loaded ${t.agencies} agencies.`, "ok"), hr();
+                    qe(`Loaded ${t.agencies} agencies.`, "ok"), fr();
                 } catch (t) {
                     qe(`Agencies load failed: ${t.message}`, "err");
                 }
@@ -39083,8 +39103,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         Gb(y_), LE(), Zb((i)=>ti(i)), e_(async ()=>prompt("Your account has secure backup. Enter your Matrix recovery key (or cancel to skip):") || null);
         try {
             const i = await l_();
-            if (i && i.userId && ze()) {
-                ti(""), await Cp();
+            if (i && i.userId && Je()) {
+                ti(""), await Ip();
                 return;
             }
         } catch (i) {
@@ -39094,4 +39114,4 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
     }
     UE();
 })();
-export { BE as A, jE as B, et as C, jc as D, qE as E, ne as F, Vh as G, Vn as H, KE as I, xs as J, Te as K, FE as L, Lr as M, xE as N, Jr as O, hi as P, yn as S, js as T, $E as U, _, Fy as a, VE as b, mt as c, Ty as d, HE as e, zS as f, Iy as g, jv as h, WE as i, GE as j, B as k, Ne as l, He as m, Fe as n, K as o, ai as p, fr as q, tt as r, mi as s, y as t, ge as u, Bf as v, Yn as w, ky as x, Ry as y, ta as z, __tla };
+export { BE as A, jE as B, tt as C, Fc as D, qE as E, ne as F, Kh as G, Vn as H, KE as I, xs as J, Te as K, FE as L, Lr as M, xE as N, Jr as O, hi as P, yn as S, js as T, $E as U, _, Fy as a, VE as b, mt as c, Ty as d, HE as e, zS as f, Iy as g, Fv as h, WE as i, GE as j, B as k, Ne as l, ze as m, Fe as n, K as o, ai as p, vr as q, rt as r, mi as s, y as t, ge as u, jf as v, Yn as w, ky as x, Ry as y, ta as z, __tla };

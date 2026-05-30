@@ -29,9 +29,11 @@ export class DfrMap {
     this._flights = [];
     this._fitDone = false;
     // Re-render the viewport subset as the user pans/zooms (cheap: only what's visible).
-    this.map.on('moveend', () => this._renderViewport());
-    this.onCount = null;  // (shown, total) → UI
-    this.onFlight = null; // (flight) → open the details panel
+    this.map.on('moveend', () => { if (this.onMove) this.onMove(); this._renderViewport(); });
+    this.onCount = null;     // (shown, total) → UI
+    this.onFlight = null;    // (flight) → open the details panel
+    this.onMove = null;      // () → recompute viewport-relative state (e.g. time span)
+    this.timeFilter = null;  // (flight) => boolean — cursor filter, applied per-marker
   }
 
   renderAgencies(agencies, onPick) {
@@ -90,6 +92,9 @@ export class DfrMap {
     this._renderViewport();
   }
 
+  /** Re-apply the viewport + time filter without recomputing fit (cheap; for the scrubber). */
+  refresh() { this._renderViewport(); }
+
   /** Draw the flights in the current viewport; at city zoom, draw movement lines too. */
   _renderViewport() {
     this.flightLayer.clearLayers();
@@ -102,6 +107,7 @@ export class DfrMap {
       const c = f.start_coords;
       if (!c || c.length < 2) continue;
       if (!b.contains([c[1], c[0]])) continue;
+      if (this.timeFilter && !this.timeFilter(f)) continue;   // time scrubber cutoff
       inView++;
       if (shown >= MAX_MARKERS) continue;
       const m = L.circleMarker([c[1], c[0]], {

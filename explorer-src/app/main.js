@@ -291,6 +291,15 @@ function ensureMap() {
   dfrMap.onCount = (shown, total, capped) => setFocusHint(
     total ? `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} flights in view${capped ? ' (capped — zoom in for more)' : ''}` : '');
   dfrMap.onFlight = (f) => showFlight(f);
+  // Cursor cutoff is applied per-marker inside the map's viewport render.
+  dfrMap.timeFilter = (f) => {
+    if (cursorFrac >= 1 || !timeSpan) return true;
+    const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
+    return !f.takeoff || f.takeoff <= cut;
+  };
+  // On pan/zoom, recompute the span from the now-visible flights so the cursor
+  // is always relative to what's in focus.
+  dfrMap.onMove = () => { recomputeTimeSpan(store?.flights || []); };
   return dfrMap;
 }
 
@@ -332,27 +341,36 @@ function showFlight(f) {
 }
 function hideFlight() { $('flightPanel').classList.add('hidden'); }
 let agenciesDrawn = false;
-// Time scrubber state: tmin/tmax span the dataset; cursorFrac in [0,1] hides
-// flights with takeoff after the cursor. 1 = show all.
-let timeSpan = null;       // { min, max } in ms
+// Time scrubber state. The span is RELATIVE TO WHAT'S IN FOCUS: it's computed
+// from the flights currently in the map viewport, so zooming into a city makes
+// the cursor scrub that city's time range, not the whole dataset's.
+let timeSpan = null;       // { min, max } in ms — over the in-view flights
 let cursorFrac = 1;
 
-function flightsUpToCursor(flights) {
-  if (cursorFrac >= 1 || !timeSpan) return flights;
-  const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
-  return flights.filter(f => !f.takeoff || f.takeoff <= cut);
+/** Flights whose start point is in the current map viewport (the focus). */
+function viewportFlights(flights) {
+  if (!dfrMap) return flights;
+  const bb = dfrMap.bbox();   // [w,s,e,n]
+  return flights.filter(f => {
+    const c = f.start_coords;
+    return c && c.length >= 2 && c[0] >= bb[0] && c[0] <= bb[2] && c[1] >= bb[1] && c[1] <= bb[3];
+  });
 }
 
+/** Recompute the span from the focused (in-view) flights. */
 function recomputeTimeSpan(flights) {
+  const focus = viewportFlights(flights);
   let min = Infinity, max = 0;
-  for (const f of flights) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
+  for (const f of focus) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
   timeSpan = (min === Infinity) ? null : { min, max };
   updateTimeLabel();
 }
 
 function updateTimeLabel() {
   const lbl = $('timeLabel'); if (!lbl) return;
-  if (cursorFrac >= 1 || !timeSpan) { lbl.textContent = 'all time'; return; }
+  if (!timeSpan) { lbl.textContent = 'no flights in view'; return; }
+  const day = (ms) => new Date(ms).toISOString().slice(0, 10);
+  if (cursorFrac >= 1) { lbl.textContent = `${day(timeSpan.min)} → ${day(timeSpan.max)}`; return; }
   const cut = timeSpan.min + (timeSpan.max - timeSpan.min) * cursorFrac;
   lbl.textContent = '≤ ' + new Date(cut).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
 }
@@ -368,7 +386,7 @@ function togglePlay() {
     cursorFrac = Math.min(1, cursorFrac + 0.02);
     $('timeSlider').value = String(Math.round(cursorFrac * 1000));
     updateTimeLabel();
-    if (dfrMap) dfrMap.render(flightsUpToCursor(store?.flights || []));
+    if (dfrMap) dfrMap.refresh();
     if (cursorFrac >= 1) { clearInterval(playTimer); playTimer = null; btn.textContent = '▶'; }
   }, 240);
 }
@@ -376,8 +394,8 @@ function togglePlay() {
 function renderMap(flights) {
   const m = ensureMap();
   if (!m) return;
-  recomputeTimeSpan(flights);
-  m.render(flightsUpToCursor(flights));
+  m.render(flights);                 // map filters by viewport + timeFilter
+  recomputeTimeSpan(flights);        // span from what's now in view
   // Agencies rarely change; only (re)draw when the set changes.
   if (!agenciesDrawn && store?.agencies?.length) {
     m.renderAgencies(store.agencies, (a) => { m.focusOn(a); focusFetchNow(m.bbox(), { agency: a.name }); });
@@ -566,7 +584,7 @@ function wire() {
   $('timeSlider').addEventListener('input', e => {
     cursorFrac = (+e.target.value) / 1000;
     updateTimeLabel();
-    if (dfrMap) dfrMap.render(flightsUpToCursor(store?.flights || []));
+    if (dfrMap) dfrMap.refresh();
   });
   $('playBtn').addEventListener('click', togglePlay);
   $('focusToggle').addEventListener('change', e => {
