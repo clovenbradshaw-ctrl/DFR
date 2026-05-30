@@ -183,8 +183,17 @@ async function openRoom(roomId) {
   unsubMembers = onMembersChange(roomId, () => renderMembers());
   renderMembers();
   if (swarm) swarm.start();
-  if (!hydrated) openGate('hydrate');
-  else log('Dataset ready.', 'ok');
+  if (!hydrated) {
+    openGate('hydrate');
+  } else {
+    log('Dataset ready.', 'ok');
+    // Auto-start background checking once the dataset is hydrated — no manual
+    // "Start" needed. Honors a saved opt-out (autoStart=false).
+    if (scraper && !scraper.running && scraper.autoStart !== false) {
+      scraper.configure({ intervalMin: $('interval').value, proxy: $('proxy').value });
+      scraper.start();
+    }
+  }
 }
 
 async function renderMembers() {
@@ -281,8 +290,47 @@ function ensureMap() {
   dfrMap.onFocusChange((bbox, zoom) => scheduleFocus(bbox, zoom));
   dfrMap.onCount = (shown, total, capped) => setFocusHint(
     total ? `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} flights in view${capped ? ' (capped — zoom in for more)' : ''}` : '');
+  dfrMap.onFlight = (f) => showFlight(f);
   return dfrMap;
 }
+
+// ── flight details panel ──
+function deptLabelFor(orgId) {
+  const a = (store?.agencies || []).find(x => x.id === orgId);
+  return a ? (a.name || [a.city, a.county, a.state].filter(Boolean).join(', ') || orgId) : (orgId || '—');
+}
+function showFlight(f) {
+  const panel = $('flightPanel');
+  $('fpTitle').textContent = f.flight_purpose || 'DFR flight';
+  const fmt = (ms) => ms ? new Date(ms).toISOString().slice(0, 16).replace('T', ' ') + ' UTC' : '—';
+  const dept = deptLabelFor(f.organization_id);
+  const rows = [
+    ['Purpose', `<span class="fp-purpose">${esc(f.flight_purpose || 'unspecified')}</span>`, true],
+    ['Department', `<a class="fp-dept" id="fpDept">${esc(dept)}</a>`, true],
+    ['Flight ID', esc(f.flight_id || '—')],
+    ['Case / ext', esc(f.external_id || '—')],
+    ['Takeoff', fmt(f.takeoff)],
+    ['Landing', fmt(f.landing)],
+    ['Duration', f.duration_min != null ? f.duration_min + ' min' : '—'],
+    ['Path points', f.num_points != null ? f.num_points.toLocaleString() : '—'],
+    ['Start', f.start_coords ? f.start_coords.map(n => n.toFixed(5)).join(', ') : '—'],
+    ['End', f.end_coords ? f.end_coords.map(n => n.toFixed(5)).join(', ') : '—'],
+    ['Org UUID', esc(f.organization_id || '—')],
+  ];
+  $('fpBody').innerHTML = rows.map(([k, v, raw]) =>
+    `<dl class="fp-row"><dt>${k}</dt><dd>${raw ? v : esc(v)}</dd></dl>`).join('') +
+    (f.geometry ? '' : '<div class="hint">No path geometry in the index for this flight.</div>');
+  panel.classList.remove('hidden');
+  // Clicking the department jumps to its detail in the Departments tab.
+  const dEl = $('fpDept');
+  if (dEl && f.organization_id) dEl.onclick = () => {
+    setTab('depts');
+    const dv = ensureDepts();
+    dv.selected = f.organization_id; dv.page = 0;
+    dv.renderSidebar(); dv.renderMain();
+  };
+}
+function hideFlight() { $('flightPanel').classList.add('hidden'); }
 let agenciesDrawn = false;
 // Time scrubber state: tmin/tmax span the dataset; cursorFrac in [0,1] hides
 // flights with takeoff after the cursor. 1 = show all.
@@ -507,6 +555,7 @@ function wire() {
   $('tabMap').addEventListener('click', () => setTab('map'));
   $('tabActivity').addEventListener('click', () => setTab('activity'));
   $('tabTerm').addEventListener('click', () => setTab('term'));
+  $('fpClose').addEventListener('click', hideFlight);
   $('actClear').addEventListener('click', () => { Activity.clear(); renderActivity(); });
   $('termClear').addEventListener('click', () => { Term.clear(); renderTerminal(); });
   // Live-update Activity + Terminal views (cheap repaint only when visible).

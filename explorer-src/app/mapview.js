@@ -30,7 +30,8 @@ export class DfrMap {
     this._fitDone = false;
     // Re-render the viewport subset as the user pans/zooms (cheap: only what's visible).
     this.map.on('moveend', () => this._renderViewport());
-    this.onCount = null; // (shown, total) → UI
+    this.onCount = null;  // (shown, total) → UI
+    this.onFlight = null; // (flight) → open the details panel
   }
 
   renderAgencies(agencies, onPick) {
@@ -107,8 +108,7 @@ export class DfrMap {
         renderer: this._canvas, radius: 3.5, color: '#ff4d4d', weight: 1,
         fillColor: '#ff6b6b', fillOpacity: 0.85,
       });
-      m.bindPopup(popup(f));
-      m.on('click', () => this.drawPath(f));
+      m.on('click', () => { this.drawPath(f); if (this.onFlight) this.onFlight(f); });
       m.addTo(this.flightLayer);
       shown++;
       // Movement lines for in-view flights when zoomed into a city, capped.
@@ -133,15 +133,6 @@ export class DfrMap {
   }
 
   invalidate() { setTimeout(() => this.map.invalidateSize(), 50); }
-}
-
-function popup(f) {
-  const t = f.takeoff ? new Date(f.takeoff).toLocaleString() : '—';
-  return `<b>${esc(f.flight_purpose || 'DFR flight')}</b><br>` +
-         `<span style="opacity:.7">${esc(f.external_id || f.flight_id || '')}</span><br>` +
-         `Takeoff: ${t}<br>` +
-         `${f.duration_min != null ? f.duration_min + ' min · ' : ''}${f.num_points || 0} pts` +
-         `${f.geometry ? '<br><i>click to draw path</i>' : ''}`;
 }
 
 function esc(s) {
