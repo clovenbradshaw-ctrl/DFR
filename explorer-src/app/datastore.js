@@ -180,15 +180,24 @@ export class DataStore {
   // ── agencies (a parallel lean layer) ────────────────────────────────────────
 
   async _loadAgencies() {
-    this.agencies = [];
     const state = readDatasetState(this.roomId);
     const ref = state?.agencies_index;
+    let loaded = [];
     if (ref && ref.__media) {
       try {
         const bytes = await getMediaBytes(ref);
-        if (bytes) { this.agencies = await unpackFlights(bytes); this._notify(); }
+        if (bytes) loaded = await unpackFlights(bytes);
       } catch (e) { this.log(`Agencies load: ${e.message}`, 'warn'); }
     }
+    // Merge real agency records over any manifest-seeded stubs (don't wipe the
+    // stubs — they give every sharded department a name/location fallback).
+    const byId = new Map();
+    for (const a of (this.agencies || [])) if (a.id) byId.set(a.id, a);
+    for (const a of loaded) if (a.id) byId.set(a.id, { ...byId.get(a.id), ...a, stub: false });
+    this.agencies = [...byId.values()];
+    // Re-seed stubs for any sharded department still missing an agency record.
+    if (this.deptManifest) this._seedAgenciesFromManifest(this.deptManifest);
+    this._notify();
   }
 
   // ── lazy per-department loading (sharded manifest) ──────────────────────────
@@ -818,10 +827,14 @@ export class DataStore {
     // supersede the original byte-sliced raw archive — drop it (and redact its
     // blocks below). Other modes keep the raw archive as the full-res source.
     const keepRaw = mode !== 'sharded';
+    // Carry forward unrelated room-state keys (agencies_index, etc.) so a
+    // publish/re-shard never orphans them — only override what this publish sets.
     const content = {
+      ...(prev || {}),
       hydrated: markHydrated || !!prev?.hydrated,
       mode, format: FORMAT, payload_format: FORMAT, version,
-      count: this.flights.length, hash: blobHash(bytes),
+      count: mode === 'sharded' ? this.flights.length : this.flights.length, hash: blobHash(bytes),
+      total: mode === 'sharded' ? this.flights.length : (prev?.total ?? this.flights.length),
       blob, manifest, chunk_count: chunkCount,
       source_url: sourceUrl ?? prev?.source_url ?? null,
       raw_archive: keepRaw ? (prev?.raw_archive ?? (prev?.mode === 'chunked-raw' ? prev?.manifest : null)) : null,

@@ -23694,7 +23694,7 @@ Date.now: "`.concat(Date.now()));
                 var o = t.getDeviceId();
                 if (o === null) throw new Error("Cannot enable encryption on MatrixClient with unknown deviceId: ensure deviceId is passed in createClient().");
                 t.logger.debug("Downloading Rust crypto library");
-                var l = yield of(()=>import("./index-B6hBx_kk.js"), [], import.meta.url), d = yield l.initRustCrypto({
+                var l = yield of(()=>import("./index-B4vWKM0G.js"), [], import.meta.url), d = yield l.initRustCrypto({
                     logger: t.logger,
                     http: t.http,
                     userId: s,
@@ -37705,14 +37705,24 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return a && (this.flights = n, this._notify()), a;
         }
         async _loadAgencies() {
-            this.agencies = [];
             const t = Qt(this.roomId)?.agencies_index;
+            let r = [];
             if (t && t.__media) try {
-                const r = await Gr(t);
-                r && (this.agencies = await ea(r), this._notify());
-            } catch (r) {
-                this.log(`Agencies load: ${r.message}`, "warn");
+                const a = await Gr(t);
+                a && (r = await ea(a));
+            } catch (a) {
+                this.log(`Agencies load: ${a.message}`, "warn");
             }
+            const n = new Map;
+            for (const a of this.agencies || [])a.id && n.set(a.id, a);
+            for (const a of r)a.id && n.set(a.id, {
+                ...n.get(a.id),
+                ...a,
+                stub: !1
+            });
+            this.agencies = [
+                ...n.values()
+            ], this.deptManifest && this._seedAgenciesFromManifest(this.deptManifest), this._notify();
         }
         deptIndex() {
             const e = this.deptManifest;
@@ -38298,13 +38308,15 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 sizeMB: +(r.length / 1048576).toFixed(2)
             }), u = "single") : (this.log(`Snapshot ${(r.length / 1048576).toFixed(1)} MB exceeds limit — chaining into blocks…`, "mut"), d = await this._uploadCanonicalChunked(r, s), u = "chunked", c = (await this._downloadManifest(d)).chunk_count);
             const h = u !== "sharded", v = {
+                ...a || {},
                 hydrated: e || !!a?.hydrated,
                 mode: u,
                 format: ss,
                 payload_format: ss,
                 version: s,
-                count: this.flights.length,
+                count: u === "sharded" ? this.flights.length : this.flights.length,
                 hash: kE(r),
+                total: u === "sharded" ? this.flights.length : a?.total ?? this.flights.length,
                 blob: l,
                 manifest: d,
                 chunk_count: c,
@@ -39686,14 +39698,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         }));
     }
     function dr() {
-        const i = ye?.flights || [], e = QE(i);
-        V("sFlights").textContent = e.flights, V("sSites").textContent = ye?.dirty ?? 0, V("sGeom").textContent = e.withGeometry, V("sSnap").textContent = ye?.meta?.version ?? 0;
-        const t = e.earliest && e.latest ? `${new Date(e.earliest).toLocaleDateString()} – ${new Date(e.latest).toLocaleDateString()}` : "—";
-        V("span").textContent = `span ${t}`;
-        const r = ye?.meta, n = ye?.agencies?.length ? ` · ${ye.agencies.length} agencies` : "";
-        r && r.mode === "chunked-raw" && !r.lean_index && !ye.flights.length ? V("syncStatus").textContent = `v${r.version} · raw archive (${((r.total_bytes || 0) / 1073741824).toFixed(2)} GB) — click "Build index" to view flights${n}` : V("syncStatus").textContent = (r ? `v${r.version} · ${r.count} flights · ${r.lean_index ? "indexed" : r.blob ? "in media" : r.source_url ? "external host" : "OPFS only"}${ye.dirty ? ` · ${ye.dirty} unpublished` : ""}` : ye?.flights?.length ? `${ye.flights.length} local · not published` : "not hydrated") + n, di === "depts" && su().refresh(), di === "map" && om(i);
-        const a = (ye?.flights?.length || 0) > 0, s = V("setupPanel");
-        s && a && !s.dataset.autoclosed && (s.open = !1, s.dataset.autoclosed = "1");
+        const i = ye?.flights || [], e = QE(i), t = ye?.isLazy() ? ye.deptManifest?.total ?? null : null;
+        V("sFlights").textContent = t != null ? t.toLocaleString() + (i.length ? ` (${i.length.toLocaleString()} loaded)` : "") : e.flights.toLocaleString(), V("sSites").textContent = ye?.dirty ?? 0, V("sGeom").textContent = e.withGeometry, V("sSnap").textContent = ye?.meta?.version ?? 0;
+        const r = e.earliest && e.latest ? `${new Date(e.earliest).toLocaleDateString()} – ${new Date(e.latest).toLocaleDateString()}` : "—";
+        V("span").textContent = `span ${r}`;
+        const n = ye?.meta, a = ye?.agencies?.length ? ` · ${ye.agencies.length} agencies` : "";
+        n && n.mode === "chunked-raw" && !n.lean_index && !ye.flights.length ? V("syncStatus").textContent = `v${n.version} · raw archive (${((n.total_bytes || 0) / 1073741824).toFixed(2)} GB) — click "Build index" to view flights${a}` : V("syncStatus").textContent = (n ? `v${n.version} · ${n.count} flights · ${n.lean_index ? "indexed" : n.blob ? "in media" : n.source_url ? "external host" : "OPFS only"}${ye.dirty ? ` · ${ye.dirty} unpublished` : ""}` : ye?.flights?.length ? `${ye.flights.length} local · not published` : "not hydrated") + a, di === "depts" && su().refresh(), di === "map" && om(i);
+        const s = (ye?.flights?.length || 0) > 0, o = V("setupPanel");
+        o && s && !o.dataset.autoclosed && (o.open = !1, o.dataset.autoclosed = "1");
     }
     const nd = 12, Mw = 700;
     let ws = !0, sf = null, na = null, id = "";
