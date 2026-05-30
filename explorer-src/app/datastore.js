@@ -640,6 +640,12 @@ export class DataStore {
       count: this.flights.length, hash: blobHash(bytes),
       blob, manifest, chunk_count: chunkCount,
       source_url: sourceUrl ?? prev?.source_url ?? null,
+      // Preserve the original full-resolution raw archive (the chunked-raw
+      // hydration upload) across snapshot publishes so it's never orphaned —
+      // the snapshot block carries lean geometry, this keeps the source of truth.
+      raw_archive: prev?.raw_archive ?? (prev?.mode === 'chunked-raw' ? prev?.manifest : null),
+      raw_payload_format: prev?.raw_payload_format ?? (prev?.mode === 'chunked-raw' ? prev?.payload_format : null),
+      raw_bytes: prev?.raw_bytes ?? (prev?.mode === 'chunked-raw' ? prev?.total_bytes : null),
       updated_at: Date.now(), updated_by: getClient()?.getUserId() || null,
     };
     await writeDatasetState(this.roomId, content);

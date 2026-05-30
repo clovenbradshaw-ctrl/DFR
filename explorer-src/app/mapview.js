@@ -125,7 +125,17 @@ export class DfrMap {
 
   _addPath(geom, fit) {
     if (!geom || !geom.coordinates) return;
-    const toLatLng = (seg) => seg.map(([lng, lat]) => [lat, lng]);
+    // Full geometry stays in memory; for the bulk (non-clicked) movement lines
+    // we draw a downsampled copy so 600 paths × thousands of points doesn't choke
+    // the canvas. The clicked path (fit=true) draws at full resolution.
+    const cap = fit ? Infinity : 60;
+    const reduce = (seg) => {
+      if (seg.length <= cap) return seg;
+      const step = (seg.length - 1) / (cap - 1), out = [];
+      for (let i = 0; i < cap; i++) out.push(seg[Math.round(i * step)]);
+      return out;
+    };
+    const toLatLng = (seg) => reduce(seg).map(([lng, lat]) => [lat, lng]);
     const lines = geom.type === 'MultiLineString' ? geom.coordinates.map(toLatLng) : [toLatLng(geom.coordinates)];
     for (const line of lines) {
       L.polyline(line, { renderer: this._canvas, color: fit ? '#ffd24d' : '#ff8c4d',
