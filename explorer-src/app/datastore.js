@@ -72,6 +72,22 @@ function sizeBatches(records) {
 
 const PUBLISH_THRESHOLD = 25;
 const PUBLISH_MIN_INTERVAL = 30 * 60e3;
+const UPLOAD_CONCURRENCY = 4;   // parallel media uploads during publish/hydrate
+
+/** Run `fn` over items with at most `limit` in flight; returns results in order. */
+async function parallelMap(items, limit, fn) {
+  const out = new Array(items.length);
+  let next = 0;
+  const worker = async () => {
+    while (true) {
+      const i = next++;
+      if (i >= items.length) return;
+      out[i] = await fn(items[i], i);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return out;
+}
 
 const lvKey = (roomId) => `dfr.localver.${roomId}`;
 const encoder = new TextEncoder();
@@ -504,20 +520,36 @@ export class DataStore {
     const size = await this._chunkSize();
     const iter = isFile ? fileChunks(source, size, signal) : streamChunks(source.body, size, signal);
 
+    // Stream the source slice-by-slice (never fully buffered). The hash chain
+    // is sequential & cheap, computed as we go; the uploads — the slow part —
+    // run through a bounded parallel pool (≤UPLOAD_CONCURRENCY in flight).
     let prev = [0, 0], i = 0, total = 0;
     const chunks = [];
+    const inflight = new Set();
+    const pumpUpload = (framed, meta) => {
+      const pr = uploadEncrypted(framed, { mime: 'application/octet-stream', name: `${name}.blk${meta.i}.bin` })
+        .then(ref => { meta.ref = ref; })
+        .finally(() => inflight.delete(pr));
+      inflight.add(pr);
+      return pr;
+    };
     for await (const payload of iter) {
       if (signal?.aborted) throw new DOMException('aborted', 'AbortError');
       const self = hash64(payload);
       const framed = frameBlock(i, 0, prev, payload, 0);
-      const ref = await uploadEncrypted(framed, { mime: 'application/octet-stream', name: `${name}.blk${i}.bin` });
-      chunks.push({ i, size: payload.length, self, prev, ref });
+      const meta = { i, size: payload.length, self, prev, ref: null };
+      chunks.push(meta);
+      pumpUpload(framed, meta);
       total += payload.length; prev = self; i++;
       if (onProgress) onProgress({ block: i, bytes: total });
-      this.log(`Uploaded block ${i} (${(total / 1048576).toFixed(1)} MB total)…`, 'mut');
-      act.block(`Block #${i} created`, { index: i, sizeMB: +(payload.length / 1048576).toFixed(2), totalMB: +(total / 1048576).toFixed(1) });
+      this.log(`Uploading block ${i} (${(total / 1048576).toFixed(1)} MB, ${inflight.size} in flight)…`, 'mut');
+      // Backpressure: don't let more than the pool size queue up (keeps memory
+      // ~N chunks and avoids overwhelming the homeserver).
+      while (inflight.size >= UPLOAD_CONCURRENCY) await Promise.race(inflight);
     }
+    await Promise.all(inflight);   // drain remaining uploads
     if (!i) throw new Error('Empty source — nothing to upload.');
+    if (chunks.some(c => !c.ref)) throw new Error('Some blocks failed to upload.');
 
     const manifest = { dfr_manifest: 1, chain: 'dfr-chain/1', payload_format, name,
       total_bytes: total, chunk_count: i, head: prev, chunks, created_at: Date.now() };
@@ -808,21 +840,24 @@ export class DataStore {
       }
     }
     if (carried) this.log(`Carrying ${carried} unloaded department shard(s) forward unchanged.`, 'mut');
-    let i = 0;
-    for (const [org, list] of byOrg) {
+    // Upload department shards in parallel (each is independent) — much faster
+    // than one-at-a-time across hundreds of departments.
+    const orgList = [...byOrg.keys()];
+    const chunkSize = await this._chunkSize();
+    let done = 0;
+    await parallelMap(orgList, UPLOAD_CONCURRENCY, async (org) => {
+      const list = byOrg.get(org);
       const bytes = await packFlights(list);
       let entry;
       if (bytes.length <= limit) {
         const ref = await uploadEncrypted(bytes, { mime: 'application/gzip', name: `dfr-v${version}-${org.slice(0, 8)}.ndjson.gz` });
         entry = { ref };
       } else {
-        // Rare: a single department exceeds the limit → chain it.
-        const { blocks, metas, head } = chunkBlob(bytes, await this._chunkSize());
-        const refs = [];
-        for (let j = 0; j < blocks.length; j++) {
-          const r = await uploadEncrypted(blocks[j], { mime: 'application/octet-stream', name: `dfr-v${version}-${org.slice(0, 8)}.blk${j}.bin` });
-          refs.push({ i: j, size: metas[j].size, self: metas[j].self, prev: metas[j].prev, ref: r });
-        }
+        const { blocks, metas, head } = chunkBlob(bytes, chunkSize);
+        const refs = await parallelMap(blocks, UPLOAD_CONCURRENCY, async (blk, j) => {
+          const r = await uploadEncrypted(blk, { mime: 'application/octet-stream', name: `dfr-v${version}-${org.slice(0, 8)}.blk${j}.bin` });
+          return { i: j, size: metas[j].size, self: metas[j].self, prev: metas[j].prev, ref: r };
+        });
         entry = { chunks: refs, head };
       }
       entry.count = list.length;
@@ -830,8 +865,8 @@ export class DataStore {
       entry.tmin = Math.min(...list.map(f => f.takeoff || Infinity));
       entry.tmax = Math.max(...list.map(f => f.takeoff || 0));
       departments[org] = entry;
-      if (++i % 25 === 0) this.log(`Sharded ${i}/${byOrg.size} departments…`, 'mut');
-    }
+      if (++done % 25 === 0 || done === orgList.length) this.log(`Sharded ${done}/${orgList.length} departments…`, 'mut');
+    });
     // Totals span ALL departments in the manifest (rewritten + carried).
     const allOrgs = Object.keys(departments);
     const total = allOrgs.reduce((n, o) => n + (departments[o].count || 0), 0);
