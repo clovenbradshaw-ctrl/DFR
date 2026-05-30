@@ -87,7 +87,7 @@ tbody tr:hover{background:var(--surf2)}
 .bar > i{display:block;height:100%;background:var(--acc);width:0}
 @media(max-width:760px){.main{grid-template-columns:1fr}.side{max-height:42vh}}
 </style>
-  <script type="module" crossorigin src="./assets/index-ai6_Wn_u.js"></script>
+  <script type="module" crossorigin src="./assets/index-C6tUJ3wG.js"></script>
 </head>
 <body>
 
@@ -156,7 +156,12 @@ tbody tr:hover{background:var(--surf2)}
           <button id="publishNow" class="primary" style="flex:1">Publish snapshot</button>
           <button id="syncNow">Sync</button>
         </div>
-        <button id="rehydrateBtn" style="margin-top:8px;width:100%">Import more…</button>
+        <div class="row" style="margin-top:8px">
+          <button id="rehydrateBtn" style="flex:1">Import more…</button>
+          <button id="buildIndexBtn" title="Extract viewable flights from the uploaded archive">Build index</button>
+        </div>
+        <button id="agenciesBtn" style="margin-top:8px;width:100%">Load agencies…</button>
+        <input id="agenciesFile" type="file" accept=".jsonl,.ndjson,.json,.geojson,.gz" class="hidden">
         <div class="hint" style="margin-top:8px">Updates live in OPFS as a binary
           blob; snapshots upload to Matrix media and bump one room-state pointer
           — peers download only when the version advances.</div>

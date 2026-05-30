@@ -189,10 +189,15 @@ function render() {
   $('span').textContent = `span ${span}`;
 
   const m = store?.meta;
-  $('syncStatus').textContent = m
-    ? `v${m.version} · ${m.count} flights · ${m.blob ? 'in media' : (m.source_url ? 'external host' : 'OPFS only')}` +
-      `${store.dirty ? ` · ${store.dirty} unpublished` : ''}`
-    : (store?.flights?.length ? `${store.flights.length} local · not published` : 'not hydrated');
+  const ag = store?.agencies?.length ? ` · ${store.agencies.length} agencies` : '';
+  if (m && m.mode === 'chunked-raw' && !m.lean_index && !store.flights.length) {
+    $('syncStatus').textContent = `v${m.version} · raw archive (${((m.total_bytes||0)/1073741824).toFixed(2)} GB) — click "Build index" to view flights${ag}`;
+  } else {
+    $('syncStatus').textContent = (m
+      ? `v${m.version} · ${m.count} flights · ${m.lean_index ? 'indexed' : m.blob ? 'in media' : (m.source_url ? 'external host' : 'OPFS only')}` +
+        `${store.dirty ? ` · ${store.dirty} unpublished` : ''}`
+      : (store?.flights?.length ? `${store.flights.length} local · not published` : 'not hydrated')) + ag;
+  }
 
   if (tab === 'table') renderTable(flights);
   if (tab === 'map') renderMap(flights);
@@ -219,7 +224,12 @@ function ensureMap() {
   dfrMap = new DfrMap('map');
   return dfrMap;
 }
-function renderMap(flights) { const m = ensureMap(); if (m) m.render(flights); }
+function renderMap(flights) {
+  const m = ensureMap();
+  if (!m) return;
+  m.render(flights);
+  m.renderAgencies(store?.agencies || []);
+}
 
 function renderScraper(st = scraper?.state) {
   if (!st) return;
@@ -338,6 +348,28 @@ function wire() {
   });
   $('syncNow').addEventListener('click', async () => { await store.sync(); render(); });
   $('rehydrateBtn').addEventListener('click', () => openGate('import'));
+
+  $('buildIndexBtn').addEventListener('click', async () => {
+    $('buildIndexBtn').disabled = true;
+    try { const r = await store.buildIndexFromArchive(); log(`Built index: ${r.flights} flights.`, 'ok'); render(); }
+    catch (e) { log(`Build index failed: ${e.message}`, 'err'); }
+    finally { $('buildIndexBtn').disabled = false; }
+  });
+
+  // Agencies: pick a local NDJSON/JSON file and load it as its own layer.
+  $('agenciesBtn').addEventListener('click', () => $('agenciesFile').click());
+  $('agenciesFile').addEventListener('change', async e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!currentRoomId) { log('Open or create a dataset first.', 'warn'); return; }
+    log(`Loading agencies from ${file.name}…`);
+    try {
+      const r = await store.hydrateAgencies(file, { onProgress: p => log(`…${p.kept} agencies`, 'mut') });
+      log(`Loaded ${r.agencies} agencies.`, 'ok');
+      render();
+    } catch (err) { log(`Agencies load failed: ${err.message}`, 'err'); }
+    e.target.value = '';
+  });
 
   $('gateLoad').addEventListener('click', async () => {
     const url = $('gateUrl').value.trim();

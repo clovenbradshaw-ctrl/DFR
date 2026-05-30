@@ -18,7 +18,26 @@ export class DfrMap {
       { maxZoom: 19, subdomains: 'abcd' }).addTo(this.map);
     this.flightLayer = L.layerGroup().addTo(this.map);
     this.pathLayer = L.layerGroup().addTo(this.map);
+    this.agencyLayer = L.layerGroup().addTo(this.map);
     this._fitDone = false;
+  }
+
+  renderAgencies(agencies) {
+    this.agencyLayer.clearLayers();
+    for (const a of agencies) {
+      if (a.lat == null || a.lng == null) continue;
+      L.circleMarker([a.lat, a.lng], {
+        radius: 4, color: '#b06ef5', weight: 1, fillColor: '#c79bff', fillOpacity: 0.7,
+      }).bindPopup(`<b>${esc(a.name || 'Agency')}</b><br>` +
+          `<span style="opacity:.75">${esc([a.city, a.county, a.state].filter(Boolean).join(', '))}</span>` +
+          `${a.address ? '<br>' + esc(a.address) : ''}`)
+        .addTo(this.agencyLayer);
+    }
+  }
+
+  toggleAgencies(show) {
+    if (show) this.agencyLayer.addTo(this.map);
+    else this.map.removeLayer(this.agencyLayer);
   }
 
   render(flights) {

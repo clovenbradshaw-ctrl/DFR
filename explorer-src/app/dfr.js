@@ -130,6 +130,42 @@ export function flightKey(feature) {
   return p.flight_id || (p.ObjectId != null ? 'oid_' + p.ObjectId : null);
 }
 
+// ── Agencies ─────────────────────────────────────────────────────────────────
+
+/**
+ * Normalise one agency record (NDJSON: u, city, county, state, address,
+ * centroid/…) into a lean, mappable shape. `centr*` is treated as a centroid:
+ * accepts [lng,lat], {lat,lng}, or "lat,lng" strings. Tolerant of empty fields.
+ */
+export function toAgency(el) {
+  const o = el || {};
+  let lat = num(o.lat ?? o.latitude), lng = num(o.lng ?? o.lon ?? o.longitude);
+  const c = o.centroid ?? o.center ?? o.centre ?? o.centr ?? o.geo ?? null;
+  if ((lat == null || lng == null) && c != null) {
+    if (Array.isArray(c) && c.length >= 2) { lng = num(c[0]); lat = num(c[1]); }
+    else if (typeof c === 'object') { lat = num(c.lat ?? c.latitude ?? c[1]); lng = num(c.lng ?? c.lon ?? c.longitude ?? c[0]); }
+    else if (typeof c === 'string' && c.includes(',')) {
+      const [a, b] = c.split(',').map(s => num(s.trim()));
+      // "lat,lng" is the common convention for a centroid string.
+      lat = a; lng = b;
+    }
+  }
+  return {
+    id: o.u || o.id || o.uuid || null,
+    city: o.city || '', county: o.county || '', state: o.state || '',
+    address: o.address || '',
+    name: o.name || o.agency || agencyLabel(o),
+    lat, lng,
+  };
+}
+
+function agencyLabel(o) {
+  return [o.city, o.county, o.state].filter(Boolean).join(', ') || (o.address || 'Agency');
+}
+function num(v) { if (v == null || v === '') return null; const n = Number(v); return Number.isFinite(n) ? n : null; }
+
+export function agencyKey(a) { return a.id || (a.lat != null ? `${a.lat},${a.lng}` : a.name); }
+
 // ── Schema-as-log (written once at room creation, read by any fresh client) ──
 
 export const SCHEMA = {
