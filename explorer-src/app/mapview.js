@@ -150,6 +150,31 @@ export class DfrMap {
     this._addPath(f.geometry, true);   // highlighted + fit to this flight
   }
 
+  /**
+   * Draw the tract choropleth. `feats` are TIGERweb GeoJSON tract features with
+   * `geoid`; `colorFor(geoid)` returns a fill; `overflown` is a Set of geoids to
+   * outline (the drone-overflown tracts).
+   */
+  renderTracts(feats, colorFor, overflown) {
+    this.tractLayer.clearLayers();
+    if (!feats || !feats.length) return;
+    for (const f of feats) {
+      const geoid = f.properties.geoid;
+      const over = overflown && overflown.has(geoid);
+      L.geoJSON(f, {
+        renderer: this._canvas,
+        style: {
+          fillColor: colorFor ? colorFor(geoid) : 'rgba(43,103,119,0.3)',
+          fillOpacity: 1, weight: over ? 2 : 0.5,
+          color: over ? '#ff4d4d' : 'rgba(120,120,120,0.4)',
+        },
+      }).addTo(this.tractLayer);
+    }
+    // Keep flight dots/paths on top.
+    this.flightLayer.bringToFront(); this.pathLayer.bringToFront();
+  }
+  clearTracts() { this.tractLayer.clearLayers(); }
+
   invalidate() { setTimeout(() => this.map.invalidateSize(), 50); }
 }
 

@@ -29,6 +29,7 @@ import { DfrMap } from './mapview.js';
 import { DepartmentsView } from './departments.js';
 import { Swarm } from './swarm.js';
 import { Activity, act, Term } from './activity.js';
+import { loadACS, loadTractGeom, acsLabel, overflownTracts, contrast, choroplethColor } from './census.js';
 
 const $ = (id) => document.getElementById(id);
 let deptsView = null, swarm = null;
@@ -57,6 +58,80 @@ function renderTerminal() {
   if (!el) return;
   el.textContent = Term.lines.join('\n');
   if ($('termFollow')?.checked) el.scrollTop = el.scrollHeight;
+}
+
+// ── Demographics view ──
+let demoData = null;   // { year, byGeoid, feats, overflown, metric }
+async function guessCountyFips() {
+  // Use the densest flight start as the probe point; reverse-geocode to FIPS via
+  // the Census geographies service.
+  const fl = store?.flights || [];
+  const pt = fl.find(f => f.start_coords)?.start_coords;
+  if (!pt) return '';
+  const url = `https://geocoding.geo.census.gov/geocoder/geographies/coordinates?x=${pt[0]}&y=${pt[1]}` +
+              `&benchmark=Public_AR_Current&vintage=Current_Current&layers=Counties&format=json`;
+  try {
+    const proxy = $('proxy').value.trim();
+    const r = await import('./dfr.js').then(m => m.feedFetch(url, proxy));
+    const c = r?.result?.geographies?.Counties?.[0];
+    if (c) return `${c.STATE}${c.COUNTY}`;
+  } catch {}
+  return '';
+}
+
+async function loadDemographics() {
+  const m = $('demoMetric').value;
+  let fips = $('demoFips').value.trim().replace(/[^0-9]/g, '');
+  if (!fips) { fips = await guessCountyFips(); if (fips) $('demoFips').value = fips; }
+  if (fips.length < 4) { $('demoBody').innerHTML = '<div class="empty">Enter a 5-digit county FIPS (state+county), e.g. 47037.</div>'; return; }
+  const stateFips = fips.slice(0, 2), countyFips = fips.slice(2);
+  const proxy = $('proxy').value.trim();
+  $('demoBody').innerHTML = '<div class="empty">Loading ACS + tract geometry…</div>';
+  try {
+    const [{ year, byGeoid }, feats] = await Promise.all([
+      loadACS(stateFips, countyFips, proxy),
+      loadTractGeom(stateFips, countyFips, proxy),
+    ]);
+    const over = overflownTracts(feats, store?.flights || []);
+    demoData = { year, byGeoid, feats, overflown: over, metric: m };
+    renderDemographics();
+    // Shade the tracts on the map too.
+    if (dfrMap) dfrMap.renderTracts(feats, (geoid) => choroplethColor(byGeoid[geoid]?.[m], m), over);
+    act.info(`Loaded ${Object.keys(byGeoid).length} tracts (${acsLabel(year)}); ${over.size} overflown`);
+  } catch (e) {
+    $('demoBody').innerHTML = `<div class="empty">Failed: ${esc(e.message)}</div>`;
+  }
+}
+
+const DEMO_ROWS = [
+  ['population', 'Population', (v) => v?.toLocaleString() ?? '—', false],
+  ['pct_black', '% Black', (v) => v != null ? v + '%' : '—', true],
+  ['pct_hispanic', '% Hispanic', (v) => v != null ? v + '%' : '—', true],
+  ['pct_white', '% White', (v) => v != null ? v + '%' : '—', false],
+  ['pct_poverty', '% in poverty', (v) => v != null ? v + '%' : '—', true],
+  ['unemployment_rate', 'Unemployment', (v) => v != null ? v + '%' : '—', true],
+  ['median_household_income', 'Median income', (v) => v != null ? '$' + v.toLocaleString() : '—', false],
+];
+function renderDemographics() {
+  if (!demoData) { $('demoBody').innerHTML = '<div class="empty">Load demographics to compare.</div>'; return; }
+  const c = contrast(demoData.byGeoid, demoData.overflown);
+  const fmtRow = ([k, label, fmt, higherIsWorse]) => {
+    const o = c.overflown?.[k], r = c.rest?.[k];
+    let delta = '';
+    if (typeof o === 'number' && typeof r === 'number' && r !== 0) {
+      const d = o - r; const cls = (d > 0) === !!higherIsWorse ? 'up' : 'down';
+      delta = `<span class="delta ${cls}">${d > 0 ? '+' : ''}${(+d.toFixed(1)).toLocaleString()}</span>`;
+    }
+    return `<tr><td>${label}</td><td class="over">${fmt(o)}</td><td>${fmt(r)}</td><td>${delta}</td></tr>`;
+  };
+  $('demoBody').innerHTML = `
+    <table class="demo-cmp"><thead><tr>
+      <th>Metric</th><th>Overflown tracts</th><th>Rest of county</th><th>Δ</th>
+    </tr></thead><tbody>${DEMO_ROWS.map(fmtRow).join('')}</tbody></table>
+    <div class="demo-note">${c.nOverflown} of ${c.nTotal} census tracts intersect a drone flight ·
+      ${esc(acsLabel(demoData.year))} · race/ethnicity from B03002. "Overflown" = any sampled flight-path
+      point falls inside the tract. Δ compares overflown vs. the rest of the county (red = higher where that
+      typically signals disadvantage). Tracts are shaded on the Map tab by the selected metric.</div>`;
 }
 
 // ── Activity view ──
@@ -571,15 +646,17 @@ function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;'
 // ── tabs ──
 function setTab(t) {
   tab = t;
-  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabTerm', 'term']])
+  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabDemo', 'demo'], ['tabTerm', 'term']])
     $(id).setAttribute('aria-selected', t === name);
   $('deptsView').classList.toggle('hidden', t !== 'depts');
   $('mapView').classList.toggle('hidden', t !== 'map');
   $('activityView').classList.toggle('hidden', t !== 'activity');
+  $('demoView').classList.toggle('hidden', t !== 'demo');
   $('termView').classList.toggle('hidden', t !== 'term');
   if (t === 'map') { renderMap(store?.flights || []); dfrMap?.invalidate(); }
   else if (t === 'depts') ensureDepts().refresh();
   else if (t === 'activity') renderActivity();
+  else if (t === 'demo') renderDemographics();
   else if (t === 'term') renderTerminal();
 }
 
@@ -611,7 +688,15 @@ function wire() {
   $('tabDepts').addEventListener('click', () => setTab('depts'));
   $('tabMap').addEventListener('click', () => setTab('map'));
   $('tabActivity').addEventListener('click', () => setTab('activity'));
+  $('tabDemo').addEventListener('click', () => setTab('demo'));
   $('tabTerm').addEventListener('click', () => setTab('term'));
+  $('demoLoad').addEventListener('click', () => loadDemographics());
+  $('demoMetric').addEventListener('change', () => {
+    if (!demoData) return;
+    demoData.metric = $('demoMetric').value;
+    if (dfrMap) dfrMap.renderTracts(demoData.feats, (g) => choroplethColor(demoData.byGeoid[g]?.[demoData.metric], demoData.metric), demoData.overflown);
+    renderDemographics();
+  });
   $('fpClose').addEventListener('click', hideFlight);
   $('actClear').addEventListener('click', () => { Activity.clear(); renderActivity(); });
   $('termClear').addEventListener('click', () => { Term.clear(); renderTerminal(); });
