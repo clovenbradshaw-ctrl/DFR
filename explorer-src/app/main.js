@@ -886,6 +886,7 @@ function wire() {
     fromFrac = 0; toFrac = 1; syncTimeInputs(); updateTimeLabel(); if (dfrMap) dfrMap.refresh();
   });
   $('playBtn').addEventListener('click', togglePlay);
+  $('fitBtn').addEventListener('click', () => dfrMap?.fitFlights(true));
   $('exportBtn').addEventListener('click', () => {
     try {
       const flights = store?.flights || [];
