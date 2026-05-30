@@ -104,11 +104,12 @@ export class DfrMap {
     if (!this._flights.length) { if (this.onCount) this.onCount(0, 0); return; }
     const b = this.map.getBounds();
     const drawPaths = this.map.getZoom() >= PATH_ZOOM;   // city-level → show movements
-    let shown = 0, inView = 0, paths = 0;
+    let shown = 0, inView = 0, inViewAllTime = 0, paths = 0;
     for (const f of this._flights) {
       const c = f.start_coords;
       if (!c || c.length < 2) continue;
       if (!b.contains([c[1], c[0]])) continue;
+      inViewAllTime++;                                         // in viewport, any time
       if (this.timeFilter && !this.timeFilter(f)) continue;   // time scrubber cutoff
       inView++;
       if (shown >= MAX_MARKERS) continue;
@@ -122,7 +123,7 @@ export class DfrMap {
       // Movement lines for in-view flights when zoomed into a city, capped.
       if (drawPaths && paths < MAX_PATHS && f.geometry) { this._addPath(f.geometry, false); paths++; }
     }
-    if (this.onCount) this.onCount(Math.min(inView, MAX_MARKERS), this._flights.length, inView > MAX_MARKERS);
+    if (this.onCount) this.onCount(inView, this._flights.length, inView > MAX_MARKERS, inViewAllTime);
   }
 
   _addPath(geom, fit) {

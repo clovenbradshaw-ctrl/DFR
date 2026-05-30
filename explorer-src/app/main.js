@@ -462,7 +462,10 @@ function render() {
       : (store?.flights?.length ? `${store.flights.length} local · not published` : 'not hydrated')) + ag;
   }
 
-  if (tab === 'depts') ensureDepts().refresh();
+  // Keep the departments aggregate in sync with the working set even when the
+  // Departments tab isn't visible (so its counts never lag the map). The view's
+  // own _sig guard makes this cheap when nothing changed.
+  if (deptsView) deptsView.refresh();
   if (tab === 'map') renderMap(flights);
 
   // Once the room holds data, fold the hydration-setup panel away.
@@ -482,8 +485,16 @@ function ensureMap() {
   dfrMap = new DfrMap('map');
   // Auto-pull recent flights for the viewport once zoomed in.
   dfrMap.onFocusChange((bbox, zoom) => scheduleFocus(bbox, zoom));
-  dfrMap.onCount = (shown, total, capped) => setFocusHint(
-    total ? `Showing ${shown.toLocaleString()} of ${total.toLocaleString()} flights in view${capped ? ' (capped — zoom in for more)' : ''}` : '');
+  dfrMap.onCount = (shown, total, capped, inViewAllTime) => {
+    if (!total) return setFocusHint('');
+    // shown = in viewport AND inside the time window; inViewAllTime = in
+    // viewport regardless of time. Surface the time-filtered hidden count so a
+    // viewport vs. department mismatch is explained by the cursor, not a bug.
+    const hidden = (inViewAllTime ?? shown) - shown;
+    setFocusHint(`${shown.toLocaleString()} flights here` +
+      (hidden > 0 ? ` (${hidden} outside the time window)` : '') +
+      (capped ? ' · capped, zoom in' : ''));
+  };
   dfrMap.onFlight = (f) => showFlight(f);
   // The time window filter (applied per-marker in the map's viewport render).
   dfrMap.timeFilter = (f) => inWindow(f);
@@ -557,21 +568,30 @@ let timeSpan = null;       // { min, max } in ms over ALL flights (fixed)
 let fromFrac = 0, toFrac = 1;
 let timeInited = false;    // have we set the initial "now" window yet?
 
-/** Compute the fixed full-dataset span once (when flights change). */
+/** Compute the fixed full-dataset span (slider scale) when flights change. */
 function computeFullSpan(flights) {
   let min = Infinity, max = 0;
   for (const f of flights) if (f.takeoff) { if (f.takeoff < min) min = f.takeoff; if (f.takeoff > max) max = f.takeoff; }
   timeSpan = (min === Infinity) ? null : (min === max ? { min, max: min + 1 } : { min, max });
-  // Start at "now": a trailing window ending at the latest flight (default 30d
-  // back, or the whole span if shorter). Only on the first time we have a span.
-  if (timeSpan && !timeInited) {
-    timeInited = true;
-    const THIRTY_D = 30 * 864e5;
-    const span = timeSpan.max - timeSpan.min;
-    fromFrac = span > THIRTY_D ? 1 - THIRTY_D / span : 0;
-    toFrac = 1;
-    syncTimeInputs();
+  if (timeSpan && !timeInited) { timeInited = true; initWindowToViewport(flights); }
+}
+
+/** Set the initial window: from the EARLIEST in-view flight → now (latest). */
+function initWindowToViewport(flights) {
+  if (!timeSpan) return;
+  let inViewMin = Infinity;
+  const bb = dfrMap ? dfrMap.bbox() : null;
+  for (const f of flights) {
+    if (!f.takeoff) continue;
+    const c = f.start_coords;
+    const inView = !bb || (c && c.length >= 2 && c[0] >= bb[0] && c[0] <= bb[2] && c[1] >= bb[1] && c[1] <= bb[3]);
+    if (inView && f.takeoff < inViewMin) inViewMin = f.takeoff;
   }
+  const start = inViewMin === Infinity ? timeSpan.min : inViewMin;
+  const span = timeSpan.max - timeSpan.min;
+  fromFrac = span > 0 ? Math.max(0, (start - timeSpan.min) / span) : 0;
+  toFrac = 1;
+  syncTimeInputs();
 }
 
 const fracToTs = (fr) => timeSpan ? timeSpan.min + (timeSpan.max - timeSpan.min) * fr : 0;
