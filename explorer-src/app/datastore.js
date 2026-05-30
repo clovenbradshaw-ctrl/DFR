@@ -58,16 +58,60 @@ const MAX_CHUNK = 24 * 1024 * 1024;            // cap per-block payload memory
 // Keep a department's batch event comfortably under typical Matrix event-size
 // limits (~64KB). Beyond this we split into multiple events; a single flight
 // whose full geometry alone exceeds it is hoisted to media by the outbox.
-const EVENT_BUDGET = 48 * 1024;
-/** Split records into groups whose JSON stays under EVENT_BUDGET (≥1 each). */
-function sizeBatches(records) {
-  const out = []; let cur = [], size = 2;
-  for (const r of records) {
-    const s = JSON.stringify(r).length + 1;
-    if (cur.length && size + s > EVENT_BUDGET) { out.push(cur); cur = []; size = 2; }
-    cur.push(r); size += s;
+// Matrix's hard cap is 65536 bytes for the WHOLE event (PDU), not just content
+// — the homeserver rejects anything larger with M_TOO_LARGE. The Megolm
+// envelope, event_id, sender, signatures, and our INS wrapper (entity_type,
+// anchor, payload keys) all count against it, so we budget content well under
+// 64KB and measure the actual sent shape, not just the flight array.
+const EVENT_MAX = 65536;
+const EVENT_OVERHEAD = 12 * 1024;             // envelope + INS wrapper headroom
+const EVENT_BUDGET = EVENT_MAX - EVENT_OVERHEAD;   // ≈ 53KB for the encoded payload
+const encoder0 = new TextEncoder();
+const jsonBytes = (v) => encoder0.encode(JSON.stringify(v)).length;   // UTF-8 bytes, not chars
+
+function bytesToB64(bytes) {
+  let s = ''; const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) s += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  return btoa(s);
+}
+function b64ToBytes(b64) {
+  const bin = atob(b64); const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+/**
+ * Pack flights into BINARY batches that fit the Matrix event limit. Each batch
+ * is gzipped NDJSON, base64'd into the event — far denser than raw JSON (gzip
+ * ≈4-5× on flight data), so one event holds many more flights. We grow a batch
+ * greedily, compress, and verify the encoded size is under budget, backing off
+ * if a record pushes it over. Returns [{ b64, n }] (n = flight count).
+ */
+async function packedBatches(records) {
+  const out = [];
+  let i = 0;
+  while (i < records.length) {
+    // Grow the batch until the gzipped+base64 payload would exceed the budget,
+    // then emit the largest size that fit. Doubling probe keeps it ~O(log n)
+    // compressions per batch.
+    let take = Math.min(records.length - i, 256);
+    let best = 0, bestB64 = null;
+    while (true) {
+      const slice = records.slice(i, i + take);
+      const b64 = bytesToB64(await packFlights(slice));
+      if (b64.length <= EVENT_BUDGET) {
+        best = take; bestB64 = b64;
+        if (i + take >= records.length) break;            // consumed everything
+        take = Math.min(records.length - i, take * 2);     // try to fit more
+        continue;
+      }
+      if (best) break;                                     // last smaller size stands
+      take = Math.max(1, Math.floor(take / 2));            // even one slice too big → shrink
+      if (take === 1) { best = 1; bestB64 = bytesToB64(await packFlights(records.slice(i, i + 1))); break; }
+    }
+    out.push({ b64: bestB64, n: best });
+    i += best;
   }
-  if (cur.length) out.push(cur);
   return out;
 }
 
@@ -157,7 +201,7 @@ export class DataStore {
     this.meta = readDatasetState(roomId);
     if (this.meta && this.meta.version > this.localVersion) await this.sync();
     await this._loadAgencies();
-    this.mergeLooseEvents();   // fold in any flight events not yet rolled into the block
+    await this.mergeLooseEvents();   // fold in any flight events not yet rolled into the block
     return { hydrated: !!this.meta?.hydrated, count: this.flights.length };
   }
 
@@ -167,7 +211,7 @@ export class DataStore {
    * Idempotent — dedup by flight_id — so it's safe to call on open and on each
    * new timeline event.
    */
-  mergeLooseEvents() {
+  async mergeLooseEvents() {
     if (!this.roomId) return 0;
     const evs = getTimeline(this.roomId) || [];
     const recs = [];
@@ -178,11 +222,15 @@ export class DataStore {
       const u = typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned;
       if (u && u.redacted_because) continue;          // already rolled up
       const c = typeof e.getContent === 'function' ? e.getContent() : e.content;
-      if (!c || !c.payload) continue;
+      if (!c) continue;
       if (c.entity_type === ENTITY.FLIGHT_BATCH) {
-        for (const f of (c.payload.flights || [])) recs.push(toRecord(f));
+        if (c.data && c.enc === 'gzip-ndjson-b64') {            // binary batch
+          try { for (const f of await unpackFlights(b64ToBytes(c.data))) recs.push(toRecord(f)); } catch {}
+        } else if (c.payload?.flights) {                        // legacy JSON batch
+          for (const f of c.payload.flights) recs.push(toRecord(f));
+        }
         loose++;
-      } else if (c.entity_type === ENTITY.FLIGHT) {    // legacy single-flight events
+      } else if (c.entity_type === ENTITY.FLIGHT && c.payload) { // legacy single-flight
         recs.push(toRecord(c.payload));
         loose++;
       }
@@ -645,21 +693,19 @@ export class DataStore {
     const fresh = recs.filter(r => { const id = flightId(r); return id && !have.has(id); });
     if (!fresh.length) return { added: 0 };
 
-    // 1) Post new flights as durable room EVENTS immediately — one batch event
-    //    PER DEPARTMENT where possible, split across multiple events only when a
-    //    department's batch would exceed the size budget. Events carry the FULL,
-    //    precise geometry (this is the research-grade history); oversized batches
-    //    are auto-hoisted to encrypted media by the foundation outbox. Delivery
-    //    is guaranteed even if the tab closes mid-send.
-    const byOrg = new Map();
-    for (const r of fresh) { const o = r.organization_id || 'unknown'; (byOrg.get(o) || byOrg.set(o, []).get(o)).push(r); }
-    for (const [org, list] of byOrg) {
-      for (const batch of sizeBatches(list)) {
-        try {
-          await ins(this.roomId, ENTITY.FLIGHT_BATCH, { org, flights: batch });
-          this.looseEvents = (this.looseEvents || 0) + 1;
-        } catch (e) { act.err(`Flight batch failed: ${e.message}`); }
-      }
+    // 1) Post new flights as durable room EVENTS immediately — packed as FULL as
+    //    possible (across departments) so each event holds as many flights as fit
+    //    under the Matrix size cap. Each flight carries its own organization_id,
+    //    so a single batch can span departments. Events carry full precise
+    //    geometry; an oversize single flight is hoisted to media by the outbox.
+    //    Delivery is guaranteed even if the tab closes mid-send.
+    for (const batch of await packedBatches(fresh)) {
+      try {
+        // Binary payload: gzip-NDJSON, base64'd — packs ~4-5× more flights per
+        // event than raw JSON while staying under the Matrix size cap.
+        await ins(this.roomId, ENTITY.FLIGHT_BATCH, { enc: 'gzip-ndjson-b64', n: batch.n, data: batch.b64 });
+        this.looseEvents = (this.looseEvents || 0) + 1;
+      } catch (e) { act.err(`Flight batch failed: ${e.message}`); }
     }
 
     // 2) Update the in-memory working set + local OPFS cache.
@@ -853,7 +899,10 @@ export class DataStore {
       const u = (typeof e.getUnsigned === 'function' ? e.getUnsigned() : e.unsigned) || {};
       const id = typeof e.getId === 'function' ? e.getId() : e.event_id;
       let summary = '';
-      if (type.endsWith('.ins') && c.entity_type === ENTITY.FLIGHT_BATCH) summary = `flight batch · ${c.payload?.flights?.length || 0} flights · org ${(c.payload?.org || '').slice(0, 8)}`;
+      if (type.endsWith('.ins') && c.entity_type === ENTITY.FLIGHT_BATCH) {
+        const n = c.n ?? (c.payload?.flights?.length || 0);
+        summary = `flight batch · ${n} flights${c.enc ? ' · binary' : ''}`;
+      }
       else if (type.endsWith('.ins') && c.entity_type === ENTITY.FLIGHT) summary = `flight · ${c.payload?.flight_id?.slice(0, 8) || ''}`;
       else if (type.endsWith('.ins')) summary = `ins ${c.entity_type || ''}`;
       else if (type.endsWith('.def')) summary = `def ${c.path || ''}`;
@@ -918,10 +967,21 @@ export class DataStore {
     // than one-at-a-time across hundreds of departments.
     const orgList = [...byOrg.keys()];
     const chunkSize = await this._chunkSize();
-    let done = 0;
+    const prevDepts = this.deptManifest?.departments || {};
+    let done = 0, reused = 0, rewritten = 0;
     await parallelMap(orgList, UPLOAD_CONCURRENCY, async (org) => {
       const list = byOrg.get(org);
       const bytes = await packFlights(list);
+      const hash = blobHash(bytes);
+      // INCREMENTAL: if this department's content hash matches the prior shard,
+      // reuse the existing block ref — don't re-upload. This stops a +1-flight
+      // cycle from re-uploading all ~291 shards (~3 GB) every time.
+      const prev = prevDepts[org];
+      if (prev && prev.hash === hash && (prev.ref || prev.chunks)) {
+        departments[org] = prev; reused++;
+        if (++done % 50 === 0 || done === orgList.length) this.log(`Sharding ${done}/${orgList.length} (${reused} unchanged)…`, 'mut');
+        return;
+      }
       let entry;
       if (bytes.length <= limit) {
         const ref = await uploadEncrypted(bytes, { mime: 'application/gzip', name: `dfr-v${version}-${org.slice(0, 8)}.ndjson.gz` });
@@ -935,12 +995,15 @@ export class DataStore {
         entry = { chunks: refs, head };
       }
       entry.count = list.length;
+      entry.hash = hash;
       entry.bbox = bboxOf(list);
       entry.tmin = Math.min(...list.map(f => f.takeoff || Infinity));
       entry.tmax = Math.max(...list.map(f => f.takeoff || 0));
       departments[org] = entry;
-      if (++done % 25 === 0 || done === orgList.length) this.log(`Sharded ${done}/${orgList.length} departments…`, 'mut');
+      rewritten++;
+      if (++done % 50 === 0 || done === orgList.length) this.log(`Sharding ${done}/${orgList.length} (${rewritten} changed)…`, 'mut');
     });
+    this.log(`Sharded: ${rewritten} department(s) re-uploaded, ${reused} unchanged.`, 'ok');
     // Totals span ALL departments in the manifest (rewritten + carried).
     const allOrgs = Object.keys(departments);
     const total = allOrgs.reduce((n, o) => n + (departments[o].count || 0), 0);
@@ -1007,11 +1070,10 @@ export class DataStore {
     }
 
     // Sharded shards carry FULL geometry regrouped by department, so they fully
-    // supersede the original byte-sliced raw archive — drop it (and redact its
-    // blocks below). Other modes keep the raw archive as the full-res source.
-    const keepRaw = mode !== 'sharded';
-    // Carry forward unrelated room-state keys (agencies_index, etc.) so a
-    // publish/re-shard never orphans them — only override what this publish sets.
+    // APPEND-ONLY: never drop or redact prior blocks/archives. Old media simply
+    // stops being referenced as new shards are added; nothing is destroyed.
+    // Carry forward unrelated room-state keys (agencies_index, raw_archive, …)
+    // so a publish only adds/updates what changed.
     const content = {
       ...(prev || {}),
       hydrated: markHydrated || !!prev?.hydrated,
@@ -1022,19 +1084,17 @@ export class DataStore {
       total: mode === 'sharded' ? (this._shardTotal ?? this.flights.length) : (prev?.total ?? this.flights.length),
       blob, manifest, chunk_count: chunkCount,
       source_url: sourceUrl ?? prev?.source_url ?? null,
-      raw_archive: keepRaw ? (prev?.raw_archive ?? (prev?.mode === 'chunked-raw' ? prev?.manifest : null)) : null,
-      raw_payload_format: keepRaw ? (prev?.raw_payload_format ?? (prev?.mode === 'chunked-raw' ? prev?.payload_format : null)) : null,
-      raw_bytes: keepRaw ? (prev?.raw_bytes ?? (prev?.mode === 'chunked-raw' ? prev?.total_bytes : null)) : null,
+      raw_archive: prev?.raw_archive ?? (prev?.mode === 'chunked-raw' ? prev?.manifest : null),
+      raw_payload_format: prev?.raw_payload_format ?? (prev?.mode === 'chunked-raw' ? prev?.payload_format : null),
+      raw_bytes: prev?.raw_bytes ?? (prev?.mode === 'chunked-raw' ? prev?.total_bytes : null),
       updated_at: Date.now(), updated_by: getClient()?.getUserId() || null,
     };
     await writeDatasetState(this.roomId, content);
     this.meta = content; this._adoptVersion(version); this.dirty = 0; this.lastPublish = Date.now();
-    if (!keepRaw && (prev?.raw_archive || prev?.mode === 'chunked-raw')) {
-      this._dropRawArchive(prev).catch(() => {});   // best-effort cleanup
-    }
-    // The block now supersedes the loose per-flight events — redact them so the
-    // timeline stays lean, and reset the loose counter that gates the next roll.
-    if (mode !== 'empty') this._redactLooseEvents().catch(() => {});
+    // APPEND-ONLY: keep the loose per-flight events in the timeline (the durable
+    // append-only log); the published block is just a compaction index over
+    // them. mergeLooseEvents dedups so they're not double-counted. We only reset
+    // the in-memory counter that gates how often we compact.
     this.looseEvents = 0;
     this.log(`Published v${version} (${content.count} flights, ${mode}).`, 'ok');
     this._notify();
