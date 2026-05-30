@@ -379,7 +379,7 @@ async function openRoom(roomId) {
   });
   // Live flight events (from this device or peers) fold into the working set as
   // they arrive — durable the moment they're sent, no waiting for a block.
-  const onFlightEvents = () => { if (store.mergeLooseEvents()) scheduleRender(); };
+  const onFlightEvents = async () => { if (await store.mergeLooseEvents()) scheduleRender(); };
   const u1 = onTimeline(roomId, onFlightEvents);
   const u2 = onDecrypted(roomId, onFlightEvents);
   unsubTimeline = () => { u1(); u2(); };
