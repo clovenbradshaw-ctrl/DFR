@@ -76,6 +76,32 @@ function renderEvents() {
   }).join('') || '<div class="empty">No room events in the loaded timeline.</div>';
 }
 
+// ── Changelog view ──
+// Static release notes; `items` may contain trusted inline HTML (no user input).
+const CHANGELOG = [
+  {
+    date: '2026-05-31',
+    title: 'Alternative demographic source: Community Needs Evaluation 2025–26',
+    items: [
+      'Added a <b>Source</b> picker to the Demographics view: switch between <b>Census ACS</b> (tract-level overflown-vs-rest contrast) and Metro Nashville’s <b>Community Needs Evaluation 2025–2026</b> (race &amp; ethnicity by Metro Council District).',
+      'Apples-to-apples: both sources draw on the <b>same survey vintage — ACS 2023 5-year estimates</b>. The ACS pull probes newest-first and resolves to 2023; the CNE table is explicitly ACS 2023 5-year (DP05). The only difference is geography (35 Metro Council Districts vs. census tracts), not the data year.',
+      '<b>No change to existing ACS tract numbers</b> — the ACS pipeline is untouched; this only adds a second, selectable lens on the same survey.',
+      'CNE Davidson County baseline (pop 709,846): White 57.1%, Black 25.2%, Hispanic 13.6%, Asian 3.4%, Two or more 9.1%.',
+      'Council-district detail exposes segregation the county/tract averages smooth over: % Black spans <b>2.9% (D24) → 65.8% (D2)</b>; % White <b>16.0% (D2) → 89.3% (D24)</b>; % Hispanic <b>2.1% (D25) → 48.6% (D30)</b>.',
+      'When Metro’s council-district polygons load through the proxy, the overflown-vs-rest contrast (population-weighted) is computed across districts, mirroring the tract analysis and shading the Map tab.',
+    ],
+  },
+];
+function renderChangelog() {
+  const el = $('changelogBody'); if (!el) return;
+  el.innerHTML = CHANGELOG.map(e => `
+    <div class="cl-entry">
+      <div class="cl-date">${esc(e.date)}</div>
+      <h3 class="cl-title">${esc(e.title)}</h3>
+      <ul class="cl-list">${e.items.map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
 // ── Demographics view ──
 // demoData carries whichever source is active:
 //   ACS: { source:'acs', year, byGeoid, feats, overflown:Set<geoid>, metric }
@@ -947,7 +973,7 @@ function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;'
 // ── tabs ──
 function setTab(t) {
   tab = t;
-  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabDemo', 'demo'], ['tabTerm', 'term'], ['tabEvents', 'events']])
+  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabDemo', 'demo'], ['tabTerm', 'term'], ['tabEvents', 'events'], ['tabChangelog', 'changelog']])
     $(id).setAttribute('aria-selected', t === name);
   $('deptsView').classList.toggle('hidden', t !== 'depts');
   $('mapView').classList.toggle('hidden', t !== 'map');
@@ -959,6 +985,7 @@ function setTab(t) {
   else if (t === 'depts') ensureDepts().refresh();
   else if (t === 'activity') renderActivity();
   else if (t === 'demo') renderDemographics();
+  else if (t === 'changelog') renderChangelog();
   else if (t === 'term') renderTerminal();
   else if (t === 'events') renderEvents();
 }
@@ -1029,6 +1056,7 @@ function wire() {
   $('tabDemo').addEventListener('click', () => setTab('demo'));
   $('tabTerm').addEventListener('click', () => setTab('term'));
   $('tabEvents').addEventListener('click', () => setTab('events'));
+  $('tabChangelog').addEventListener('click', () => setTab('changelog'));
   $('eventsRefresh').addEventListener('click', renderEvents);
   $('demoLoad').addEventListener('click', () => loadDemographics());
   $('demoSource').addEventListener('change', () => {
