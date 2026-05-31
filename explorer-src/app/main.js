@@ -620,14 +620,23 @@ function inWindow(f) {
   return f.takeoff >= fracToTs(fromFrac) && f.takeoff <= fracToTs(toFrac);
 }
 
+// Scrubber cursor reads in Central Time so the timestamp matches the drone-line
+// data we're scrubbing over. Date only for the full-range overview; full
+// date+time (so you can confirm CT while dragging) once a window is selected.
+const CT_TZ = 'America/Chicago';
+const fmtCTDate = (ms) => new Intl.DateTimeFormat('en-CA',
+  { timeZone: CT_TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(ms);
+const fmtCTStamp = (ms) => new Intl.DateTimeFormat('en-CA',
+  { timeZone: CT_TZ, year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false }).format(ms).replace(',', '');
+
 function updateTimeLabel() {
   const lbl = $('timeLabel'); if (!lbl) return;
   if (!timeSpan) { lbl.textContent = 'no dated flights'; return; }
-  const d = (ms) => new Date(ms).toISOString().slice(0, 10);
   const atNow = toFrac >= 0.999;
   lbl.textContent = (fromFrac <= 0 && toFrac >= 1)
-    ? `all · ${d(timeSpan.min)} → ${d(timeSpan.max)}`
-    : `${d(fracToTs(fromFrac))} → ${atNow ? 'now' : d(fracToTs(toFrac))}`;
+    ? `all · ${fmtCTDate(timeSpan.min)} → ${fmtCTDate(timeSpan.max)} CT`
+    : `${fmtCTStamp(fracToTs(fromFrac))} → ${atNow ? 'now' : fmtCTStamp(fracToTs(toFrac))} CT`;
   const fill = $('timeFill');
   if (fill) { fill.style.left = (fromFrac * 100) + '%'; fill.style.width = ((toFrac - fromFrac) * 100) + '%'; }
 }
