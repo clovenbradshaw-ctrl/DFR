@@ -240,6 +240,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .p-verdict-b{font-size:12px;color:var(--mut);line-height:1.6;font-family:'JetBrains Mono',monospace}
 .p-verdict-b ol{padding-left:18px;margin-top:4px}
 .p-verdict-b li{margin-bottom:2px}
+.pf-actions{margin-top:8px}
+.pf-actions a{color:var(--acc);text-decoration:none;font-size:11.5px;cursor:pointer;border-bottom:1px dotted var(--acc);display:inline-block}
+.pf-actions a:hover{opacity:.8}
 
 .sect{padding:14px 16px;border-bottom:1px solid var(--line)}
 .sect:last-child{border-bottom:none}
@@ -658,8 +661,11 @@ var flightGroup=L.layerGroup().addTo(map),swathGroup=L.layerGroup().addTo(map),s
 var flightsVisible=true,swathVisible=true,sitesVisible=true,launchVisible=true,launchRadiusLayer=null;
 
 function fmtMoney(n){n=Math.round(n);var neg=n<0;n=Math.abs(n);var s=n>=1000?'$'+(n/1000).toFixed(n%1000===0?0:1)+'k':'$'+n;return neg?'-'+s:s}
-function fmtTime(d){return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})}
-function fmtDate(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+// Drone flight times are reported in Central Time — pin every flight-time
+// readout to America/Chicago so it matches the scrubber cursor and the data.
+var CT_TZ='America/Chicago';
+function fmtTime(d){return d.toLocaleTimeString('en-US',{timeZone:CT_TZ,hour:'numeric',minute:'2-digit',hour12:true})}
+function fmtDate(d){return d.toLocaleDateString('en-US',{timeZone:CT_TZ,month:'short',day:'numeric',year:'numeric'})}
 function durStr(ms){var m=Math.round(ms/60000);return m<60?m+'m':Math.floor(m/60)+'h '+(m%60)+'m'}
 function gdist(a,b,c,d){var R=6371000,dL=(c-a)*Math.PI/180,dG=(d-b)*Math.PI/180;var x=Math.sin(dL/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
 function ptSeg(px,py,ax,ay,bx,by){var dx=bx-ax,dy=by-ay;if(!dx&&!dy)return gdist(px,py,ax,ay);var t=((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy);t=Math.max(0,Math.min(1,t));return gdist(px,py,ax+t*dx,ay+t*dy)}
@@ -1004,12 +1010,19 @@ function showPanel(lat,lng){
 
   h+='<div class="p-head"><div class="p-dist">Council District '+dn+'</div><div class="p-name">'+cm.n+'</div><div class="p-phone"><a href="tel:'+cm.p.replace(/-/g,'')+'">'+cm.p+'</a></div><div class="p-addr" id="clickAddr"><span style="color:var(--mut2)">Loading address…</span></div></div>';
 
+  panelFlights=null;   // cleared unless this point has flights overhead (below)
   if(top&&top.under){
     var listed=allOver.slice().sort(function(a,b){return new Date(b.flight.properties.takeoff)-new Date(a.flight.properties.takeoff)});
+    // Stash this location's full flight set so the list can expand and the CSV
+    // download (built below) carries every flight, not just the visible three.
+    panelFlights={lat:lat,lng:lng,rows:listed};
     h+='<div class="p-verdict hit"><div class="p-verdict-t" style="color:#ef4444">'+allOver.length+' drone flight'+(allOver.length>1?'s':'')+' recorded here</div><div class="p-verdict-b">Nearest path: '+ft+' ft<ol>';
-    listed.slice(0,3).forEach(function(r){var f=r.flight,t=new Date(f.properties.takeoff),l=new Date(f.properties.landing);h+='<li>'+fmtDate(t)+', '+fmtTime(t)+'–'+fmtTime(l)+' · '+durStr(l-t)+'</li>'});
-    if(allOver.length>3)h+='<li style="list-style:none;color:var(--mut2);margin-top:2px">+ '+(allOver.length-3)+' more</li>';
-    h+='</ol></div></div>';
+    listed.forEach(function(r,i){var f=r.flight,t=new Date(f.properties.takeoff),l=new Date(f.properties.landing);
+      h+='<li'+(i>=3?' class="pf-extra" hidden':'')+'>'+fmtDate(t)+', '+fmtTime(t)+'–'+fmtTime(l)+' · '+durStr(l-t)+' <span style="color:var(--mut2)">· '+Math.round(r.dist*3.281)+' ft</span></li>'});
+    h+='</ol>';
+    if(listed.length>3)h+='<div class="pf-actions"><a id="pfToggle" onclick="togglePanelFlights()">Show all '+listed.length+' flights ↓</a></div>';
+    h+='<div class="pf-actions"><a onclick="downloadPanelFlights()">⬇ Download all '+listed.length+' flight'+(listed.length>1?'s':'')+' (CSV)</a></div>';
+    h+='</div></div>';
   }else if(top){
     var ds=ft>=5280?((ft/5280).toFixed(1)+' mi'):(ft+' ft');
     h+='<div class="p-verdict miss"><div class="p-verdict-t" style="color:#34d399">No recorded flights here</div><div class="p-verdict-b">Nearest path: '+ds+' away</div></div>';
@@ -1023,6 +1036,48 @@ function showPanel(lat,lng){
   panelInner.scrollTop=0;
   document.getElementById('panel').classList.add('show');
   setPanelState(top&&top.under?'peek':'peek');
+}
+
+// The flight set behind the currently-open location panel: {lat,lng,rows}, where
+// each row is {dist, flight}. Drives the expand toggle + CSV download.
+var panelFlights=null;
+function togglePanelFlights(){
+  var link=document.getElementById('pfToggle');if(!link)return;
+  var extras=document.querySelectorAll('#panelInner .pf-extra'),hide=extras.length&&extras[0].hidden;
+  for(var i=0;i<extras.length;i++)extras[i].hidden=!hide;
+  link.textContent=hide?'Show fewer ↑':('Show all '+(panelFlights?panelFlights.rows.length:extras.length+3)+' flights ↓');
+}
+function downloadPanelFlights(){
+  if(!panelFlights||!panelFlights.rows.length)return;
+  var hdr=['flight','council_districts','takeoff_ct','landing_ct','duration_min','distance_ft','num_points','start_lat','start_lng','end_lat','end_lng'];
+  var ctIso=function(d){return new Date(d).toLocaleString('sv-SE',{timeZone:CT_TZ}).replace(' ','T')+' CT';};
+  var esc=function(v){if(v==null)v='';v=String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  var rows=[
+    ['Source: '+FLIGHTS_URL],
+    ['Location: '+panelFlights.lat.toFixed(6)+', '+panelFlights.lng.toFixed(6)+' (within '+SWATH_M+' m of these flight paths)'],
+    ['Times reported in Central Time (America/Chicago)'],
+    ['Generated: '+new Date().toISOString()],
+    [],
+    hdr
+  ];
+  panelFlights.rows.forEach(function(r,idx){
+    var f=r.flight,p=f.properties||{},c=exCoords(f.geometry),s=c[0]||[],e=c[c.length-1]||[];
+    var t0=new Date(p.takeoff),t1=new Date(p.landing);
+    rows.push([
+      p.id||p.name||('flight_'+(idx+1)),
+      flightDistrictsOf(f).join(';'),
+      p.takeoff?ctIso(p.takeoff):'',p.landing?ctIso(p.landing):'',
+      (p.takeoff&&p.landing)?Math.round((t1-t0)/60000):'',
+      Math.round(r.dist*3.281),
+      c.length,
+      s[1]!=null?s[1]:'',s[0]!=null?s[0]:'',e[1]!=null?e[1]:'',e[0]!=null?e[0]:''
+    ]);
+  });
+  var text=rows.map(function(r){return r.map(esc).join(',');}).join('\r\n');
+  var blob=new Blob([text],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='dfr_flights_'+panelFlights.lat.toFixed(5)+'_'+panelFlights.lng.toFixed(5)+'.csv';
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},150);
 }
 
 // Panel close
@@ -1829,7 +1884,13 @@ function pathUpTo(coords,frac){
   var pts=coords.slice(0,i+1);pts.push(end);
   return{pts:pts,end:end};
 }
-function fmtScrubTime(t){var d=new Date(t);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' · '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});}
+// The scrubber cursor reads in Central Time (CT) — that's the zone the drone
+// flight data is reported in — and we surface the live zone abbreviation
+// (CDT/CST) plus seconds so you can confirm the cursor is actually in CT while
+// scrubbing, not the viewer's local clock.
+function fmtScrubTime(t){var d=new Date(t);
+  return d.toLocaleDateString('en-US',{timeZone:CT_TZ,month:'short',day:'numeric'})+' · '+
+         d.toLocaleTimeString('en-US',{timeZone:CT_TZ,hour:'numeric',minute:'2-digit',second:'2-digit',hour12:true,timeZoneName:'short'});}
 function restoreFlight(fl){
   fl.line.setLatLngs(fl.ll);
   fl.line.setStyle({color:'#ef4444',weight:flightWeightFor(),opacity:1});
