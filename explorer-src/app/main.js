@@ -31,6 +31,7 @@ import { DepartmentsView } from './departments.js';
 import { Swarm } from './swarm.js';
 import { Activity, act, Term } from './activity.js';
 import { loadACS, loadTractGeom, acsLabel, overflownTracts, contrast, choroplethColor } from './census.js';
+import { CNE_META, CNE_BASELINE, CNE_DISTRICTS, CNE_METRICS, contrastDistricts, loadCouncilDistricts, cneColor } from './cne.js';
 import { exportFlights } from './export.js';
 
 const $ = (id) => document.getElementById(id);
@@ -75,8 +76,65 @@ function renderEvents() {
   }).join('') || '<div class="empty">No room events in the loaded timeline.</div>';
 }
 
+// ── Changelog view ──
+// Static release notes; `items` may contain trusted inline HTML (no user input).
+const CHANGELOG = [
+  {
+    date: '2026-05-31',
+    title: 'Alternative demographic source: Community Needs Evaluation 2025–26',
+    items: [
+      'Added a <b>Source</b> picker to the Demographics view: switch between <b>Census ACS</b> (tract-level overflown-vs-rest contrast) and Metro Nashville’s <b>Community Needs Evaluation 2025–2026</b> (race &amp; ethnicity by Metro Council District).',
+      'Apples-to-apples: both sources draw on the <b>same survey vintage — ACS 2023 5-year estimates</b>. The ACS pull probes newest-first and resolves to 2023; the CNE table is explicitly ACS 2023 5-year (DP05). The only difference is geography (35 Metro Council Districts vs. census tracts), not the data year.',
+      '<b>No change to existing ACS tract numbers</b> — the ACS pipeline is untouched; this only adds a second, selectable lens on the same survey.',
+      'CNE Davidson County baseline (pop 709,846): White 57.1%, Black 25.2%, Hispanic 13.6%, Asian 3.4%, Two or more 9.1%.',
+      'Council-district detail exposes segregation the county/tract averages smooth over: % Black spans <b>2.9% (D24) → 65.8% (D2)</b>; % White <b>16.0% (D2) → 89.3% (D24)</b>; % Hispanic <b>2.1% (D25) → 48.6% (D30)</b>.',
+      'When Metro’s council-district polygons load through the proxy, the overflown-vs-rest contrast (population-weighted) is computed across districts, mirroring the tract analysis and shading the Map tab.',
+    ],
+  },
+];
+function renderChangelog() {
+  const el = $('changelogBody'); if (!el) return;
+  el.innerHTML = CHANGELOG.map(e => `
+    <div class="cl-entry">
+      <div class="cl-date">${esc(e.date)}</div>
+      <h3 class="cl-title">${esc(e.title)}</h3>
+      <ul class="cl-list">${e.items.map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
 // ── Demographics view ──
-let demoData = null;   // { year, byGeoid, feats, overflown, metric }
+// demoData carries whichever source is active:
+//   ACS: { source:'acs', year, byGeoid, feats, overflown:Set<geoid>, metric }
+//   CNE: { source:'cne', feats, overflown:Set<districtId>, metric }
+let demoData = null;
+const currentSource = () => $('demoSource')?.value || 'acs';
+
+// Metric pickers differ by source. ACS carries income/poverty/etc.; the CNE
+// "Know Your Community" table is race/ethnicity + population only.
+const ACS_METRIC_OPTS = [
+  ['pct_poverty', '% in poverty'], ['pct_black', '% Black'], ['pct_hispanic', '% Hispanic'],
+  ['pct_white', '% White'], ['median_household_income', 'Median income'], ['unemployment_rate', 'Unemployment'],
+];
+function rebuildMetricOptions(source) {
+  const opts = source === 'cne' ? CNE_METRICS.map(([k, l]) => [k, l]) : ACS_METRIC_OPTS;
+  const sel = $('demoMetric');
+  const prev = sel.value;
+  sel.innerHTML = opts.map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+  if (opts.some(([k]) => k === prev)) sel.value = prev;   // keep selection when shared (e.g. pct_black)
+}
+
+// Shade the active demographic layer on the Map tab for the current source.
+function shadeDemoMap(m) {
+  if (!m || !demoData?.feats) return;
+  const metric = demoData.metric;
+  if (demoData.source === 'cne') {
+    const byId = demoData.byId;
+    m.renderTracts(demoData.feats, (g) => cneColor(byId[g]?.[metric], metric), demoData.overflown);
+  } else {
+    m.renderTracts(demoData.feats, (g) => choroplethColor(demoData.byGeoid[g]?.[metric], metric), demoData.overflown);
+  }
+}
+
 async function guessCountyFips() {
   // Use the densest flight start as the probe point; reverse-geocode to FIPS via
   // the Census geographies service.
@@ -95,6 +153,7 @@ async function guessCountyFips() {
 }
 
 async function loadDemographics() {
+  if (currentSource() === 'cne') return loadCNE();
   const m = $('demoMetric').value;
   let fips = $('demoFips').value.trim().replace(/[^0-9]/g, '');
   if (!fips) { fips = await guessCountyFips(); if (fips) $('demoFips').value = fips; }
@@ -118,6 +177,24 @@ async function loadDemographics() {
   }
 }
 
+// Community Needs Evaluation source: curated council-district figures, plus a
+// best-effort overflown/rest contrast if Metro's district polygons can be loaded.
+async function loadCNE() {
+  const m = $('demoMetric').value;
+  const proxy = $('proxy').value.trim();
+  const byId = {}; for (const r of CNE_DISTRICTS) byId[String(r.district)] = r;
+  $('demoBody').innerHTML = '<div class="empty">Loading council-district boundaries…</div>';
+  let feats = [], over = new Set();
+  try {
+    feats = await loadCouncilDistricts(proxy);
+    if (feats.length) over = overflownTracts(feats, store?.flights || []);   // generic over GeoJSON polygons
+  } catch { /* fall back to table-only below */ }
+  demoData = { source: 'cne', feats, byId, overflown: over, metric: m };
+  renderDemographics();
+  if (dfrMap && feats.length) shadeDemoMap(dfrMap);
+  act.info(`Loaded CNE 2025–26 (35 council districts)${feats.length ? `; ${over.size} overflown` : '; no district geometry'}`);
+}
+
 // Optional tract layer on the Map tab. Reuses the Demographics data if loaded;
 // otherwise loads tracts for the county under the map center.
 let tractsOn = false;
@@ -127,10 +204,7 @@ async function toggleTracts(on) {
   if (!m) return;
   if (!on) { m.clearTracts(); return; }
   setTab('map');
-  if (demoData?.feats) {
-    m.renderTracts(demoData.feats, (g) => choroplethColor(demoData.byGeoid[g]?.[demoData.metric || 'pct_poverty'], demoData.metric || 'pct_poverty'), demoData.overflown);
-    return;
-  }
+  if (demoData?.feats?.length) { shadeDemoMap(m); return; }
   // No demographics loaded yet — fetch tracts for the county under the center.
   try {
     const fips = await guessCountyFips();
@@ -154,7 +228,14 @@ const DEMO_ROWS = [
   ['median_household_income', 'Median income', (v) => v != null ? '$' + v.toLocaleString() : '—', false],
 ];
 function renderDemographics() {
-  if (!demoData) { $('demoBody').innerHTML = '<div class="empty">Load demographics to compare.</div>'; return; }
+  if (!demoData) {
+    const cne = currentSource() === 'cne';
+    $('demoBody').innerHTML = `<div class="empty">${cne
+      ? 'Load the Community Needs Evaluation to see Nashville’s 35 Metro Council districts by race &amp; ethnicity (Davidson County baseline included).'
+      : 'Load demographics to compare.'}</div>`;
+    return;
+  }
+  if (demoData.source === 'cne') return renderCNE();
   const c = contrast(demoData.byGeoid, demoData.overflown);
   const fmtRow = ([k, label, fmt, higherIsWorse]) => {
     const o = c.overflown?.[k], r = c.rest?.[k];
@@ -173,6 +254,73 @@ function renderDemographics() {
       ${esc(acsLabel(demoData.year))} · race/ethnicity from B03002. "Overflown" = any sampled flight-path
       point falls inside the tract. Δ compares overflown vs. the rest of the county (red = higher where that
       typically signals disadvantage). Tracts are shaded on the Map tab by the selected metric.</div>`;
+}
+
+// CNE source: a sortable per-district table (selected metric) with the Davidson
+// baseline pinned on top, plus — when district polygons loaded — an overflown
+// vs. rest summary mirroring the ACS contrast.
+let cneSort = { key: null, dir: -1 };   // default: by selected metric, descending
+function renderCNE() {
+  const metric = demoData.metric;
+  const metaRow = CNE_METRICS.find(([k]) => k === metric) || ['population', 'Population', false];
+  const [, metricLabel, higherIsWorse] = metaRow;
+  const fmt = (v) => v == null ? '—' : (metric === 'population' ? v.toLocaleString() : v + '%');
+  const over = demoData.overflown;
+  const haveGeom = demoData.feats?.length > 0;
+
+  // Optional overflown-vs-rest summary.
+  let summary = '';
+  if (haveGeom && over.size) {
+    const c = contrastDistricts(over);
+    const o = c.overflown?.[metric], r = c.rest?.[metric];
+    let delta = '';
+    if (typeof o === 'number' && typeof r === 'number') {
+      const d = o - r; const cls = (d > 0) === !!higherIsWorse ? 'up' : 'down';
+      delta = `<span class="delta ${cls}">${d > 0 ? '+' : ''}${(+d.toFixed(1)).toLocaleString()}</span>`;
+    }
+    summary = `<table class="demo-cmp"><thead><tr>
+        <th>${esc(metricLabel)}</th><th>Overflown districts</th><th>Rest of county</th><th>Δ</th>
+      </tr></thead><tbody><tr>
+        <td>${c.nOverflown} of ${c.nTotal} districts</td>
+        <td class="over">${fmt(o)}</td><td>${fmt(r)}</td><td>${delta}</td>
+      </tr></tbody></table>`;
+  }
+
+  // Sorted district rows (default: selected metric, descending).
+  const key = cneSort.key || metric;
+  const rows = [...CNE_DISTRICTS].sort((a, b) => {
+    const av = a[key] ?? -Infinity, bv = b[key] ?? -Infinity;
+    return (av - bv) * cneSort.dir;
+  });
+  const cell = (r) => fmt(r[metric]);
+  const trs = rows.map(r => {
+    const isOver = haveGeom && over.has(String(r.district));
+    return `<tr class="${isOver ? 'over' : ''}"><td>District ${r.district}</td>` +
+           `<td>${r.population.toLocaleString()}</td><td class="val">${cell(r)}</td></tr>`;
+  }).join('');
+  const baseTr = `<tr class="base"><td>Davidson (county)</td>` +
+                 `<td>${CNE_BASELINE.population.toLocaleString()}</td><td class="val">${fmt(CNE_BASELINE[metric])}</td></tr>`;
+
+  const note = `<div class="demo-note">${esc(CNE_META.title)} — ${esc(CNE_META.publisher)}.
+    Source: ${esc(CNE_META.source)} (${esc(CNE_META.geography)}). Percentages are of total population;
+    “Hispanic or Latino” is of any race and overlaps the race rows.
+    ${haveGeom
+      ? `${over.size} of 35 districts intersect a drone flight (◗); the Map tab shades districts by the selected metric.`
+      : 'Council-district boundaries could not be loaded through the proxy, so the overflown/rest contrast and map shading are unavailable — the per-district table is shown directly from the report.'}
+    <a href="${esc(CNE_META.url)}" target="_blank" rel="noopener">View the report (PDF)</a>.</div>`;
+
+  $('demoBody').innerHTML = `
+    ${summary}
+    <table class="cne-tbl"><thead><tr>
+      <th data-k="district">District</th><th data-k="population">Population</th><th data-k="${metric}">${esc(metricLabel)}</th>
+    </tr></thead><tbody>${baseTr}${trs}</tbody></table>
+    ${note}`;
+
+  $('demoBody').querySelectorAll('.cne-tbl thead th').forEach(th => th.onclick = () => {
+    const k = th.getAttribute('data-k');
+    cneSort = { key: k, dir: cneSort.key === k ? -cneSort.dir : -1 };
+    renderCNE();
+  });
 }
 
 // ── Activity view ──
@@ -825,7 +973,7 @@ function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;'
 // ── tabs ──
 function setTab(t) {
   tab = t;
-  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabDemo', 'demo'], ['tabTerm', 'term'], ['tabEvents', 'events']])
+  for (const [id, name] of [['tabDepts', 'depts'], ['tabMap', 'map'], ['tabActivity', 'activity'], ['tabDemo', 'demo'], ['tabTerm', 'term'], ['tabEvents', 'events'], ['tabChangelog', 'changelog']])
     $(id).setAttribute('aria-selected', t === name);
   $('deptsView').classList.toggle('hidden', t !== 'depts');
   $('mapView').classList.toggle('hidden', t !== 'map');
@@ -837,6 +985,7 @@ function setTab(t) {
   else if (t === 'depts') ensureDepts().refresh();
   else if (t === 'activity') renderActivity();
   else if (t === 'demo') renderDemographics();
+  else if (t === 'changelog') renderChangelog();
   else if (t === 'term') renderTerminal();
   else if (t === 'events') renderEvents();
 }
@@ -907,12 +1056,26 @@ function wire() {
   $('tabDemo').addEventListener('click', () => setTab('demo'));
   $('tabTerm').addEventListener('click', () => setTab('term'));
   $('tabEvents').addEventListener('click', () => setTab('events'));
+  $('tabChangelog').addEventListener('click', () => setTab('changelog'));
   $('eventsRefresh').addEventListener('click', renderEvents);
   $('demoLoad').addEventListener('click', () => loadDemographics());
+  $('demoSource').addEventListener('change', () => {
+    const src = currentSource();
+    rebuildMetricOptions(src);
+    // FIPS only applies to the county-level ACS pull; hide it for the CNE source.
+    $('demoFipsWrap').classList.toggle('hidden', src === 'cne');
+    $('demoLede').textContent = src === 'cne'
+      ? 'Community Needs Evaluation 2025–26 — Davidson County by Metro Council District'
+      : 'Census ACS demographics — drone-overflown tracts vs. the rest of the county';
+    $('demoLoad').textContent = src === 'cne' ? 'Load report' : 'Load demographics';
+    demoData = null;            // sources aren't interchangeable; require a reload
+    if (dfrMap) dfrMap.clearTracts();
+    renderDemographics();
+  });
   $('demoMetric').addEventListener('change', () => {
     if (!demoData) return;
     demoData.metric = $('demoMetric').value;
-    if (dfrMap) dfrMap.renderTracts(demoData.feats, (g) => choroplethColor(demoData.byGeoid[g]?.[demoData.metric], demoData.metric), demoData.overflown);
+    if (dfrMap) shadeDemoMap(dfrMap);
     renderDemographics();
   });
   $('fpClose').addEventListener('click', hideFlight);
