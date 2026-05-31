@@ -168,6 +168,13 @@ details.setup > label:first-of-type{margin-top:0}
 .demo-cmp .over{color:#ff9b9b;font-weight:600}
 .demo-cmp .delta.up{color:#ff6b6b} .demo-cmp .delta.down{color:#3ecf8e}
 .demo-note{font-size:11px;color:var(--mut2);margin-top:14px;max-width:680px;line-height:1.6}
+.cne-tbl{width:100%;max-width:760px;border-collapse:collapse;font-size:12px;margin-top:8px}
+.cne-tbl th,.cne-tbl td{padding:5px 10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.cne-tbl th:first-child,.cne-tbl td:first-child{text-align:left}
+.cne-tbl thead th{color:var(--txt);font-weight:600;cursor:pointer;user-select:none}
+.cne-tbl tr.base td{color:var(--txt);font-weight:600;border-bottom:2px solid var(--line)}
+.cne-tbl tr.over td:first-child::after{content:" ◗";color:#ff9b9b}
+.cne-tbl td.val{color:var(--txt)}
 
 /* ── time scrubber over the map ── */
 #mapView{position:relative}
