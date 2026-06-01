@@ -360,6 +360,13 @@ body.timebar-on .tract-ctl{bottom:calc(82px + var(--safe-b))}
 .csi-pop th{text-align:left;color:var(--mut);font-weight:500;padding:2px 10px 2px 0;vertical-align:top;white-space:nowrap}
 .csi-pop td{color:var(--txt);padding:2px 0;word-break:break-word}
 .csi-pop .csi-h{font-family:'DM Sans',sans-serif;font-weight:700;font-size:12.5px;color:var(--txt);margin-bottom:6px}
+/* Drone flight-path popup — the dispatch reason (flight_purpose) for a given path */
+.flt-pop{min-width:210px;max-width:280px}
+.flt-pop .flt-h{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#fca5a5;margin-bottom:4px}
+.flt-pop .flt-reason{font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;line-height:1.25;color:var(--txt);margin-bottom:8px}
+.flt-pop table{border-collapse:collapse;font-size:11.5px;font-family:'JetBrains Mono',monospace}
+.flt-pop th{text-align:left;color:var(--mut);font-weight:500;padding:2px 10px 2px 0;vertical-align:top;white-space:nowrap}
+.flt-pop td{color:var(--txt);padding:2px 0;word-break:break-word}
 /* District-wide drone tally inside the address panel */
 .p-distflights{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--mut);padding:10px 16px;border-bottom:1px solid var(--line);line-height:1.5;background:rgba(255,255,255,.02)}
 .p-distflights b{color:#fca5a5}
@@ -556,7 +563,7 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
     </div>
     <div class="legend-block">
       <div class="legend-t">Legend</div>
-      <div class="li"><div class="lsw" style="background:#ef4444"></div>Drone flight path</div>
+      <div class="li"><div class="lsw" style="background:#ef4444"></div>Drone flight path <span style="color:var(--mut2)">— tap for dispatch reason</span></div>
       <div class="li"><div class="lsw" style="background:rgba(239,68,68,.3);height:8px"></div>~270 ft camera swath</div>
       <div class="li"><div class="lsw" style="background:transparent;border:1px solid rgba(77,141,245,.7);height:11px;border-radius:2px"></div>Council district boundary</div>
       <div class="li"><div class="lci" style="background:transparent;border:1.5px dashed #f59e0b;width:11px;height:11px"></div>2-mi launch radius (Dist. 7 carved out)</div>
@@ -618,10 +625,12 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,maxNativeZoom:19,subdomains:'abcd',updateWhenZooming:false,keepBuffer:4}).addTo(map);
 
 // Dedicated pane so drone flight lines render above site markers & overlays.
-// pointer-events:none lets map clicks pass through the lines to the basemap.
+// Leaving pointer-events at the default lets a click on a flight line reveal its
+// dispatch reason, while the SVG root stays pointer-events:none so clicks in the
+// empty gaps still fall through to the map's usual location-selection handler.
 map.createPane('flightPane');
 map.getPane('flightPane').style.zIndex=650;
-map.getPane('flightPane').style.pointerEvents='none';
+map.getPane('flightPane').style.pointerEvents='auto';
 // Calls/incidents above the flight lines; sensitive sites on top of everything.
 map.createPane('csiPane');  map.getPane('csiPane').style.zIndex=655;
 map.createPane('sitePane'); map.getPane('sitePane').style.zIndex=665;
@@ -763,6 +772,29 @@ function flightDistrictsOf(f){
   var c=exCoords(f.geometry),seen={},out=[];
   for(var i=0;i<c.length;i++){var dn=findDist(c[i][1],c[i][0]);if(dn&&!seen[dn]){seen[dn]=1;out.push(dn);}}
   return out;
+}
+// The dispatch reason a flight was launched for. The Skydio ArcGIS feed carries
+// it as `flight_purpose` (e.g. "PERSON WITH WEAPON", "DOMESTIC DISTURBANCE");
+// older/processed rows may carry it as `purpose` / `p`. Returns '' if absent.
+function flightReason(f){var p=(f&&f.properties)||{};return String(p.flight_purpose||p.purpose||p.p||'').trim();}
+function escHtml(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+// Popup for a single flight path: the reason it was dispatched, plus when, the
+// case/event id it was tied to, and which council district(s) the path crossed.
+function flightPopupHtml(f){
+  var p=(f&&f.properties)||{};
+  var reason=flightReason(f);
+  var t0=p.takeoff?new Date(p.takeoff):null,t1=p.landing?new Date(p.landing):null;
+  var h='<div class="flt-pop"><div class="flt-h">Reason for dispatch</div>';
+  h+='<div class="flt-reason">'+(reason?escHtml(reason):'<span style="color:var(--mut2);font-weight:600;font-size:12.5px">Not recorded in the feed</span>')+'</div>';
+  var rows='';
+  if(t0)rows+='<tr><th>When</th><td>'+fmtDate(t0)+' · '+fmtTime(t0)+(t1?'&ndash;'+fmtTime(t1):'')+(t1?' · '+durStr(t1-t0):'')+'</td></tr>';
+  var caseId=String(p.external_id||p.x||'').trim();
+  if(caseId)rows+='<tr><th>Case</th><td>'+escHtml(caseId)+'</td></tr>';
+  var dists=flightDistrictsOf(f);
+  if(dists&&dists.length)rows+='<tr><th>District'+(dists.length>1?'s':'')+'</th><td>'+dists.join(', ')+'</td></tr>';
+  if(rows)h+='<table>'+rows+'</table>';
+  h+='</div>';
+  return h;
 }
 function computeFlightsByDistrict(){
   flightsByDistrict={};
@@ -1017,8 +1049,8 @@ function showPanel(lat,lng){
     // download (built below) carries every flight, not just the visible three.
     panelFlights={lat:lat,lng:lng,rows:listed};
     h+='<div class="p-verdict hit"><div class="p-verdict-t" style="color:#ef4444">'+allOver.length+' drone flight'+(allOver.length>1?'s':'')+' recorded here</div><div class="p-verdict-b">Nearest path: '+ft+' ft<ol>';
-    listed.forEach(function(r,i){var f=r.flight,t=new Date(f.properties.takeoff),l=new Date(f.properties.landing);
-      h+='<li'+(i>=3?' class="pf-extra" hidden':'')+'>'+fmtDate(t)+', '+fmtTime(t)+'–'+fmtTime(l)+' · '+durStr(l-t)+' <span style="color:var(--mut2)">· '+Math.round(r.dist*3.281)+' ft</span></li>'});
+    listed.forEach(function(r,i){var f=r.flight,t=new Date(f.properties.takeoff),l=new Date(f.properties.landing);var reason=flightReason(f);
+      h+='<li'+(i>=3?' class="pf-extra" hidden':'')+'>'+(reason?'<span style="color:#fca5a5;font-weight:600">'+escHtml(reason)+'</span><br>':'')+fmtDate(t)+', '+fmtTime(t)+'–'+fmtTime(l)+' · '+durStr(l-t)+' <span style="color:var(--mut2)">· '+Math.round(r.dist*3.281)+' ft</span></li>'});
     h+='</ol>';
     if(listed.length>3)h+='<div class="pf-actions"><a id="pfToggle" onclick="togglePanelFlights()">Show all '+listed.length+' flights ↓</a></div>';
     h+='<div class="pf-actions"><a onclick="downloadPanelFlights()">⬇ Download all '+listed.length+' flight'+(listed.length>1?'s':'')+' (CSV)</a></div>';
@@ -1049,7 +1081,7 @@ function togglePanelFlights(){
 }
 function downloadPanelFlights(){
   if(!panelFlights||!panelFlights.rows.length)return;
-  var hdr=['flight','council_districts','takeoff_ct','landing_ct','duration_min','distance_ft','num_points','start_lat','start_lng','end_lat','end_lng'];
+  var hdr=['flight','flight_purpose','council_districts','takeoff_ct','landing_ct','duration_min','distance_ft','num_points','start_lat','start_lng','end_lat','end_lng'];
   var ctIso=function(d){return new Date(d).toLocaleString('sv-SE',{timeZone:CT_TZ}).replace(' ','T')+' CT';};
   var esc=function(v){if(v==null)v='';v=String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
   var rows=[
@@ -1065,6 +1097,7 @@ function downloadPanelFlights(){
     var t0=new Date(p.takeoff),t1=new Date(p.landing);
     rows.push([
       p.id||p.name||('flight_'+(idx+1)),
+      flightReason(f),
       flightDistrictsOf(f).join(';'),
       p.takeoff?ctIso(p.takeoff):'',p.landing?ctIso(p.landing):'',
       (p.takeoff&&p.landing)?Math.round((t1-t0)/60000):'',
@@ -2531,7 +2564,9 @@ Promise.all([
     var simp=coords.filter(function(_,i){return i%3===0||i===coords.length-1});
     var swath=null;
     if(simp.length>=2){try{var sw=bufLine(simp,SWATH_M);swath=L.polygon(sw,{color:'rgba(239,68,68,.2)',weight:0,fillColor:'rgba(239,68,68,.12)',fillOpacity:1,interactive:false}).addTo(swathGroup)}catch(e){}}
-    var line=L.polyline(ll,{color:'#ef4444',weight:flightWeightFor(),opacity:1,pane:'flightPane'}).addTo(flightGroup);fb.extend(line.getBounds());
+    var line=L.polyline(ll,{color:'#ef4444',weight:flightWeightFor(),opacity:1,pane:'flightPane',bubblingMouseEvents:false}).addTo(flightGroup);fb.extend(line.getBounds());
+    // Clicking a path reveals why that drone was dispatched (flight_purpose).
+    line.bindPopup(flightPopupHtml(f),{maxWidth:300,className:'flightpopup'});
     flightLayers.push({line:line,swath:swath,ll:ll,t0:+new Date(f.properties.takeoff),t1:+new Date(f.properties.landing),head:null});});
   buildLaunchRadius();
   computeFlightsByDistrict();   // drones per district
