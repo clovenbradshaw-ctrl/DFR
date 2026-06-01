@@ -1448,7 +1448,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       demographics:{source:demoSourceObj(),county_baseline:baseline,districts:demographics},
       calls_for_service:{source:SRC_CALLS,by_district:callsByDistrict,points:allCalls},
       incidents:{source:SRC_INCIDENTS,by_district:incidentsByDistrict,points:allIncidents},
-      tract_analysis:{source:SRC_TRACTS(),method:TRACT_METHOD(),tracts:tractAnalysis().map(function(t){var o={tract_geoid:t.geoid,tract_name:t.name,drone_deployments:t.drones,calls_for_service:t.calls,incidents:t.incidents,drones_per_100_calls:t.drones_per_100_calls,drones_per_100_incidents:t.drones_per_100_incidents};for(var k in t.vals)o[k]=t.vals[k];return o;})},
+      tract_analysis:{source:SRC_TRACTS(),method:TRACT_METHOD(),tracts:tractAnalysis().map(function(t){var o={tract_geoid:t.geoid,tract_name:t.name,council_district:t.council_district,drone_deployments:t.drones,calls_for_service:t.calls,incidents:t.incidents,drones_per_100_calls:t.drones_per_100_calls,drones_per_100_incidents:t.drones_per_100_incidents};for(var k in t.vals)o[k]=t.vals[k];return o;})},
       council_members:CM
     },null,2);
   }
@@ -1533,18 +1533,29 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   // Lazy (like SRC_TRACTS) so PILOT_START is read at download time, not when this
   // IIFE first runs — PILOT_START is assigned later in the script, so eager use baked "undefined".
   function TRACT_METHOD(){return 'Numerator = drone deployments (distinct DFR flights crossing the tract). Denominators = MNPD calls for service and incidents inside the radius. drones_per_100_x = numerator / denominator × 100. All counts limited to inside the 2-mile flight radius since 12:00 AM CT on '+PILOT_START+'.';}
+  // Which council district a tract sits in (primary, by centroid; point-in-polygon
+  // against the Metro GIS boundaries). Lets the export group drones by the 5 trial districts.
+  function tractDistrict(geom){
+    var rings=ringsOf(geom);if(!rings.length)return '';        // rings are [lng,lat]
+    var big=rings[0],bigA=-1;
+    for(var i=0;i<rings.length;i++){var a=Math.abs(ringArea(rings[i]));if(a>bigA){bigA=a;big=rings[i];}}
+    var sx=0,sy=0,n=big.length;for(var k=0;k<n;k++){sx+=big[k][0];sy+=big[k][1];}
+    var dn=n?findDist(sy/n,sx/n):null;                         // findDist takes (lat,lng)
+    for(var k=0;k<big.length&&!dn;k++)dn=findDist(big[k][1],big[k][0]);   // fallback: a vertex inside a district
+    return dn||'';
+  }
   function tractAnalysis(){
     if(typeof computeTractTallies==='function')computeTractTallies();   // fresh tallies from current flights/calls/incidents
     return (tractFeatures||[]).map(function(f){
       var p=f.properties,d=p._vals||{},dr=p._drones||0,ca=p._calls||0,ic=p._incidents||0;
-      return {geoid:p._geoid,name:p._name,drones:dr,calls:ca,incidents:ic,
+      return {geoid:p._geoid,name:p._name,council_district:tractDistrict(f.geometry),drones:dr,calls:ca,incidents:ic,
         drones_per_100_calls:ca?+(dr/ca*100).toFixed(1):null,
         drones_per_100_incidents:ic?+(dr/ic*100).toFixed(1):null,
         vals:d,geometry:f.geometry};
     });
   }
-  var TRACT_HEAD=['tract_geoid','tract_name','drone_deployments','calls_for_service','incidents','drones_per_100_calls','drones_per_100_incidents','population','median_age','pct_white','pct_black','pct_hispanic','pct_asian','pct_two_or_more','pct_under_18','pct_65_and_over','median_household_income','per_capita_income','pct_total_poverty','pct_child_poverty','median_owner_value','median_monthly_rent','pct_renter_cost_burdened_35plus','unemployment_rate'];
-  function tractValRow(t){var d=t.vals;return [t.geoid,t.name,t.drones,t.calls,t.incidents,t.drones_per_100_calls,t.drones_per_100_incidents,d.population,d.median_age,d.pct_white,d.pct_black,d.pct_hispanic,d.pct_asian,d.pct_two_or_more,d.pct_under_18,d.pct_65_and_over,d.median_household_income,d.per_capita_income,d.pct_total_poverty,d.pct_child_poverty,d.median_owner_value,d.median_monthly_rent,d.pct_renter_cost_burdened_35plus,d.unemployment_rate];}
+  var TRACT_HEAD=['tract_geoid','tract_name','council_district','drone_deployments','calls_for_service','incidents','drones_per_100_calls','drones_per_100_incidents','population','median_age','pct_white','pct_black','pct_hispanic','pct_asian','pct_two_or_more','pct_under_18','pct_65_and_over','median_household_income','per_capita_income','pct_total_poverty','pct_child_poverty','median_owner_value','median_monthly_rent','pct_renter_cost_burdened_35plus','unemployment_rate'];
+  function tractValRow(t){var d=t.vals;return [t.geoid,t.name,t.council_district,t.drones,t.calls,t.incidents,t.drones_per_100_calls,t.drones_per_100_incidents,d.population,d.median_age,d.pct_white,d.pct_black,d.pct_hispanic,d.pct_asian,d.pct_two_or_more,d.pct_under_18,d.pct_65_and_over,d.median_household_income,d.per_capita_income,d.pct_total_poverty,d.pct_child_poverty,d.median_owner_value,d.median_monthly_rent,d.pct_renter_cost_burdened_35plus,d.unemployment_rate];}
   function tractCSV(){
     var rows=srcRows(srcLines(SRC_TRACTS(),TRACT_METHOD()+' Demographics: U.S. Census Bureau '+acsYearLabel()+', detailed tables by tract.'));
     rows.push(TRACT_HEAD);
@@ -1553,25 +1564,30 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
   }
   function tractGeoJSON(){
     return JSON.stringify({type:'FeatureCollection',metadata:{source:SRC_TRACTS().name,source_url:SRC_TRACTS().url,method:TRACT_METHOD(),demographics:'U.S. Census Bureau '+acsYearLabel()+', detailed tables by tract',generated:new Date().toISOString()},
-      features:tractAnalysis().map(function(t){var props={tract_geoid:t.geoid,tract_name:t.name,drone_deployments:t.drones,calls_for_service:t.calls,incidents:t.incidents,drones_per_100_calls:t.drones_per_100_calls,drones_per_100_incidents:t.drones_per_100_incidents};
+      features:tractAnalysis().map(function(t){var props={tract_geoid:t.geoid,tract_name:t.name,council_district:t.council_district,drone_deployments:t.drones,calls_for_service:t.calls,incidents:t.incidents,drones_per_100_calls:t.drones_per_100_calls,drones_per_100_incidents:t.drones_per_100_incidents};
         for(var k in t.vals)props[k]=t.vals[k];
         return {type:'Feature',geometry:t.geometry,properties:props};})},null,2);
   }
   function tractReportHTML(withFiles){
-    var rows=tractAnalysis().slice().sort(function(a,b){return (b.drones_per_100_calls||-1)-(a.drones_per_100_calls||-1)||b.drones-a.drones;});
+    // Group by the 5 trial council districts (numeric order), then most drones first within each.
+    var rows=tractAnalysis().slice().sort(function(a,b){
+      var da=+a.council_district||9999,db=+b.council_district||9999;
+      return da-db||b.drones-a.drones||(b.drones_per_100_calls||-1)-(a.drones_per_100_calls||-1);
+    });
     var totD=0,totC=0,totI=0;rows.forEach(function(t){totD+=t.drones;totC+=t.calls;totI+=t.incidents;});
     var src=SRC_TRACTS(),gen=new Date();
     function num(v,suf){return '<td class="num">'+(v==null||v===''?'—':(v.toLocaleString?v.toLocaleString():v)+(suf||''))+'</td>';}
     function row(t){var d=t.vals;return '<tr><td class="cm">'+esc(t.name||t.geoid)+'</td>'+
+      '<td class="dn">'+(t.council_district?('D'+t.council_district):'—')+'</td>'+
       '<td class="num" style="color:#ff8a6a;font-weight:700">'+t.drones+'</td>'+num(t.calls)+num(t.incidents)+
       '<td class="num" style="color:#fca5a5;font-weight:700">'+(t.drones_per_100_calls==null?'—':t.drones_per_100_calls)+'</td>'+
       '<td class="num">'+(t.drones_per_100_incidents==null?'—':t.drones_per_100_incidents)+'</td>'+
       num(d.population)+num(d.pct_white,'%')+num(d.pct_black,'%')+num(d.pct_hispanic,'%')+
       '<td class="num">'+(d.median_household_income!=null?'$'+Math.round(d.median_household_income).toLocaleString():'—')+'</td>'+
       num(d.pct_total_poverty,'%')+num(d.pct_child_poverty,'%')+'</tr>';}
-    var head='<tr><th>Census tract</th><th>Drone deployments</th><th>Calls</th><th>Incidents</th><th>Drones/100 calls</th><th>Drones/100 inc.</th><th>Population</th><th>White</th><th>Black</th><th>Hispanic</th><th>Med. HH income</th><th>Poverty</th><th>Child pov.</th></tr>';
+    var head='<tr><th>Census tract</th><th>Council district</th><th>Drone deployments</th><th>Calls</th><th>Incidents</th><th>Drones/100 calls</th><th>Drones/100 inc.</th><th>Population</th><th>White</th><th>Black</th><th>Hispanic</th><th>Med. HH income</th><th>Poverty</th><th>Child pov.</th></tr>';
     // Davidson County reference row (all tracts) — the baseline the bars compare against
-    var bl=tractBaseline,refRow=bl?('<tr class="ref"><td class="cm">Davidson County (all tracts)</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td>'+
+    var bl=tractBaseline,refRow=bl?('<tr class="ref"><td class="cm">Davidson County (all tracts)</td><td class="dn">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td>'+
       num(bl.population)+num(bl.pct_white,'%')+num(bl.pct_black,'%')+num(bl.pct_hispanic,'%')+
       '<td class="num">'+(bl.median_household_income!=null?'$'+Math.round(bl.median_household_income).toLocaleString():'—')+'</td>'+
       num(bl.pct_total_poverty,'%')+num(bl.pct_child_poverty,'%')+'</tr>'):'';
@@ -1587,7 +1603,7 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       '<!DOCTYPE html>','<html lang="en"><head><meta charset="utf-8">','<meta name="viewport" content="width=device-width, initial-scale=1">',
       '<title>Nashville DFR — census-tract explorer</title>','<style>'+REPORT_CSS+'th{cursor:pointer}</style></head><body>',
       '<header><h1>Drone deployments vs. calls &amp; incidents, by census tract</h1>',
-      '<p class="sub">Each census tract inside the 2-mile Madison Precinct flight radius. <strong>Numerator</strong>: drone deployments (distinct DFR flights crossing the tract). <strong>Denominators</strong>: MNPD calls for service and incidents inside the radius. <em>Click any column header to sort.</em> Default sort: drones per 100 calls — the tracts getting the most drone activity relative to actual call volume rise to the top. Generated '+esc(gen.toLocaleString())+'.</p>',
+      '<p class="sub">Each census tract inside the 2-mile Madison Precinct flight radius. <strong>Numerator</strong>: drone deployments (distinct DFR flights crossing the tract). <strong>Denominators</strong>: MNPD calls for service and incidents inside the radius. <em>Click any column header to sort.</em> Default sort: grouped by the 5 trial council districts (in numeric order), with the most-overflown tracts first within each district. Generated '+esc(gen.toLocaleString())+'.</p>',
       '<div class="stats"><div class="stat"><b>'+rows.length+'</b><span>tracts in radius</span></div><div class="stat"><b>'+totD.toLocaleString()+'</b><span>drone deployments</span></div><div class="stat"><b>'+totC.toLocaleString()+'</b><span>calls for service</span></div><div class="stat"><b>'+totI.toLocaleString()+'</b><span>incidents</span></div></div></header>',
       '<div class="tablewrap"><table><thead>'+head+'</thead><tbody>'+refRow+rows.map(row).join('')+'</tbody></table></div>',
       filesBlock,
@@ -1614,7 +1630,9 @@ document.getElementById('aboutBg').addEventListener('click',function(e){if(e.tar
       'The data/ folder has the same information as raw files you can load into a',
       'spreadsheet, QGIS, Mapbox, or geojson.io:',
       '  data/tract_analysis.csv / .geojson  — drones (numerator) vs calls & incidents',
-      '                                         (denominators) + ACS demographics, per tract',
+      '                                         (denominators) + ACS demographics, per tract,',
+      '                                         tagged with its council district (grouped by the',
+      '                                         5 trial districts in index.html)',
       '  data/flight_paths.geojson           — DFR flight paths',
       '  data/calls_for_service.geojson/.csv — MNPD calls inside the radius (since 12:00 AM CT, '+PILOT_START+')',
       '  data/incidents.geojson/.csv         — MNPD incidents inside the radius',
