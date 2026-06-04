@@ -352,6 +352,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 .lyr-sw::after{content:'';position:absolute;top:2.5px;left:2.5px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.5)}
 .lyr-row.on .lyr-sw{background:var(--acc)}
 .lyr-row.on .lyr-sw::after{transform:translateX(15px)}
+.lyr-sep{height:1px;background:var(--line);margin:6px 8px}
+.lyr-row-base{align-items:flex-start;padding-top:8px;padding-bottom:8px}
+.lyr-row-base .lyr-ic{margin-top:5px}
+.lyr-row.lyr-row-base .lyr-name{color:var(--txt)}
+.lyr-hint{display:block;font-size:10.5px;font-weight:400;color:var(--mut);margin-top:2px;line-height:1.25}
 @media(max-width:768px){.layers-menu{right:62px}}
 .dist-label{background:none!important;border:none!important;display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer}
 .dist-label span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;line-height:1;color:#bcd6ff;background:rgba(8,13,22,.74);border:1px solid rgba(77,141,245,.5);border-radius:5px;padding:2px 5px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5);text-shadow:0 1px 2px rgba(0,0,0,.6);transition:background .12s,border-color .12s}
@@ -476,6 +481,13 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
 </div>
 
 <div class="layers-menu" id="layersMenu" role="group" aria-label="Map layers">
+  <div class="lyr-title">Map style</div>
+  <div class="lyr-row lyr-row-base" data-layer="basemap" role="switch" aria-checked="false" tabindex="0">
+    <span class="lyr-ic line" style="background:linear-gradient(90deg,#5b6bff,#34d399)"></span>
+    <span class="lyr-name">Simple map<span class="lyr-hint">Plain street map — easier to read</span></span>
+    <span class="lyr-sw"></span>
+  </div>
+  <div class="lyr-sep"></div>
   <div class="lyr-title">Map layers</div>
   <div class="lyr-row on" data-layer="flights" role="switch" aria-checked="true" tabindex="0">
     <span class="lyr-ic line" style="background:#ef4444"></span><span class="lyr-name">Drone flight paths</span><span class="lyr-sw"></span>
@@ -659,8 +671,31 @@ var map=L.map('map',{
   bounceAtZoomLimits:false,            // no rubber-band glitch at min/max zoom
   zoomAnimation:true,markerZoomAnimation:true
 }).setView([36.165,-86.78],12);
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:19,updateWhenZooming:false,keepBuffer:4}).addTo(map);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,maxNativeZoom:19,subdomains:'abcd',updateWhenZooming:false,keepBuffer:4}).addTo(map);
+// Two basemaps: the default satellite imagery (+ a label overlay) and a much
+// simpler dark street map for people who find the imagery hard to navigate.
+var baseSatellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:19,updateWhenZooming:false,keepBuffer:4,pane:'tilePane'});
+var baseSatLabels=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,maxNativeZoom:19,subdomains:'abcd',updateWhenZooming:false,keepBuffer:4,pane:'tilePane'});
+var baseSimple=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,maxNativeZoom:19,subdomains:'abcd',updateWhenZooming:false,keepBuffer:4,pane:'tilePane'});
+var simpleBasemap=false;
+function setSimpleBasemap(on){
+  simpleBasemap=!!on;
+  if(simpleBasemap){
+    if(map.hasLayer(baseSatellite))map.removeLayer(baseSatellite);
+    if(map.hasLayer(baseSatLabels))map.removeLayer(baseSatLabels);
+    if(!map.hasLayer(baseSimple))baseSimple.addTo(map);
+  }else{
+    if(map.hasLayer(baseSimple))map.removeLayer(baseSimple);
+    if(!map.hasLayer(baseSatellite))baseSatellite.addTo(map);
+    if(!map.hasLayer(baseSatLabels))baseSatLabels.addTo(map);
+  }
+  document.body.classList.toggle('simple-map',simpleBasemap);
+  var row=document.querySelector('.lyr-row[data-layer="basemap"]');
+  if(row){row.classList.toggle('on',simpleBasemap);row.setAttribute('aria-checked',simpleBasemap?'true':'false');}
+  try{localStorage.setItem('dfrSimpleMap',simpleBasemap?'1':'0');}catch(e){}
+}
+// Restore the user's basemap preference, defaulting to satellite imagery.
+var _simplePref=false;try{_simplePref=localStorage.getItem('dfrSimpleMap')==='1';}catch(e){}
+setSimpleBasemap(_simplePref);
 
 // Dedicated pane so drone flight lines render above site markers & overlays.
 // Leaving pointer-events at the default lets a click on a flight line reveal its
@@ -1161,7 +1196,7 @@ document.getElementById('panelClose').addEventListener('click',function(){
 // ── Layers menu (toggle every map feature on/off) ──
 (function(){
   var btn=document.getElementById('layersBtn'),menu=document.getElementById('layersMenu');
-  var toggles={flights:setFlightsVisible,swath:setSwathVisible,sites:setSitesVisible,launch:setLaunchVisible,districts:setDistrictsVisible,precincts:setPrecinctsVisible,calls:setCallsVisible,incidents:setIncidentsVisible,tracts:setTractsVisible};
+  var toggles={basemap:setSimpleBasemap,flights:setFlightsVisible,swath:setSwathVisible,sites:setSitesVisible,launch:setLaunchVisible,districts:setDistrictsVisible,precincts:setPrecinctsVisible,calls:setCallsVisible,incidents:setIncidentsVisible,tracts:setTractsVisible};
   function openMenu(o){menu.classList.toggle('show',o);btn.classList.toggle('active',o);btn.setAttribute('aria-expanded',o?'true':'false');}
   btn.addEventListener('click',function(e){e.stopPropagation();openMenu(!menu.classList.contains('show'));});
   menu.addEventListener('click',function(e){e.stopPropagation();});
