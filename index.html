@@ -1409,16 +1409,45 @@ map.on('click',function(e){
   });
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&box.classList.contains('show'))closeSearch();});
 
-  function geocode(q){
-    var query=q.trim();
-    if(!query)return Promise.resolve([]);
-    // Bias to Nashville unless the user already named a city / state / ZIP
+  // Normalise a Photon GeoJSON feature into the same shape Nominatim returns,
+  // so fmt() and pick() can stay geocoder-agnostic.
+  function fromPhoton(f){
+    var c=(f.geometry&&f.geometry.coordinates)||[];
+    var p=f.properties||{};
+    var road=p.street||p.name||'';
+    var city=p.city||p.town||p.village||'';
+    var addr={house_number:p.housenumber,road:road,neighbourhood:p.district,suburb:p.suburb,city:city,town:p.town,village:p.village,state:p.state,postcode:p.postcode};
+    var head=[p.housenumber,p.street].filter(Boolean).join(' ')||p.name||'';
+    var dn=[head,p.district||p.suburb||'',city,p.state||'',p.postcode||''].filter(Boolean).join(', ');
+    return {lat:c[1],lon:c[0],address:addr,display_name:dn};
+  }
+
+  // Precise-address fallback: Nominatim resolves full house-number addresses
+  // better than Photon, but blocks direct browser requests, hence the proxy.
+  function nominatim(query){
     var hasPlace=/nashville|tennessee|\btn\b|\b\d{5}\b/i.test(query);
     var full=hasPlace?query:query+', Nashville, TN';
-    var url='https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&countrycodes=us&viewbox='+NASH_VIEWBOX+'&q='+encodeURIComponent(full);
+    var url='https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&dedupe=1&limit=8&countrycodes=us&viewbox='+NASH_VIEWBOX+'&q='+encodeURIComponent(full);
     return fetch(PROXY+encodeURIComponent(url),{headers:{'Accept':'application/json'}})
       .then(function(r){return r.json()})
       .then(function(d){return Array.isArray(d)?d:[]});
+  }
+
+  function geocode(q){
+    var query=q.trim();
+    if(!query)return Promise.resolve([]);
+    // Photon is a search-as-you-type geocoder that tolerates partial words and
+    // typos, biased toward Nashville (lat/lon). It supports CORS, so we hit it
+    // directly. If it finds nothing we fall back to Nominatim for exact addresses.
+    var photon='https://photon.komoot.io/api/?lang=en&limit=8&zoom=12&lat=36.165&lon=-86.78&q='+encodeURIComponent(query);
+    return fetch(photon,{headers:{'Accept':'application/json'}})
+      .then(function(r){return r.json()})
+      .then(function(d){
+        var feats=(d&&Array.isArray(d.features))?d.features:[];
+        var out=feats.map(fromPhoton).filter(function(r){return isFinite(r.lat)&&isFinite(r.lon)});
+        return out.length?out:nominatim(query);
+      })
+      .catch(function(){return nominatim(query)});
   }
 
   function fmt(r){
@@ -1484,7 +1513,7 @@ map.on('click',function(e){
     box.classList.toggle('has-text',!!input.value);
     clearTimeout(debounceT);
     if(!input.value.trim()){hideResults();return;}
-    debounceT=setTimeout(runSearch,320);
+    debounceT=setTimeout(runSearch,200);
   });
   input.addEventListener('keydown',function(e){
     var items=resultsEl.querySelectorAll('.geo-result');
