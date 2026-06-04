@@ -675,7 +675,11 @@ var map=L.map('map',{
 // simpler dark street map for people who find the imagery hard to navigate.
 var baseSatellite=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:19,updateWhenZooming:false,keepBuffer:4,pane:'tilePane'});
 var baseSatLabels=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,maxNativeZoom:19,subdomains:'abcd',updateWhenZooming:false,keepBuffer:4,pane:'tilePane'});
-var baseSimple=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,maxNativeZoom:19,subdomains:'abcd',updateWhenZooming:false,keepBuffer:4,pane:'tilePane'});
+// Light-mode street basemap (Carto Voyager): clear, legible street names with a
+// strong road hierarchy — only the bigger roads (highways/arterials) show when
+// zoomed out, and progressively all the smaller local streets appear as you
+// zoom in. This behaviour is baked into the tileset's per-zoom cartography.
+var baseSimple=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19,maxNativeZoom:19,subdomains:'abcd',updateWhenZooming:false,keepBuffer:4,pane:'tilePane'});
 var simpleBasemap=false;
 function setSimpleBasemap(on){
   simpleBasemap=!!on;
