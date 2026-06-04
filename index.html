@@ -293,7 +293,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);over
 /* ── Council district overlay ────────────────────────── */
 .iconbtn.layers{top:calc(var(--hdr) + 64px + var(--safe-t))}
 .iconbtn.download{top:calc(var(--hdr) + 118px + var(--safe-t))}
+.iconbtn.search{top:calc(var(--hdr) + 172px + var(--safe-t))}
 .iconbtn.active{border-color:var(--acc);color:var(--acc);background:rgba(77,141,245,.16)}
+
+/* ── Location search ─────────────────────────────────── */
+.geosearch{position:fixed;z-index:1004;top:calc(var(--hdr) + 172px + var(--safe-t));right:64px;width:320px;max-width:calc(100vw - 84px);display:none;transform-origin:top right;animation:lyrIn .16s ease}
+.geosearch.show{display:block}
+.geosearch-box{display:flex;align-items:center;gap:9px;background:var(--surf);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:12px;padding:0 6px 0 12px;box-shadow:0 14px 44px rgba(0,0,0,.6)}
+.geosearch-box svg.geosearch-ic{width:16px;height:16px;stroke:var(--mut);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+.geosearch input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;padding:12px 0}
+.geosearch input::placeholder{color:var(--mut2)}
+.geosearch input::-webkit-search-cancel-button{-webkit-appearance:none}
+.geosearch-x{flex-shrink:0;width:30px;height:30px;border:none;background:transparent;color:var(--mut);cursor:pointer;display:none;align-items:center;justify-content:center;border-radius:8px;padding:0}
+.geosearch-x:hover{background:rgba(255,255,255,.06);color:var(--txt)}
+.geosearch-x svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.geosearch.has-text .geosearch-x{display:flex}
+.geosearch-results{margin-top:6px;background:var(--surf);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.6);overflow:hidden;display:none;max-height:min(50vh,360px);overflow-y:auto}
+.geosearch-results.show{display:block}
+.geo-result{display:block;width:100%;text-align:left;padding:10px 13px;cursor:pointer;border:none;background:transparent;border-bottom:1px solid var(--line)}
+.geo-result:last-child{border-bottom:none}
+.geo-result:hover,.geo-result.active{background:rgba(77,141,245,.16)}
+.geo-result .n{font-size:13.5px;color:var(--txt);line-height:1.3}
+.geo-result .s{font-size:11px;color:var(--mut);margin-top:2px;line-height:1.3}
+.geo-msg{padding:12px 13px;font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:8px}
+.geo-msg .ring{width:13px;height:13px;border:2px solid rgba(255,255,255,.12);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 
 /* ── Data export modal ───────────────────────────────── */
 .export-list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
@@ -436,6 +459,21 @@ body.timebar-on .hint{bottom:calc(88px + var(--safe-b))}
 <button class="iconbtn download" id="exportBtn" aria-label="Export data" aria-haspopup="dialog" title="Export data">
   <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
 </button>
+
+<button class="iconbtn search" id="searchBtn" aria-label="Search for an address or cross streets" aria-haspopup="true" aria-expanded="false" title="Search address or cross streets">
+  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+</button>
+
+<div class="geosearch" id="geosearch" role="search">
+  <div class="geosearch-box">
+    <svg class="geosearch-ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="searchInput" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Address or cross streets — e.g. 5th &amp; Broadway" aria-label="Search for an address or cross streets" aria-controls="searchResults"/>
+    <button class="geosearch-x" id="searchClear" type="button" aria-label="Clear search">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="geosearch-results" id="searchResults" role="listbox" aria-label="Search results"></div>
+</div>
 
 <div class="layers-menu" id="layersMenu" role="group" aria-label="Map layers">
   <div class="lyr-title">Map layers</div>
@@ -1266,13 +1304,14 @@ function updatePipOverlay(lat,lng,inFrame){
     }
   }
 }
-function selectLocation(lat,lng,siteLabel){
+function selectLocation(lat,lng,siteLabel,zoom){
   // Quietly ignore clicks outside Metro Nashville districts
   if(!findDist(lat,lng))return;
   if(clickMarker)map.removeLayer(clickMarker);
   clickMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div style="width:16px;height:16px;background:#4d8df5;border:2px solid #fff;border-radius:50%;box-shadow:0 0 18px rgba(77,141,245,.9)"></div>',iconSize:[16,16],iconAnchor:[8,8]}),zIndexOffset:2000}).addTo(map);
   // Center map on the selection (offset upward so PiP doesn't cover it)
-  map.panTo([lat,lng],{animate:true,duration:0.4});
+  if(zoom)map.flyTo([lat,lng],zoom,{animate:true,duration:0.6});
+  else map.panTo([lat,lng],{animate:true,duration:0.4});
   showPanel(lat,lng);
   var pipAddr=document.getElementById('pipAddr');
   if(siteLabel){
@@ -1291,9 +1330,144 @@ function selectLocation(lat,lng,siteLabel){
 
 // Map click
 map.on('click',function(e){
-  if(e.originalEvent.target.closest('.iconbtn,.layers-menu,.panel,.modal-bg,.hint,.pip,.headline,.timebar'))return;
+  if(e.originalEvent.target.closest('.iconbtn,.layers-menu,.geosearch,.panel,.modal-bg,.hint,.pip,.headline,.timebar'))return;
   selectLocation(e.latlng.lat,e.latlng.lng);
 });
+
+// ── Location search (address & cross streets) ──
+(function(){
+  var btn=document.getElementById('searchBtn'),
+      box=document.getElementById('geosearch'),
+      input=document.getElementById('searchInput'),
+      clearBtn=document.getElementById('searchClear'),
+      resultsEl=document.getElementById('searchResults');
+  if(!btn||!input)return;
+
+  // Davidson County / Nashville bounding box: lon_min,lat_max,lon_max,lat_min
+  var NASH_VIEWBOX='-87.06,36.41,-86.51,35.97';
+  var lastResults=[],activeIdx=-1,reqSeq=0,debounceT=null;
+
+  function openSearch(){
+    box.classList.add('show');btn.classList.add('active');btn.setAttribute('aria-expanded','true');
+    setTimeout(function(){input.focus()},30);
+  }
+  function closeSearch(){
+    box.classList.remove('show');btn.classList.remove('active');btn.setAttribute('aria-expanded','false');
+    hideResults();
+  }
+  function hideResults(){resultsEl.classList.remove('show');resultsEl.innerHTML='';activeIdx=-1;}
+
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(box.classList.contains('show'))closeSearch();else openSearch();
+  });
+  clearBtn.addEventListener('click',function(){
+    input.value='';box.classList.remove('has-text');hideResults();input.focus();
+  });
+  // Close when clicking elsewhere on the map / page
+  document.addEventListener('click',function(e){
+    if(box.classList.contains('show')&&!box.contains(e.target)&&e.target!==btn&&!btn.contains(e.target))closeSearch();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&box.classList.contains('show'))closeSearch();});
+
+  function geocode(q){
+    var query=q.trim();
+    if(!query)return Promise.resolve([]);
+    // Bias to Nashville unless the user already named a city / state / ZIP
+    var hasPlace=/nashville|tennessee|\btn\b|\b\d{5}\b/i.test(query);
+    var full=hasPlace?query:query+', Nashville, TN';
+    var url='https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&countrycodes=us&viewbox='+NASH_VIEWBOX+'&q='+encodeURIComponent(full);
+    return fetch(PROXY+encodeURIComponent(url),{headers:{'Accept':'application/json'}})
+      .then(function(r){return r.json()})
+      .then(function(d){return Array.isArray(d)?d:[]});
+  }
+
+  function fmt(r){
+    var dn=(r.display_name||'').split(', ');
+    var a=r.address||{};
+    var head=[a.house_number,a.road].filter(Boolean).join(' ')||dn[0]||r.display_name||'';
+    var sub=[a.neighbourhood||a.suburb||'',a.city||a.town||a.village||'',a.state||''].filter(Boolean).join(', ');
+    if(!sub)sub=dn.slice(1,4).join(', ');
+    return {head:head,sub:sub};
+  }
+
+  function render(results){
+    lastResults=results;activeIdx=-1;
+    if(!results.length){
+      resultsEl.innerHTML='<div class="geo-msg">No matches — try adding a city or ZIP.</div>';
+      resultsEl.classList.add('show');return;
+    }
+    resultsEl.innerHTML=results.map(function(r,i){
+      var f=fmt(r);
+      return '<button class="geo-result" role="option" data-i="'+i+'"><div class="n">'+esc(f.head)+'</div>'+(f.sub?'<div class="s">'+esc(f.sub)+'</div>':'')+'</button>';
+    }).join('');
+    resultsEl.classList.add('show');
+  }
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  function showLoading(){resultsEl.innerHTML='<div class="geo-msg"><span class="ring"></span>Searching…</div>';resultsEl.classList.add('show');}
+
+  function runSearch(){
+    var q=input.value;
+    if(!q.trim()){hideResults();return;}
+    showLoading();
+    var seq=++reqSeq;
+    geocode(q).then(function(results){
+      if(seq!==reqSeq)return; // a newer search superseded this one
+      render(results);
+    }).catch(function(){
+      if(seq!==reqSeq)return;
+      resultsEl.innerHTML='<div class="geo-msg">Search unavailable. Check your connection and try again.</div>';
+      resultsEl.classList.add('show');
+    });
+  }
+
+  function pick(r){
+    var lat=parseFloat(r.lat),lng=parseFloat(r.lon);
+    if(!isFinite(lat)||!isFinite(lng))return;
+    var f=fmt(r);
+    input.value=f.head;box.classList.add('has-text');
+    var z=Math.max(map.getZoom(),16);
+    if(findDist(lat,lng)){
+      // Inside Metro Nashville — open the location panel and zoom in
+      selectLocation(lat,lng,null,z);
+    }else{
+      // Outside the council districts — still move the map and drop a marker
+      map.flyTo([lat,lng],z,{animate:true,duration:0.7});
+      if(clickMarker)map.removeLayer(clickMarker);
+      clickMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div style="width:16px;height:16px;background:#4d8df5;border:2px solid #fff;border-radius:50%;box-shadow:0 0 18px rgba(77,141,245,.9)"></div>',iconSize:[16,16],iconAnchor:[8,8]}),zIndexOffset:2000}).addTo(map);
+    }
+    closeSearch();
+    var hint=document.getElementById('hint');if(hint)hint.classList.add('hide');
+  }
+
+  input.addEventListener('input',function(){
+    box.classList.toggle('has-text',!!input.value);
+    clearTimeout(debounceT);
+    if(!input.value.trim()){hideResults();return;}
+    debounceT=setTimeout(runSearch,320);
+  });
+  input.addEventListener('keydown',function(e){
+    var items=resultsEl.querySelectorAll('.geo-result');
+    if(e.key==='ArrowDown'&&items.length){e.preventDefault();activeIdx=Math.min(activeIdx+1,items.length-1);highlight(items);}
+    else if(e.key==='ArrowUp'&&items.length){e.preventDefault();activeIdx=Math.max(activeIdx-1,0);highlight(items);}
+    else if(e.key==='Enter'){
+      e.preventDefault();
+      clearTimeout(debounceT);
+      if(activeIdx>=0&&lastResults[activeIdx])pick(lastResults[activeIdx]);
+      else if(lastResults.length)pick(lastResults[0]);
+      else runSearch();
+    }
+  });
+  function highlight(items){items.forEach(function(el,i){el.classList.toggle('active',i===activeIdx);if(i===activeIdx)el.scrollIntoView({block:'nearest'});});}
+
+  resultsEl.addEventListener('click',function(e){
+    var el=e.target.closest('.geo-result');
+    if(!el)return;
+    var r=lastResults[+el.dataset.i];
+    if(r)pick(r);
+  });
+})();
 
 // ── About modal ──
 function openAbout(){document.getElementById('aboutBg').classList.add('show')}
