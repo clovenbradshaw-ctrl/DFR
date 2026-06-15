@@ -880,7 +880,7 @@ export class DataStore {
 
   /**
    * Deduped local flight count per department — unique flight identity (not raw
-   * row count), so the duplicate-flight_id inflation noted in AUDIT (F-01) can't
+   * row count), so the upstream duplicate-flight_id inflation can't
    * skew the comparison. Returns a Map<org, count>.
    */
   localDeptCounts() {
