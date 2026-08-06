@@ -168,6 +168,18 @@ details.setup > label:first-of-type{margin-top:0}
 .demo-cmp .over{color:#ff9b9b;font-weight:600}
 .demo-cmp .delta.up{color:#ff6b6b} .demo-cmp .delta.down{color:#3ecf8e}
 .demo-note{font-size:11px;color:var(--mut2);margin-top:14px;max-width:680px;line-height:1.6}
+.cne-tbl{width:100%;max-width:760px;border-collapse:collapse;font-size:12px;margin-top:8px}
+.cne-tbl th,.cne-tbl td{padding:5px 10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+.cne-tbl th:first-child,.cne-tbl td:first-child{text-align:left}
+.cne-tbl thead th{color:var(--txt);font-weight:600;cursor:pointer;user-select:none}
+.cne-tbl tr.base td{color:var(--txt);font-weight:600;border-bottom:2px solid var(--line)}
+.cne-tbl tr.over td:first-child::after{content:" ◗";color:#ff9b9b}
+.cne-tbl td.val{color:var(--txt)}
+.cl-entry{max-width:760px;padding:14px 0;border-bottom:1px solid var(--line)}
+.cl-date{font-size:11px;color:var(--mut2);font-variant-numeric:tabular-nums}
+.cl-title{margin:4px 0 8px;font-size:15px;color:var(--txt)}
+.cl-list{margin:0;padding-left:18px;font-size:13px;color:var(--mut);line-height:1.7}
+.cl-list b{color:var(--txt);font-weight:600}
 
 /* ── time scrubber over the map ── */
 #mapView{position:relative}
@@ -298,7 +310,7 @@ tbody tr:hover{background:var(--surf2)}
 }
 @media(min-width:761px){ #sideScrim{display:none} }
 </style>
-  <script type="module" crossorigin src="./assets/index-CBBVaoWa.js"></script>
+  <script type="module" crossorigin src="./assets/index-CIj5XSTz.js"></script>
 </head>
 <body>
 
@@ -404,10 +416,11 @@ tbody tr:hover{background:var(--surf2)}
 
     <section class="content">
       <div class="tabs">
-        <button id="tabDepts" aria-selected="true">Departments</button>
-        <button id="tabMap" aria-selected="false">Map</button>
+        <button id="tabDepts" aria-selected="false">Departments</button>
+        <button id="tabMap" aria-selected="true">Map</button>
         <button id="tabActivity" aria-selected="false">Activity</button>
         <button id="tabDemo" aria-selected="false">Demographics</button>
+        <button id="tabChangelog" aria-selected="false">Changelog</button>
         <button id="tabTerm" aria-selected="false">Terminal</button>
         <button id="tabEvents" aria-selected="false">Events</button>
         <label class="focus-toggle" title="Pull recent flights from the live feed for the area you zoom into">
@@ -424,7 +437,7 @@ tbody tr:hover{background:var(--surf2)}
         <button id="exportBtn" title="Download the current flights">Export</button>
         <span class="focus-hint" id="focusHint"></span>
       </div>
-      <div class="view" id="deptsView">
+      <div class="view hidden" id="deptsView">
         <div id="deptLayout">
           <aside id="deptSidebar">
             <div class="dept-search"><input type="text" id="deptSearch" placeholder="Filter departments…"></div>
@@ -433,7 +446,7 @@ tbody tr:hover{background:var(--surf2)}
           <main id="deptMain"><div class="empty">Loading…</div></main>
         </div>
       </div>
-      <div class="view hidden" id="mapView">
+      <div class="view" id="mapView">
         <!-- time scrubber: a draggable window over the dataset's full span -->
         <div id="timebar">
           <button id="playBtn" title="Play the window forward through time">▶</button>
@@ -472,6 +485,10 @@ tbody tr:hover{background:var(--surf2)}
           <button id="demoLoad" class="primary">Load demographics</button>
         </div>
         <div class="demo-body" id="demoBody"><div class="empty">Enter a county FIPS (or load — it's guessed from where the flights are) to compare the demographics of drone-overflown census tracts against the rest of the county. Tracts also shade on the Map tab.</div></div>
+      </div>
+      <div class="view hidden" id="changelogView">
+        <div class="demo-head"><span>Changelog — what changed and how it affects the data</span></div>
+        <div class="demo-body" id="changelogBody"></div>
       </div>
       <div class="view hidden" id="termView">
         <div class="term-head">
