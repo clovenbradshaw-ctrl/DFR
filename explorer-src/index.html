@@ -415,8 +415,8 @@ tbody tr:hover{background:var(--surf2)}
 
     <section class="content">
       <div class="tabs">
-        <button id="tabDepts" aria-selected="true">Departments</button>
-        <button id="tabMap" aria-selected="false">Map</button>
+        <button id="tabDepts" aria-selected="false">Departments</button>
+        <button id="tabMap" aria-selected="true">Map</button>
         <button id="tabActivity" aria-selected="false">Activity</button>
         <button id="tabDemo" aria-selected="false">Demographics</button>
         <button id="tabChangelog" aria-selected="false">Changelog</button>
@@ -436,7 +436,7 @@ tbody tr:hover{background:var(--surf2)}
         <button id="exportBtn" title="Download the current flights">Export</button>
         <span class="focus-hint" id="focusHint"></span>
       </div>
-      <div class="view" id="deptsView">
+      <div class="view hidden" id="deptsView">
         <div id="deptLayout">
           <aside id="deptSidebar">
             <div class="dept-search"><input type="text" id="deptSearch" placeholder="Filter departments…"></div>
@@ -445,7 +445,7 @@ tbody tr:hover{background:var(--surf2)}
           <main id="deptMain"><div class="empty">Loading…</div></main>
         </div>
       </div>
-      <div class="view hidden" id="mapView">
+      <div class="view" id="mapView">
         <!-- time scrubber: a draggable window over the dataset's full span -->
         <div id="timebar">
           <button id="playBtn" title="Play the window forward through time">▶</button>

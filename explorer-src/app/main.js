@@ -382,6 +382,13 @@ async function onAuthed() {
   try { collapsed = isMobile || localStorage.getItem('dfr.sideHidden') === '1'; } catch { collapsed = isMobile; }
   $('mainGrid').classList.toggle('side-hidden', collapsed);
 
+  // Paint the map (base terrain tiles) right now, before any room/dataset
+  // loading starts — Leaflet + the tile layer don't depend on flight data, so
+  // there's no reason to make the user wait through auth→open→sync to see
+  // the map. Flights fill in progressively as the dataset loads (see
+  // store.onChange below and DataStore.sync's incremental notifies).
+  setTab('map');
+
   store = new DataStore({ log });
   store.onChange = scheduleRender;
   store.onBusy = showLoading;
@@ -581,7 +588,7 @@ async function doInvite() {
 }
 
 // ── render ──
-let tab = 'depts';
+let tab = 'map';   // land on the map so the terrain is visible instantly; flights fill in as they load
 // Coalesce bursts of onChange (e.g. during indexing) into one paint per frame.
 let renderScheduled = false;
 function scheduleRender() {

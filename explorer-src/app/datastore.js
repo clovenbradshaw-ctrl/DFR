@@ -118,6 +118,8 @@ async function packedBatches(records) {
 const PUBLISH_THRESHOLD = 25;
 const PUBLISH_MIN_INTERVAL = 30 * 60e3;
 const UPLOAD_CONCURRENCY = 4;   // parallel media uploads during publish/hydrate
+const SHARD_LOAD_CONCURRENCY = 8;   // parallel department-shard fetches on open/sync (reads are cheap to overlap)
+const SHARD_NOTIFY_EVERY = 5;       // repaint the map every N shards landed, not every one
 
 /** Run `fn` over items with at most `limit` in flight; returns results in order. */
 async function parallelMap(items, limit, fn) {
@@ -449,32 +451,55 @@ export class DataStore {
 
     let bytes = null;
     if (state.mode === 'sharded' && state.manifest && state.manifest.__media) {
-      // Read the per-department manifest, then load EVERY department shard up
-      // front so the whole dataset (map, stats, departments) is present on open
-      // — the behavior before lazy loading. (Reverted from lazy-on-open: lazy
-      // left the map/stats empty until each department was manually opened.)
+      // Read the per-department manifest, then load EVERY department shard so
+      // the whole dataset (map, stats, departments) is present on open — the
+      // behavior before lazy loading. (Reverted from lazy-on-open: lazy left
+      // the map/stats empty until each department was manually opened.)
+      //
+      // Shards are fetched with bounded concurrency rather than one request at
+      // a time — with dozens/hundreds of departments, network round-trip
+      // latency (not bandwidth) dominates, so overlapping requests cuts total
+      // load time roughly by the concurrency factor. Flights are merged into
+      // the working set — and the UI notified — incrementally as shards land,
+      // so the map fills in progressively instead of staying empty until the
+      // very last department finishes.
       this.log('Loading department manifest…', 'mut');
       const manifest = await this._downloadManifest(state.manifest);
       this.deptManifest = manifest;
       this._loadedOrgs = new Set();
       this._seedAgenciesFromManifest(manifest);
+      this._notify();   // paint agency stubs on the map right away
       const orgs = Object.keys(manifest.departments || {});
       this._busy('Loading dataset', `0 / ${orgs.length} departments`, 0);
-      const all = [];
-      let i = 0;
-      for (const org of orgs) {
-        const d = manifest.departments[org];
-        try {
-          let b;
-          if (d.ref && d.ref.__media) b = await getMediaBytes(d.ref);
-          else if (d.chunks) b = reassemble(await Promise.all(d.chunks.map(c => getMediaBytes(c.ref))));
-          if (b) { for (const r of await unpackFlights(b)) all.push(r); this._loadedOrgs.add(org); }
-        } catch (e) { this.log(`Department ${org.slice(0, 8)} load failed: ${e.message}`, 'warn'); }
-        if (++i % 10 === 0 || i === orgs.length) this._busy('Loading dataset', `${i} / ${orgs.length} departments`, i / orgs.length);
-      }
+      let done = 0, pending = [];
+      const flushPending = () => {
+        if (!pending.length) return;
+        const { merged } = mergeFlights(this.flights, pending);
+        this.flights = merged;
+        pending = [];
+        this._notify();   // progressive paint — the map fills in as shards land
+      };
+      let next = 0;
+      const worker = async () => {
+        while (true) {
+          const idx = next++;
+          if (idx >= orgs.length) return;
+          const org = orgs[idx];
+          const d = manifest.departments[org];
+          try {
+            let b;
+            if (d.ref && d.ref.__media) b = await getMediaBytes(d.ref);
+            else if (d.chunks) b = reassemble(await Promise.all(d.chunks.map(c => getMediaBytes(c.ref))));
+            if (b) { for (const r of await unpackFlights(b)) pending.push(r); this._loadedOrgs.add(org); }
+          } catch (e) { this.log(`Department ${org.slice(0, 8)} load failed: ${e.message}`, 'warn'); }
+          done++;
+          if (done % 10 === 0 || done === orgs.length) this._busy('Loading dataset', `${done} / ${orgs.length} departments`, done / orgs.length);
+          if (done % SHARD_NOTIFY_EVERY === 0) flushPending();
+        }
+      };
+      await Promise.all(Array.from({ length: Math.min(SHARD_LOAD_CONCURRENCY, orgs.length) }, worker));
+      flushPending();   // merge any remainder
       this._busy(null);
-      const { merged } = mergeFlights(this.flights, all);
-      this.flights = merged;
       this._adoptVersion(state.version);
       await saveLocal(this.roomId, await packFlights(this.flights));
       act.sync(`Loaded ${this.flights.length.toLocaleString()} flights from ${orgs.length} department shards`, { flights: this.flights.length, departments: orgs.length });
