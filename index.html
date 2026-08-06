@@ -2706,15 +2706,25 @@ function fetchLiveFlights(){
   return page(0).catch(function(e){console.warn('[dfr] live ArcGIS enrich failed',e);return [];});
 }
 
+// ── Local dataset cache (IndexedDB) ──
+// Persist the loaded dataset between visits so a refresh can paint immediately
+// from the last-known data instead of blocking on the network every time.
+function idbOpen(){return new Promise(function(res,rej){try{var rq=indexedDB.open('dfrCache',1);rq.onupgradeneeded=function(){rq.result.createObjectStore('kv');};rq.onsuccess=function(){res(rq.result);};rq.onerror=function(){rej(rq.error);};}catch(e){rej(e);}});}
+function idbGet(key){return idbOpen().then(function(db){return new Promise(function(res,rej){var tx=db.transaction('kv','readonly');var rq=tx.objectStore('kv').get(key);rq.onsuccess=function(){res(rq.result);};rq.onerror=function(){rej(rq.error);};});});}
+function idbSet(key,val){return idbOpen().then(function(db){return new Promise(function(res,rej){var tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(val,key);tx.oncomplete=function(){res();};tx.onerror=function(){rej(tx.error);};});});}
+
 // ── LOAD ──
-Promise.all([
-  pfetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
-  pfetch(FLIGHTS_URL+'?t='+Date.now()).then(function(r){return r.json()}),
-  pfetch(DEMO_URL+'?t='+Date.now()).then(function(r){return r.json()}),
-  pfetch(DIST_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}}),
-  pfetch(PRECINCT_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}}),
-  fetchLiveFlights()
-]).then(function(res){
+function fetchAllData(){
+  return Promise.all([
+    pfetch(SITES_URL+'?t='+Date.now()).then(function(r){return r.json()}),
+    pfetch(FLIGHTS_URL+'?t='+Date.now()).then(function(r){return r.json()}),
+    pfetch(DEMO_URL+'?t='+Date.now()).then(function(r){return r.json()}),
+    pfetch(DIST_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}}),
+    pfetch(PRECINCT_URL).then(function(r){return r.json()}).catch(function(){return{features:[]}}),
+    fetchLiveFlights()
+  ]);
+}
+function renderData(res){
   demographics=(res[2].districts||{});demoMeta=(res[2].metadata||{});compBaseline();
   // Keep the About panel's demographics citation in sync with the live feed
   if(demoMeta.data_source){var sd=document.getElementById('srcDemoText');if(sd)sd.textContent=demoMeta.data_source+(demoMeta.source?', compiled by '+demoMeta.source:'');}
@@ -2791,10 +2801,38 @@ Promise.all([
   if(fb.isValid())map.fitBounds(fb,{padding:isMobile?[40,40]:[80,80]});
 
   setTimeout(function(){document.getElementById('splash').classList.add('hide')},200);
-}).catch(function(e){
+}
+function showLoadError(e){
   console.error('Load error:',e);
   document.getElementById('splash').innerHTML='<div style="color:#ef4444;font-family:JetBrains Mono,monospace;font-size:12px;text-align:center;padding:20px">Failed to load flight data.<br>Check your connection and reload.</div>';
-});
+}
+// ── Cache-first boot ──
+// If we have a cached dataset, render it right away (no loading splash wait),
+// then silently refresh the cache so the next refresh shows the latest flights.
+// Otherwise load from the network as before and seed the cache.
+(function(){
+  var CACHE_KEY='dataset_v1';
+  function valid(c){return c&&Array.isArray(c.res)&&c.res.length===6&&c.res[1]&&c.res[1].features;}
+  function loadFresh(){
+    return fetchAllData().then(function(res){
+      idbSet(CACHE_KEY,{res:res,ts:Date.now()}).catch(function(){});
+      renderData(res);
+    });
+  }
+  idbGet(CACHE_KEY).then(function(cached){
+    if(valid(cached)){
+      try{renderData(cached.res);}
+      catch(e){console.warn('[dfr] cached render failed, reloading from network',e);return loadFresh().catch(showLoadError);}
+      // Quietly bring the cache up to date for the next visit (non-fatal on failure).
+      fetchAllData().then(function(res){idbSet(CACHE_KEY,{res:res,ts:Date.now()}).catch(function(){});}).catch(function(){});
+    }else{
+      return loadFresh().catch(showLoadError);
+    }
+  }).catch(function(){
+    // IndexedDB unavailable (e.g. private browsing) — plain network load.
+    fetchAllData().then(renderData).catch(showLoadError);
+  });
+})();
 
 // Auto-hide hint after 8s
 setTimeout(function(){document.getElementById('hint').classList.add('hide')},8000);
