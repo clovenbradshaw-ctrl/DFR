@@ -16,7 +16,7 @@
  */
 
 import { discoverFromDirectory, countUrl, agencyQueryUrl, agencyTailUrl, feedFetch,
-         DIRECTORY_URL } from './dfr.js';
+         DIRECTORY_URL, NASHVILLE_ORG_UUID } from './dfr.js';
 import { act } from './activity.js';
 
 const SETTINGS_KEY = 'dfr.scraper.settings';
@@ -135,7 +135,13 @@ export class Scraper {
     let fetched = 0, skipped = 0, totAdded = 0, totRemoved = 0, newDepts = 0;
     try {
       const dir = await feedFetch(DIRECTORY_URL, this.proxy);
-      const found = discoverFromDirectory(dir, this.includeStaging);
+      const discovered = discoverFromDirectory(dir, this.includeStaging);
+      // Skydio's ArcGIS org hosts DFR dashboards for many departments
+      // nationwide. This app is the Nashville dataset explorer, so discovery
+      // is scoped to Nashville's dashboard only — it must never auto-ingest
+      // another city's flights.
+      const found = discovered[NASHVILLE_ORG_UUID]
+        ? { [NASHVILLE_ORG_UUID]: discovered[NASHVILLE_ORG_UUID] } : {};
       const knownDepts = new Set((this.store.agencies || []).map(a => a.id));
       const allUuids = Object.keys(found);
       const fresh = allUuids.filter(u => !knownDepts.has(u));

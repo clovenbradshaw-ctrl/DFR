@@ -37,7 +37,7 @@ import { packFlights, unpackFlights, mergeFlights, blobHash, flightId } from './
 import { saveLocal, loadLocal } from './opfsbin.js';
 import { readDatasetState, writeDatasetState } from './roomstate.js';
 import { toRecord, toAgency, agencyKey, focusQueryUrl, feedFetch,
-         fsForOrg, countUrl, agencyTailUrl, agencyQueryUrl } from './dfr.js';
+         fsForOrg, countUrl, agencyTailUrl, agencyQueryUrl, NASHVILLE_ORG_UUID } from './dfr.js';
 import { textStreamFrom, readChunks, streamElements, streamNdjson } from './jsonstream.js';
 import { chunkBlob, frameBlock, hash64, reassemble, reassembleStream } from './chunks.js';
 import { fileChunks, streamChunks, guessFormat } from './chunkstream.js';
@@ -153,6 +153,18 @@ function bboxOf(flights) {
   return any ? [w, s, e, n] : null;
 }
 
+/**
+ * This app is the Nashville MNPD dataset explorer (see ONLY_SPACE_UUID /
+ * NASHVILLE_ORG_UUID in dfr.js) — filter out any record tagged with a
+ * different department's organization_id before it enters the working set.
+ * Belt-and-braces: the scraper's discovery is scoped to Nashville too, but
+ * this guards the load path itself against anything already sitting in a
+ * synced snapshot/manifest from before that scoping existed.
+ */
+function nashvilleOnly(records) {
+  return records.filter(r => r.organization_id === NASHVILLE_ORG_UUID);
+}
+
 export class DataStore {
   constructor({ log } = {}) {
     this.log = log || (() => {});
@@ -239,7 +251,7 @@ export class DataStore {
     }
     this.looseEvents = loose;
     if (!recs.length) return 0;
-    const { merged, added } = mergeFlights(this.flights, recs);
+    const { merged, added } = mergeFlights(this.flights, nashvilleOnly(recs));
     if (added) { this.flights = merged; this._notify(); }
     return added;
   }
@@ -253,7 +265,9 @@ export class DataStore {
     if (ref && ref.__media) {
       try {
         const bytes = await getMediaBytes(ref);
-        if (bytes) loaded = await unpackFlights(bytes);
+        // Scoped to Nashville only — the agencies index can carry other
+        // departments' entries forward from a broader hydration upload.
+        if (bytes) loaded = (await unpackFlights(bytes)).filter(a => a.id === NASHVILLE_ORG_UUID);
       } catch (e) { this.log(`Agencies load: ${e.message}`, 'warn'); }
     }
     // Merge real agency records over any manifest-seeded stubs (don't wipe the
@@ -283,10 +297,16 @@ export class DataStore {
   // treats them as fully present — not lazy. (Lazy-on-open was reverted.)
   isLazy() { return false; }
 
-  /** Give the Departments tab counts/locations before any block is fetched. */
+  /**
+   * Give the Departments tab counts/locations before any block is fetched.
+   * Scoped to Nashville only (see NASHVILLE_ORG_UUID) regardless of what
+   * else the manifest carries forward, so a non-Nashville shard never gets a
+   * stub pin on the map even before its block would be fetched.
+   */
   _seedAgenciesFromManifest(manifest) {
     const known = new Set((this.agencies || []).map(a => a.id));
     for (const [org, d] of Object.entries(manifest.departments || {})) {
+      if (org !== NASHVILLE_ORG_UUID) continue;
       if (known.has(org)) continue;
       const bb = d.bbox;
       this.agencies.push({ id: org, name: '', city: '', county: '', state: '', address: '',
@@ -299,6 +319,7 @@ export class DataStore {
    * set. Idempotent — repeat calls are cheap no-ops once loaded.
    */
   async loadDepartment(org) {
+    if (org !== NASHVILLE_ORG_UUID) return { added: 0 };   // scoped to Nashville only
     const m = this.deptManifest;
     const d = m && m.departments && m.departments[org];
     if (!d) return { added: 0 };
@@ -467,9 +488,17 @@ export class DataStore {
       const manifest = await this._downloadManifest(state.manifest);
       this.deptManifest = manifest;
       this._loadedOrgs = new Set();
-      this._seedAgenciesFromManifest(manifest);
+      // Scope to Nashville's shard only — the manifest can carry other
+      // departments' shards forward from before discovery was scoped (see
+      // NASHVILLE_ORG_UUID); never fetch, seed, or display those. Leaving
+      // `manifest`/`this.deptManifest` itself untouched means a future
+      // publish still carries any non-Nashville shard forward unchanged
+      // (append-only) — this only keeps this client from loading it.
+      const nashvilleDepts = manifest.departments?.[NASHVILLE_ORG_UUID]
+        ? { [NASHVILLE_ORG_UUID]: manifest.departments[NASHVILLE_ORG_UUID] } : {};
+      this._seedAgenciesFromManifest(manifest);   // internally scoped to Nashville
       this._notify();   // paint agency stubs on the map right away
-      const orgs = Object.keys(manifest.departments || {});
+      const orgs = Object.keys(nashvilleDepts);
       this._busy('Loading dataset', `0 / ${orgs.length} departments`, 0);
       let done = 0, pending = [];
       const flushPending = () => {
@@ -485,7 +514,7 @@ export class DataStore {
           const idx = next++;
           if (idx >= orgs.length) return;
           const org = orgs[idx];
-          const d = manifest.departments[org];
+          const d = nashvilleDepts[org];
           try {
             let b;
             if (d.ref && d.ref.__media) b = await getMediaBytes(d.ref);
@@ -521,7 +550,7 @@ export class DataStore {
         // No prebuilt index: stream the chained archive block-by-block and
         // extract a lean index in-flight (never holds the whole archive).
         this.log(`Indexing ${manifest.chunk_count} chained blocks (${(manifest.total_bytes / 1073741824).toFixed(2)} GB)…`, 'mut');
-        const flights = await this._indexFromManifest(manifest);
+        const flights = nashvilleOnly(await this._indexFromManifest(manifest));
         this._adopt(flights, state.version);
         await saveLocal(this.roomId, await packFlights(this.flights));
         this.log(`Indexed ${flights.length} flights from chained dataset.`, 'ok');
@@ -538,7 +567,7 @@ export class DataStore {
     }
     if (!bytes) return { synced: false, reason: 'no-bytes' };
 
-    const incoming = await unpackFlights(bytes);
+    const incoming = nashvilleOnly(await unpackFlights(bytes));
     const { merged, added } = mergeFlights(this.flights, incoming);
     this.flights = merged;
     this._adoptVersion(state.version);
@@ -696,7 +725,10 @@ export class DataStore {
     }
     if (!fetched.length) { this.log('No recent flights in this area.', 'mut'); return { added: 0, fetched: 0 }; }
 
-    const recs = fetched.map(toRecord);
+    // focusQueryUrl already targets Nashville's single FeatureServer, so this
+    // filter is a no-op in practice — kept for the same Nashville-only
+    // guarantee as every other path that merges into the working set.
+    const recs = nashvilleOnly(fetched.map(toRecord));
     const { merged, added } = mergeFlights(this.flights, recs);
     this.flights = merged;
     if (added) {
@@ -712,7 +744,10 @@ export class DataStore {
   // ── scraper feed ────────────────────────────────────────────────────────────
 
   async addFlights(rawFlights) {
-    const recs = rawFlights.map(toRecord);
+    // The scraper's discovery is scoped to Nashville (see NASHVILLE_ORG_UUID),
+    // so this is normally a no-op — kept as a guard against ever recording
+    // (even to the room timeline) a flight from another department.
+    const recs = nashvilleOnly(rawFlights.map(toRecord));
     // Which are genuinely new (dedup against the working set)?
     const have = new Set(this.flights.map(flightId).filter(Boolean));
     const fresh = recs.filter(r => { const id = flightId(r); return id && !have.has(id); });
@@ -885,7 +920,7 @@ export class DataStore {
    * (fixes "stored 45 but feed has 47"). `proxy` is the CORS proxy prefix.
    */
   async refreshDepartment(org, proxy = '') {
-    if (!org) return { added: 0 };
+    if (!org || org !== NASHVILLE_ORG_UUID) return { added: 0 };   // scoped to Nashville only
     const fs = fsForOrg(org);
     let cnt = null;
     try { cnt = (await feedFetch(countUrl(fs), proxy, { preferProxy: true }))?.count ?? null; } catch { return { added: 0 }; }
@@ -948,7 +983,9 @@ export class DataStore {
     // manifest, and any org seen on a flight — so nothing is silently skipped.
     const orgs = new Set();
     for (const a of (this.agencies || [])) if (a.id) orgs.add(a.id);
-    for (const d of this.deptIndex()) if (d.org) orgs.add(d.org);
+    // deptIndex() reflects the raw manifest, which can carry a non-Nashville
+    // shard forward (see NASHVILLE_ORG_UUID) — never check drift against it.
+    for (const d of this.deptIndex()) if (d.org === NASHVILLE_ORG_UUID) orgs.add(d.org);
     for (const org of local.keys()) if (org && org !== 'unknown') orgs.add(org);
     const list = [...orgs];
 

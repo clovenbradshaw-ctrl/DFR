@@ -41,15 +41,23 @@ export const FIELD = {
 };
 
 // ── Live feed (Skydio ArcGIS — mirrors dfr.py's per-department pipeline) ──
+//
+// `ORG` is Skydio's shared multi-tenant ArcGIS org — it hosts DFR dashboards
+// for many police departments nationwide, not just Nashville's. This app is
+// the Nashville MNPD dataset explorer (see ONLY_SPACE_UUID above), so its
+// discovery/loading is scoped to NASHVILLE_ORG_UUID, not the whole directory.
 
 export const ORG = 'mnhQTdIYDA7UoY2l';
 export const SVC_BASE = `https://services7.arcgis.com/${ORG}/arcgis/rest/services`;
 export const DIRECTORY_URL = `${SVC_BASE}?f=json`;
 export const DASH_URL = (uuid) => `https://cloud.skydio.com/dashboard/${uuid}`;
 
-// Back-compat single service (still used as a fallback).
+// Nashville MNPD's dashboard UUID within the shared org — the only department
+// this app should ever discover, fetch, or display.
+export const NASHVILLE_ORG_UUID = '678dee26-6aa8-4d60-bf1c-30c7b0f6b517';
+
 export const FEATURE_SERVICE =
-  `${SVC_BASE}/678dee26-6aa8-4d60-bf1c-30c7b0f6b517-production/FeatureServer/0`;
+  `${SVC_BASE}/${NASHVILLE_ORG_UUID}-production/FeatureServer/0`;
 
 export function feedQueryUrl() {
   return `${FEATURE_SERVICE}/query?where=1%3D1&outFields=*` +
