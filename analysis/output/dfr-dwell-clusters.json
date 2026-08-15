@@ -1,0 +1,6752 @@
+[
+ {
+  "flight_id": "04dc6f30-8911-4a26-b6e8-1fc047629206",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-05-26T19:03:18.672000+00:00",
+  "duration_min": 15.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2531,
+    "lon": -86.7176,
+    "frac_of_flight": 0.3
+   },
+   {
+    "lat": 36.2539,
+    "lon": -86.7204,
+    "frac_of_flight": 0.19
+   }
+  ],
+  "max_separation_km": 0.27
+ },
+ {
+  "flight_id": "c4ee5275-12ee-46fc-9614-7d26be687a07",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-05-26T19:12:35.454000+00:00",
+  "duration_min": 11.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2542,
+    "lon": -86.721,
+    "frac_of_flight": 0.42
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5ad6cf0e-8f8b-4d77-9edb-ef552265635e",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-05-26T20:34:37.858000+00:00",
+  "duration_min": 8.1,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2649,
+    "lon": -86.7091,
+    "frac_of_flight": 0.64
+   },
+   {
+    "lat": 36.2676,
+    "lon": -86.7033,
+    "frac_of_flight": 0.14
+   },
+   {
+    "lat": 36.2715,
+    "lon": -86.6949,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 1.47
+ },
+ {
+  "flight_id": "7d44855b-9d5c-4f4d-8dfd-daeedda8bf1d",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-05-26T20:56:33.566000+00:00",
+  "duration_min": 13.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2919,
+    "lon": -86.7016,
+    "frac_of_flight": 0.73
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3f2a3e15-aaa6-4c17-8544-3b4d0a7ac68d",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-05-26T21:55:47.106000+00:00",
+  "duration_min": 7.6,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.265,
+    "lon": -86.709,
+    "frac_of_flight": 0.6
+   },
+   {
+    "lat": 36.2682,
+    "lon": -86.7021,
+    "frac_of_flight": 0.15
+   },
+   {
+    "lat": 36.2715,
+    "lon": -86.6949,
+    "frac_of_flight": 0.13
+   }
+  ],
+  "max_separation_km": 1.45
+ },
+ {
+  "flight_id": "d015ceb2-873a-4560-8f32-390eb242dc8f",
+  "purpose": "SAFETY HAZARD",
+  "takeoff": "2026-05-26T21:30:01.211000+00:00",
+  "duration_min": 11.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2641,
+    "lon": -86.7102,
+    "frac_of_flight": 0.63
+   },
+   {
+    "lat": 36.2697,
+    "lon": -86.6985,
+    "frac_of_flight": 0.15
+   }
+  ],
+  "max_separation_km": 1.22
+ },
+ {
+  "flight_id": "28637e47-cb0f-4326-beb7-c3869d4f1126",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-05-26T21:09:54.529000+00:00",
+  "duration_min": 8.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2932,
+    "lon": -86.7004,
+    "frac_of_flight": 0.55
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "07b42f35-0576-4c9f-bffc-33daa5eb503b",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-05-26T22:28:39.668000+00:00",
+  "duration_min": 6.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2637,
+    "lon": -86.7033,
+    "frac_of_flight": 0.52
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "78224bb1-18a4-445d-a170-62c8473314ad",
+  "purpose": "THEFT",
+  "takeoff": "2026-05-26T23:05:57.064000+00:00",
+  "duration_min": 18.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2671,
+    "lon": -86.7119,
+    "frac_of_flight": 0.82
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e9b9b7d9-c682-4010-a878-c7bab142c7d4",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-05-26T23:51:10.216000+00:00",
+  "duration_min": 14.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2619,
+    "lon": -86.712,
+    "frac_of_flight": 0.77
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "2eee7974-6443-49e7-952d-bf1f4c539b18",
+  "purpose": "SHOTS FIRED",
+  "takeoff": "2026-05-27T00:02:55.671000+00:00",
+  "duration_min": 23.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2684,
+    "lon": -86.6828,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "af207d28-2295-4065-8042-5e0ae5c27602",
+  "purpose": "SHOTS FIRED",
+  "takeoff": "2026-05-27T00:24:08.079000+00:00",
+  "duration_min": 10.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2691,
+    "lon": -86.6823,
+    "frac_of_flight": 0.84
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "dfbb3117-a792-491d-89e4-5fb97df02ba6",
+  "purpose": "THEFT",
+  "takeoff": "2026-05-27T00:31:52.552000+00:00",
+  "duration_min": 18.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2965,
+    "lon": -86.6994,
+    "frac_of_flight": 0.9
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "72a72e4f-66c8-42ba-ba52-35d4d20379b8",
+  "purpose": "THEFT",
+  "takeoff": "2026-05-27T00:47:45.378000+00:00",
+  "duration_min": 16.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.295,
+    "lon": -86.6974,
+    "frac_of_flight": 0.91
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3adae817-5396-4d53-a40f-d315332eacc4",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-05-27T17:01:09.268000+00:00",
+  "duration_min": 20.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2656,
+    "lon": -86.7093,
+    "frac_of_flight": 0.9
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "7cce8ded-bf3a-4571-b7f9-d889d46ab6c7",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-05-27T17:47:41.366000+00:00",
+  "duration_min": 19.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2591,
+    "lon": -86.7118,
+    "frac_of_flight": 0.93
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c03f6aed-3dce-4697-979e-8282fb16ad0e",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-05-27T18:17:45.926000+00:00",
+  "duration_min": 14.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2662,
+    "lon": -86.6938,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c76cc087-c81e-4ec6-8cf5-3062e9509804",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-05-27T17:31:09.265000+00:00",
+  "duration_min": 16.3,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2952,
+    "lon": -86.6998,
+    "frac_of_flight": 0.36
+   },
+   {
+    "lat": 36.2692,
+    "lon": -86.7097,
+    "frac_of_flight": 0.11
+   },
+   {
+    "lat": 36.2799,
+    "lon": -86.7092,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 3.02
+ },
+ {
+  "flight_id": "2be67a15-27db-40a9-b35c-d997df1a0371",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-05-27T18:05:12.778000+00:00",
+  "duration_min": 15.8,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2563,
+    "lon": -86.7148,
+    "frac_of_flight": 0.38
+   },
+   {
+    "lat": 36.2591,
+    "lon": -86.7108,
+    "frac_of_flight": 0.13
+   },
+   {
+    "lat": 36.2676,
+    "lon": -86.6988,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 1.91
+ },
+ {
+  "flight_id": "513d9d69-8932-4b43-9ea0-5d6f83665499",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-05-27T19:34:43.775000+00:00",
+  "duration_min": 21.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2591,
+    "lon": -86.698,
+    "frac_of_flight": 0.88
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9d3bf3bc-b499-4ccf-965a-4b76d140d35f",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-05-27T19:50:48.207000+00:00",
+  "duration_min": 10.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2571,
+    "lon": -86.7027,
+    "frac_of_flight": 0.75
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "8bf48c45-f34d-4c15-b34c-a5d579516bcb",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-05-27T20:01:55.870000+00:00",
+  "duration_min": 20.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2946,
+    "lon": -86.6989,
+    "frac_of_flight": 0.84
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9a7b3519-bcb6-4b15-8d6b-42fb5fefb1e4",
+  "purpose": "SAFETY HAZARD",
+  "takeoff": "2026-05-27T20:30:47.456000+00:00",
+  "duration_min": 11.1,
+  "n_dwell_locations": 4,
+  "dwell_locations": [
+   {
+    "lat": 36.2629,
+    "lon": -86.7099,
+    "frac_of_flight": 0.18
+   },
+   {
+    "lat": 36.2643,
+    "lon": -86.6919,
+    "frac_of_flight": 0.17
+   },
+   {
+    "lat": 36.2634,
+    "lon": -86.7057,
+    "frac_of_flight": 0.13
+   },
+   {
+    "lat": 36.2654,
+    "lon": -86.6963,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 1.62
+ },
+ {
+  "flight_id": "6f08bb8f-1b7a-4c9b-ba0e-1c55aa4d55ec",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-05-27T21:15:17.247000+00:00",
+  "duration_min": 17.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.295,
+    "lon": -86.6994,
+    "frac_of_flight": 0.79
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "7329b061-e18d-4fac-a141-adeb05b9c7bb",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-05-27T22:09:10.318000+00:00",
+  "duration_min": 16.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2924,
+    "lon": -86.7014,
+    "frac_of_flight": 0.79
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "bb39088a-953c-4836-8b9b-ae08faa348cf",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-05-28T00:13:39.090000+00:00",
+  "duration_min": 23.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2661,
+    "lon": -86.6945,
+    "frac_of_flight": 0.98
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "31fd8040-1f2d-41e0-9941-a5488cb3f158",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-05-28T15:55:23.727000+00:00",
+  "duration_min": 17.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2563,
+    "lon": -86.7153,
+    "frac_of_flight": 0.79
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "f8e132b9-b53d-45bc-98c3-d8f77177f891",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-05-28T16:30:24.907000+00:00",
+  "duration_min": 17.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2547,
+    "lon": -86.7171,
+    "frac_of_flight": 0.75
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "66bcf2d2-607f-403d-a522-ae8e67fb310c",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-05-28T20:51:42.247000+00:00",
+  "duration_min": 10.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.3009,
+    "lon": -86.6916,
+    "frac_of_flight": 0.64
+   },
+   {
+    "lat": 36.2871,
+    "lon": -86.691,
+    "frac_of_flight": 0.35
+   }
+  ],
+  "max_separation_km": 1.54
+ },
+ {
+  "flight_id": "91528ae7-86de-4abf-a40d-085547dfb978",
+  "purpose": "PERSON INDECENTLY EXPOSED",
+  "takeoff": "2026-05-28T21:04:45.066000+00:00",
+  "duration_min": 16.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3008,
+    "lon": -86.6926,
+    "frac_of_flight": 0.71
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "404a3681-16bb-40fa-80b4-717fb25ee2bc",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-05-28T22:02:26.175000+00:00",
+  "duration_min": 11.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2546,
+    "lon": -86.7174,
+    "frac_of_flight": 0.71
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "2cd5bd75-071f-46a1-b848-5fad175837a7",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-05-29T00:14:31.596000+00:00",
+  "duration_min": 19.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.263,
+    "lon": -86.714,
+    "frac_of_flight": 0.69
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3fa69387-24ec-43ab-a0c6-4c3d4dc12660",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-05-29T00:40:55.284000+00:00",
+  "duration_min": 20.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2631,
+    "lon": -86.7108,
+    "frac_of_flight": 0.88
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "0d2b9bc3-7d0b-42ee-9f5c-9984ed0cd820",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-05-29T00:56:39.222000+00:00",
+  "duration_min": 15.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2623,
+    "lon": -86.7125,
+    "frac_of_flight": 0.8
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "34de212f-ff82-47c1-a74f-d798701be9f2",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-05-29T15:47:01.319000+00:00",
+  "duration_min": 13.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2661,
+    "lon": -86.6964,
+    "frac_of_flight": 0.94
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3b10858a-4e20-42b9-8ac3-aa619e923813",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-05-29T15:54:25.421000+00:00",
+  "duration_min": 7.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2689,
+    "lon": -86.7011,
+    "frac_of_flight": 0.8
+   },
+   {
+    "lat": 36.2718,
+    "lon": -86.6943,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 0.69
+ },
+ {
+  "flight_id": "fbee8f94-38b6-47d4-b0e1-835f3d8b0d21",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-05-29T19:26:55.467000+00:00",
+  "duration_min": 19.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2935,
+    "lon": -86.6965,
+    "frac_of_flight": 0.71
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "828a2ecb-ab26-4d7d-b77f-44dd6980d3b7",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-05-29T19:43:00.191000+00:00",
+  "duration_min": 9.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.292,
+    "lon": -86.695,
+    "frac_of_flight": 0.55
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d5aaf43b-1560-4892-8d50-276d66b0392f",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-05-29T20:51:40.566000+00:00",
+  "duration_min": 4.2,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2756,
+    "lon": -86.694,
+    "frac_of_flight": 0.19
+   },
+   {
+    "lat": 36.2827,
+    "lon": -86.7045,
+    "frac_of_flight": 0.18
+   },
+   {
+    "lat": 36.2775,
+    "lon": -86.6967,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 1.23
+ },
+ {
+  "flight_id": "c30bd7c3-8eb4-4862-aa48-21e4c84abc93",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-05-29T20:58:45.059000+00:00",
+  "duration_min": 7.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2733,
+    "lon": -86.6892,
+    "frac_of_flight": 1.0
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "50e20911-3ef5-4b9e-a74b-758e1e1d00f0",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-05-29T21:21:09.637000+00:00",
+  "duration_min": 19.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2622,
+    "lon": -86.7078,
+    "frac_of_flight": 0.91
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "17bc3b8e-ccd7-494d-ad41-3c510993ab20",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-05-29T21:27:21.343000+00:00",
+  "duration_min": 20.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2585,
+    "lon": -86.7131,
+    "frac_of_flight": 0.38
+   },
+   {
+    "lat": 36.2728,
+    "lon": -86.7065,
+    "frac_of_flight": 0.31
+   }
+  ],
+  "max_separation_km": 1.69
+ },
+ {
+  "flight_id": "e2260b9e-c7f5-46d0-b16f-343d10f267a8",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-05-29T22:59:31.671000+00:00",
+  "duration_min": 4.6,
+  "n_dwell_locations": 4,
+  "dwell_locations": [
+   {
+    "lat": 36.2856,
+    "lon": -86.6952,
+    "frac_of_flight": 0.25
+   },
+   {
+    "lat": 36.279,
+    "lon": -86.6928,
+    "frac_of_flight": 0.24
+   },
+   {
+    "lat": 36.2895,
+    "lon": -86.6967,
+    "frac_of_flight": 0.15
+   },
+   {
+    "lat": 36.2754,
+    "lon": -86.6914,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 1.64
+ },
+ {
+  "flight_id": "77c1f152-7e43-4639-ac03-a9946ed17461",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-05-29T23:47:07.890000+00:00",
+  "duration_min": 9.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.255,
+    "lon": -86.7173,
+    "frac_of_flight": 0.38
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "ff59bbd1-c052-40cf-b0b1-f9da36bd5b9b",
+  "purpose": "SAFETY HAZARD",
+  "takeoff": "2026-06-02T12:34:45.479000+00:00",
+  "duration_min": 13.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2856,
+    "lon": -86.7054,
+    "frac_of_flight": 0.25
+   },
+   {
+    "lat": 36.2562,
+    "lon": -86.7147,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 3.37
+ },
+ {
+  "flight_id": "f2bc2b85-54f3-4496-b96a-7515ff3d653f",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-02T15:43:51.940000+00:00",
+  "duration_min": 13.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2703,
+    "lon": -86.7115,
+    "frac_of_flight": 0.74
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "bf21f4d9-6218-4211-a555-97de0dedf473",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-02T18:37:27.840000+00:00",
+  "duration_min": 20.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2542,
+    "lon": -86.6811,
+    "frac_of_flight": 0.92
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "b5b9f04b-58d5-49b8-a284-c86c37b6f08f",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-02T18:50:30.240000+00:00",
+  "duration_min": 19.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2558,
+    "lon": -86.6814,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "22cfe76c-2151-4a9d-b527-e3e48777be28",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-02T19:21:02.657000+00:00",
+  "duration_min": 20.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.255,
+    "lon": -86.6818,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "08b6d597-43b4-48ef-964f-936885a0667a",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-02T19:57:51.455000+00:00",
+  "duration_min": 7.4,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2823,
+    "lon": -86.6881,
+    "frac_of_flight": 0.6
+   },
+   {
+    "lat": 36.2802,
+    "lon": -86.6892,
+    "frac_of_flight": 0.18
+   },
+   {
+    "lat": 36.2763,
+    "lon": -86.6901,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 0.7
+ },
+ {
+  "flight_id": "8521fb50-43b2-46c1-b92a-d804bd242dba",
+  "purpose": "SHOTS FIRED",
+  "takeoff": "2026-06-02T19:50:49.610000+00:00",
+  "duration_min": 17.0,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2881,
+    "lon": -86.7101,
+    "frac_of_flight": 0.31
+   },
+   {
+    "lat": 36.2826,
+    "lon": -86.7016,
+    "frac_of_flight": 0.18
+   }
+  ],
+  "max_separation_km": 0.97
+ },
+ {
+  "flight_id": "b5baf6d6-766a-404e-8067-550ed6a650fa",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-06-02T20:11:26.177000+00:00",
+  "duration_min": 14.0,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.3016,
+    "lon": -86.6921,
+    "frac_of_flight": 0.58
+   },
+   {
+    "lat": 36.2787,
+    "lon": -86.691,
+    "frac_of_flight": 0.13
+   }
+  ],
+  "max_separation_km": 2.55
+ },
+ {
+  "flight_id": "b298d9cd-846b-440f-98c0-5a9d30f1b366",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-02T20:38:27.263000+00:00",
+  "duration_min": 19.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2954,
+    "lon": -86.7002,
+    "frac_of_flight": 0.67
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c84821a9-f214-4960-ade5-acaa7a6e4dfc",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-06-02T21:38:35.697000+00:00",
+  "duration_min": 14.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2634,
+    "lon": -86.7116,
+    "frac_of_flight": 0.8
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "142d77e5-ff72-4774-bd9f-f378672c49b4",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-06-03T00:34:58.883000+00:00",
+  "duration_min": 20.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.292,
+    "lon": -86.6932,
+    "frac_of_flight": 0.95
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "0f5261e9-eed6-4bee-accd-669e5d9949ff",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-03T01:26:28.170000+00:00",
+  "duration_min": 22.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2707,
+    "lon": -86.7053,
+    "frac_of_flight": 0.98
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c291fea3-56b6-4b09-9267-036334de7afb",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-03T01:55:16.224000+00:00",
+  "duration_min": 16.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2624,
+    "lon": -86.7118,
+    "frac_of_flight": 0.74
+   },
+   {
+    "lat": 36.2701,
+    "lon": -86.6975,
+    "frac_of_flight": 0.16
+   }
+  ],
+  "max_separation_km": 1.53
+ },
+ {
+  "flight_id": "661e2f83-6665-4e10-99b0-4d417595d94d",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-06-03T02:50:22.669000+00:00",
+  "duration_min": 10.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2695,
+    "lon": -86.6947,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "024564ce-9782-4142-9806-fd125390c163",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-06-03T03:05:20.968000+00:00",
+  "duration_min": 11.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2703,
+    "lon": -86.6861,
+    "frac_of_flight": 0.98
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e415a24f-4749-46db-a0df-f46246f7f47b",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-06-03T03:19:51.918000+00:00",
+  "duration_min": 23.5,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2662,
+    "lon": -86.6988,
+    "frac_of_flight": 0.79
+   },
+   {
+    "lat": 36.2668,
+    "lon": -86.6934,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 0.49
+ },
+ {
+  "flight_id": "57e64561-2e94-4666-a3d8-250e88306606",
+  "purpose": "FIRE",
+  "takeoff": "2026-06-03T14:55:13.363000+00:00",
+  "duration_min": 15.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.3004,
+    "lon": -86.692,
+    "frac_of_flight": 0.72
+   },
+   {
+    "lat": 36.2793,
+    "lon": -86.691,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 2.35
+ },
+ {
+  "flight_id": "20a70dde-9209-41ef-b29e-af0df186d5e4",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-03T12:12:20.298000+00:00",
+  "duration_min": 10.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2652,
+    "lon": -86.6633,
+    "frac_of_flight": 0.53
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "42b937c6-301e-4081-ae55-996b32b9347d",
+  "purpose": "THEFT",
+  "takeoff": "2026-06-03T13:23:38.457000+00:00",
+  "duration_min": 14.5,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.3012,
+    "lon": -86.6919,
+    "frac_of_flight": 0.66
+   },
+   {
+    "lat": 36.2778,
+    "lon": -86.691,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 2.6
+ },
+ {
+  "flight_id": "6d6baa03-f844-4f38-b9be-525b71b0cb44",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-06-03T15:26:01.848000+00:00",
+  "duration_min": 11.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2563,
+    "lon": -86.715,
+    "frac_of_flight": 0.73
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d00bdbb6-b05b-4fde-893a-f857b436180c",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-06-03T19:48:38.877000+00:00",
+  "duration_min": 14.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2666,
+    "lon": -86.6982,
+    "frac_of_flight": 0.93
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3e876912-37ec-4726-bdab-75968a638b21",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-06-03T20:39:27.298000+00:00",
+  "duration_min": 9.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2834,
+    "lon": -86.693,
+    "frac_of_flight": 0.89
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "566fa92e-e2bf-4389-8b04-1ca5aaa34729",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-06-03T21:04:51.742000+00:00",
+  "duration_min": 19.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2587,
+    "lon": -86.7077,
+    "frac_of_flight": 0.47
+   },
+   {
+    "lat": 36.2564,
+    "lon": -86.7081,
+    "frac_of_flight": 0.37
+   }
+  ],
+  "max_separation_km": 0.26
+ },
+ {
+  "flight_id": "2d975a04-829e-4d9b-822d-aeb654cda94e",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-06-03T21:59:42.807000+00:00",
+  "duration_min": 16.5,
+  "n_dwell_locations": 4,
+  "dwell_locations": [
+   {
+    "lat": 36.2572,
+    "lon": -86.7105,
+    "frac_of_flight": 0.18
+   },
+   {
+    "lat": 36.2588,
+    "lon": -86.708,
+    "frac_of_flight": 0.16
+   },
+   {
+    "lat": 36.2589,
+    "lon": -86.7137,
+    "frac_of_flight": 0.15
+   },
+   {
+    "lat": 36.255,
+    "lon": -86.7161,
+    "frac_of_flight": 0.15
+   }
+  ],
+  "max_separation_km": 0.84
+ },
+ {
+  "flight_id": "9f5039a4-bd0f-46eb-ac2c-eddca9c9aee1",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-06-03T21:43:19.849000+00:00",
+  "duration_min": 19.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2572,
+    "lon": -86.7122,
+    "frac_of_flight": 0.77
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d65d6f1d-9486-4aae-8c64-874e9d5d69b0",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-03T21:19:19.089000+00:00",
+  "duration_min": 21.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2945,
+    "lon": -86.6987,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "29f8386d-b59d-47d6-b232-c82f077b43dc",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-06-03T23:12:51.663000+00:00",
+  "duration_min": 14.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2644,
+    "lon": -86.6733,
+    "frac_of_flight": 0.76
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "64e386db-2c4c-429a-a344-9e5bf957afb5",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-04T02:27:12.007000+00:00",
+  "duration_min": 20.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2961,
+    "lon": -86.6995,
+    "frac_of_flight": 0.61
+   },
+   {
+    "lat": 36.2994,
+    "lon": -86.696,
+    "frac_of_flight": 0.23
+   }
+  ],
+  "max_separation_km": 0.49
+ },
+ {
+  "flight_id": "7470381b-48ec-46ff-be56-e259bc30f34f",
+  "purpose": "THEFT",
+  "takeoff": "2026-06-04T03:04:38.214000+00:00",
+  "duration_min": 16.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2973,
+    "lon": -86.7009,
+    "frac_of_flight": 0.81
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "edf1c162-4e40-42c1-85e0-6532f32bac36",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-06-04T14:04:02.175000+00:00",
+  "duration_min": 8.6,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2634,
+    "lon": -86.7021,
+    "frac_of_flight": 0.36
+   },
+   {
+    "lat": 36.2655,
+    "lon": -86.6976,
+    "frac_of_flight": 0.12
+   },
+   {
+    "lat": 36.2628,
+    "lon": -86.706,
+    "frac_of_flight": 0.12
+   }
+  ],
+  "max_separation_km": 0.81
+ },
+ {
+  "flight_id": "596e6b83-d5fc-495b-a18a-c1cfc765d62f",
+  "purpose": "THEFT",
+  "takeoff": "2026-06-04T17:53:01.335000+00:00",
+  "duration_min": 4.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2689,
+    "lon": -86.6908,
+    "frac_of_flight": 0.82
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "cdf17d04-5e88-4a02-bdbb-c60d27a331c3",
+  "purpose": "THEFT",
+  "takeoff": "2026-06-04T18:13:33.109000+00:00",
+  "duration_min": 23.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2682,
+    "lon": -86.6909,
+    "frac_of_flight": 0.68
+   },
+   {
+    "lat": 36.2643,
+    "lon": -86.6913,
+    "frac_of_flight": 0.28
+   }
+  ],
+  "max_separation_km": 0.44
+ },
+ {
+  "flight_id": "13cac167-fd6e-491e-8eaf-d70327690dc6",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-06-04T19:33:16.542000+00:00",
+  "duration_min": 9.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.257,
+    "lon": -86.7146,
+    "frac_of_flight": 0.55
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "133e0ead-96d6-4780-82ce-6e6892c9ce23",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-04T20:33:34.098000+00:00",
+  "duration_min": 10.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2696,
+    "lon": -86.6837,
+    "frac_of_flight": 0.84
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "b547b9f2-095b-41f7-992a-1bed1afb635e",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-06-04T19:54:24.133000+00:00",
+  "duration_min": 9.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2809,
+    "lon": -86.6914,
+    "frac_of_flight": 0.94
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "85561d4f-3bea-48f6-ba35-9a38853f4ea3",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-04T21:19:26.796000+00:00",
+  "duration_min": 19.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2605,
+    "lon": -86.6782,
+    "frac_of_flight": 0.84
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "066c6214-f24c-4203-aa9d-bdf3ffb49220",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-04T21:02:41.837000+00:00",
+  "duration_min": 15.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2613,
+    "lon": -86.6778,
+    "frac_of_flight": 0.94
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "1cd89a8b-b217-4a5f-97d1-895f09a81858",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-06-04T21:53:07.441000+00:00",
+  "duration_min": 12.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2515,
+    "lon": -86.7012,
+    "frac_of_flight": 0.51
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "21cb7e0e-645f-4ebe-861f-91356d03e66b",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-04T22:14:20.861000+00:00",
+  "duration_min": 9.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2858,
+    "lon": -86.7197,
+    "frac_of_flight": 0.23
+   },
+   {
+    "lat": 36.279,
+    "lon": -86.7039,
+    "frac_of_flight": 0.15
+   }
+  ],
+  "max_separation_km": 1.61
+ },
+ {
+  "flight_id": "fd49169a-f6c5-4a30-8e75-38d164f74eb2",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-06-04T22:43:25.390000+00:00",
+  "duration_min": 9.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2934,
+    "lon": -86.6985,
+    "frac_of_flight": 0.45
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "6df6597a-e106-44a1-a59a-1a6b3a82c557",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-06-04T22:45:24.790000+00:00",
+  "duration_min": 22.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2572,
+    "lon": -86.6737,
+    "frac_of_flight": 0.81
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "7434c454-a104-495d-95ce-fd6da2e8dfd5",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-04T23:57:43.776000+00:00",
+  "duration_min": 15.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2945,
+    "lon": -86.6988,
+    "frac_of_flight": 0.68
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e329e348-fe1c-428e-bade-52a876e2144c",
+  "purpose": "THEFT",
+  "takeoff": "2026-06-05T00:16:15.279000+00:00",
+  "duration_min": 19.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2828,
+    "lon": -86.7161,
+    "frac_of_flight": 0.71
+   },
+   {
+    "lat": 36.2835,
+    "lon": -86.7192,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 0.29
+ },
+ {
+  "flight_id": "a49b76db-65f9-402c-8da3-1f5903f96234",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-06-05T01:10:00.787000+00:00",
+  "duration_min": 11.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2642,
+    "lon": -86.6937,
+    "frac_of_flight": 0.58
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "35709e4d-67b5-4b69-8cbf-ab17c7ceb274",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-06-05T01:23:18.632000+00:00",
+  "duration_min": 11.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2658,
+    "lon": -86.7108,
+    "frac_of_flight": 0.55
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "a18e7aad-46fb-46c2-8ddb-65ca06fdd79e",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-06-05T02:58:25.548000+00:00",
+  "duration_min": 20.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2634,
+    "lon": -86.7113,
+    "frac_of_flight": 0.94
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "698637b4-c19f-43a9-b2fe-570855213eec",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-06-05T02:51:15.820000+00:00",
+  "duration_min": 9.0,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2617,
+    "lon": -86.7114,
+    "frac_of_flight": 0.44
+   },
+   {
+    "lat": 36.2694,
+    "lon": -86.6979,
+    "frac_of_flight": 0.34
+   }
+  ],
+  "max_separation_km": 1.48
+ },
+ {
+  "flight_id": "2ce03131-db6e-4afe-8652-b9359246aa5a",
+  "purpose": "FIRE",
+  "takeoff": "2026-06-05T02:22:32.046000+00:00",
+  "duration_min": 21.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2815,
+    "lon": -86.7011,
+    "frac_of_flight": 0.96
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "14bda3fa-c26c-42af-9323-19c7040d9b0a",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-05T13:05:06.718000+00:00",
+  "duration_min": 7.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2806,
+    "lon": -86.7112,
+    "frac_of_flight": 0.48
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e90bdfac-dd04-4469-ab5c-7eb1db13ab84",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-06-05T14:30:34.093000+00:00",
+  "duration_min": 22.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2791,
+    "lon": -86.7091,
+    "frac_of_flight": 0.93
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "7340684d-8dc7-4600-9d4f-6af7b5c308c8",
+  "purpose": "SUICIDAL PERSON",
+  "takeoff": "2026-06-05T16:46:38.809000+00:00",
+  "duration_min": 12.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2692,
+    "lon": -86.7013,
+    "frac_of_flight": 0.87
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "fb73e5a8-0c0d-4cdf-a3e6-133c39f7cbe8",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-05T15:15:17.114000+00:00",
+  "duration_min": 9.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2703,
+    "lon": -86.7096,
+    "frac_of_flight": 0.78
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "b027209a-9e0f-4f38-af4b-eea174334168",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-05T20:14:09.642000+00:00",
+  "duration_min": 20.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2753,
+    "lon": -86.7207,
+    "frac_of_flight": 0.79
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5e8092e8-b321-48e4-8acb-ada3b774dbe2",
+  "purpose": "PERSON INDECENTLY EXPOSED",
+  "takeoff": "2026-06-05T22:53:31.904000+00:00",
+  "duration_min": 15.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2551,
+    "lon": -86.6738,
+    "frac_of_flight": 0.42
+   },
+   {
+    "lat": 36.2811,
+    "lon": -86.69,
+    "frac_of_flight": 0.35
+   }
+  ],
+  "max_separation_km": 3.23
+ },
+ {
+  "flight_id": "3d13a344-4c13-4b6c-9390-2d697d742ffc",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-06-05T23:50:17.894000+00:00",
+  "duration_min": 12.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2799,
+    "lon": -86.708,
+    "frac_of_flight": 0.75
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "4ac4436e-e492-42e2-9401-c5bbf1434c97",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-06T00:19:52.750000+00:00",
+  "duration_min": 10.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2599,
+    "lon": -86.713,
+    "frac_of_flight": 0.55
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "6bcee961-c690-4d38-9068-79598a986fa4",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-06-06T01:35:54.593000+00:00",
+  "duration_min": 10.8,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2634,
+    "lon": -86.6907,
+    "frac_of_flight": 0.47
+   },
+   {
+    "lat": 36.2629,
+    "lon": -86.6828,
+    "frac_of_flight": 0.18
+   }
+  ],
+  "max_separation_km": 0.71
+ },
+ {
+  "flight_id": "06a965ed-3d49-43b6-8184-2b90f30b1f00",
+  "purpose": "THEFT",
+  "takeoff": "2026-06-06T01:53:48.589000+00:00",
+  "duration_min": 19.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2721,
+    "lon": -86.7189,
+    "frac_of_flight": 0.78
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "31cb8725-ecc6-42f4-a26a-9bd15c64378b",
+  "purpose": "ITEM / VEHICLE IS STOLEN",
+  "takeoff": "2026-06-09T13:30:27.285000+00:00",
+  "duration_min": 21.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2649,
+    "lon": -86.7127,
+    "frac_of_flight": 0.92
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c18aa77c-c1cc-42d2-b590-13bd4130f21d",
+  "purpose": "ITEM / VEHICLE IS STOLEN",
+  "takeoff": "2026-06-09T13:46:44.356000+00:00",
+  "duration_min": 22.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2659,
+    "lon": -86.7101,
+    "frac_of_flight": 0.87
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d4a9ad04-126f-4249-a791-26c53ce15acd",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-09T14:18:06.517000+00:00",
+  "duration_min": 7.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2979,
+    "lon": -86.6968,
+    "frac_of_flight": 0.24
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "4cf619a1-f8aa-48db-bdef-986fe9eb717d",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-09T15:26:23.439000+00:00",
+  "duration_min": 20.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2926,
+    "lon": -86.7007,
+    "frac_of_flight": 0.94
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "f9c52a68-7aa7-45ab-8221-0ed89e6da1d1",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-09T15:42:36.796000+00:00",
+  "duration_min": 20.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2926,
+    "lon": -86.7013,
+    "frac_of_flight": 0.94
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5fd0efe1-7ceb-4567-85b0-f2f11928a2e7",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-06-09T17:25:00.094000+00:00",
+  "duration_min": 19.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2934,
+    "lon": -86.6984,
+    "frac_of_flight": 0.81
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "2812ff60-3a38-41cc-af80-dd90afeed097",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-06-09T17:12:48.947000+00:00",
+  "duration_min": 18.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2935,
+    "lon": -86.6988,
+    "frac_of_flight": 0.96
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "a87d466f-5b60-4d3b-a8f7-3bf3118142b9",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-06-09T18:28:02.796000+00:00",
+  "duration_min": 11.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2756,
+    "lon": -86.7059,
+    "frac_of_flight": 0.87
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "f2b51288-8ca6-40e7-b193-fad47cb94992",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-06-10T00:05:39.113000+00:00",
+  "duration_min": 19.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3,
+    "lon": -86.6814,
+    "frac_of_flight": 0.79
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "cb5c1611-b4d1-4d1d-8408-3569522a21d1",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-06-09T23:51:48.671000+00:00",
+  "duration_min": 19.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3002,
+    "lon": -86.6815,
+    "frac_of_flight": 0.77
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "41982041-82db-4b66-b0ba-df1a5ef3928c",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-06-10T03:28:41.055000+00:00",
+  "duration_min": 11.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2889,
+    "lon": -86.7125,
+    "frac_of_flight": 0.62
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "b1010793-466b-431c-8f8d-b2a59b5980fa",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-10T12:32:45.962000+00:00",
+  "duration_min": 3.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2766,
+    "lon": -86.6874,
+    "frac_of_flight": 0.19
+   },
+   {
+    "lat": 36.2751,
+    "lon": -86.6895,
+    "frac_of_flight": 0.19
+   }
+  ],
+  "max_separation_km": 0.25
+ },
+ {
+  "flight_id": "de6146b1-6bf1-4d66-a796-29283e2603ed",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-10T12:56:40.456000+00:00",
+  "duration_min": 10.1,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2688,
+    "lon": -86.6628,
+    "frac_of_flight": 0.19
+   },
+   {
+    "lat": 36.27,
+    "lon": -86.6656,
+    "frac_of_flight": 0.19
+   }
+  ],
+  "max_separation_km": 0.28
+ },
+ {
+  "flight_id": "01c0db1d-ca5d-411d-b706-6d7fcbf546f8",
+  "purpose": "PERSON INDECENTLY EXPOSED",
+  "takeoff": "2026-06-10T14:13:36.340000+00:00",
+  "duration_min": 19.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2976,
+    "lon": -86.691,
+    "frac_of_flight": 0.93
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "ef7c84d5-374b-485b-80c6-0ea916d99dd6",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-06-10T14:24:39.227000+00:00",
+  "duration_min": 19.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2638,
+    "lon": -86.724,
+    "frac_of_flight": 0.81
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "75f9d69e-4077-4f52-b529-0d8ff58837a7",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-06-10T16:45:45.638000+00:00",
+  "duration_min": 6.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2683,
+    "lon": -86.6928,
+    "frac_of_flight": 0.98
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5b2e17a0-bd51-4388-be22-10d21564f18c",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-06-10T17:03:43.170000+00:00",
+  "duration_min": 11.4,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2887,
+    "lon": -86.7034,
+    "frac_of_flight": 0.2
+   },
+   {
+    "lat": 36.2937,
+    "lon": -86.7014,
+    "frac_of_flight": 0.19
+   },
+   {
+    "lat": 36.2967,
+    "lon": -86.6988,
+    "frac_of_flight": 0.19
+   }
+  ],
+  "max_separation_km": 0.98
+ },
+ {
+  "flight_id": "08e229ec-6db0-4ddf-9851-3d3fa17c0663",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-06-10T18:43:20.618000+00:00",
+  "duration_min": 8.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2644,
+    "lon": -86.7096,
+    "frac_of_flight": 0.61
+   },
+   {
+    "lat": 36.2697,
+    "lon": -86.6985,
+    "frac_of_flight": 0.23
+   }
+  ],
+  "max_separation_km": 1.16
+ },
+ {
+  "flight_id": "0fd39664-bea3-4914-b2a8-88775e35e09c",
+  "purpose": "THEFT",
+  "takeoff": "2026-06-10T20:46:08.691000+00:00",
+  "duration_min": 4.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2707,
+    "lon": -86.6893,
+    "frac_of_flight": 0.94
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9947fc56-846c-4333-8c1f-baa42b4a380b",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-06-10T22:18:16.308000+00:00",
+  "duration_min": 25.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2715,
+    "lon": -86.7087,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "86178986-ed98-471c-942c-e8cbf38928c8",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-06-10T22:09:25.214000+00:00",
+  "duration_min": 10.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2722,
+    "lon": -86.7091,
+    "frac_of_flight": 0.9
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "b6d636f2-2562-47f4-b89b-88e5a6a626db",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-06-10T21:46:49.199000+00:00",
+  "duration_min": 20.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2642,
+    "lon": -86.6796,
+    "frac_of_flight": 0.95
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c4575121-307e-4e7e-a5c0-e36d105177e5",
+  "purpose": "FIRE",
+  "takeoff": "2026-06-10T21:10:36.898000+00:00",
+  "duration_min": 10.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3,
+    "lon": -86.7027,
+    "frac_of_flight": 0.63
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "2c404070-c35f-43c0-96ff-5a25beb1a393",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-07T14:45:46.927000+00:00",
+  "duration_min": 11.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.3008,
+    "lon": -86.7012,
+    "frac_of_flight": 0.32
+   },
+   {
+    "lat": 36.2805,
+    "lon": -86.6935,
+    "frac_of_flight": 0.24
+   }
+  ],
+  "max_separation_km": 2.36
+ },
+ {
+  "flight_id": "19673924-b6e5-450a-a0e9-5666695014db",
+  "purpose": "FIRE",
+  "takeoff": "2026-07-07T15:15:55.647000+00:00",
+  "duration_min": 4.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2712,
+    "lon": -86.6913,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "59899b75-f2e6-40f4-ac3c-979d9eafd89f",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-07T17:17:48.977000+00:00",
+  "duration_min": 16.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2965,
+    "lon": -86.6997,
+    "frac_of_flight": 0.59
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "cf89e07e-a74b-4426-96c9-d0ad33076dd7",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-07T22:41:27.661000+00:00",
+  "duration_min": 8.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2834,
+    "lon": -86.691,
+    "frac_of_flight": 0.75
+   },
+   {
+    "lat": 36.2788,
+    "lon": -86.6908,
+    "frac_of_flight": 0.22
+   }
+  ],
+  "max_separation_km": 0.52
+ },
+ {
+  "flight_id": "1bd5ebff-75e0-40d1-a211-fe8dea9455ae",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-07T21:37:48.305000+00:00",
+  "duration_min": 9.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2653,
+    "lon": -86.6948,
+    "frac_of_flight": 0.82
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "8deb952c-05cb-471e-9df9-c3ce3b307c07",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-07T23:53:21.807000+00:00",
+  "duration_min": 11.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2684,
+    "lon": -86.7094,
+    "frac_of_flight": 0.66
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "db511299-9e01-413e-8dd2-8c1e2f9e3b00",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-08T01:31:49.044000+00:00",
+  "duration_min": 12.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2682,
+    "lon": -86.7135,
+    "frac_of_flight": 0.74
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "f6288ac4-73f1-4872-b43e-4289ff7be47b",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-08T01:30:20.579000+00:00",
+  "duration_min": 11.3,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2595,
+    "lon": -86.6973,
+    "frac_of_flight": 0.63
+   },
+   {
+    "lat": 36.2661,
+    "lon": -86.6946,
+    "frac_of_flight": 0.1
+   },
+   {
+    "lat": 36.2706,
+    "lon": -86.6921,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 1.33
+ },
+ {
+  "flight_id": "360b8e0a-22ba-468c-97a1-ea5f568ba751",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-07-08T03:21:59.287000+00:00",
+  "duration_min": 11.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2967,
+    "lon": -86.6915,
+    "frac_of_flight": 0.62
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3635750b-4127-429c-a03e-28636d938ede",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-08T12:22:13.842000+00:00",
+  "duration_min": 19.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2542,
+    "lon": -86.6758,
+    "frac_of_flight": 0.84
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "aa857e6e-c879-4a0a-82f2-df57716c5250",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-08T16:06:36.579000+00:00",
+  "duration_min": 15.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2665,
+    "lon": -86.6969,
+    "frac_of_flight": 0.92
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "05aa33fa-fd8f-4e54-8998-0c4c44750f04",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-08T16:59:18.624000+00:00",
+  "duration_min": 10.3,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2572,
+    "lon": -86.7153,
+    "frac_of_flight": 0.41
+   },
+   {
+    "lat": 36.2606,
+    "lon": -86.7099,
+    "frac_of_flight": 0.11
+   },
+   {
+    "lat": 36.271,
+    "lon": -86.6943,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 2.43
+ },
+ {
+  "flight_id": "4dab4ff4-a29e-473e-91fd-d3de6c050a3c",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-08T17:25:28.233000+00:00",
+  "duration_min": 17.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.266,
+    "lon": -86.7106,
+    "frac_of_flight": 0.33
+   },
+   {
+    "lat": 36.2646,
+    "lon": -86.715,
+    "frac_of_flight": 0.27
+   }
+  ],
+  "max_separation_km": 0.42
+ },
+ {
+  "flight_id": "a0668049-3b33-49ad-a0f3-b052ca2ffe5e",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-07-08T20:08:43.455000+00:00",
+  "duration_min": 16.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2595,
+    "lon": -86.6782,
+    "frac_of_flight": 0.84
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d23ae024-a2fd-4c95-8d0d-13247676be63",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-08T20:45:28.864000+00:00",
+  "duration_min": 12.5,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2549,
+    "lon": -86.7173,
+    "frac_of_flight": 0.54
+   },
+   {
+    "lat": 36.2682,
+    "lon": -86.6982,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 2.26
+ },
+ {
+  "flight_id": "ec383e12-9b7b-45f8-80ba-8db0cbcea159",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-08T21:30:15.918000+00:00",
+  "duration_min": 14.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2577,
+    "lon": -86.6612,
+    "frac_of_flight": 0.48
+   },
+   {
+    "lat": 36.2713,
+    "lon": -86.6868,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 2.75
+ },
+ {
+  "flight_id": "04beb45e-ada4-4b08-bd6f-6f872016ee37",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-08T22:28:42.060000+00:00",
+  "duration_min": 17.4,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2559,
+    "lon": -86.715,
+    "frac_of_flight": 0.41
+   },
+   {
+    "lat": 36.2624,
+    "lon": -86.7121,
+    "frac_of_flight": 0.28
+   }
+  ],
+  "max_separation_km": 0.77
+ },
+ {
+  "flight_id": "bc285b9f-68dd-4587-b7c9-fcfe3314b77c",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-08T22:37:25.252000+00:00",
+  "duration_min": 10.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.259,
+    "lon": -86.6804,
+    "frac_of_flight": 0.66
+   },
+   {
+    "lat": 36.2682,
+    "lon": -86.6861,
+    "frac_of_flight": 0.13
+   }
+  ],
+  "max_separation_km": 1.14
+ },
+ {
+  "flight_id": "1ba4430d-9180-4903-ad93-3dd8d836acf4",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-08T23:34:49.679000+00:00",
+  "duration_min": 18.5,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2596,
+    "lon": -86.6879,
+    "frac_of_flight": 0.88
+   },
+   {
+    "lat": 36.2664,
+    "lon": -86.6892,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 0.76
+ },
+ {
+  "flight_id": "00d8559d-3f1c-404c-8394-678ebd22485c",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-09T13:11:48.153000+00:00",
+  "duration_min": 19.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2545,
+    "lon": -86.6793,
+    "frac_of_flight": 0.75
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "073115f6-a793-40b3-84ef-506ebe078f00",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-09T13:34:44.582000+00:00",
+  "duration_min": 20.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2527,
+    "lon": -86.6807,
+    "frac_of_flight": 0.79
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "b47380e2-e6aa-4ae0-9039-78e28ad83a3a",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-09T15:25:28.729000+00:00",
+  "duration_min": 10.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2696,
+    "lon": -86.685,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "efc404ee-40c5-4a72-8d3d-e3258d4a416f",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-09T14:57:06.569000+00:00",
+  "duration_min": 21.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2554,
+    "lon": -86.7158,
+    "frac_of_flight": 0.84
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "f3d17d89-39ac-4f7f-b829-f8eed1869375",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-09T15:08:31.837000+00:00",
+  "duration_min": 14.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.256,
+    "lon": -86.7156,
+    "frac_of_flight": 0.7
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "94bd6313-eaa0-482c-a4ea-5a8435957811",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-09T18:05:19.896000+00:00",
+  "duration_min": 19.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2637,
+    "lon": -86.7048,
+    "frac_of_flight": 0.95
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "207ab979-9a9a-41b2-b50a-29949fd95480",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-09T17:54:22.972000+00:00",
+  "duration_min": 19.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.255,
+    "lon": -86.7167,
+    "frac_of_flight": 0.72
+   },
+   {
+    "lat": 36.2665,
+    "lon": -86.7003,
+    "frac_of_flight": 0.15
+   }
+  ],
+  "max_separation_km": 1.94
+ },
+ {
+  "flight_id": "fbacf221-0089-4385-a7c9-1673986e2763",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-09T21:31:00.243000+00:00",
+  "duration_min": 16.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2704,
+    "lon": -86.6843,
+    "frac_of_flight": 0.96
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "378492f9-0144-4bb3-ab5f-d094b051d1a8",
+  "purpose": "SAFETY HAZARD",
+  "takeoff": "2026-07-10T00:34:28.756000+00:00",
+  "duration_min": 15.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2927,
+    "lon": -86.6987,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e4560700-18c8-4c88-9b59-de48210e27f0",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-09T19:44:37.722000+00:00",
+  "duration_min": 8.3,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2817,
+    "lon": -86.6938,
+    "frac_of_flight": 0.49
+   },
+   {
+    "lat": 36.2967,
+    "lon": -86.6995,
+    "frac_of_flight": 0.25
+   },
+   {
+    "lat": 36.2916,
+    "lon": -86.6976,
+    "frac_of_flight": 0.15
+   }
+  ],
+  "max_separation_km": 1.74
+ },
+ {
+  "flight_id": "fa42d51d-f6c0-4975-895e-cd5112b1f455",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-09T21:33:17.703000+00:00",
+  "duration_min": 13.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2886,
+    "lon": -86.6891,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "7cd6075b-7f49-40d1-b467-375a2372ff31",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-10T02:15:28.172000+00:00",
+  "duration_min": 8.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2683,
+    "lon": -86.6944,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "7ae24341-3f6b-424d-b5c3-71248f49185c",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-10T01:13:54.707000+00:00",
+  "duration_min": 10.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2677,
+    "lon": -86.6857,
+    "frac_of_flight": 0.86
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c2006e86-13fa-4d66-a858-f586fa420a32",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-10T02:41:49.469000+00:00",
+  "duration_min": 16.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.263,
+    "lon": -86.712,
+    "frac_of_flight": 0.8
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "ca7a19b4-bf5a-406e-b64e-40e2d66f948f",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-10T16:43:06.746000+00:00",
+  "duration_min": 17.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2604,
+    "lon": -86.7115,
+    "frac_of_flight": 0.84
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "705a5248-17cb-4ad0-911d-0c78c40b7e0d",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-10T17:11:35.902000+00:00",
+  "duration_min": 19.0,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2562,
+    "lon": -86.715,
+    "frac_of_flight": 0.71
+   },
+   {
+    "lat": 36.2628,
+    "lon": -86.7054,
+    "frac_of_flight": 0.13
+   },
+   {
+    "lat": 36.2695,
+    "lon": -86.6961,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 2.25
+ },
+ {
+  "flight_id": "9833b710-5ad2-4fc9-87a2-225bbae27ec3",
+  "purpose": "KIDNAPPING",
+  "takeoff": "2026-07-10T17:25:00.838000+00:00",
+  "duration_min": 20.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2588,
+    "lon": -86.6953,
+    "frac_of_flight": 0.95
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "f713dafe-6dc8-4bb1-819a-f6788483e91e",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-10T17:46:43.552000+00:00",
+  "duration_min": 18.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2662,
+    "lon": -86.724,
+    "frac_of_flight": 0.71
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e3d90c34-7a46-4149-82df-0ce8f38ed9c1",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-10T19:53:39.347000+00:00",
+  "duration_min": 18.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2552,
+    "lon": -86.7165,
+    "frac_of_flight": 0.62
+   },
+   {
+    "lat": 36.2666,
+    "lon": -86.7002,
+    "frac_of_flight": 0.18
+   }
+  ],
+  "max_separation_km": 1.93
+ },
+ {
+  "flight_id": "15c2743b-e2cd-4c35-a206-46ab8e77a361",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-10T21:14:02.377000+00:00",
+  "duration_min": 13.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.26,
+    "lon": -86.7139,
+    "frac_of_flight": 0.75
+   },
+   {
+    "lat": 36.2693,
+    "lon": -86.6976,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 1.79
+ },
+ {
+  "flight_id": "6869bd1a-b93f-4f31-b75f-8d85fd96b5c7",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-11T01:10:43.904000+00:00",
+  "duration_min": 18.1,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2492,
+    "lon": -86.6771,
+    "frac_of_flight": 0.58
+   },
+   {
+    "lat": 36.2628,
+    "lon": -86.6847,
+    "frac_of_flight": 0.23
+   }
+  ],
+  "max_separation_km": 1.65
+ },
+ {
+  "flight_id": "2fd6515a-a24d-4f1e-a97d-794a9fce1c4f",
+  "purpose": "SHOTS FIRED",
+  "takeoff": "2026-07-11T02:12:43.098000+00:00",
+  "duration_min": 5.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2675,
+    "lon": -86.6867,
+    "frac_of_flight": 0.68
+   },
+   {
+    "lat": 36.2706,
+    "lon": -86.6889,
+    "frac_of_flight": 0.19
+   }
+  ],
+  "max_separation_km": 0.4
+ },
+ {
+  "flight_id": "b7aa6242-1425-4975-b355-1cadfbf53ee3",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-11T01:55:46.079000+00:00",
+  "duration_min": 11.1,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.258,
+    "lon": -86.7122,
+    "frac_of_flight": 0.51
+   },
+   {
+    "lat": 36.2637,
+    "lon": -86.7042,
+    "frac_of_flight": 0.18
+   },
+   {
+    "lat": 36.2695,
+    "lon": -86.6961,
+    "frac_of_flight": 0.17
+   }
+  ],
+  "max_separation_km": 1.93
+ },
+ {
+  "flight_id": "0677129b-d03d-4e8f-926a-ef51a1d49ec6",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-14T16:36:49.120000+00:00",
+  "duration_min": 18.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2571,
+    "lon": -86.7141,
+    "frac_of_flight": 0.41
+   },
+   {
+    "lat": 36.2657,
+    "lon": -86.6844,
+    "frac_of_flight": 0.29
+   }
+  ],
+  "max_separation_km": 2.83
+ },
+ {
+  "flight_id": "7bd9c316-6f6c-44f8-860d-f4ec4f3132db",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-14T17:33:35.566000+00:00",
+  "duration_min": 16.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2626,
+    "lon": -86.6823,
+    "frac_of_flight": 0.87
+   },
+   {
+    "lat": 36.2682,
+    "lon": -86.6864,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 0.73
+ },
+ {
+  "flight_id": "72caa89e-9f76-4614-bb44-12b33831b031",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-14T18:02:03.023000+00:00",
+  "duration_min": 14.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.264,
+    "lon": -86.7126,
+    "frac_of_flight": 0.44
+   },
+   {
+    "lat": 36.2661,
+    "lon": -86.7074,
+    "frac_of_flight": 0.4
+   }
+  ],
+  "max_separation_km": 0.52
+ },
+ {
+  "flight_id": "61f8cf4c-303b-427c-8150-2209beee6702",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-07-14T19:45:57.251000+00:00",
+  "duration_min": 4.1,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2718,
+    "lon": -86.6832,
+    "frac_of_flight": 0.57
+   },
+   {
+    "lat": 36.2706,
+    "lon": -86.6775,
+    "frac_of_flight": 0.17
+   },
+   {
+    "lat": 36.273,
+    "lon": -86.6886,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 1.03
+ },
+ {
+  "flight_id": "20826282-76e5-4716-9611-1ec3d29660e0",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-07-14T19:31:39.030000+00:00",
+  "duration_min": 20.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2673,
+    "lon": -86.6647,
+    "frac_of_flight": 0.83
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9f577102-3cea-4998-bff3-1130690e633b",
+  "purpose": "INTOXICATED PERSON",
+  "takeoff": "2026-07-14T22:03:36.374000+00:00",
+  "duration_min": 16.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2638,
+    "lon": -86.7031,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "13a5bd91-4784-4a22-b55e-a339038e0e0b",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-14T21:34:06.717000+00:00",
+  "duration_min": 11.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2617,
+    "lon": -86.7074,
+    "frac_of_flight": 0.73
+   },
+   {
+    "lat": 36.269,
+    "lon": -86.6973,
+    "frac_of_flight": 0.15
+   }
+  ],
+  "max_separation_km": 1.21
+ },
+ {
+  "flight_id": "471e1e56-0185-4803-bd8f-e7c94ed7bfda",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-15T00:58:15.207000+00:00",
+  "duration_min": 20.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2913,
+    "lon": -86.7037,
+    "frac_of_flight": 0.79
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "6ee666d8-5790-4796-9194-b9d9c0dfd0dd",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-15T01:11:52.458000+00:00",
+  "duration_min": 7.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2826,
+    "lon": -86.6987,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "86016474-712f-4cc7-9003-4116315a5715",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-14T22:49:29.500000+00:00",
+  "duration_min": 6.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2688,
+    "lon": -86.688,
+    "frac_of_flight": 0.92
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c587ef4e-c56d-4992-8e08-117a6779ac7d",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-15T01:35:58.786000+00:00",
+  "duration_min": 7.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2674,
+    "lon": -86.6872,
+    "frac_of_flight": 0.96
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9bcadd89-8e75-4276-81ee-40cb88d9a880",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-15T02:16:26.577000+00:00",
+  "duration_min": 10.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2844,
+    "lon": -86.7004,
+    "frac_of_flight": 0.91
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "a5117e5f-f10c-4648-b28b-bb183321c6a6",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-15T15:02:50.051000+00:00",
+  "duration_min": 21.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2551,
+    "lon": -86.7012,
+    "frac_of_flight": 0.79
+   },
+   {
+    "lat": 36.2637,
+    "lon": -86.6961,
+    "frac_of_flight": 0.16
+   }
+  ],
+  "max_separation_km": 1.06
+ },
+ {
+  "flight_id": "85268d08-a551-4d32-9487-8846aec83819",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-15T15:07:36.861000+00:00",
+  "duration_min": 19.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2883,
+    "lon": -86.691,
+    "frac_of_flight": 1.0
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9ffd9925-399a-4a26-a851-3d3db556bcab",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-15T15:58:16.779000+00:00",
+  "duration_min": 14.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2497,
+    "lon": -86.6778,
+    "frac_of_flight": 0.52
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "6bcda1b2-3e80-4b3e-91a3-5391883f2c1f",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-07-15T15:24:53.828000+00:00",
+  "duration_min": 18.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2694,
+    "lon": -86.7069,
+    "frac_of_flight": 0.89
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "26c55be9-e36f-4dcb-8ca4-1a30a11e4f2e",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-15T17:58:01.004000+00:00",
+  "duration_min": 15.5,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2992,
+    "lon": -86.6957,
+    "frac_of_flight": 0.65
+   },
+   {
+    "lat": 36.2841,
+    "lon": -86.6929,
+    "frac_of_flight": 0.25
+   }
+  ],
+  "max_separation_km": 1.7
+ },
+ {
+  "flight_id": "ba487ca7-0af9-4413-a0c3-c39d91514402",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-15T17:17:44.151000+00:00",
+  "duration_min": 14.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2828,
+    "lon": -86.7185,
+    "frac_of_flight": 0.59
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "11f07e7e-98cd-455c-ae94-f3d237d87677",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-15T20:39:27.779000+00:00",
+  "duration_min": 16.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2579,
+    "lon": -86.7121,
+    "frac_of_flight": 0.64
+   },
+   {
+    "lat": 36.2577,
+    "lon": -86.715,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 0.26
+ },
+ {
+  "flight_id": "112874da-62a6-47c9-8231-e231b67cd566",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-15T21:04:18.419000+00:00",
+  "duration_min": 7.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2631,
+    "lon": -86.7057,
+    "frac_of_flight": 0.66
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "dffad99d-0138-4ea1-b90b-6261047b30f3",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-15T22:58:42.488000+00:00",
+  "duration_min": 16.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2565,
+    "lon": -86.7143,
+    "frac_of_flight": 0.74
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "422058fe-ef6a-4f8c-a27c-5dac76d73aa2",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-15T23:10:17.417000+00:00",
+  "duration_min": 15.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3012,
+    "lon": -86.6984,
+    "frac_of_flight": 0.54
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "805325fd-7f24-4800-830c-d797151e9974",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-16T00:19:56.666000+00:00",
+  "duration_min": 18.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2587,
+    "lon": -86.7124,
+    "frac_of_flight": 0.75
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "eaee0224-1855-4249-992a-f028af44213a",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-16T00:07:10.092000+00:00",
+  "duration_min": 17.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2969,
+    "lon": -86.7002,
+    "frac_of_flight": 0.71
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "63a30d1d-72de-4d54-97ce-d4d93d5d1fb0",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-16T00:31:42.496000+00:00",
+  "duration_min": 18.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2516,
+    "lon": -86.7014,
+    "frac_of_flight": 0.43
+   },
+   {
+    "lat": 36.262,
+    "lon": -86.7101,
+    "frac_of_flight": 0.27
+   }
+  ],
+  "max_separation_km": 1.39
+ },
+ {
+  "flight_id": "ac828447-d66c-4306-b5c1-46fff80d2237",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-16T01:38:13.756000+00:00",
+  "duration_min": 14.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2607,
+    "lon": -86.711,
+    "frac_of_flight": 0.74
+   },
+   {
+    "lat": 36.2679,
+    "lon": -86.6997,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 1.29
+ },
+ {
+  "flight_id": "52a85056-0872-4eb6-8a82-b6bb8c733bd5",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-16T02:07:34.117000+00:00",
+  "duration_min": 16.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2631,
+    "lon": -86.7227,
+    "frac_of_flight": 0.65
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d012e930-b151-4545-a243-f12632ee7046",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-16T12:19:05.848000+00:00",
+  "duration_min": 18.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2577,
+    "lon": -86.713,
+    "frac_of_flight": 0.79
+   },
+   {
+    "lat": 36.2634,
+    "lon": -86.7054,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 0.93
+ },
+ {
+  "flight_id": "deb78e70-e3f7-4860-b119-07590239898d",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-16T13:02:30.867000+00:00",
+  "duration_min": 10.0,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2617,
+    "lon": -86.7085,
+    "frac_of_flight": 0.5
+   },
+   {
+    "lat": 36.2634,
+    "lon": -86.7056,
+    "frac_of_flight": 0.15
+   },
+   {
+    "lat": 36.2692,
+    "lon": -86.6973,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 1.3
+ },
+ {
+  "flight_id": "3b2346f7-7a12-400b-a7ca-de606a5e6b98",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-16T13:28:11.217000+00:00",
+  "duration_min": 19.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2615,
+    "lon": -86.714,
+    "frac_of_flight": 0.53
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "08dfd6cf-f907-4954-853e-4e02a6becb13",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-16T14:16:48.369000+00:00",
+  "duration_min": 6.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.267,
+    "lon": -86.6871,
+    "frac_of_flight": 0.88
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d2940953-3545-4336-b21c-5db32dafb84e",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-16T14:33:30.919000+00:00",
+  "duration_min": 10.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2725,
+    "lon": -86.6884,
+    "frac_of_flight": 0.94
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "786f33f2-1c1d-4607-a776-95ac742fa3f2",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-16T15:24:27.292000+00:00",
+  "duration_min": 17.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2735,
+    "lon": -86.7031,
+    "frac_of_flight": 0.93
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "4f51a86c-4fff-4c59-915c-1cc126121810",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-16T16:05:52.621000+00:00",
+  "duration_min": 14.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2646,
+    "lon": -86.7105,
+    "frac_of_flight": 0.73
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e9df26c7-cfc5-425b-9d11-197745d2737d",
+  "purpose": "THEFT",
+  "takeoff": "2026-07-16T17:13:40.498000+00:00",
+  "duration_min": 14.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2645,
+    "lon": -86.6824,
+    "frac_of_flight": 0.82
+   },
+   {
+    "lat": 36.2689,
+    "lon": -86.6865,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 0.61
+ },
+ {
+  "flight_id": "2e208cfd-c350-49ae-a7ad-7cd20449c003",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-16T17:59:30.041000+00:00",
+  "duration_min": 18.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2983,
+    "lon": -86.7031,
+    "frac_of_flight": 0.84
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "aadceda3-332d-4104-b341-52247c3f6c60",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-16T20:06:43.976000+00:00",
+  "duration_min": 19.1,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.3016,
+    "lon": -86.6912,
+    "frac_of_flight": 0.58
+   },
+   {
+    "lat": 36.3018,
+    "lon": -86.6946,
+    "frac_of_flight": 0.18
+   }
+  ],
+  "max_separation_km": 0.31
+ },
+ {
+  "flight_id": "0a04fc07-ba31-49fa-9840-c1eaa439861b",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-16T22:17:14.733000+00:00",
+  "duration_min": 9.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2648,
+    "lon": -86.7018,
+    "frac_of_flight": 0.65
+   },
+   {
+    "lat": 36.2692,
+    "lon": -86.6961,
+    "frac_of_flight": 0.16
+   }
+  ],
+  "max_separation_km": 0.71
+ },
+ {
+  "flight_id": "504d5d7a-579e-48a2-8a8e-c158e3ec9dc0",
+  "purpose": "CUTTING / STABBING",
+  "takeoff": "2026-07-17T00:12:03.705000+00:00",
+  "duration_min": 18.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3014,
+    "lon": -86.6918,
+    "frac_of_flight": 0.68
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "26684034-f0a3-4764-a10f-78fce128f838",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-16T22:22:50.520000+00:00",
+  "duration_min": 9.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2592,
+    "lon": -86.6965,
+    "frac_of_flight": 0.76
+   },
+   {
+    "lat": 36.2676,
+    "lon": -86.6931,
+    "frac_of_flight": 0.13
+   }
+  ],
+  "max_separation_km": 0.98
+ },
+ {
+  "flight_id": "b80ae8bc-70a1-4403-93e0-f6acc7cc02ed",
+  "purpose": "CUTTING / STABBING",
+  "takeoff": "2026-07-17T00:25:01.270000+00:00",
+  "duration_min": 11.1,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.3011,
+    "lon": -86.6917,
+    "frac_of_flight": 0.47
+   },
+   {
+    "lat": 36.2802,
+    "lon": -86.691,
+    "frac_of_flight": 0.23
+   },
+   {
+    "lat": 36.294,
+    "lon": -86.6916,
+    "frac_of_flight": 0.19
+   }
+  ],
+  "max_separation_km": 2.32
+ },
+ {
+  "flight_id": "d03eb144-b9e4-4a6e-ba4e-0f6c5d2c0872",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-17T01:49:45.745000+00:00",
+  "duration_min": 18.7,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2832,
+    "lon": -86.7085,
+    "frac_of_flight": 0.22
+   },
+   {
+    "lat": 36.2834,
+    "lon": -86.7039,
+    "frac_of_flight": 0.21
+   },
+   {
+    "lat": 36.2841,
+    "lon": -86.7003,
+    "frac_of_flight": 0.21
+   }
+  ],
+  "max_separation_km": 0.74
+ },
+ {
+  "flight_id": "ee77e7c8-a89a-4be0-a1f5-278af4dc4ebf",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-17T02:56:37.433000+00:00",
+  "duration_min": 14.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.265,
+    "lon": -86.7117,
+    "frac_of_flight": 0.76
+   },
+   {
+    "lat": 36.27,
+    "lon": -86.6991,
+    "frac_of_flight": 0.12
+   }
+  ],
+  "max_separation_km": 1.26
+ },
+ {
+  "flight_id": "e2318a04-e878-4090-9e1a-e625ca1477c6",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-17T03:11:34.416000+00:00",
+  "duration_min": 10.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2844,
+    "lon": -86.7192,
+    "frac_of_flight": 0.41
+   },
+   {
+    "lat": 36.2751,
+    "lon": -86.6952,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 2.39
+ },
+ {
+  "flight_id": "7ec7f725-7361-4d13-b12a-f2115067a5d1",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-17T12:31:08.638000+00:00",
+  "duration_min": 14.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2982,
+    "lon": -86.6994,
+    "frac_of_flight": 0.31
+   },
+   {
+    "lat": 36.2937,
+    "lon": -86.698,
+    "frac_of_flight": 0.29
+   }
+  ],
+  "max_separation_km": 0.51
+ },
+ {
+  "flight_id": "85493e6d-d425-42c0-bc80-cd91d9305261",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-17T13:39:30.937000+00:00",
+  "duration_min": 10.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.263,
+    "lon": -86.6776,
+    "frac_of_flight": 0.71
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c1f7b922-4ac8-4102-bc92-1784836a6e51",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-17T15:17:31.236000+00:00",
+  "duration_min": 11.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.296,
+    "lon": -86.6999,
+    "frac_of_flight": 0.63
+   },
+   {
+    "lat": 36.2781,
+    "lon": -86.6927,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 2.09
+ },
+ {
+  "flight_id": "c2ec7eef-bc5d-4814-805e-8a5beb4613c8",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-17T14:12:08.079000+00:00",
+  "duration_min": 15.3,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.3018,
+    "lon": -86.6937,
+    "frac_of_flight": 0.34
+   },
+   {
+    "lat": 36.3009,
+    "lon": -86.691,
+    "frac_of_flight": 0.16
+   },
+   {
+    "lat": 36.2778,
+    "lon": -86.691,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 2.68
+ },
+ {
+  "flight_id": "6a037221-f0e2-4c3d-a256-7cb22387541f",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-17T16:54:31.108000+00:00",
+  "duration_min": 18.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2547,
+    "lon": -86.6814,
+    "frac_of_flight": 0.82
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "cc5999e7-7b57-40d5-ae8b-766ce690967c",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-07-17T15:50:44.386000+00:00",
+  "duration_min": 11.4,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2631,
+    "lon": -86.7124,
+    "frac_of_flight": 0.68
+   },
+   {
+    "lat": 36.2709,
+    "lon": -86.6955,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 1.74
+ },
+ {
+  "flight_id": "754b5418-2521-4408-8c28-d7a28ecfca7b",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-17T17:06:44.064000+00:00",
+  "duration_min": 16.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2629,
+    "lon": -86.7113,
+    "frac_of_flight": 0.7
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "fa305ebd-bc1d-453b-897e-6d350c51f26a",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-17T18:23:00.585000+00:00",
+  "duration_min": 13.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2655,
+    "lon": -86.6825,
+    "frac_of_flight": 0.89
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "483a9cf6-b7a4-4f24-8208-0b996ad92796",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-07-17T19:18:59.696000+00:00",
+  "duration_min": 21.0,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2706,
+    "lon": -86.7063,
+    "frac_of_flight": 0.9
+   },
+   {
+    "lat": 36.2718,
+    "lon": -86.6988,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 0.69
+ },
+ {
+  "flight_id": "d7abd4fa-29bc-4356-bc2c-a83dfcc33a75",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-07-17T18:47:19.121000+00:00",
+  "duration_min": 7.4,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2631,
+    "lon": -86.71,
+    "frac_of_flight": 0.14
+   },
+   {
+    "lat": 36.2712,
+    "lon": -86.6946,
+    "frac_of_flight": 0.13
+   }
+  ],
+  "max_separation_km": 1.65
+ },
+ {
+  "flight_id": "0e3fcb66-3859-471a-ac9d-664009f59dcd",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-17T20:20:43.006000+00:00",
+  "duration_min": 17.4,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2683,
+    "lon": -86.7118,
+    "frac_of_flight": 0.81
+   },
+   {
+    "lat": 36.2717,
+    "lon": -86.6979,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 1.3
+ },
+ {
+  "flight_id": "b1a52abe-ca25-47b1-8793-6c5a7eed27e4",
+  "purpose": "THEFT",
+  "takeoff": "2026-07-17T22:27:27.154000+00:00",
+  "duration_min": 17.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2952,
+    "lon": -86.6982,
+    "frac_of_flight": 0.42
+   },
+   {
+    "lat": 36.2932,
+    "lon": -86.7,
+    "frac_of_flight": 0.19
+   }
+  ],
+  "max_separation_km": 0.27
+ },
+ {
+  "flight_id": "bdd2f14d-c7ba-4c41-98d1-f7e101ac7ba0",
+  "purpose": "THEFT",
+  "takeoff": "2026-07-17T22:09:20.612000+00:00",
+  "duration_min": 16.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2921,
+    "lon": -86.7013,
+    "frac_of_flight": 0.71
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "166ab435-833b-4a86-93b9-19d44993e28a",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-17T22:27:47.790000+00:00",
+  "duration_min": 11.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2597,
+    "lon": -86.7133,
+    "frac_of_flight": 0.66
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "b9e6cf60-6194-4f52-bed8-6f9e5e08c4e0",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-18T00:33:31.921000+00:00",
+  "duration_min": 20.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2593,
+    "lon": -86.7099,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "a9222cda-6f5e-4a18-a23f-511012c6637d",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-18T01:21:15.530000+00:00",
+  "duration_min": 19.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2693,
+    "lon": -86.6708,
+    "frac_of_flight": 0.88
+   },
+   {
+    "lat": 36.2724,
+    "lon": -86.6847,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 1.29
+ },
+ {
+  "flight_id": "76066406-cec0-423d-9c98-aa5daf2b4c2f",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-18T01:32:02.318000+00:00",
+  "duration_min": 15.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2688,
+    "lon": -86.6707,
+    "frac_of_flight": 0.68
+   },
+   {
+    "lat": 36.2724,
+    "lon": -86.685,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 1.34
+ },
+ {
+  "flight_id": "537c0c35-3ee0-4513-95db-cb5c5ab31c53",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-18T01:42:23.637000+00:00",
+  "duration_min": 20.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2707,
+    "lon": -86.6718,
+    "frac_of_flight": 0.83
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "987a2aa0-43de-4053-969b-ed5b7aad2aba",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-22T13:34:18.272000+00:00",
+  "duration_min": 11.5,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2901,
+    "lon": -86.6961,
+    "frac_of_flight": 0.42
+   },
+   {
+    "lat": 36.2973,
+    "lon": -86.7012,
+    "frac_of_flight": 0.17
+   },
+   {
+    "lat": 36.2775,
+    "lon": -86.6921,
+    "frac_of_flight": 0.13
+   }
+  ],
+  "max_separation_km": 2.35
+ },
+ {
+  "flight_id": "27d93ec6-9088-4212-8c65-439ea1a847b9",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-22T14:21:04.321000+00:00",
+  "duration_min": 17.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2641,
+    "lon": -86.7117,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "6b97e964-3fac-46fe-8729-f5177fffe81f",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-07-22T14:43:20.010000+00:00",
+  "duration_min": 11.3,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2716,
+    "lon": -86.7256,
+    "frac_of_flight": 0.4
+   },
+   {
+    "lat": 36.273,
+    "lon": -86.6976,
+    "frac_of_flight": 0.16
+   },
+   {
+    "lat": 36.2724,
+    "lon": -86.7078,
+    "frac_of_flight": 0.12
+   }
+  ],
+  "max_separation_km": 2.51
+ },
+ {
+  "flight_id": "e474e5d9-0dc9-4bcc-a75f-ae5e2c4ce576",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-22T15:21:09.863000+00:00",
+  "duration_min": 19.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2604,
+    "lon": -86.7085,
+    "frac_of_flight": 0.86
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "fad4fa39-4021-41b0-bc65-59aa2d158dd2",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-22T16:35:38.450000+00:00",
+  "duration_min": 19.1,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.262,
+    "lon": -86.7099,
+    "frac_of_flight": 0.83
+   },
+   {
+    "lat": 36.2687,
+    "lon": -86.6985,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 1.27
+ },
+ {
+  "flight_id": "ab7a9340-3cb1-4477-8119-b706328cbad8",
+  "purpose": "THEFT",
+  "takeoff": "2026-07-22T16:42:50.496000+00:00",
+  "duration_min": 19.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2931,
+    "lon": -86.7058,
+    "frac_of_flight": 0.35
+   },
+   {
+    "lat": 36.2964,
+    "lon": -86.7118,
+    "frac_of_flight": 0.31
+   }
+  ],
+  "max_separation_km": 0.65
+ },
+ {
+  "flight_id": "98097b9d-5086-4620-a436-49717ba4af23",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-22T19:53:53.161000+00:00",
+  "duration_min": 14.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2592,
+    "lon": -86.7141,
+    "frac_of_flight": 0.6
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "86c1d0eb-c604-4c6b-91f8-f4aa0cce6f06",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-22T21:32:03.783000+00:00",
+  "duration_min": 19.5,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2967,
+    "lon": -86.6974,
+    "frac_of_flight": 0.69
+   },
+   {
+    "lat": 36.2965,
+    "lon": -86.7007,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 0.3
+ },
+ {
+  "flight_id": "b2b4015b-5e6b-4cc9-b2ef-d50fc655ae00",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-22T22:48:22.784000+00:00",
+  "duration_min": 6.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2637,
+    "lon": -86.6823,
+    "frac_of_flight": 0.79
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "4b723704-ce5d-41c1-a322-3a15421c4681",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-23T00:36:50.402000+00:00",
+  "duration_min": 21.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2697,
+    "lon": -86.686,
+    "frac_of_flight": 1.0
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "fa1502d2-d1eb-4ebc-9e1a-0147bab0cd52",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-23T00:32:10.012000+00:00",
+  "duration_min": 17.4,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2545,
+    "lon": -86.6793,
+    "frac_of_flight": 0.84
+   },
+   {
+    "lat": 36.2658,
+    "lon": -86.6869,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 1.43
+ },
+ {
+  "flight_id": "029656ea-501b-451d-871b-12b02e35e0a2",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T00:50:53.956000+00:00",
+  "duration_min": 18.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.255,
+    "lon": -86.6823,
+    "frac_of_flight": 0.76
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e75ab1ee-2d7f-4b7b-b177-332d69d2db29",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-23T13:56:29.346000+00:00",
+  "duration_min": 9.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2794,
+    "lon": -86.7069,
+    "frac_of_flight": 0.25
+   },
+   {
+    "lat": 36.2792,
+    "lon": -86.71,
+    "frac_of_flight": 0.22
+   }
+  ],
+  "max_separation_km": 0.28
+ },
+ {
+  "flight_id": "9c326e39-9287-4f54-b976-733c18eedb1d",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-23T15:36:50.992000+00:00",
+  "duration_min": 9.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2928,
+    "lon": -86.7009,
+    "frac_of_flight": 0.37
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5bcb5ea0-11d6-4ed2-959f-9451fc04c070",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-23T15:42:46.722000+00:00",
+  "duration_min": 12.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2684,
+    "lon": -86.7093,
+    "frac_of_flight": 0.83
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "05770219-046d-45bd-b9c0-e83879e87db3",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T16:06:59.932000+00:00",
+  "duration_min": 21.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2676,
+    "lon": -86.6984,
+    "frac_of_flight": 0.98
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c2315d31-1e60-4db3-ac11-9ea44f554dde",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T17:38:25.866000+00:00",
+  "duration_min": 5.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2761,
+    "lon": -86.6894,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "1031c179-0de0-4be0-b271-eeb59d434da0",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T17:41:14.684000+00:00",
+  "duration_min": 21.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.27,
+    "lon": -86.6904,
+    "frac_of_flight": 1.0
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "0b6672df-0a9f-4b49-9a07-385fbc314eb0",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T17:59:57.649000+00:00",
+  "duration_min": 13.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2698,
+    "lon": -86.6896,
+    "frac_of_flight": 0.99
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "b3486bc8-a537-4f73-b4a7-12d60d54ba83",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T17:15:25.564000+00:00",
+  "duration_min": 20.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2591,
+    "lon": -86.7135,
+    "frac_of_flight": 0.88
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e8e034ca-74a2-4bb9-9aa7-f7a5cf99fe1f",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-07-23T16:20:24.729000+00:00",
+  "duration_min": 15.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.288,
+    "lon": -86.6838,
+    "frac_of_flight": 0.78
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5f49640f-5920-4507-8087-22bc58410b37",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T18:18:09.948000+00:00",
+  "duration_min": 21.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.266,
+    "lon": -86.7101,
+    "frac_of_flight": 0.96
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "2e13176b-5945-4cd6-89fc-3db9baca1374",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T21:54:10.716000+00:00",
+  "duration_min": 15.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2574,
+    "lon": -86.6964,
+    "frac_of_flight": 0.87
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9e2414ba-e1b3-4325-9136-f9396fddbe4e",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T22:34:49.117000+00:00",
+  "duration_min": 14.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.296,
+    "lon": -86.6994,
+    "frac_of_flight": 0.65
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c8b7a976-7cbc-4b25-9c2e-57f2430ea3fd",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-23T22:51:27.044000+00:00",
+  "duration_min": 19.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2939,
+    "lon": -86.6999,
+    "frac_of_flight": 0.81
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d1e93acb-e610-4a65-a194-969da9264377",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-24T01:07:08.791000+00:00",
+  "duration_min": 17.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2861,
+    "lon": -86.6921,
+    "frac_of_flight": 0.95
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "440881d4-ce8f-4555-a371-6b479a00af26",
+  "purpose": "MISSING PERSON",
+  "takeoff": "2026-07-23T23:32:02.174000+00:00",
+  "duration_min": 20.1,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2556,
+    "lon": -86.6919,
+    "frac_of_flight": 0.78
+   },
+   {
+    "lat": 36.2667,
+    "lon": -86.691,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 1.24
+ },
+ {
+  "flight_id": "820f2c84-a4b5-4b77-a162-d61d691e1df8",
+  "purpose": "MISSING PERSON",
+  "takeoff": "2026-07-23T23:48:55.788000+00:00",
+  "duration_min": 16.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2546,
+    "lon": -86.692,
+    "frac_of_flight": 0.71
+   },
+   {
+    "lat": 36.264,
+    "lon": -86.6916,
+    "frac_of_flight": 0.26
+   }
+  ],
+  "max_separation_km": 1.05
+ },
+ {
+  "flight_id": "979f3591-515d-4898-86f6-09ab2c920f70",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-24T01:51:09.834000+00:00",
+  "duration_min": 16.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2668,
+    "lon": -86.7021,
+    "frac_of_flight": 0.95
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "da93eeb6-201b-45d9-a183-5b6038973ab9",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-24T01:42:50.220000+00:00",
+  "duration_min": 7.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2639,
+    "lon": -86.6851,
+    "frac_of_flight": 0.74
+   },
+   {
+    "lat": 36.2688,
+    "lon": -86.6878,
+    "frac_of_flight": 0.17
+   }
+  ],
+  "max_separation_km": 0.59
+ },
+ {
+  "flight_id": "eba17dc0-32db-4222-971a-31f046b4de3a",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-24T03:12:38.812000+00:00",
+  "duration_min": 15.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2948,
+    "lon": -86.6993,
+    "frac_of_flight": 0.13
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "27b5ef98-fc3f-42c2-a71a-3711d0b5bf7c",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-24T03:06:32.402000+00:00",
+  "duration_min": 18.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2517,
+    "lon": -86.7004,
+    "frac_of_flight": 0.25
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "436b3df4-0104-4180-adc9-488c3acae27f",
+  "purpose": "SUICIDAL PERSON",
+  "takeoff": "2026-07-24T13:37:36.636000+00:00",
+  "duration_min": 13.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2687,
+    "lon": -86.6967,
+    "frac_of_flight": 0.96
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "52b86b58-45ca-4e2c-b46b-5c7d4f858b0a",
+  "purpose": "PERSON INDECENTLY EXPOSED",
+  "takeoff": "2026-07-24T12:50:43.332000+00:00",
+  "duration_min": 21.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2639,
+    "lon": -86.71,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "eeda8994-3109-4b2e-8778-b879361a63ab",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-24T13:54:25.954000+00:00",
+  "duration_min": 10.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2639,
+    "lon": -86.713,
+    "frac_of_flight": 0.6
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "658acb26-0b6c-489e-a97f-2b8680b99280",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-07-24T11:58:02.463000+00:00",
+  "duration_min": 10.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2624,
+    "lon": -86.7138,
+    "frac_of_flight": 0.52
+   },
+   {
+    "lat": 36.2691,
+    "lon": -86.6997,
+    "frac_of_flight": 0.33
+   }
+  ],
+  "max_separation_km": 1.47
+ },
+ {
+  "flight_id": "1217d277-3ff2-4c25-951a-1269a0d75405",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-24T15:07:45.932000+00:00",
+  "duration_min": 22.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2777,
+    "lon": -86.7107,
+    "frac_of_flight": 0.88
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "319bed28-bc7b-48ff-85ff-bd5017931f45",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-07-24T16:08:17.976000+00:00",
+  "duration_min": 6.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2673,
+    "lon": -86.695,
+    "frac_of_flight": 0.81
+   },
+   {
+    "lat": 36.2703,
+    "lon": -86.6929,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 0.39
+ },
+ {
+  "flight_id": "e7998464-6db2-445d-9411-c036a49a1011",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-24T16:38:19.519000+00:00",
+  "duration_min": 17.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2838,
+    "lon": -86.7226,
+    "frac_of_flight": 0.59
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "65e8fcd3-0876-47de-b9bc-087859366627",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-24T17:03:30.629000+00:00",
+  "duration_min": 20.8,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2559,
+    "lon": -86.7157,
+    "frac_of_flight": 0.54
+   },
+   {
+    "lat": 36.2596,
+    "lon": -86.711,
+    "frac_of_flight": 0.2
+   },
+   {
+    "lat": 36.2689,
+    "lon": -86.6976,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 2.17
+ },
+ {
+  "flight_id": "426a258c-bd0f-4b54-becc-5178209f3913",
+  "purpose": "INTOXICATED PERSON",
+  "takeoff": "2026-07-24T17:22:10.906000+00:00",
+  "duration_min": 19.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2603,
+    "lon": -86.7104,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "75ae7a8e-737d-4a55-93e2-79536465b8b3",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-24T20:14:32.400000+00:00",
+  "duration_min": 13.1,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2933,
+    "lon": -86.6929,
+    "frac_of_flight": 0.87
+   },
+   {
+    "lat": 36.2793,
+    "lon": -86.6913,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 1.56
+ },
+ {
+  "flight_id": "3d40fa10-3fdc-420b-878d-90ff1131e7b0",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-24T20:02:10.511000+00:00",
+  "duration_min": 20.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.297,
+    "lon": -86.6932,
+    "frac_of_flight": 0.93
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5a85c359-ce09-4475-967b-327ae4cce771",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-24T20:30:17.836000+00:00",
+  "duration_min": 6.1,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2676,
+    "lon": -86.6973,
+    "frac_of_flight": 0.33
+   },
+   {
+    "lat": 36.2658,
+    "lon": -86.6916,
+    "frac_of_flight": 0.15
+   },
+   {
+    "lat": 36.2703,
+    "lon": -86.691,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 0.64
+ },
+ {
+  "flight_id": "5bca327b-49ee-4ce5-aead-9982c0e3d1cf",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-24T21:40:23.765000+00:00",
+  "duration_min": 12.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.263,
+    "lon": -86.7129,
+    "frac_of_flight": 0.45
+   },
+   {
+    "lat": 36.27,
+    "lon": -86.6979,
+    "frac_of_flight": 0.15
+   }
+  ],
+  "max_separation_km": 1.55
+ },
+ {
+  "flight_id": "e9a8aee3-45fa-47c2-80eb-86157913d95c",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-24T23:11:41.468000+00:00",
+  "duration_min": 17.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.302,
+    "lon": -86.6912,
+    "frac_of_flight": 0.66
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "30740bdb-2fae-47e1-84a0-9d979083cc22",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-25T00:46:18.922000+00:00",
+  "duration_min": 21.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.265,
+    "lon": -86.6918,
+    "frac_of_flight": 0.98
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d7b469ca-644e-4a45-8d38-72b05bcad2e3",
+  "purpose": "THEFT",
+  "takeoff": "2026-07-25T01:12:22.898000+00:00",
+  "duration_min": 20.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2912,
+    "lon": -86.7012,
+    "frac_of_flight": 0.86
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "efe9f628-1116-46d3-a24d-2711d6469a03",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-25T02:18:01.027000+00:00",
+  "duration_min": 18.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2917,
+    "lon": -86.6936,
+    "frac_of_flight": 0.91
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "44a2b6d7-2de2-4f18-9364-a2dca2da3565",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-27T13:54:11.106000+00:00",
+  "duration_min": 10.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2643,
+    "lon": -86.7158,
+    "frac_of_flight": 0.42
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "fabe3498-74d7-4d5b-bc88-738fa04206f6",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-27T14:32:42.687000+00:00",
+  "duration_min": 18.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2586,
+    "lon": -86.7123,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "514d80f0-4a66-44d3-8def-66544ca40e46",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-27T15:48:09.481000+00:00",
+  "duration_min": 19.8,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2572,
+    "lon": -86.713,
+    "frac_of_flight": 0.79
+   },
+   {
+    "lat": 36.2672,
+    "lon": -86.6994,
+    "frac_of_flight": 0.14
+   }
+  ],
+  "max_separation_km": 1.65
+ },
+ {
+  "flight_id": "2a1e9ab4-7c1f-4693-b8d5-2051d0d30a6f",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-27T15:01:59.463000+00:00",
+  "duration_min": 18.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2616,
+    "lon": -86.7136,
+    "frac_of_flight": 0.73
+   },
+   {
+    "lat": 36.2687,
+    "lon": -86.7,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 1.45
+ },
+ {
+  "flight_id": "01ed1b98-7a75-4da1-8add-1659f0dcf020",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-27T18:10:57.888000+00:00",
+  "duration_min": 11.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.264,
+    "lon": -86.7126,
+    "frac_of_flight": 0.24
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "59611727-3ac6-4d90-aeb8-f2dfd0b87d76",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-27T17:45:32.275000+00:00",
+  "duration_min": 8.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2718,
+    "lon": -86.6883,
+    "frac_of_flight": 0.86
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "ee89fb8b-921e-497f-bf97-98422f800a28",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-27T19:15:35.318000+00:00",
+  "duration_min": 16.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2598,
+    "lon": -86.659,
+    "frac_of_flight": 0.77
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3c4c3160-3747-4b0b-b383-92ddd9210ae3",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-27T20:49:04.270000+00:00",
+  "duration_min": 10.0,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2719,
+    "lon": -86.6888,
+    "frac_of_flight": 0.86
+   },
+   {
+    "lat": 36.2724,
+    "lon": -86.6853,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 0.32
+ },
+ {
+  "flight_id": "ac3bdfa7-af66-4fcd-a5a5-12685678e7b2",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-27T19:28:31.515000+00:00",
+  "duration_min": 18.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3015,
+    "lon": -86.694,
+    "frac_of_flight": 0.54
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9acf091d-c560-4093-9845-922e6f88a625",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-28T00:20:59.304000+00:00",
+  "duration_min": 11.4,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2548,
+    "lon": -86.7175,
+    "frac_of_flight": 0.2
+   },
+   {
+    "lat": 36.2562,
+    "lon": -86.715,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 0.27
+ },
+ {
+  "flight_id": "76747577-5c26-45bd-8a5e-47f04dec00fa",
+  "purpose": "SUICIDAL PERSON",
+  "takeoff": "2026-07-27T22:30:58.264000+00:00",
+  "duration_min": 11.8,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2638,
+    "lon": -86.678,
+    "frac_of_flight": 0.84
+   },
+   {
+    "lat": 36.2689,
+    "lon": -86.6847,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 0.83
+ },
+ {
+  "flight_id": "c5b2fcbf-f0f8-4608-b472-9e66f05727b8",
+  "purpose": "SUICIDAL PERSON",
+  "takeoff": "2026-07-27T21:56:27.401000+00:00",
+  "duration_min": 21.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2637,
+    "lon": -86.6764,
+    "frac_of_flight": 0.79
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "568c8f5d-61be-4489-ae0e-ca5c7794e55b",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-28T00:05:52.099000+00:00",
+  "duration_min": 11.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2639,
+    "lon": -86.682,
+    "frac_of_flight": 0.91
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3dff886a-f0ff-4699-bd26-88656dac991d",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-28T01:22:51.839000+00:00",
+  "duration_min": 11.0,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2784,
+    "lon": -86.7001,
+    "frac_of_flight": 0.78
+   },
+   {
+    "lat": 36.2757,
+    "lon": -86.6947,
+    "frac_of_flight": 0.15
+   }
+  ],
+  "max_separation_km": 0.57
+ },
+ {
+  "flight_id": "d99a7106-1779-4a66-bcd0-af573b93a98c",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-28T15:54:10.090000+00:00",
+  "duration_min": 6.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2644,
+    "lon": -86.6905,
+    "frac_of_flight": 0.85
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5f26c116-9612-41d5-9c1d-9d9d22c687ac",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-28T16:13:29.626000+00:00",
+  "duration_min": 18.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3015,
+    "lon": -86.6916,
+    "frac_of_flight": 0.88
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "147599d2-a9fb-4cb9-be67-52f31a53da01",
+  "purpose": "PERSON INDECENTLY EXPOSED",
+  "takeoff": "2026-07-28T20:15:52.769000+00:00",
+  "duration_min": 19.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2573,
+    "lon": -86.7148,
+    "frac_of_flight": 0.76
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "1b285ccc-ea3b-45ac-96db-7734e3ff04e0",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-28T20:38:51.054000+00:00",
+  "duration_min": 15.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2599,
+    "lon": -86.7129,
+    "frac_of_flight": 0.86
+   },
+   {
+    "lat": 36.2668,
+    "lon": -86.7012,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 1.3
+ },
+ {
+  "flight_id": "76ba9795-58ac-48b7-95b7-8ff4d95ef65f",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-28T21:19:09.506000+00:00",
+  "duration_min": 7.8,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2666,
+    "lon": -86.7004,
+    "frac_of_flight": 0.75
+   },
+   {
+    "lat": 36.271,
+    "lon": -86.6943,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 0.73
+ },
+ {
+  "flight_id": "0f9086c0-9bad-41e5-98fb-258f9e8bc12f",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-28T22:29:35.670000+00:00",
+  "duration_min": 20.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2671,
+    "lon": -86.6948,
+    "frac_of_flight": 0.93
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "61ff0f0d-54fb-4041-912e-d7a557915a03",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-07-28T23:57:35.960000+00:00",
+  "duration_min": 15.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2589,
+    "lon": -86.6769,
+    "frac_of_flight": 0.89
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3a001a90-2329-4931-a3f6-950e7a6dd220",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-29T01:29:16.265000+00:00",
+  "duration_min": 16.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2726,
+    "lon": -86.6886,
+    "frac_of_flight": 0.6
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3fef1492-1549-4903-b02a-0572beccd02d",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-29T01:46:50.276000+00:00",
+  "duration_min": 11.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2731,
+    "lon": -86.6884,
+    "frac_of_flight": 1.0
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c737e9a1-77f9-4420-81d8-6dce58f32b42",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-29T01:25:02.245000+00:00",
+  "duration_min": 19.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.274,
+    "lon": -86.687,
+    "frac_of_flight": 0.98
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "0f0360e8-cb67-440c-b324-01572aee6254",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-29T02:18:48.856000+00:00",
+  "duration_min": 6.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2705,
+    "lon": -86.6845,
+    "frac_of_flight": 0.89
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "a37311fc-05d3-45b0-ae31-261a62da7820",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-29T02:35:17.402000+00:00",
+  "duration_min": 14.1,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2601,
+    "lon": -86.7103,
+    "frac_of_flight": 0.62
+   },
+   {
+    "lat": 36.2682,
+    "lon": -86.6982,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 1.41
+ },
+ {
+  "flight_id": "cf9b5bf1-a007-413c-8027-6e5fd592428b",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-29T03:41:55.560000+00:00",
+  "duration_min": 12.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2706,
+    "lon": -86.6844,
+    "frac_of_flight": 0.72
+   },
+   {
+    "lat": 36.2669,
+    "lon": -86.6816,
+    "frac_of_flight": 0.18
+   }
+  ],
+  "max_separation_km": 0.48
+ },
+ {
+  "flight_id": "acb9eb47-1719-49c4-863c-0450204378bf",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-29T03:28:42.001000+00:00",
+  "duration_min": 21.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2655,
+    "lon": -86.6814,
+    "frac_of_flight": 0.53
+   },
+   {
+    "lat": 36.2688,
+    "lon": -86.683,
+    "frac_of_flight": 0.4
+   }
+  ],
+  "max_separation_km": 0.4
+ },
+ {
+  "flight_id": "d1ebfd5a-e5f8-4f02-bdf3-0f8adf838139",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-07-29T03:21:37.217000+00:00",
+  "duration_min": 12.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2694,
+    "lon": -86.6836,
+    "frac_of_flight": 0.75
+   },
+   {
+    "lat": 36.2661,
+    "lon": -86.6805,
+    "frac_of_flight": 0.15
+   }
+  ],
+  "max_separation_km": 0.46
+ },
+ {
+  "flight_id": "6dffa950-94a0-4093-b734-4fdab9d180d0",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-29T16:59:48.519000+00:00",
+  "duration_min": 3.9,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2778,
+    "lon": -86.6891,
+    "frac_of_flight": 0.26
+   },
+   {
+    "lat": 36.2781,
+    "lon": -86.6919,
+    "frac_of_flight": 0.24
+   },
+   {
+    "lat": 36.2754,
+    "lon": -86.6913,
+    "frac_of_flight": 0.24
+   }
+  ],
+  "max_separation_km": 0.33
+ },
+ {
+  "flight_id": "0a69512e-da61-447d-a5c3-6a98c21a8e86",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-29T18:17:43.187000+00:00",
+  "duration_min": 17.8,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2619,
+    "lon": -86.6916,
+    "frac_of_flight": 0.85
+   },
+   {
+    "lat": 36.2672,
+    "lon": -86.6908,
+    "frac_of_flight": 0.13
+   }
+  ],
+  "max_separation_km": 0.59
+ },
+ {
+  "flight_id": "22aea509-0eab-45c6-a416-aad134ac5ac6",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-29T18:17:59.591000+00:00",
+  "duration_min": 16.5,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2566,
+    "lon": -86.7153,
+    "frac_of_flight": 0.43
+   },
+   {
+    "lat": 36.2594,
+    "lon": -86.7124,
+    "frac_of_flight": 0.29
+   }
+  ],
+  "max_separation_km": 0.41
+ },
+ {
+  "flight_id": "5909cb60-cbeb-4d86-ba80-dc988cd1b296",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-29T19:10:03.254000+00:00",
+  "duration_min": 10.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2564,
+    "lon": -86.6756,
+    "frac_of_flight": 0.57
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "be4ba12b-0843-4974-b77c-28ab5cc74c60",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-29T19:17:31.570000+00:00",
+  "duration_min": 6.8,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2688,
+    "lon": -86.6928,
+    "frac_of_flight": 0.4
+   },
+   {
+    "lat": 36.264,
+    "lon": -86.6892,
+    "frac_of_flight": 0.3
+   },
+   {
+    "lat": 36.2655,
+    "lon": -86.6916,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 0.62
+ },
+ {
+  "flight_id": "35220abc-1bc5-4d81-a625-41543f044bd8",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-29T19:28:52.341000+00:00",
+  "duration_min": 21.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2685,
+    "lon": -86.7099,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c12f7f9b-b2dd-4e11-ad1f-55fb4971bc39",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-29T21:11:12.135000+00:00",
+  "duration_min": 20.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2661,
+    "lon": -86.701,
+    "frac_of_flight": 0.9
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3e9eb3ec-b6c0-4feb-93e8-bb6efcd6d6b4",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-29T20:55:10.313000+00:00",
+  "duration_min": 17.5,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2961,
+    "lon": -86.7019,
+    "frac_of_flight": 0.75
+   },
+   {
+    "lat": 36.2802,
+    "lon": -86.6942,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 1.9
+ },
+ {
+  "flight_id": "3b445759-98d9-4907-afc7-89da3d493563",
+  "purpose": "SHOTS FIRED",
+  "takeoff": "2026-07-29T21:35:51.572000+00:00",
+  "duration_min": 17.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2524,
+    "lon": -86.702,
+    "frac_of_flight": 0.91
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3357b4a5-39d5-4d5b-85fc-fea5736f3afc",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-29T23:28:03.663000+00:00",
+  "duration_min": 4.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2724,
+    "lon": -86.6889,
+    "frac_of_flight": 0.99
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "bb42e9c0-58e7-486e-9e7f-d41dfced682c",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-07-29T22:48:49.878000+00:00",
+  "duration_min": 11.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2583,
+    "lon": -86.7128,
+    "frac_of_flight": 0.67
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e7aaae75-0fac-42e6-b9a2-0e3bafc1daa2",
+  "purpose": "WANT OFFICER FOR INVESTIGATION / ASSISTANCE",
+  "takeoff": "2026-07-29T23:45:15.842000+00:00",
+  "duration_min": 15.5,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2671,
+    "lon": -86.6889,
+    "frac_of_flight": 0.25
+   },
+   {
+    "lat": 36.264,
+    "lon": -86.6868,
+    "frac_of_flight": 0.23
+   },
+   {
+    "lat": 36.2688,
+    "lon": -86.6828,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 0.64
+ },
+ {
+  "flight_id": "49ac62ba-4d38-412b-b790-1de40306106f",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-07-30T01:11:24.756000+00:00",
+  "duration_min": 8.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2708,
+    "lon": -86.6892,
+    "frac_of_flight": 0.98
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "1f3f7bb9-4275-4cdb-b25b-27f3fcd9be3d",
+  "purpose": "SUICIDAL PERSON",
+  "takeoff": "2026-07-30T01:28:44.687000+00:00",
+  "duration_min": 6.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2711,
+    "lon": -86.6896,
+    "frac_of_flight": 1.0
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9d78fe03-e65f-4696-b462-437aa7964c85",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-30T00:16:35.521000+00:00",
+  "duration_min": 17.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2503,
+    "lon": -86.6753,
+    "frac_of_flight": 0.71
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "1f95a292-7046-4e45-baf8-c8e24013d1ef",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-30T13:22:31.688000+00:00",
+  "duration_min": 11.9,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2613,
+    "lon": -86.7143,
+    "frac_of_flight": 0.47
+   },
+   {
+    "lat": 36.2616,
+    "lon": -86.7114,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 0.26
+ },
+ {
+  "flight_id": "4de78c07-9d54-4caf-b25b-14007eae5ef8",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-30T15:02:22.535000+00:00",
+  "duration_min": 11.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2665,
+    "lon": -86.6944,
+    "frac_of_flight": 0.99
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "05b01157-8685-4fcf-a73d-02e7f583e22f",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-07-30T15:13:22.174000+00:00",
+  "duration_min": 19.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2632,
+    "lon": -86.6642,
+    "frac_of_flight": 0.82
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "c0e5236b-7865-496c-9807-7819af5bfc92",
+  "purpose": "VEHICLE BLOCKING RIGHT OF WAY",
+  "takeoff": "2026-07-30T17:26:42.488000+00:00",
+  "duration_min": 8.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.271,
+    "lon": -86.6906,
+    "frac_of_flight": 0.81
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d1070e14-cfa3-46dd-ae0c-f5509a0145f1",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-07-30T17:57:44.366000+00:00",
+  "duration_min": 12.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2923,
+    "lon": -86.695,
+    "frac_of_flight": 0.77
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "644a932b-80aa-4093-af99-e46c2070a817",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-30T18:49:52.166000+00:00",
+  "duration_min": 19.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2662,
+    "lon": -86.7099,
+    "frac_of_flight": 0.82
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "da92adfd-e789-49f4-8c16-b30611190e40",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-30T19:22:52.484000+00:00",
+  "duration_min": 13.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.3006,
+    "lon": -86.6929,
+    "frac_of_flight": 0.6
+   },
+   {
+    "lat": 36.2802,
+    "lon": -86.6914,
+    "frac_of_flight": 0.16
+   }
+  ],
+  "max_separation_km": 2.27
+ },
+ {
+  "flight_id": "aedbd151-7648-4c30-84f7-265d90fdc458",
+  "purpose": "SUICIDAL PERSON",
+  "takeoff": "2026-07-30T21:50:23.529000+00:00",
+  "duration_min": 13.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.288,
+    "lon": -86.691,
+    "frac_of_flight": 1.0
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "8cfa7d9b-7b3a-49d1-a82f-e9a41b19d59b",
+  "purpose": "WANT OFFICER FOR INVESTIGATION / ASSISTANCE",
+  "takeoff": "2026-07-30T21:56:24.654000+00:00",
+  "duration_min": 9.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2698,
+    "lon": -86.6914,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "76c1aee6-b0a1-4c45-84e4-36555b3f3276",
+  "purpose": "FIRE",
+  "takeoff": "2026-07-30T23:58:50.932000+00:00",
+  "duration_min": 11.2,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2564,
+    "lon": -86.7143,
+    "frac_of_flight": 0.45
+   },
+   {
+    "lat": 36.2615,
+    "lon": -86.7072,
+    "frac_of_flight": 0.17
+   }
+  ],
+  "max_separation_km": 0.85
+ },
+ {
+  "flight_id": "976aa59f-8777-4b8b-8c8c-06c3497e6f23",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-07-31T00:33:49.922000+00:00",
+  "duration_min": 2.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2709,
+    "lon": -86.6904,
+    "frac_of_flight": 0.97
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5ff15392-9383-4dc0-ac13-2dd0867159f6",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-31T00:52:34.198000+00:00",
+  "duration_min": 8.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2579,
+    "lon": -86.6773,
+    "frac_of_flight": 0.4
+   },
+   {
+    "lat": 36.2706,
+    "lon": -86.6884,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 1.73
+ },
+ {
+  "flight_id": "4144d3de-6d10-4f78-91b4-f1abfbe4a92f",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-07-31T03:11:10.346000+00:00",
+  "duration_min": 15.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2659,
+    "lon": -86.6955,
+    "frac_of_flight": 0.91
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "ac8c76ea-2ab9-4a06-afcc-36113a34f8ed",
+  "purpose": "SAFETY HAZARD",
+  "takeoff": "2026-07-31T16:10:44.963000+00:00",
+  "duration_min": 17.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2608,
+    "lon": -86.7168,
+    "frac_of_flight": 0.71
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "2a4b35b8-c77f-40a1-b425-8e8562570809",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-31T16:45:36.197000+00:00",
+  "duration_min": 20.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3012,
+    "lon": -86.6869,
+    "frac_of_flight": 0.83
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "99661603-b148-43fd-ac7c-ffd1f92c6555",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-07-31T18:35:44.280000+00:00",
+  "duration_min": 16.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2582,
+    "lon": -86.7122,
+    "frac_of_flight": 0.92
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "80be694e-b552-4e51-8c60-51ac2b92d242",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-07-31T21:17:26.673000+00:00",
+  "duration_min": 9.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2731,
+    "lon": -86.7054,
+    "frac_of_flight": 0.75
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e0b0e03f-0d7b-40cf-8096-690abe397224",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-01T00:47:28.466000+00:00",
+  "duration_min": 7.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2855,
+    "lon": -86.7013,
+    "frac_of_flight": 0.63
+   },
+   {
+    "lat": 36.2769,
+    "lon": -86.6938,
+    "frac_of_flight": 0.14
+   }
+  ],
+  "max_separation_km": 1.17
+ },
+ {
+  "flight_id": "079989fa-2d2c-4c7f-8281-995a65058c85",
+  "purpose": "THEFT",
+  "takeoff": "2026-07-31T22:19:09.758000+00:00",
+  "duration_min": 19.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2994,
+    "lon": -86.6935,
+    "frac_of_flight": 0.96
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "03f1b2af-ddf0-4f75-b7d2-7c42ac7a506c",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-08-01T01:49:08.804000+00:00",
+  "duration_min": 16.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2678,
+    "lon": -86.7002,
+    "frac_of_flight": 0.48
+   },
+   {
+    "lat": 36.2621,
+    "lon": -86.7117,
+    "frac_of_flight": 0.26
+   }
+  ],
+  "max_separation_km": 1.21
+ },
+ {
+  "flight_id": "2b61ef07-9404-403c-9410-134273770903",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-08-01T01:47:26.655000+00:00",
+  "duration_min": 12.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3001,
+    "lon": -86.6947,
+    "frac_of_flight": 0.53
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "0395d04b-6ee4-4b69-9bf6-c4506eb1b91f",
+  "purpose": "SHOTS FIRED",
+  "takeoff": "2026-08-01T03:38:42.360000+00:00",
+  "duration_min": 20.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2543,
+    "lon": -86.7004,
+    "frac_of_flight": 0.86
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "1c3c2450-9d79-4f10-ba40-d68d1b2b78bd",
+  "purpose": "SHOTS FIRED",
+  "takeoff": "2026-08-01T03:51:34.325000+00:00",
+  "duration_min": 15.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2518,
+    "lon": -86.7015,
+    "frac_of_flight": 0.69
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "59988072-71f1-4c95-81e8-583fa5248bc8",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-04T14:39:20.228000+00:00",
+  "duration_min": 12.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2644,
+    "lon": -86.7131,
+    "frac_of_flight": 0.73
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "bbb2fc5d-5fec-4bde-bcac-313f5ef563d7",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-08-04T16:39:19.723000+00:00",
+  "duration_min": 6.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2736,
+    "lon": -86.7003,
+    "frac_of_flight": 1.0
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "a27feb53-caab-4267-ad67-2e6c6ea96702",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-08-04T17:38:38.074000+00:00",
+  "duration_min": 15.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2632,
+    "lon": -86.6942,
+    "frac_of_flight": 0.93
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3204e4af-0d45-41af-a854-6e2734bea0f9",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-08-04T20:36:01.475000+00:00",
+  "duration_min": 12.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2815,
+    "lon": -86.7171,
+    "frac_of_flight": 0.54
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "6797eabb-74e9-40ce-81d2-fb037edb1213",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-08-04T21:15:32.971000+00:00",
+  "duration_min": 12.4,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2714,
+    "lon": -86.6948,
+    "frac_of_flight": 0.95
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "924bda5a-0084-49c5-b1e9-41a99d640f30",
+  "purpose": "SAFETY HAZARD",
+  "takeoff": "2026-08-04T22:18:01.056000+00:00",
+  "duration_min": 9.6,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2806,
+    "lon": -86.7066,
+    "frac_of_flight": 0.74
+   },
+   {
+    "lat": 36.2766,
+    "lon": -86.6973,
+    "frac_of_flight": 0.2
+   }
+  ],
+  "max_separation_km": 0.94
+ },
+ {
+  "flight_id": "138a57ca-9c5d-4bea-b04f-e908bc311784",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-04T23:16:40.821000+00:00",
+  "duration_min": 16.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2725,
+    "lon": -86.6698,
+    "frac_of_flight": 0.88
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "cdee1165-ab0e-4604-91b5-c7cd0300af6c",
+  "purpose": "KIDNAPPING",
+  "takeoff": "2026-08-04T23:45:51.638000+00:00",
+  "duration_min": 14.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2642,
+    "lon": -86.6639,
+    "frac_of_flight": 0.59
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "9dd287a7-40eb-4fbe-978c-5e7e59a23a6d",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-08-04T23:57:43.739000+00:00",
+  "duration_min": 8.0,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2675,
+    "lon": -86.6987,
+    "frac_of_flight": 0.84
+   },
+   {
+    "lat": 36.271,
+    "lon": -86.694,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 0.57
+ },
+ {
+  "flight_id": "c7be81cc-7cbd-4f75-bb29-334453eb7081",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-08-05T00:14:16.223000+00:00",
+  "duration_min": 11.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.266,
+    "lon": -86.6966,
+    "frac_of_flight": 0.86
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3f7eb2f3-bd7b-4e0f-afd3-52305e74695d",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-05T00:32:21.327000+00:00",
+  "duration_min": 11.8,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2941,
+    "lon": -86.7019,
+    "frac_of_flight": 0.4
+   },
+   {
+    "lat": 36.2772,
+    "lon": -86.6931,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 2.04
+ },
+ {
+  "flight_id": "cf8d82ed-457d-41be-9106-b4467a34d2c6",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-08-05T02:07:03.434000+00:00",
+  "duration_min": 7.7,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2824,
+    "lon": -86.703,
+    "frac_of_flight": 0.44
+   },
+   {
+    "lat": 36.2761,
+    "lon": -86.6946,
+    "frac_of_flight": 0.28
+   },
+   {
+    "lat": 36.2808,
+    "lon": -86.701,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 1.02
+ },
+ {
+  "flight_id": "919bc920-14b9-4cd0-b9ad-eab331354442",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-08-05T02:38:27.507000+00:00",
+  "duration_min": 10.0,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.273,
+    "lon": -86.7093,
+    "frac_of_flight": 0.65
+   },
+   {
+    "lat": 36.2736,
+    "lon": -86.6985,
+    "frac_of_flight": 0.24
+   }
+  ],
+  "max_separation_km": 0.97
+ },
+ {
+  "flight_id": "d9c08866-2f13-460b-861c-63b82d53c4a8",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-05T03:30:46.599000+00:00",
+  "duration_min": 19.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2943,
+    "lon": -86.6957,
+    "frac_of_flight": 0.74
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "887ed112-049f-4831-99e8-7a4161193a42",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-05T16:43:47.354000+00:00",
+  "duration_min": 11.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2793,
+    "lon": -86.7105,
+    "frac_of_flight": 0.64
+   },
+   {
+    "lat": 36.2778,
+    "lon": -86.7078,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 0.29
+ },
+ {
+  "flight_id": "0acd8155-84c7-4168-a3f1-0ab88b3f48f8",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-05T12:18:34.671000+00:00",
+  "duration_min": 14.5,
+  "n_dwell_locations": 4,
+  "dwell_locations": [
+   {
+    "lat": 36.2958,
+    "lon": -86.6975,
+    "frac_of_flight": 0.23
+   },
+   {
+    "lat": 36.297,
+    "lon": -86.7006,
+    "frac_of_flight": 0.19
+   },
+   {
+    "lat": 36.2787,
+    "lon": -86.6924,
+    "frac_of_flight": 0.13
+   },
+   {
+    "lat": 36.2982,
+    "lon": -86.697,
+    "frac_of_flight": 0.09
+   }
+  ],
+  "max_separation_km": 2.21
+ },
+ {
+  "flight_id": "51406c25-d307-4814-bcb5-fb4b7ef7f061",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-05T18:02:30.738000+00:00",
+  "duration_min": 12.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2591,
+    "lon": -86.7131,
+    "frac_of_flight": 0.64
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "8362caa3-6af8-4288-8156-1d05a3811240",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-08-05T22:55:09.160000+00:00",
+  "duration_min": 18.3,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3018,
+    "lon": -86.6919,
+    "frac_of_flight": 0.75
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "4046cf84-7cbd-47e3-b613-dc64bda7a398",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-08-05T23:22:05.679000+00:00",
+  "duration_min": 7.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2625,
+    "lon": -86.6853,
+    "frac_of_flight": 0.89
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "4ee3afe7-fe63-4093-b21c-b9833b7c7c8c",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-08-05T23:09:17.354000+00:00",
+  "duration_min": 18.3,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.254,
+    "lon": -86.6777,
+    "frac_of_flight": 0.4
+   },
+   {
+    "lat": 36.255,
+    "lon": -86.6813,
+    "frac_of_flight": 0.4
+   }
+  ],
+  "max_separation_km": 0.34
+ },
+ {
+  "flight_id": "f815fa49-3444-4c30-8d03-fa9e14769c3d",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-08-06T00:03:51.257000+00:00",
+  "duration_min": 2.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2763,
+    "lon": -86.691,
+    "frac_of_flight": 0.95
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "8a881c58-f150-49e8-9ec4-540d1f808ea6",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-08-05T22:49:31.193000+00:00",
+  "duration_min": 14.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2888,
+    "lon": -86.6949,
+    "frac_of_flight": 0.88
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "1cba840d-2e1e-4f7c-a226-020b28110a38",
+  "purpose": "Explosion",
+  "takeoff": "2026-08-06T00:47:10.707000+00:00",
+  "duration_min": 8.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2726,
+    "lon": -86.6956,
+    "frac_of_flight": 0.66
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "872e9650-1bdd-4b71-a98c-bfdd59cff13c",
+  "purpose": "SHOTS FIRED",
+  "takeoff": "2026-08-06T01:51:41.565000+00:00",
+  "duration_min": 15.7,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2517,
+    "lon": -86.7018,
+    "frac_of_flight": 0.69
+   },
+   {
+    "lat": 36.2685,
+    "lon": -86.6931,
+    "frac_of_flight": 0.08
+   }
+  ],
+  "max_separation_km": 2.03
+ },
+ {
+  "flight_id": "05a591dc-64df-4eb3-a643-3264d4485649",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-08-06T01:56:55.003000+00:00",
+  "duration_min": 9.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2748,
+    "lon": -86.701,
+    "frac_of_flight": 0.86
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "d0a9e51e-2ea2-436e-83ad-fe824d4191a5",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-08-06T02:15:14.822000+00:00",
+  "duration_min": 10.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2637,
+    "lon": -86.6939,
+    "frac_of_flight": 0.82
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "6d835598-88f7-48b7-a8e3-f9388867ff46",
+  "purpose": "VEHICLE ACCIDENT-PERSONAL INJURY",
+  "takeoff": "2026-08-06T02:59:21.979000+00:00",
+  "duration_min": 10.1,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2585,
+    "lon": -86.7126,
+    "frac_of_flight": 0.4
+   },
+   {
+    "lat": 36.2708,
+    "lon": -86.6946,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 2.11
+ },
+ {
+  "flight_id": "600bf8cc-7245-47d8-b4f6-05c68d72300a",
+  "purpose": "FIGHT / ASSAULT",
+  "takeoff": "2026-08-06T03:13:35.196000+00:00",
+  "duration_min": 16.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2793,
+    "lon": -86.7063,
+    "frac_of_flight": 0.93
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "bd5a5908-8402-48b6-9703-f55c77fba9c1",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-08-06T12:29:40.113000+00:00",
+  "duration_min": 18.1,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2651,
+    "lon": -86.6651,
+    "frac_of_flight": 0.79
+   },
+   {
+    "lat": 36.2688,
+    "lon": -86.6757,
+    "frac_of_flight": 0.12
+   }
+  ],
+  "max_separation_km": 1.03
+ },
+ {
+  "flight_id": "7799fd05-1951-471d-bc69-6cfd55e3d1d6",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-06T13:35:45.494000+00:00",
+  "duration_min": 14.0,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2978,
+    "lon": -86.6998,
+    "frac_of_flight": 0.58
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3f02807a-d19e-4a1e-9c43-c97a7c2fd883",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-08-06T13:11:14.854000+00:00",
+  "duration_min": 20.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.3004,
+    "lon": -86.6929,
+    "frac_of_flight": 0.68
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "5524d01c-4f53-43eb-83a5-10ca0b0a7093",
+  "purpose": "BURGLARY - RESIDENCE",
+  "takeoff": "2026-08-06T16:12:56.070000+00:00",
+  "duration_min": 18.6,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2682,
+    "lon": -86.7235,
+    "frac_of_flight": 0.75
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "a3e84638-18e9-4289-883b-53a64bac9715",
+  "purpose": "THEFT",
+  "takeoff": "2026-08-06T17:53:47.610000+00:00",
+  "duration_min": 8.7,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2916,
+    "lon": -86.7013,
+    "frac_of_flight": 0.41
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "09d4f235-aa5c-4560-91e9-512ec93ab228",
+  "purpose": "SUSPICIOUS PERSON",
+  "takeoff": "2026-08-06T18:03:01.514000+00:00",
+  "duration_min": 12.3,
+  "n_dwell_locations": 4,
+  "dwell_locations": [
+   {
+    "lat": 36.2583,
+    "lon": -86.681,
+    "frac_of_flight": 0.4
+   },
+   {
+    "lat": 36.2605,
+    "lon": -86.6843,
+    "frac_of_flight": 0.15
+   },
+   {
+    "lat": 36.2673,
+    "lon": -86.6874,
+    "frac_of_flight": 0.12
+   },
+   {
+    "lat": 36.258,
+    "lon": -86.685,
+    "frac_of_flight": 0.11
+   }
+  ],
+  "max_separation_km": 1.15
+ },
+ {
+  "flight_id": "b29b7ba0-c329-4369-88a8-0ca580649b13",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-08-06T18:23:45.788000+00:00",
+  "duration_min": 20.1,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2622,
+    "lon": -86.7064,
+    "frac_of_flight": 0.89
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "439ea100-bc53-45f6-b821-547bb89777d5",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-08-06T21:31:27.831000+00:00",
+  "duration_min": 9.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2653,
+    "lon": -86.6909,
+    "frac_of_flight": 0.96
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "e0d9e3ab-d486-4f20-9c7b-7c2f27aa8ebf",
+  "purpose": "HOLDUP / ROBBERY",
+  "takeoff": "2026-08-06T21:10:13.558000+00:00",
+  "duration_min": 5.5,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2681,
+    "lon": -86.7012,
+    "frac_of_flight": 0.9
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "20be8130-f468-4e14-9d87-271ed572c632",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-08-06T23:04:38.331000+00:00",
+  "duration_min": 17.2,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2552,
+    "lon": -86.7182,
+    "frac_of_flight": 0.61
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "55e9c5c4-5bc1-416a-963c-827949150b90",
+  "purpose": "PERSON WITH WEAPON",
+  "takeoff": "2026-08-06T23:17:08.356000+00:00",
+  "duration_min": 16.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2571,
+    "lon": -86.7177,
+    "frac_of_flight": 0.65
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "3c61ac21-234f-4fa6-9d5b-0f31333afa0f",
+  "purpose": "FIRE",
+  "takeoff": "2026-08-07T00:02:04.944000+00:00",
+  "duration_min": 9.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2816,
+    "lon": -86.7121,
+    "frac_of_flight": 0.49
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "abd523cd-76eb-43f0-bb85-3ea9afd17d1c",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-07T01:08:29.842000+00:00",
+  "duration_min": 15.5,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2658,
+    "lon": -86.6647,
+    "frac_of_flight": 0.6
+   },
+   {
+    "lat": 36.2711,
+    "lon": -86.6829,
+    "frac_of_flight": 0.19
+   }
+  ],
+  "max_separation_km": 1.74
+ },
+ {
+  "flight_id": "25b4b7bf-17d8-4bde-b655-a5532349da74",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-08-07T02:49:07.127000+00:00",
+  "duration_min": 7.0,
+  "n_dwell_locations": 3,
+  "dwell_locations": [
+   {
+    "lat": 36.2811,
+    "lon": -86.7006,
+    "frac_of_flight": 0.18
+   },
+   {
+    "lat": 36.283,
+    "lon": -86.6983,
+    "frac_of_flight": 0.15
+   },
+   {
+    "lat": 36.2801,
+    "lon": -86.6962,
+    "frac_of_flight": 0.1
+   }
+  ],
+  "max_separation_km": 0.41
+ },
+ {
+  "flight_id": "ed03d8a7-fe34-42e5-9f67-d024d5632946",
+  "purpose": "DOMESTIC DISTURBANCE",
+  "takeoff": "2026-08-07T14:10:13.746000+00:00",
+  "duration_min": 17.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2696,
+    "lon": -86.6987,
+    "frac_of_flight": 0.98
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "13693a91-c8aa-47bc-bb29-670d42b9fd3c",
+  "purpose": "DISORDERLY PERSON",
+  "takeoff": "2026-08-07T15:32:51.147000+00:00",
+  "duration_min": 18.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2648,
+    "lon": -86.7136,
+    "frac_of_flight": 0.82
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "8f587d65-33b9-43d5-b318-f2f25575f99c",
+  "purpose": "VEHICLE ACCIDENT - PROPERTY DAMAGE",
+  "takeoff": "2026-08-07T22:49:49.844000+00:00",
+  "duration_min": 8.8,
+  "n_dwell_locations": 2,
+  "dwell_locations": [
+   {
+    "lat": 36.2909,
+    "lon": -86.7024,
+    "frac_of_flight": 0.54
+   },
+   {
+    "lat": 36.2778,
+    "lon": -86.6936,
+    "frac_of_flight": 0.14
+   }
+  ],
+  "max_separation_km": 1.66
+ },
+ {
+  "flight_id": "f248e3f6-a207-4893-a865-a1244657298f",
+  "purpose": "THEFT",
+  "takeoff": "2026-08-08T01:29:27.525000+00:00",
+  "duration_min": 13.8,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2593,
+    "lon": -86.7134,
+    "frac_of_flight": 0.62
+   }
+  ],
+  "max_separation_km": 0.0
+ },
+ {
+  "flight_id": "41e64102-9eec-4c96-9e91-9875868ed0d4",
+  "purpose": "BURGLARY - NON-RESIDENCE",
+  "takeoff": "2026-08-08T03:05:51.763000+00:00",
+  "duration_min": 11.9,
+  "n_dwell_locations": 1,
+  "dwell_locations": [
+   {
+    "lat": 36.2659,
+    "lon": -86.6639,
+    "frac_of_flight": 0.54
+   }
+  ],
+  "max_separation_km": 0.0
+ }
+]

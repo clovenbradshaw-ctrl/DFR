@@ -1,0 +1,113 @@
+{
+ "davidson_county_baseline": {
+  "pop": 708490.0,
+  "median_hh_income": 72908,
+  "pct_black": 26.4,
+  "pct_white": 55.7,
+  "pct_hispanic": 10.4,
+  "pct_poverty": 14.3
+ },
+ "locations": {
+  "Churchill Crossing (confirmed)": {
+   "tract": "47037010401",
+   "population": 4927.0,
+   "median_hh_income": 46536.0,
+   "pct_white": 39.9,
+   "pct_black": 34.3,
+   "pct_hispanic": 20.3,
+   "pct_poverty": 11.7,
+   "pct_renter_occupied": 73.46
+  },
+  "Robinson Rowhouses (confirmed)": {
+   "tract": "47037010501",
+   "population": 5989.0,
+   "median_hh_income": 60026.0,
+   "pct_white": 74.9,
+   "pct_black": 14.0,
+   "pct_hispanic": 4.7,
+   "pct_poverty": 7.6,
+   "pct_renter_occupied": 38.29
+  },
+  "cand: 36.2570,-86.7139": {
+   "tract": "47037010701",
+   "population": 4357.0,
+   "median_hh_income": 53575.0,
+   "pct_white": 36.5,
+   "pct_black": 34.5,
+   "pct_hispanic": 24.4,
+   "pct_poverty": 11.2,
+   "pct_renter_occupied": 63.45
+  },
+  "cand: 36.2531,-86.7178": {
+   "tract": "47037010701",
+   "population": 4357.0,
+   "median_hh_income": 53575.0,
+   "pct_white": 36.5,
+   "pct_black": 34.5,
+   "pct_hispanic": 24.4,
+   "pct_poverty": 11.2,
+   "pct_renter_occupied": 63.45
+  },
+  "cand: 36.2622,-86.7139": {
+   "tract": "47037010701",
+   "population": 4357.0,
+   "median_hh_income": 53575.0,
+   "pct_white": 36.5,
+   "pct_black": 34.5,
+   "pct_hispanic": 24.4,
+   "pct_poverty": 11.2,
+   "pct_renter_occupied": 63.45
+  },
+  "cand: 36.2999,-86.6918": {
+   "tract": "47037010401",
+   "population": 4927.0,
+   "median_hh_income": 46536.0,
+   "pct_white": 39.9,
+   "pct_black": 34.3,
+   "pct_hispanic": 20.3,
+   "pct_poverty": 11.7,
+   "pct_renter_occupied": 73.46
+  },
+  "cand: 36.2648,-86.7139": {
+   "tract": "47037010404",
+   "population": 2344.0,
+   "median_hh_income": 65973.0,
+   "pct_white": 39.5,
+   "pct_black": 28.8,
+   "pct_hispanic": 30.2,
+   "pct_poverty": 12.7,
+   "pct_renter_occupied": 58.85
+  },
+  "Madison Town Center (ruled out)": {
+   "tract": "47037010701",
+   "population": 4357.0,
+   "median_hh_income": 53575.0,
+   "pct_white": 36.5,
+   "pct_black": 34.5,
+   "pct_hispanic": 24.4,
+   "pct_poverty": 11.2,
+   "pct_renter_occupied": 63.45
+  },
+  "Kroger plaza (ruled out)": {
+   "tract": "47037010701",
+   "population": 4357.0,
+   "median_hh_income": 53575.0,
+   "pct_white": 36.5,
+   "pct_black": 34.5,
+   "pct_hispanic": 24.4,
+   "pct_poverty": 11.2,
+   "pct_renter_occupied": 63.45
+  },
+  "DOCK": {
+   "tract": "47037010401",
+   "population": 4927.0,
+   "median_hh_income": 46536.0,
+   "pct_white": 39.9,
+   "pct_black": 34.3,
+   "pct_hispanic": 20.3,
+   "pct_poverty": 11.7,
+   "pct_renter_occupied": 73.46
+  }
+ },
+ "source": "Census Planning Database 2023 (ACS 2017-2021 5-Year), tract-level, keyless bulk CSV"
+}
