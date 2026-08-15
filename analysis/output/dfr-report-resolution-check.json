@@ -1,0 +1,57 @@
+{
+ "checked_at": "2026-08-15",
+ "n_linked_complaint_numbers": 46,
+ "resolved_to_incident": 44,
+ "resolution_rate": 0.9565,
+ "missing": [
+  "20260340776",
+  "20260357788"
+ ],
+ "missing_detail": {
+  "20260340776": [
+   {
+    "attributes": {
+     "Event_Number": "PD202600410593",
+     "Complaint_Number": 20260340776,
+     "Tencode_Description": "40",
+     "Call_Received": 1780454962000
+    }
+   }
+  ],
+  "20260357788": [
+   {
+    "attributes": {
+     "Event_Number": "PD202600431168",
+     "Complaint_Number": 20260357788,
+     "Tencode_Description": "54",
+     "Call_Received": 1781127929000
+    }
+   }
+  ]
+ },
+ "resolved_offenses": {
+  "TRANSPORT": 4,
+  "SHOPLIFTING": 5,
+  "ASSAULT- FEAR OF BODILY INJURY": 3,
+  "INTENTIONAL AGGRAVATED ASSAULT": 7,
+  "WEAPON OFFENSE, CRIMINAL ATTEMPT": 5,
+  "DAMAGE PROP - PRIVATE": 3,
+  "SIMPLE ASSLT": 3,
+  "BURGLARY - MOTOR VEHICLE": 1,
+  "CONTEMPT - VIOLATION OF PROTECTION ORDER": 1,
+  "BURGLARY - AGGRAVATED": 1,
+  "THEFT OF PROPERTY- $1,000 OR >  BUT < $10,000": 1,
+  "BURGLARY- MOTOR VEHICLE": 2,
+  "DRUG FREE SCH.ZONE-CONT.SUB.-SCH. IV": 2,
+  "DRUG PARAPHERNALIA- UNLAWFUL USE": 2,
+  "VEHICLE THEFT": 2,
+  "FOUND PROPERTY": 3,
+  "POLICE INQUIRY": 7,
+  "THEFT OF PROPERTY-$1,000 OR LESS": 1,
+  "ROBBERY, AGGRAVATED, KNIFE": 1,
+  "ASSAULT- OFFENSIVE OR PROVOCATIVE CONTACT": 2,
+  "WEAPON - FIREARM OR CLUB": 1,
+  "THEFT OF MERCHANDISE 5TH - $1,000 OR LESS": 1,
+  "THEFT OF MERCHANDISE- $1,000 OR LESS": 1
+ }
+}

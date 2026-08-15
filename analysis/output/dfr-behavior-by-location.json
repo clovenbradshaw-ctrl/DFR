@@ -1,0 +1,38 @@
+{
+ "Churchill Crossing": {
+  "n_here": 17,
+  "n_distance_matched_other": 93,
+  "dest_dist_from_dock_km": 3.14,
+  "duration_min": {
+   "here": 17.5,
+   "other": 16.28
+  },
+  "real_path_km": {
+   "here": 6.368,
+   "other": 6.448
+  },
+  "loiter_density": {
+   "here": 0.397,
+   "other": 0.278,
+   "permutation_p_value": 0.0854
+  }
+ },
+ "Robinson Rowhouses": {
+  "n_here": 3,
+  "n_distance_matched_other": 174,
+  "dest_dist_from_dock_km": 2.62,
+  "duration_min": {
+   "here": 11.86,
+   "other": 16.545
+  },
+  "real_path_km": {
+   "here": 5.637,
+   "other": 5.6945
+  },
+  "loiter_density": {
+   "here": 0.318,
+   "other": 0.2935,
+   "permutation_p_value": 0.872
+  }
+ }
+}
