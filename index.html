@@ -2372,7 +2372,7 @@ function loadCSI(){
 // ACS values come straight from the Census API by tract (Davidson Co., FIPS 47037);
 // tract geometry comes from the Census TIGERweb service. Lazy-loaded the first time
 // the layer is switched on. Variables mirror the council-district panel set.
-var CENSUS_YEAR='2021';
+var CENSUS_YEAR='2024';   // default label; reset to whichever ACS 5-yr vintage the API actually serves
 var CENSUS_KEY='02123594ad60bb42acd69d5369b81060dc94c53a';   // Census API key (raises query limit; public-data, rate-limit only)
 var tractGroup=L.layerGroup(),tractsLoaded=false,tractFeatures=[],tractVarKey='drones',tractDataPromise=null,tractBaseline=null;
 var PAL_COOL=['#0b2f4a','#16567d','#2a86a8','#5cb3cf','#a7e0f2'];   // low → high (neutral)
@@ -2475,9 +2475,15 @@ function computeTractBaseline(byGeoid){
   };
 }
 // One ACS 5-yr query per tract (Davidson Co.), keyed on GEOID = state+county+tract.
-// Prefer 2021 (2017–2021) so the vintage matches the council-district baseline.
+// Pull the most recent ACS 5-Year vintage the Census API serves, newest first;
+// each failed/unpublished year falls through to the next. CENSUS_YEAR (and every
+// "ACS yyyy–yyyy" label derived from it) is reset to whichever vintage answers.
+// All of these vintages (2021+) use 2020-census tract boundaries, so they stay
+// consistent with the TIGERweb "Current" tract geometry. Note: the council-district
+// panel still uses the static 2017–2021 baseline, so the two layers can differ in
+// vintage when a newer tract vintage is live.
 function loadACSProfiles(){
-  var years=[2021,2022,2020];
+  var years=[2024,2023,2022,2021,2020];
   function tryYear(i){
     if(i>=years.length)return Promise.resolve({});
     var url='https://api.census.gov/data/'+years[i]+'/acs/acs5?get='+ACS_VARS.join(',')+
